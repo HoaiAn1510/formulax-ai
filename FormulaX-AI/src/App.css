@@ -2147,7 +2147,7 @@
   .bottom-nav::before { display: none; }
 
   .nav-logo-header {
-    display: flex;
+    display: flex !important;
     align-items: center;
     gap: 10px;
     padding: 18px 20px 14px;
@@ -2182,6 +2182,8 @@
     display: none;
   }
   .nav-settings-section {
+    display: flex;
+    flex-direction: column;
     margin-top: auto;
     padding-bottom: 12px;
   }
