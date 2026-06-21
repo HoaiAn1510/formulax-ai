@@ -100,9 +100,10 @@
   align-items: center;
   gap: var(--sp-2);
   font-weight: 800;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: var(--primary);
-  letter-spacing: -0.6px;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
 }
 
 .logo-icon-avatar {
@@ -196,6 +197,10 @@
   padding: 0 var(--sp-2);
   z-index: 100;
 }
+
+/* Ẩn các phần chỉ dùng trong sidebar desktop — không hiện trên bottom nav mobile */
+.nav-logo-header   { display: none; }
+.nav-settings-section { display: none; }
 
 .nav-item {
   display: flex;

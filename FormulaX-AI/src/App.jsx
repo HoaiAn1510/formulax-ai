@@ -108,16 +108,27 @@ export default function App() {
   useEffect(() => {
     if (!user?.googleId || !dataLoadedRef.current) return;
 
-    // Backup tức thì vào localStorage — không bao giờ mất dù Supabase có lỗi
     localStorage.setItem(`formulax_stats_${user.googleId}`, JSON.stringify(stats));
 
-    // Đồng bộ Supabase sau 1s (debounce tránh gọi API liên tục)
     clearTimeout(statsTimer.current);
     statsTimer.current = setTimeout(() => {
       saveStats(user.googleId, stats).catch(console.error);
-    }, 1000);
+    }, 500); // giảm debounce 500ms để lưu nhanh hơn
     return () => clearTimeout(statsTimer.current);
   }, [stats, user?.googleId]);
+
+  // Lưu Supabase ngay khi người dùng tắt/rời tab — tránh mất dữ liệu
+  useEffect(() => {
+    if (!user?.googleId) return;
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden" && dataLoadedRef.current) {
+        clearTimeout(statsTimer.current);
+        saveStats(user.googleId, stats).catch(console.error);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, [user?.googleId, stats]);
 
   // ─── Quiz daily — lưu localStorage ngay + Supabase (chỉ sau khi load xong)
   useEffect(() => {
