@@ -16,7 +16,7 @@ const STEPS = [
     color: "#10B981",
     bg: "rgba(16,185,129,0.08)",
     title: "Thử Finder AI ngay!",
-    subtitle: 'Gõ bất kỳ câu hỏi toán nào — ví dụ "công thức tính diện tích hình cầu" — AI sẽ tìm đúng công thức cho bạn.',
+    subtitle: "Gõ bất kỳ câu hỏi toán nào — AI sẽ tìm đúng công thức cho bạn.",
   },
   {
     id: "quiz",
