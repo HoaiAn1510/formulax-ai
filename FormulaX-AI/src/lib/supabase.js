@@ -1,10 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl  = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey  = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-console.log("[Supabase] URL:", supabaseUrl);
-console.log("[Supabase] Key prefix:", supabaseKey?.substring(0, 30));
+// Strip BOM (﻿) và whitespace — PowerShell có thể thêm BOM khi set env var qua CLI
+const supabaseUrl  = (import.meta.env.VITE_SUPABASE_URL  || "").replace(/^﻿/, "").trim();
+const supabaseKey  = (import.meta.env.VITE_SUPABASE_ANON_KEY || "").replace(/^﻿/, "").trim();
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
