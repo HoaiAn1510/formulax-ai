@@ -1,0 +1,1411 @@
+export const questionsPool = [
+  // ==================== GIẢI TÍCH (20 câu) ====================
+  {
+    id: "gt1",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm đạo hàm của hàm số $y = x^3$ trên tập số thực.",
+    options: [
+      { letter: "A", text: "$y' = 3x^2$", isCorrect: true },
+      { letter: "B", text: "$y' = x^2$", isCorrect: false },
+      { letter: "C", text: "$y' = 3x^3$", isCorrect: false },
+      { letter: "D", text: "$y' = 3x$", isCorrect: false }
+    ],
+    blankAnswer: "3x^2",
+    explanation: "Áp dụng công thức đạo hàm lũy thừa $(x^n)' = n \\cdot x^{n-1}$ với $n = 3$, ta có $(x^3)' = 3x^2$."
+  },
+  {
+    id: "gt2",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm nguyên hàm của hàm số $f(x) = \\cos x$.",
+    options: [
+      { letter: "A", text: "$\\int \\cos x \\, dx = \\sin x + C$", isCorrect: true },
+      { letter: "B", text: "$\\int \\cos x \\, dx = -\\sin x + C$", isCorrect: false },
+      { letter: "C", text: "$\\int \\cos x \\, dx = \\tan x + C$", isCorrect: false },
+      { letter: "D", text: "$\\int \\cos x \\, dx = \\cos x + C$", isCorrect: false }
+    ],
+    blankAnswer: "sin x + C",
+    explanation: "Theo bảng nguyên hàm cơ bản, nguyên hàm của hàm số $f(x) = \\cos x$ là $\\sin x + C$."
+  },
+  {
+    id: "gt3",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tính tích phân $I = \\int_{0}^{1} e^x \\, dx$.",
+    options: [
+      { letter: "A", text: "$I = e - 1$", isCorrect: true },
+      { letter: "B", text: "$I = e$", isCorrect: false },
+      { letter: "C", text: "$I = 1$", isCorrect: false },
+      { letter: "D", text: "$I = e + 1$", isCorrect: false }
+    ],
+    blankAnswer: "e - 1",
+    explanation: "Ta có $\\int_{0}^{1} e^x \\, dx = [e^x]_0^1 = e^1 - e^0 = e - 1$."
+  },
+  {
+    id: "gt4",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm tiệm cận đứng của đồ thị hàm số $y = \\frac{2x - 1}{x + 1}$.",
+    options: [
+      { letter: "A", text: "$x = -1$", isCorrect: true },
+      { letter: "B", text: "$x = 2$", isCorrect: false },
+      { letter: "C", text: "$y = 2$", isCorrect: false },
+      { letter: "D", text: "$x = 1$", isCorrect: false }
+    ],
+    blankAnswer: "x = -1",
+    explanation: "Giới hạn $\\lim_{x \\to -1^+} y = -\\infty$, mẫu số bằng 0 tại $x = -1$ và tử số khác 0. Vậy đường tiệm cận đứng là $x = -1$."
+  },
+  {
+    id: "gt5",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm đạo hàm của hàm số $y = \\ln x$ trên khoảng $(0; +\\infty)$.",
+    options: [
+      { letter: "A", text: "$y' = \\frac{1}{x}$", isCorrect: true },
+      { letter: "B", text: "$y' = x$", isCorrect: false },
+      { letter: "C", text: "$y' = e^x$", isCorrect: false },
+      { letter: "D", text: "$y' = -\\frac{1}{x^2}$", isCorrect: false }
+    ],
+    blankAnswer: "1/x",
+    explanation: "Đạo hàm của hàm số logarit tự nhiên $y = \\ln x$ là $y' = \\frac{1}{x}$."
+  },
+  {
+    id: "gt6",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm đạo hàm của hàm số $y = \\sin x$.",
+    options: [
+      { letter: "A", text: "$y' = \\cos x$", isCorrect: true },
+      { letter: "B", text: "$y' = -\\cos x$", isCorrect: false },
+      { letter: "C", text: "$y' = \\sin x$", isCorrect: false },
+      { letter: "D", text: "$y' = \\frac{1}{\\cos^2 x}$", isCorrect: false }
+    ],
+    blankAnswer: "cos x",
+    explanation: "Theo công thức đạo hàm lượng giác cơ bản: $(\\sin x)' = \\cos x$."
+  },
+  {
+    id: "gt7",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm đạo hàm của hàm số $y = e^x$.",
+    options: [
+      { letter: "A", text: "$y' = e^x$", isCorrect: true },
+      { letter: "B", text: "$y' = x e^{x-1}$", isCorrect: false },
+      { letter: "C", text: "$y' = e^x \\ln x$", isCorrect: false },
+      { letter: "D", text: "$y' = -e^x$", isCorrect: false }
+    ],
+    blankAnswer: "e^x",
+    explanation: "Đạo hàm của hàm số mũ cơ số $e$ đặc biệt luôn bằng chính nó: $(e^x)' = e^x$."
+  },
+  {
+    id: "gt8",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm nguyên hàm của hàm số $f(x) = \\frac{1}{x}$ trên khoảng $(0; +\\infty)$.",
+    options: [
+      { letter: "A", text: "$\\int \\frac{1}{x} \\, dx = \\ln x + C$", isCorrect: true },
+      { letter: "B", text: "$\\int \\frac{1}{x} \\, dx = -\\frac{1}{x^2} + C$", isCorrect: false },
+      { letter: "C", text: "$\\int \\frac{1}{x} \\, dx = e^x + C$", isCorrect: false },
+      { letter: "D", text: "$\\int \\frac{1}{x} \\, dx = \\ln|x| + C$", isCorrect: false }
+    ],
+    blankAnswer: "ln x + C",
+    explanation: "Trên khoảng $(0; +\\infty)$, ta có $x > 0$ nên nguyên hàm của $\\frac{1}{x}$ là $\\ln x + C$."
+  },
+  {
+    id: "gt9",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm nguyên hàm của hàm số $f(x) = x$.",
+    options: [
+      { letter: "A", text: "$\\int x \\, dx = \\frac{x^2}{2} + C$", isCorrect: true },
+      { letter: "B", text: "$\\int x \\, dx = 1 + C$", isCorrect: false },
+      { letter: "C", text: "$\\int x \\, dx = x^2 + C$", isCorrect: false },
+      { letter: "D", text: "$\\int x \\, dx = \\frac{x^2}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "x^2/2 + C",
+    explanation: "Áp dụng công thức nguyên hàm lũy thừa: $\\int x^n \\, dx = \\frac{x^{n+1}}{n+1} + C$ với $n=1$."
+  },
+  {
+    id: "gt10",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm hoành độ điểm cực trị của hàm số $y = x^2 - 2x + 3$.",
+    options: [
+      { letter: "A", text: "$x = 1$", isCorrect: true },
+      { letter: "B", text: "$x = 2$", isCorrect: false },
+      { letter: "C", text: "$x = -1$", isCorrect: false },
+      { letter: "D", text: "$x = 0$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "Ta có $y' = 2x - 2$. Giải phương trình $y' = 0 \\iff 2x - 2 = 0 \\iff x = 1$."
+  },
+  {
+    id: "gt11",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm đạo hàm của hàm số $y = \\tan x$.",
+    options: [
+      { letter: "A", text: "$y' = \\frac{1}{\\cos^2 x}$", isCorrect: true },
+      { letter: "B", text: "$y' = 1 + \\tan^2 x$", isCorrect: false },
+      { letter: "C", text: "$y' = -\\frac{1}{\\sin^2 x}$", isCorrect: false },
+      { letter: "D", text: "Cả A và B đều đúng", isCorrect: true }
+    ],
+    blankAnswer: "D",
+    explanation: "Ta có $(\\tan x)' = \\frac{1}{\\cos^2 x} = 1 + \\tan^2 x$. Do đó cả A và B đều đúng."
+  },
+  {
+    id: "gt12",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm giá trị lớn nhất của hàm số $y = x^3 - 3x$ trên đoạn $[0; 2]$.",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: true },
+      { letter: "B", text: "$0$", isCorrect: false },
+      { letter: "C", text: "$-2$", isCorrect: false },
+      { letter: "D", text: "$4$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "$y' = 3x^2 - 3 = 0 \\iff x = \\pm 1$. Trên đoạn $[0; 2]$, ta nhận $x = 1$. Tính các giá trị: $y(0) = 0$, $y(1) = -2$, $y(2) = 2$. Vậy giá trị lớn nhất là 2."
+  },
+  {
+    id: "gt13",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm đạo hàm của hàm số $y = x^4$.",
+    options: [
+      { letter: "A", text: "$y' = 4x^3$", isCorrect: true },
+      { letter: "B", text: "$y' = 4x$", isCorrect: false },
+      { letter: "C", text: "$y' = x^3$", isCorrect: false },
+      { letter: "D", text: "$y' = 3x^4$", isCorrect: false }
+    ],
+    blankAnswer: "4x^3",
+    explanation: "Áp dụng công thức đạo hàm lũy thừa: $(x^4)' = 4x^{4-1} = 4x^3$."
+  },
+  {
+    id: "gt14",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm nguyên hàm của hàm số $f(x) = e^{2x}$.",
+    options: [
+      { letter: "A", text: "$\\int e^{2x} \\, dx = \\frac{1}{2} e^{2x} + C$", isCorrect: true },
+      { letter: "B", text: "$\\int e^{2x} \\, dx = e^{2x} + C$", isCorrect: false },
+      { letter: "C", text: "$\\int e^{2x} \\, dx = 2e^{2x} + C$", isCorrect: false },
+      { letter: "D", text: "$\\int e^{2x} \\, dx = \\frac{1}{2} e^{x} + C$", isCorrect: false }
+    ],
+    blankAnswer: "1/2 * e^(2x) + C",
+    explanation: "Áp dụng công thức nguyên hàm mở rộng: $\\int e^{ax+b} \\, dx = \\frac{1}{a} e^{ax+b} + C$."
+  },
+  {
+    id: "gt15",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính giới hạn $L = \\lim_{x \\to 2} \\frac{x^2 - 4}{x - 2}$.",
+    options: [
+      { letter: "A", text: "$L = 4$", isCorrect: true },
+      { letter: "B", text: "$L = 2$", isCorrect: false },
+      { letter: "C", text: "$L = 0$", isCorrect: false },
+      { letter: "D", text: "$L = \\infty$", isCorrect: false }
+    ],
+    blankAnswer: "4",
+    explanation: "Ta có $\\frac{x^2 - 4}{x - 2} = \\frac{(x-2)(x+2)}{x-2} = x + 2$ (khi $x \\neq 2$). Giới hạn bằng $\\lim_{x \\to 2} (x+2) = 4$."
+  },
+  {
+    id: "gt16",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm đạo hàm của hàm số $y = \\cos(2x)$.",
+    options: [
+      { letter: "A", text: "$y' = -2\\sin(2x)$", isCorrect: true },
+      { letter: "B", text: "$y' = 2\\sin(2x)$", isCorrect: false },
+      { letter: "C", text: "$y' = -\\sin(2x)$", isCorrect: false },
+      { letter: "D", text: "$y' = -2\\cos(2x)$", isCorrect: false }
+    ],
+    blankAnswer: "-2sin(2x)",
+    explanation: "Áp dụng công thức đạo hàm hàm hợp $(\\cos u)' = -u' \\cdot \\sin u$, ta được $(\\cos 2x)' = -2\\sin(2x)$."
+  },
+  {
+    id: "gt17",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Viết phương trình tiếp tuyến của đồ thị hàm số $y = x^2$ tại điểm có hoành độ $x_0 = 1$.",
+    options: [
+      { letter: "A", text: "$y = 2x - 1$", isCorrect: true },
+      { letter: "B", text: "$y = 2x + 1$", isCorrect: false },
+      { letter: "C", text: "$y = x$", isCorrect: false },
+      { letter: "D", text: "$y = 2x$", isCorrect: false }
+    ],
+    blankAnswer: "y = 2x - 1",
+    explanation: "$y' = 2x \\implies f'(1) = 2$. Với $x_0 = 1 \\implies y_0 = 1$. Phương trình tiếp tuyến: $y = 2(x - 1) + 1 = 2x - 1$."
+  },
+  {
+    id: "gt18",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm nguyên hàm của hàm số $f(x) = \\sin x$.",
+    options: [
+      { letter: "A", text: "$\\int \\sin x \\, dx = -\\cos x + C$", isCorrect: true },
+      { letter: "B", text: "$\\int \\sin x \\, dx = \\cos x + C$", isCorrect: false },
+      { letter: "C", text: "$\\int \\sin x \\, dx = \\sin x + C$", isCorrect: false },
+      { letter: "D", text: "$\\int \\sin x \\, dx = -\\sin x + C$", isCorrect: false }
+    ],
+    blankAnswer: "-cos x + C",
+    explanation: "Nguyên hàm của hàm số sin là trừ cos: $\\int \\sin x \\, dx = -\\cos x + C$."
+  },
+  {
+    id: "gt19",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tính diện tích hình phẳng giới hạn bởi đồ thị hàm số $y = x^2$, trục hoành $Ox$, đường thẳng $x = 0$ và $x = 1$.",
+    options: [
+      { letter: "A", text: "$S = \\frac{1}{3}$", isCorrect: true },
+      { letter: "B", text: "$S = \\frac{1}{2}$", isCorrect: false },
+      { letter: "C", text: "$S = 1$", isCorrect: false },
+      { letter: "D", text: "$S = \\frac{1}{4}$", isCorrect: false }
+    ],
+    blankAnswer: "1/3",
+    explanation: "Diện tích là $S = \\int_{0}^{1} x^2 \\, dx = [\\frac{x^3}{3}]_0^1 = \\frac{1}{3}$."
+  },
+  {
+    id: "gt20",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm số điểm cực trị của đồ thị hàm số $y = x^4 - 2x^2 + 1$.",
+    options: [
+      { letter: "A", text: "$3$", isCorrect: true },
+      { letter: "B", text: "$1$", isCorrect: false },
+      { letter: "C", text: "$2$", isCorrect: false },
+      { letter: "D", text: "$0$", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "$y' = 4x^3 - 4x = 4x(x^2 - 1) = 0 \\iff x = 0$ hoặc $x = \\pm 1$. Vì đạo hàm có 3 nghiệm đơn đổi dấu qua đó nên hàm số có 3 điểm cực trị."
+  },
+
+  // ==================== HÌNH HỌC (20 câu) ====================
+  {
+    id: "hh1",
+    topic: "Hình học",
+    grade: 12,
+    text: "Cho khối chóp có diện tích đáy $B = 10\\text{ cm}^2$ và chiều cao $h = 6\\text{ cm}$. Tính thể tích $V$ của khối chóp.",
+    options: [
+      { letter: "A", text: "$V = 60\\text{ cm}^3$", isCorrect: false },
+      { letter: "B", text: "$V = 20\\text{ cm}^3$", isCorrect: true },
+      { letter: "C", text: "$V = 30\\text{ cm}^3$", isCorrect: false },
+      { letter: "D", text: "$V = 10\\text{ cm}^3$", isCorrect: false }
+    ],
+    blankAnswer: "20",
+    explanation: "Áp dụng công thức thể tích khối chóp $V = \\frac{1}{3} B \\cdot h$. Thay số ta có: $V = \\frac{1}{3} \\cdot 10 \\cdot 6 = 20\\text{ cm}^3$."
+  },
+  {
+    id: "hh2",
+    topic: "Hình học",
+    grade: 12,
+    text: "Tính thể tích khối cầu có bán kính $R = 3\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$V = 36\\pi \\text{ cm}^3$", isCorrect: true },
+      { letter: "B", text: "$V = 12\\pi \\text{ cm}^3$", isCorrect: false },
+      { letter: "C", text: "$V = 18\\pi \\text{ cm}^3$", isCorrect: false },
+      { letter: "D", text: "$V = 27\\pi \\text{ cm}^3$", isCorrect: false }
+    ],
+    blankAnswer: "36pi",
+    explanation: "Áp dụng công thức thể tích khối cầu $V = \\frac{4}{3}\\pi R^3$. Với $R = 3$, ta có $V = \\frac{4}{3}\\pi \\cdot 3^3 = 36\\pi \\text{ cm}^3$."
+  },
+  {
+    id: "hh3",
+    topic: "Hình học",
+    grade: 12,
+    text: "Tính thể tích của khối lăng trụ đứng có diện tích đáy $B = 9\\text{ cm}^2$ và chiều cao $h = 5\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$V = 15\\text{ cm}^3$", isCorrect: false },
+      { letter: "B", text: "$V = 45\\text{ cm}^3$", isCorrect: true },
+      { letter: "C", text: "$V = 22.5\\text{ cm}^3$", isCorrect: false },
+      { letter: "D", text: "$V = 90\\text{ cm}^3$", isCorrect: false }
+    ],
+    blankAnswer: "45",
+    explanation: "Thể tích khối lăng trụ được tính theo công thức $V = B \\cdot h$. Ở đây $V = 9 \\cdot 5 = 45\\text{ cm}^3$."
+  },
+  {
+    id: "hh4",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho tam giác $ABC$ có cạnh $b = 5$, $c = 8$ và góc $A = 60^\\circ$. Tính độ dài cạnh $a$.",
+    options: [
+      { letter: "A", text: "$a = 9$", isCorrect: false },
+      { letter: "B", text: "$a = 7$", isCorrect: true },
+      { letter: "C", text: "$a = \\sqrt{89}$", isCorrect: false },
+      { letter: "D", text: "$a = 5\\sqrt{2}$", isCorrect: false }
+    ],
+    blankAnswer: "7",
+    explanation: "Áp dụng định lý Côsin: $a^2 = b^2 + c^2 - 2bc \\cos A = 5^2 + 8^2 - 2(5)(8)\\cos 60^\\circ = 25 + 64 - 40 = 49 \\implies a = 7$."
+  },
+  {
+    id: "hh5",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho điểm $A(1; 2; 3)$. Tính khoảng cách từ điểm $A$ đến mặt phẳng tọa độ $(Oxy)$.",
+    options: [
+      { letter: "A", text: "$1$", isCorrect: false },
+      { letter: "B", text: "$2$", isCorrect: false },
+      { letter: "C", text: "$3$", isCorrect: true },
+      { letter: "D", text: "$\\sqrt{14}$", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "Khoảng cách từ điểm $A(x_0; y_0; z_0)$ đến mặt phẳng $(Oxy)$ bằng $|z_0|$. Với $A(1; 2; 3)$, khoảng cách là $|3| = 3$."
+  },
+  {
+    id: "hh6",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, phương trình mặt cầu có tâm $I(1; -2; 3)$ và bán kính $R = 5$ là:",
+    options: [
+      { letter: "A", text: "$(x-1)^2 + (y+2)^2 + (z-3)^2 = 25$", isCorrect: true },
+      { letter: "B", text: "$(x+1)^2 + (y-2)^2 + (z+3)^2 = 25$", isCorrect: false },
+      { letter: "C", text: "$(x-1)^2 + (y-2)^2 + (z-3)^2 = 5$", isCorrect: false },
+      { letter: "D", text: "$(x-1)^2 + (y+2)^2 + (z-3)^2 = 5$", isCorrect: false }
+    ],
+    blankAnswer: "(x-1)^2 + (y+2)^2 + (z-3)^2 = 25",
+    explanation: "Phương trình mặt cầu tâm $I(a; b; c)$ bán kính $R$ là $(x-a)^2 + (y-b)^2 + (z-c)^2 = R^2$. Thay số ta có $(x-1)^2 + (y+2)^2 + (z-3)^2 = 25$."
+  },
+  {
+    id: "hh7",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình lập phương $ABCD.A'B'C'D'$. Góc giữa hai đường thẳng $AB$ và $CC'$ bằng bao nhiêu độ?",
+    options: [
+      { letter: "A", text: "$90^\\circ$", isCorrect: true },
+      { letter: "B", text: "$45^\\circ$", isCorrect: false },
+      { letter: "C", text: "$0^\\circ$", isCorrect: false },
+      { letter: "D", text: "$60^\\circ$", isCorrect: false }
+    ],
+    blankAnswer: "90",
+    explanation: "Vì $CC' \\parallel AA'$ nên góc giữa $AB$ và $CC'$ bằng góc giữa $AB$ and $AA'$. Hình lập phương có các mặt là hình vuông nên $AB \\perp AA'$, góc bằng $90^\\circ$."
+  },
+  {
+    id: "hh8",
+    topic: "Hình học",
+    grade: 12,
+    text: "Tính diện tích xung quanh của hình nón có bán kính đáy $r = 3\\text{ cm}$ và đường sinh $l = 5\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$15\\pi\\text{ cm}^2$", isCorrect: true },
+      { letter: "B", text: "$30\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "C", text: "$9\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "D", text: "$12\\pi\\text{ cm}^2$", isCorrect: false }
+    ],
+    blankAnswer: "15pi",
+    explanation: "Diện tích xung quanh của hình nón: $S_{xq} = \\pi r l = \\pi \\cdot 3 \\cdot 5 = 15\\pi\\text{ cm}^2$."
+  },
+  {
+    id: "hh9",
+    topic: "Hình học",
+    grade: 12,
+    text: "Tính diện tích xung quanh của hình trụ có bán kính đáy $r = 4\\text{ cm}$ và chiều cao $h = 6\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$48\\pi\\text{ cm}^2$", isCorrect: true },
+      { letter: "B", text: "$24\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "C", text: "$96\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "D", text: "$16\\pi\\text{ cm}^2$", isCorrect: false }
+    ],
+    blankAnswer: "48pi",
+    explanation: "Diện tích xung quanh của hình trụ: $S_{xq} = 2\\pi r h = 2\\pi \\cdot 4 \\cdot 6 = 48\\pi\\text{ cm}^2$."
+  },
+  {
+    id: "hh10",
+    topic: "Hình học",
+    grade: 12,
+    text: "Tính thể tích $V$ của khối trụ có bán kính đáy $r = 3\\text{ cm}$ và chiều cao $h = 4\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$V = 36\\pi\\text{ cm}^3$", isCorrect: true },
+      { letter: "B", text: "$V = 12\\pi\\text{ cm}^3$", isCorrect: false },
+      { letter: "C", text: "$V = 18\\pi\\text{ cm}^3$", isCorrect: false },
+      { letter: "D", text: "$V = 24\\pi\\text{ cm}^3$", isCorrect: false }
+    ],
+    blankAnswer: "36pi",
+    explanation: "Thể tích khối trụ được tính bằng công thức $V = B \\cdot h = \\pi r^2 h = \\pi \\cdot 3^2 \\cdot 4 = 36\\pi\\text{ cm}^3$."
+  },
+  {
+    id: "hh11",
+    topic: "Hình học",
+    grade: 12,
+    text: "Cho hình hộp chữ nhật có ba kích thước lần lượt là $3\\text{ cm}$, $4\\text{ cm}$, $5\\text{ cm}$. Tính thể tích $V$ của khối hộp.",
+    options: [
+      { letter: "A", text: "$60\\text{ cm}^3$", isCorrect: true },
+      { letter: "B", text: "$12\\text{ cm}^3$", isCorrect: false },
+      { letter: "C", text: "$20\\text{ cm}^3$", isCorrect: false },
+      { letter: "D", text: "$30\\text{ cm}^3$", isCorrect: false }
+    ],
+    blankAnswer: "60",
+    explanation: "Thể tích hình hộp chữ nhật bằng tích ba kích thước: $V = a \\cdot b \\cdot c = 3 \\cdot 4 \\cdot 5 = 60\\text{ cm}^3$."
+  },
+  {
+    id: "hh12",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho hai điểm $A(1; 2; 3)$ và $B(3; 2; 1)$. Tìm tọa độ trung điểm $I$ của đoạn thẳng $AB$.",
+    options: [
+      { letter: "A", text: "$I(2; 2; 2)$", isCorrect: true },
+      { letter: "B", text: "$I(4; 4; 4)$", isCorrect: false },
+      { letter: "C", text: "$I(1; 0; -1)$", isCorrect: false },
+      { letter: "D", text: "$I(2; 0; 2)$", isCorrect: false }
+    ],
+    blankAnswer: "(2; 2; 2)",
+    explanation: "Tọa độ trung điểm $I$: $x_I = \\frac{1+3}{2} = 2$, $y_I = \\frac{2+2}{2} = 2$, $z_I = \\frac{3+1}{2} = 2$. Vậy $I(2; 2; 2)$."
+  },
+  {
+    id: "hh13",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, tìm một vectơ pháp tuyến $\\vec{n}$ của mặt phẳng $(P): x - 2y + 3z - 4 = 0$.",
+    options: [
+      { letter: "A", text: "\\vec{n} = (1; -2; 3)", isCorrect: true },
+      { letter: "B", text: "\\vec{n} = (1; 2; 3)", isCorrect: false },
+      { letter: "C", text: "\\vec{n} = (-1; 2; 3)", isCorrect: false },
+      { letter: "D", text: "\\vec{n} = (1; -2; -4)", isCorrect: false }
+    ],
+    blankAnswer: "(1; -2; 3)",
+    explanation: "Mặt phẳng $Ax+By+Cz+D=0$ có một vectơ pháp tuyến là $(A; B; C)$. Do đó $\\vec{n} = (1; -2; 3)$."
+  },
+  {
+    id: "hh14",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tính diện tích của tam giác đều cạnh $a$.",
+    options: [
+      { letter: "A", text: "$S = \\frac{a^2\\sqrt{3}}{4}$", isCorrect: true },
+      { letter: "B", text: "$S = \\frac{a^2\\sqrt{3}}{2}$", isCorrect: false },
+      { letter: "C", text: "$S = a^2\\sqrt{3}$", isCorrect: false },
+      { letter: "D", text: "$S = \\frac{a^2}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "a^2*sqrt(3)/4",
+    explanation: "Công thức diện tích tam giác đều cạnh $a$ là $S = \\frac{1}{2} a \\cdot (a\\sin 60^\\circ) = \\frac{a^2\\sqrt{3}}{4}$."
+  },
+  {
+    id: "hh15",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, tìm tọa độ trọng tâm $G$ của tam giác $ABC$ biết $A(1; 0; 0)$, $B(0; 2; 0)$, $C(0; 0; 3)$.",
+    options: [
+      { letter: "A", text: "$G(\\frac{1}{3}; \\frac{2}{3}; 1)$", isCorrect: true },
+      { letter: "B", text: "$G(1; 2; 3)$", isCorrect: false },
+      { letter: "C", text: "$G(\\frac{1}{2}; 1; \\frac{3}{2})$", isCorrect: false },
+      { letter: "D", text: "$G(0; 0; 0)$", isCorrect: false }
+    ],
+    blankAnswer: "(1/3; 2/3; 1)",
+    explanation: "Trọng tâm $G$ có tọa độ bằng trung bình cộng tọa độ 3 đỉnh: $x_G = \\frac{1+0+0}{3} = \\frac{1}{3}$, $y_G = \\frac{0+2+0}{3} = \\frac{2}{3}$, $z_G = \\frac{0+0+3}{3} = 1$."
+  },
+  {
+    id: "hh16",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tính diện tích hình tròn có bán kính $R = 4\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$16\\pi\\text{ cm}^2$", isCorrect: true },
+      { letter: "B", text: "$8\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "C", text: "$4\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "D", text: "$64\\pi\\text{ cm}^2$", isCorrect: false }
+    ],
+    blankAnswer: "16pi",
+    explanation: "Diện tích hình tròn bằng $S = \\pi R^2$. Với $R = 4$, $S = \\pi \\cdot 4^2 = 16\\pi\\text{ cm}^2$."
+  },
+  {
+    id: "hh17",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tính chu vi đường tròn có bán kính $R = 5\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$10\\pi\\text{ cm}$", isCorrect: true },
+      { letter: "B", text: "$5\\pi\\text{ cm}$", isCorrect: false },
+      { letter: "C", text: "$25\\pi\\text{ cm}$", isCorrect: false },
+      { letter: "D", text: "$20\\pi\\text{ cm}$", isCorrect: false }
+    ],
+    blankAnswer: "10pi",
+    explanation: "Chu vi đường tròn bằng $C = 2\\pi R = 2\\pi \\cdot 5 = 10\\pi\\text{ cm}$."
+  },
+  {
+    id: "hh18",
+    topic: "Hình học",
+    grade: 12,
+    text: "Tính thể tích $V$ của khối lập phương cạnh $3\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$V = 27\\text{ cm}^3$", isCorrect: true },
+      { letter: "B", text: "$V = 9\\text{ cm}^3$", isCorrect: false },
+      { letter: "C", text: "$V = 18\\text{ cm}^3$", isCorrect: false },
+      { letter: "D", text: "$V = 54\\text{ cm}^3$", isCorrect: false }
+    ],
+    blankAnswer: "27",
+    explanation: "Thể tích khối lập phương cạnh $a$ bằng $V = a^3$. Ở đây $V = 3^3 = 27\\text{ cm}^3$."
+  },
+  {
+    id: "hh19",
+    topic: "Hình học",
+    grade: 12,
+    text: "Tính diện tích xung quanh của hình nón có bán kính đáy $r = 5\\text{ cm}$ và đường sinh $l = 10\\text{ cm}$.",
+    options: [
+      { letter: "A", text: "$50\\pi\\text{ cm}^2$", isCorrect: true },
+      { letter: "B", text: "$25\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "C", text: "$100\\pi\\text{ cm}^2$", isCorrect: false },
+      { letter: "D", text: "$15\\pi\\text{ cm}^2$", isCorrect: false }
+    ],
+    blankAnswer: "50pi",
+    explanation: "Diện tích xung quanh hình nón: $S_{xq} = \\pi r l = \\pi \\cdot 5 \\cdot 10 = 50\\pi\\text{ cm}^2$."
+  },
+  {
+    id: "hh20",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, viết phương trình mặt phẳng đi qua điểm $M(1; 2; 3)$ và song song với mặt phẳng $(Oxy)$.",
+    options: [
+      { letter: "A", text: "$z - 3 = 0$", isCorrect: true },
+      { letter: "B", text: "$x - 1 = 0$", isCorrect: false },
+      { letter: "C", text: "$y - 2 = 0$", isCorrect: false },
+      { letter: "D", text: "$x + y + z - 6 = 0$", isCorrect: false }
+    ],
+    blankAnswer: "z - 3 = 0",
+    explanation: "Mặt phẳng song song với $(Oxy)$ có phương trình dạng $z + D = 0$. Vì mặt phẳng đi qua $M(1; 2; 3)$ nên $3 + D = 0 \\iff D = -3$. Phương trình mặt phẳng là $z - 3 = 0$."
+  },
+
+  // ==================== ĐẠI SỐ (20 câu) ====================
+  {
+    id: "ds1",
+    topic: "Đại số",
+    grade: 10,
+    text: "Phương trình bậc hai $ax^2 + bx + c = 0 \\quad (a \\neq 0)$ có hai nghiệm phân biệt khi biệt thức $\\Delta$ thỏa mãn điều kiện nào?",
+    options: [
+      { letter: "A", text: "$\\Delta = 0$", isCorrect: false },
+      { letter: "B", text: "$\\Delta \\ge 0$", isCorrect: false },
+      { letter: "C", text: "$\\Delta < 0$", isCorrect: false },
+      { letter: "D", text: "$\\Delta > 0$", isCorrect: true }
+    ],
+    blankAnswer: ">0",
+    explanation: "Biệt thức $\\Delta = b^2 - 4ac$. Khi $\\Delta > 0$, phương trình bậc hai luôn có hai nghiệm phân biệt."
+  },
+  {
+    id: "ds2",
+    topic: "Đại số",
+    grade: 11,
+    text: "Cho cấp số cộng có số hạng đầu $u_1 = 3$, công sai $d = 2$. Tính tổng của 10 số hạng đầu tiên ($S_{10}$).",
+    options: [
+      { letter: "A", text: "$S_{10} = 120$", isCorrect: true },
+      { letter: "B", text: "$S_{10} = 110$", isCorrect: false },
+      { letter: "C", text: "$S_{10} = 100$", isCorrect: false },
+      { letter: "D", text: "$S_{10} = 130$", isCorrect: false }
+    ],
+    blankAnswer: "120",
+    explanation: "Áp dụng công thức tổng cấp số cộng: $S_n = \\frac{n[2u_1 + (n-1)d]}{2}$. Với $n=10$, ta được $S_{10} = \\frac{10 \\cdot [2(3) + 9(2)]}{2} = 5 \\cdot 24 = 120$."
+  },
+  {
+    id: "ds3",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho tập hợp $A = \\{1; 2; 3; 4\\}$ và $B = \\{3; 4; 5; 6\\}$. Xác định tập hợp $A \\cap B$.",
+    options: [
+      { letter: "A", text: "$\\{1; 2\\}$", isCorrect: false },
+      { letter: "B", text: "$\\{3; 4\\}$", isCorrect: true },
+      { letter: "C", text: "$\\{5; 6\\}$", isCorrect: false },
+      { letter: "D", text: "$\\{1; 2; 3; 4; 5; 6\\}$", isCorrect: false }
+    ],
+    blankAnswer: "{3; 4}",
+    explanation: "Tập hợp giao $A \\cap B$ gồm các phần tử vừa thuộc $A$ vừa thuộc $B$. Các phần tử chung là $\\{3; 4\\}$."
+  },
+  {
+    id: "ds4",
+    topic: "Đại số",
+    grade: 10,
+    text: "Tìm tập xác định $D$ của hàm số $y = \\frac{1}{x - 2}$.",
+    options: [
+      { letter: "A", text: "$D = \\mathbb{R} \\setminus \\{2\\}$", isCorrect: true },
+      { letter: "B", text: "$D = \\mathbb{R}$", isCorrect: false },
+      { letter: "C", text: "$D = (2; +\\infty)$", isCorrect: false },
+      { letter: "D", text: "$D = \\mathbb{R} \\setminus \\{-2\\}$", isCorrect: false }
+    ],
+    blankAnswer: "R \\ {2}",
+    explanation: "Hàm số xác định khi mẫu số khác 0: $x - 2 \\neq 0 \\iff x \\neq 2$. Tập xác định là $D = \\mathbb{R} \\setminus \\{2\\}$."
+  },
+  {
+    id: "ds5",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho nhị thức bậc nhất $f(x) = 2x - 4$. Khẳng định nào sau đây là đúng?",
+    options: [
+      { letter: "A", text: "$f(x) > 0$ với mọi $x > 2$", isCorrect: true },
+      { letter: "B", text: "$f(x) > 0$ với mọi $x < 2$", isCorrect: false },
+      { letter: "C", text: "$f(x) < 0$ với mọi $x > 2$", isCorrect: false },
+      { letter: "D", text: "$f(x) = 0$ với mọi $x \\in \\mathbb{R}$", isCorrect: false }
+    ],
+    blankAnswer: ">0 khi x>2",
+    explanation: "Ta có $2x - 4 = 0 \\iff x = 2$. Hệ số $a = 2 > 0$. Theo quy tắc xét dấu nhị thức bậc nhất 'phải cùng, trái khác', ta có $f(x) > 0$ khi $x > 2$."
+  },
+  {
+    id: "ds6",
+    topic: "Đại số",
+    grade: 12,
+    text: "Tìm nghiệm của phương trình $\\log_2 x = 3$.",
+    options: [
+      { letter: "A", text: "$x = 8$", isCorrect: true },
+      { letter: "B", text: "$x = 6$", isCorrect: false },
+      { letter: "C", text: "$x = 9$", isCorrect: false },
+      { letter: "D", text: "$x = 5$", isCorrect: false }
+    ],
+    blankAnswer: "8",
+    explanation: "Theo định nghĩa logarit: $\\log_a x = b \\iff x = a^b$. Ở đây $x = 2^3 = 8$."
+  },
+  {
+    id: "ds7",
+    topic: "Đại số",
+    grade: 11,
+    text: "Viết công thức tính số hạng tổng quát $u_n$ của một cấp số cộng theo số hạng đầu $u_1$ và công sai $d$.",
+    options: [
+      { letter: "A", text: "$u_n = u_1 + (n-1)d$", isCorrect: true },
+      { letter: "B", text: "$u_n = u_1 + nd$", isCorrect: false },
+      { letter: "C", text: "$u_n = u_1 \\cdot d^{n-1}$", isCorrect: false },
+      { letter: "D", text: "$u_n = u_1 - (n-1)d$", isCorrect: false }
+    ],
+    blankAnswer: "u_n = u_1 + (n-1)d",
+    explanation: "Theo định nghĩa cấp số cộng, số hạng tổng quát là $u_n = u_1 + (n-1)d$."
+  },
+  {
+    id: "ds8",
+    topic: "Đại số",
+    grade: 11,
+    text: "Viết công thức tính số hạng tổng quát $u_n$ của một cấp số nhân theo số hạng đầu $u_1$ và công bội $q$.",
+    options: [
+      { letter: "A", text: "$u_n = u_1 \\cdot q^{n-1}$", isCorrect: true },
+      { letter: "B", text: "$u_n = u_1 \\cdot q^n$", isCorrect: false },
+      { letter: "C", text: "$u_n = u_1 + (n-1)q$", isCorrect: false },
+      { letter: "D", text: "$u_n = u_1 \\cdot (n-1)q$", isCorrect: false }
+    ],
+    blankAnswer: "u_n = u_1 * q^(n-1)",
+    explanation: "Số hạng thứ $n$ của cấp số nhân là $u_n = u_1 \\cdot q^{n-1}$."
+  },
+  {
+    id: "ds9",
+    topic: "Đại số",
+    grade: 12,
+    text: "Tìm tập nghiệm của phương trình $2^x = 8$.",
+    options: [
+      { letter: "A", text: "$S = \\{3\\}$", isCorrect: true },
+      { letter: "B", text: "$S = \\{4\\}$", isCorrect: false },
+      { letter: "C", text: "$S = \\{2\\}$", isCorrect: false },
+      { letter: "D", text: "$S = \\{8\\}$", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "Đưa về cùng cơ số: $2^x = 2^3 \\iff x = 3$."
+  },
+  {
+    id: "ds10",
+    topic: "Đại số",
+    grade: 10,
+    text: "Tìm tập xác định $D$ của hàm số $y = \\sqrt{x - 1}$.",
+    options: [
+      { letter: "A", text: "$D = [1; +\\infty)$", isCorrect: true },
+      { letter: "B", text: "$D = (1; +\\infty)$", isCorrect: false },
+      { letter: "C", text: "$D = \\mathbb{R} \\setminus \\{1\\}$", isCorrect: false },
+      { letter: "D", text: "$D = \\mathbb{R}$", isCorrect: false }
+    ],
+    blankAnswer: "[1; +inf)",
+    explanation: "Hàm số căn thức xác định khi biểu thức dưới căn không âm: $x - 1 \\ge 0 \\iff x \\ge 1$. Tập xác định là $D = [1; +\\infty)$."
+  },
+  {
+    id: "ds11",
+    topic: "Đại số",
+    grade: 11,
+    text: "Cho một cấp số nhân có số hạng đầu $u_1 = 2$, công bội $q = 3$. Tìm số hạng thứ hai $u_2$.",
+    options: [
+      { letter: "A", text: "$u_2 = 6$", isCorrect: true },
+      { letter: "B", text: "$u_2 = 5$", isCorrect: false },
+      { letter: "C", text: "$u_2 = 9$", isCorrect: false },
+      { letter: "D", text: "$u_2 = 8$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "Áp dụng định nghĩa cấp số nhân: $u_2 = u_1 \\cdot q = 2 \\cdot 3 = 6$."
+  },
+  {
+    id: "ds12",
+    topic: "Đại số",
+    grade: 10,
+    text: "Tập hợp $A = \\{a, b, c\\}$ có bao nhiêu tập hợp con?",
+    options: [
+      { letter: "A", text: "$8$", isCorrect: true },
+      { letter: "B", text: "$6$", isCorrect: false },
+      { letter: "C", text: "$4$", isCorrect: false },
+      { letter: "D", text: "$3$", isCorrect: false }
+    ],
+    blankAnswer: "8",
+    explanation: "Tập hợp có $n$ phần tử thì có $2^n$ tập con. Với $n=3$, số tập con là $2^3 = 8$."
+  },
+  {
+    id: "ds13",
+    topic: "Đại số",
+    grade: 10,
+    text: "Công thức biến đổi lũy thừa nào sau đây là đúng với mọi $a > 0$?",
+    options: [
+      { letter: "A", text: "$(a^m)^n = a^{m \\cdot n}$", isCorrect: true },
+      { letter: "B", text: "$(a^m)^n = a^{m + n}$", isCorrect: false },
+      { letter: "C", text: "$a^m \\cdot a^n = a^{m \\cdot n}$", isCorrect: false },
+      { letter: "D", text: "$a^m / a^n = a^{m / n}$", isCorrect: false }
+    ],
+    blankAnswer: "(a^m)^n = a^(m*n)",
+    explanation: "Theo các tính chất lũy thừa cơ bản, lũy thừa của lũy thừa là nhân các số mũ: $(a^m)^n = a^{m \\cdot n}$."
+  },
+  {
+    id: "ds14",
+    topic: "Đại số",
+    grade: 10,
+    text: "Khi biệt thức $\\Delta = 0$, phương trình bậc hai $ax^2 + bx + c = 0 \\quad (a \\neq 0)$ có nghiệm kép là:",
+    options: [
+      { letter: "A", text: "$x_1 = x_2 = -\\frac{b}{2a}$", isCorrect: true },
+      { letter: "B", text: "$x_1 = x_2 = -\\frac{b}{a}$", isCorrect: false },
+      { letter: "C", text: "$x_1 = x_2 = \\frac{b}{2a}$", isCorrect: false },
+      { letter: "D", text: "$x_1 = x_2 = -\\frac{c}{a}$", isCorrect: false }
+    ],
+    blankAnswer: "-b/(2a)",
+    explanation: "Khi biệt thức bằng 0, phương trình bậc hai có nghiệm kép $x_1 = x_2 = -\\frac{b}{2a}$."
+  },
+  {
+    id: "ds15",
+    topic: "Đại số",
+    grade: 12,
+    text: "Cho $a > 0, a \\neq 1$. Tính giá trị của biểu thức $P = \\log_a(a^2)$.",
+    options: [
+      { letter: "A", text: "$P = 2$", isCorrect: true },
+      { letter: "B", text: "$P = 1$", isCorrect: false },
+      { letter: "C", text: "$P = a$", isCorrect: false },
+      { letter: "D", text: "$P = 2a$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "Áp dụng tính chất logarit của lũy thừa: $\\log_a(a^k) = k$. Với $k=2$, ta được $P = 2$."
+  },
+  {
+    id: "ds16",
+    topic: "Đại số",
+    grade: 10,
+    text: "Giải hệ phương trình $\\begin{cases} x + y = 3 \\\\ x - y = 1 \\end{cases}$.",
+    options: [
+      { letter: "A", text: "$(x; y) = (2; 1)$", isCorrect: true },
+      { letter: "B", text: "$(x; y) = (1; 2)$", isCorrect: false },
+      { letter: "C", text: "$(x; y) = (3; 0)$", isCorrect: false },
+      { letter: "D", text: "$(x; y) = (2; 2)$", isCorrect: false }
+    ],
+    blankAnswer: "(2; 1)",
+    explanation: "Cộng hai vế phương trình ta có: $2x = 4 \\iff x = 2$. Thay vào phương trình đầu ta có $y = 3 - 2 = 1$."
+  },
+  {
+    id: "ds17",
+    topic: "Đại số",
+    grade: 12,
+    text: "Tìm tập xác định của hàm số $y = \\log_3 x$.",
+    options: [
+      { letter: "A", text: "$D = (0; +\\infty)$", isCorrect: true },
+      { letter: "B", text: "$D = [0; +\\infty)$", isCorrect: false },
+      { letter: "C", text: "$D = \\mathbb{R}$", isCorrect: false },
+      { letter: "D", text: "$D = \\mathbb{R} \\setminus \\{0\\}$", isCorrect: false }
+    ],
+    blankAnswer: "(0; +inf)",
+    explanation: "Hàm số logarit $\\log_a x$ chỉ xác định khi biểu thức trong logarit nhận giá trị dương: $x > 0$."
+  },
+  {
+    id: "ds18",
+    topic: "Đại số",
+    grade: 10,
+    text: "Khai triển biểu thức $(x - 1)^2$ ta được kết quả nào sau đây?",
+    options: [
+      { letter: "A", text: "$x^2 - 2x + 1$", isCorrect: true },
+      { letter: "B", text: "$x^2 - 1$", isCorrect: false },
+      { letter: "C", text: "$x^2 - 2x - 1$", isCorrect: false },
+      { letter: "D", text: "$x^2 + 2x + 1$", isCorrect: false }
+    ],
+    blankAnswer: "x^2-2x+1",
+    explanation: "Áp dụng hằng đẳng thức đáng nhớ bình phương một hiệu: $(a-b)^2 = a^2 - 2ab + b^2$."
+  },
+  {
+    id: "ds19",
+    topic: "Đại số",
+    grade: 11,
+    text: "Giá trị của giai thừa $5!$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$120$", isCorrect: true },
+      { letter: "B", text: "$24$", isCorrect: false },
+      { letter: "C", text: "$60$", isCorrect: false },
+      { letter: "D", text: "$720$", isCorrect: false }
+    ],
+    blankAnswer: "120",
+    explanation: "Ta có $5! = 1 \\cdot 2 \\cdot 3 \\cdot 4 \\cdot 5 = 120$."
+  },
+  {
+    id: "ds20",
+    topic: "Đại số",
+    grade: 10,
+    text: "Tìm tập nghiệm của phương trình $|x - 1| = 2$.",
+    options: [
+      { letter: "A", text: "$S = \\{-1; 3\\}$", isCorrect: true },
+      { letter: "B", text: "$S = \\{3\\}$", isCorrect: false },
+      { letter: "C", text: "$S = \\{-1\\}$", isCorrect: false },
+      { letter: "D", text: "$S = \\{-3; 1\\}$", isCorrect: false }
+    ],
+    blankAnswer: "{-1; 3}",
+    explanation: "$|x-1|=2 \\iff x-1=2$ hoặc $x-1=-2 \\iff x=3$ hoặc $x=-1$. Vậy tập nghiệm là $\\{-1; 3\\}$."
+  },
+
+  // ==================== XÁC SUẤT & TỔ HỢP (20 câu) ====================
+  {
+    id: "xs1",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Có bao nhiêu cách chọn ra 3 học sinh từ một nhóm 10 học sinh để đi trực nhật?",
+    options: [
+      { letter: "A", text: "$720$ cách", isCorrect: false },
+      { letter: "B", text: "$120$ cách", isCorrect: true },
+      { letter: "C", text: "$240$ cách", isCorrect: false },
+      { letter: "D", text: "$30$ cách", isCorrect: false }
+    ],
+    blankAnswer: "120",
+    explanation: "Vì việc chọn ra 3 học sinh không quan tâm tới thứ tự nên đây là tổ hợp chập 3 của 10 phần tử: $C_{10}^3 = \\frac{10!}{3! \\cdot 7!} = 120$ cách."
+  },
+  {
+    id: "xs2",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Gieo một con xúc xắc cân đối và đồng chất một lần. Tính xác suất để xuất hiện mặt có số chấm là số chẵn.",
+    options: [
+      { letter: "A", text: "$\\frac{1}{2}$", isCorrect: true },
+      { letter: "B", text: "$\\frac{1}{3}$", isCorrect: false },
+      { letter: "C", text: "$\\frac{1}{6}$", isCorrect: false },
+      { letter: "D", text: "$\\frac{2}{3}$", isCorrect: false }
+    ],
+    blankAnswer: "1/2",
+    explanation: "Không gian mẫu $n(\\Omega) = 6$. Biến cố xuất hiện mặt chẵn $A = \\{2; 4; 6\\} \\implies n(A) = 3$. Xác suất là $P(A) = \\frac{3}{6} = \\frac{1}{2}$."
+  },
+  {
+    id: "xs3",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Công thức nào sau đây dùng để tính số chỉnh hợp chập $k$ của $n$ phần tử ($1 \\le k \\le n$)?",
+    options: [
+      { letter: "A", text: "$A_n^k = \\frac{n!}{(n-k)!}$", isCorrect: true },
+      { letter: "B", text: "$C_n^k = \\frac{n!}{k!(n-k)!}$", isCorrect: false },
+      { letter: "C", text: "$P_n = n!$", isCorrect: false },
+      { letter: "D", text: "$A_n^k = \\frac{n!}{k!}$", isCorrect: false }
+    ],
+    blankAnswer: "A_n^k = n! / (n-k)!",
+    explanation: "Số chỉnh hợp chập $k$ của $n$ phần tử là $A_n^k = \\frac{n!}{(n-k)!}$."
+  },
+  {
+    id: "xs4",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Công thức nào sau đây dùng để tính số tổ hợp chập $k$ của $n$ phần tử ($0 \\le k \\le n$)?",
+    options: [
+      { letter: "A", text: "$C_n^k = \\frac{n!}{k!(n-k)!}$", isCorrect: true },
+      { letter: "B", text: "$A_n^k = \\frac{n!}{(n-k)!}$", isCorrect: false },
+      { letter: "C", text: "$C_n^k = \\frac{n!}{(n-k)!}$", isCorrect: false },
+      { letter: "D", text: "$C_n^k = \\frac{n!}{k!}$", isCorrect: false }
+    ],
+    blankAnswer: "C_n^k = n! / (k! * (n-k)!)",
+    explanation: "Số tổ hợp chập $k$ của $n$ phần tử được tính bằng $C_n^k = \\frac{n!}{k!(n-k)!}$."
+  },
+  {
+    id: "xs5",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Có bao nhiêu cách xếp 5 người vào một hàng dọc gồm 5 vị trí?",
+    options: [
+      { letter: "A", text: "$120$", isCorrect: true },
+      { letter: "B", text: "$24$", isCorrect: false },
+      { letter: "C", text: "$720$", isCorrect: false },
+      { letter: "D", text: "$25$", isCorrect: false }
+    ],
+    blankAnswer: "120",
+    explanation: "Đây là số hoán vị của 5 phần tử: $P_5 = 5! = 5 \\cdot 4 \\cdot 3 \\cdot 2 \\cdot 1 = 120$ cách."
+  },
+  {
+    id: "xs6",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Trong một hộp có 3 quả cầu đỏ và 4 quả cầu xanh. Chọn ngẫu nhiên 1 quả cầu. Tính xác suất để chọn được quả cầu màu đỏ.",
+    options: [
+      { letter: "A", text: "$\\frac{3}{7}$", isCorrect: true },
+      { letter: "B", text: "$\\frac{4}{7}$", isCorrect: false },
+      { letter: "C", text: "$\\frac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\frac{3}{4}$", isCorrect: false }
+    ],
+    blankAnswer: "3/7",
+    explanation: "Tổng số quả cầu là $3+4=7$. Số quả cầu đỏ là 3. Xác suất chọn được quả đỏ là $\\frac{3}{7}$."
+  },
+  {
+    id: "xs7",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Tung hai đồng xu cân đối và đồng chất. Tính xác suất để cả hai đồng xu đều xuất hiện mặt ngửa.",
+    options: [
+      { letter: "A", text: "$\\frac{1}{4}$", isCorrect: true },
+      { letter: "B", text: "$\\frac{1}{2}$", isCorrect: false },
+      { letter: "C", text: "$\\frac{3}{4}$", isCorrect: false },
+      { letter: "D", text: "$\\frac{1}{3}$", isCorrect: false }
+    ],
+    blankAnswer: "1/4",
+    explanation: "Không gian mẫu gồm các khả năng: $\\Omega = \\{(S,S), (S,N), (N,S), (N,N)\\} \\implies n(\\Omega) = 4$. Biến cố cả hai ngửa là $A = \\{(N,N)\\} \\implies n(A) = 1$. Xác suất $P(A) = \\frac{1}{4}$."
+  },
+  {
+    id: "xs8",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Gọi $\\bar{A}$ là biến cố đối của biến cố $A$. Công thức nào sau đây là đúng?",
+    options: [
+      { letter: "A", text: "$P(\\bar{A}) = 1 - P(A)$", isCorrect: true },
+      { letter: "B", text: "$P(\\bar{A}) = P(A) - 1$", isCorrect: false },
+      { letter: "C", text: "$P(\\bar{A}) = \\frac{1}{P(A)}$", isCorrect: false },
+      { letter: "D", text: "$P(\\bar{A}) = P(A)$", isCorrect: false }
+    ],
+    blankAnswer: "P(A_bar) = 1 - P(A)",
+    explanation: "Biến cố đối có tổng xác suất bằng 1: $P(A) + P(\\bar{A}) = 1 \\implies P(\\bar{A}) = 1 - P(A)$."
+  },
+  {
+    id: "xs9",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Số hoán vị của $n$ phần tử được tính bằng công thức nào?",
+    options: [
+      { letter: "A", text: "$P_n = n!$", isCorrect: true },
+      { letter: "B", text: "$P_n = n$", isCorrect: false },
+      { letter: "C", text: "$P_n = n^n$", isCorrect: false },
+      { letter: "D", text: "$P_n = (n-1)!$", isCorrect: false }
+    ],
+    blankAnswer: "n!",
+    explanation: "Hoán vị của tập hợp có $n$ phần tử ký hiệu là $P_n$ và bằng $n!$."
+  },
+  {
+    id: "xs10",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Hộp có 5 bóng xanh và 3 bóng đỏ. Hỏi có bao nhiêu cách chọn ra 2 quả bóng màu xanh?",
+    options: [
+      { letter: "A", text: "$10$ cách", isCorrect: true },
+      { letter: "B", text: "$20$ cách", isCorrect: false },
+      { letter: "C", text: "$5$ cách", isCorrect: false },
+      { letter: "D", text: "$15$ cách", isCorrect: false }
+    ],
+    blankAnswer: "10",
+    explanation: "Chọn 2 trong 5 quả bóng xanh không phân biệt thứ tự là số tổ hợp chập 2 của 5: $C_5^2 = \\frac{5!}{2!3!} = 10$ cách."
+  },
+  {
+    id: "xs11",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Hai biến cố $A$ và $B$ xung khắc với nhau. Công thức cộng xác suất nào sau đây là đúng?",
+    options: [
+      { letter: "A", text: "$P(A \\cup B) = P(A) + P(B)$", isCorrect: true },
+      { letter: "B", text: "$P(A \\cup B) = P(A) \\cdot P(B)$", isCorrect: false },
+      { letter: "C", text: "$P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$", isCorrect: false },
+      { letter: "D", text: "$P(A \\cup B) = 1$", isCorrect: false }
+    ],
+    blankAnswer: "P(A)+P(B)",
+    explanation: "Vì $A$ và $B$ xung khắc nên $A \\cap B = \\varnothing$. Do đó, $P(A \\cup B) = P(A) + P(B)$."
+  },
+  {
+    id: "xs12",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Có bao nhiêu số tự nhiên gồm 3 chữ số khác nhau được lập từ tập hợp các chữ số $\\{1; 2; 3\\}$?",
+    options: [
+      { letter: "A", text: "$6$", isCorrect: true },
+      { letter: "B", text: "$3$", isCorrect: false },
+      { letter: "C", text: "$9$", isCorrect: false },
+      { letter: "D", text: "$27$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "Số cách chọn và sắp xếp 3 chữ số khác nhau từ 3 chữ số là hoán vị $P_3 = 3! = 6$ số."
+  },
+  {
+    id: "xs13",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Gieo một con xúc xắc cân đối và đồng chất. Tính xác suất xuất hiện mặt có 6 chấm.",
+    options: [
+      { letter: "A", text: "$\\frac{1}{6}$", isCorrect: true },
+      { letter: "B", text: "$\\frac{5}{6}$", isCorrect: false },
+      { letter: "C", text: "$1$", isCorrect: false },
+      { letter: "D", text: "$\\frac{1}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "1/6",
+    explanation: "Xúc xắc có 6 mặt đồng khả năng xuất hiện. Mặt 6 chấm xuất hiện đúng 1 lần nên xác suất là $\\frac{1}{6}$."
+  },
+  {
+    id: "xs14",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Chọn ngẫu nhiên một chữ số từ $0$ đến $9$. Tính xác suất để chọn được một số nguyên tố.",
+    options: [
+      { letter: "A", text: "$\\frac{2}{5}$", isCorrect: true },
+      { letter: "B", text: "$\\frac{3}{10}$", isCorrect: false },
+      { letter: "C", text: "$\\frac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\frac{4}{9}$", isCorrect: false }
+    ],
+    blankAnswer: "2/5",
+    explanation: "Từ 0 đến 9 có 10 chữ số. Các số nguyên tố là $\\{2; 3; 5; 7\\}$ (4 số). Xác suất là $\\frac{4}{10} = \\frac{2}{5}$."
+  },
+  {
+    id: "xs15",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Có 10 câu hỏi trắc nghiệm khách quan, mỗi câu có 4 phương án trả lời. Một học sinh chọn ngẫu nhiên các phương án. Xác suất học sinh đó trả lời đúng tất cả 10 câu là:",
+    options: [
+      { letter: "A", text: "$(\\frac{1}{4})^{10}$", isCorrect: true },
+      { letter: "B", text: "$10 \\cdot \\frac{1}{4}$", isCorrect: false },
+      { letter: "C", text: "$(\\frac{3}{4})^{10}$", isCorrect: false },
+      { letter: "D", text: "$\\frac{1}{4^{10}}$", isCorrect: true }
+    ],
+    blankAnswer: "A",
+    explanation: "Xác suất đúng 1 câu là $\\frac{1}{4}$. Vì việc chọn đáp án ở 10 câu độc lập nhau nên xác suất đúng tất cả là $(\\frac{1}{4})^{10}$."
+  },
+  {
+    id: "xs16",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Cần chọn một ban cán sự gồm 1 Lớp trưởng và 1 Lớp phó từ một tổ gồm 10 học sinh. Hỏi có bao nhiêu cách chọn?",
+    options: [
+      { letter: "A", text: "$90$ cách", isCorrect: true },
+      { letter: "B", text: "$45$ cách", isCorrect: false },
+      { letter: "C", text: "$100$ cách", isCorrect: false },
+      { letter: "D", text: "$19$ cách", isCorrect: false }
+    ],
+    blankAnswer: "90",
+    explanation: "Vì hai chức vụ lớp trưởng và lớp phó có sự phân biệt thứ tự nên đây là chỉnh hợp chập 2 của 10 phần tử: $A_{10}^2 = 90$ cách."
+  },
+  {
+    id: "xs17",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Gieo đồng thời hai con xúc xắc. Tính xác suất để tổng số chấm trên hai con xúc xắc bằng 7.",
+    options: [
+      { letter: "A", text: "$\\frac{1}{6}$", isCorrect: true },
+      { letter: "B", text: "$\\frac{1}{12}$", isCorrect: false },
+      { letter: "C", text: "$\\frac{5}{36}$", isCorrect: false },
+      { letter: "D", text: "$\\frac{7}{36}$", isCorrect: false }
+    ],
+    blankAnswer: "1/6",
+    explanation: "Tổng số kết quả có thể $n(\\Omega) = 36$. Các cặp kết quả có tổng bằng 7: $\\{(1,6), (6,1), (2,5), (5,2), (3,4), (4,3)\\}$ (6 cặp). Xác suất là $\\frac{6}{36} = \\frac{1}{6}$."
+  },
+  {
+    id: "xs18",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Một tổ học sinh gồm 6 nam và 4 nữ. Chọn ngẫu nhiên 3 học sinh. Hỏi có bao nhiêu cách chọn sao cho trong 3 người có ít nhất 1 học sinh nữ?",
+    options: [
+      { letter: "A", text: "$100$ cách", isCorrect: true },
+      { letter: "B", text: "$20$ cách", isCorrect: false },
+      { letter: "C", text: "$120$ cách", isCorrect: false },
+      { letter: "D", text: "$80$ cách", isCorrect: false }
+    ],
+    blankAnswer: "100",
+    explanation: "Tổng số cách chọn 3 học sinh bất kỳ: $C_{10}^3 = 120$ cách. Số cách chọn 3 học sinh toàn nam: $C_6^3 = 20$ cách. Số cách chọn có ít nhất 1 nữ là: $120 - 20 = 100$ cách."
+  },
+  {
+    id: "xs19",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Trong khai triển nhị thức Newton $(a + b)^2$, biểu thức khai triển có bao nhiêu số hạng?",
+    options: [
+      { letter: "A", text: "$3$", isCorrect: true },
+      { letter: "B", text: "$2$", isCorrect: false },
+      { letter: "C", text: "$4$", isCorrect: false },
+      { letter: "D", text: "$1$", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "Khai triển $(a+b)^n$ có $n+1$ số hạng. Với $n=2$, có $2+1=3$ số hạng: $a^2 + 2ab + b^2$."
+  },
+  {
+    id: "xs20",
+    topic: "Xác suất & Tổ hợp",
+    grade: 11,
+    text: "Hai biến cố $A$ và $B$ độc lập nhau. Công thức nhân xác suất nào sau đây là đúng?",
+    options: [
+      { letter: "A", text: "$P(A \\cap B) = P(A) \\cdot P(B)$", isCorrect: true },
+      { letter: "B", text: "$P(A \\cap B) = P(A) + P(B)$", isCorrect: false },
+      { letter: "C", text: "$P(A \\cap B) = P(A) / P(B)$", isCorrect: false },
+      { letter: "D", text: "$P(A \\cap B) = 1 - P(A)P(B)$", isCorrect: false }
+    ],
+    blankAnswer: "P(A)*P(B)",
+    explanation: "Nếu hai biến cố độc lập thì xác suất đồng thời xảy ra bằng tích các xác suất riêng lẻ: $P(A \\cap B) = P(A) \\cdot P(B)$."
+  },
+
+  // ==================== LƯỢNG GIÁC (20 câu) ====================
+  {
+    id: "lg1",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Công thức nhân đôi nào sau đây là đúng đối với $\\cos 2x$?",
+    options: [
+      { letter: "A", text: "$\\cos 2x = 2\\cos^2 x - 1$", isCorrect: true },
+      { letter: "B", text: "$\\cos 2x = 2\\sin^2 x - 1$", isCorrect: false },
+      { letter: "C", text: "$\\cos 2x = 2\\sin x \\cos x$", isCorrect: false },
+      { letter: "D", text: "$\\cos 2x = \\cos^2 x + \\sin^2 x$", isCorrect: false }
+    ],
+    blankAnswer: "2cos^2 x - 1",
+    explanation: "Công thức nhân đôi của cosin là $\\cos 2x = \\cos^2 x - \\sin^2 x = 2\\cos^2 x - 1 = 1 - 2\\sin^2 x$."
+  },
+  {
+    id: "lg2",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tìm nghiệm của phương trình $\\sin x = 0$.",
+    options: [
+      { letter: "A", text: "$x = k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: true },
+      { letter: "B", text: "$x = \\frac{\\pi}{2} + k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "C", text: "$x = k2\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "D", text: "$x = \\pi + k2\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false }
+    ],
+    blankAnswer: "kpi",
+    explanation: "Điểm biểu diễn nghiệm $\\sin x = 0$ trên đường tròn lượng giác là hai điểm mút trục hoành, ứng với họ nghiệm $x = k\\pi \\quad (k \\in \\mathbb{Z})$."
+  },
+  {
+    id: "lg3",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tính giá trị của lượng giác $M = \\sin\\frac{\\pi}{6}$.",
+    options: [
+      { letter: "A", text: "$M = \\frac{1}{2}$", isCorrect: true },
+      { letter: "B", text: "$M = \\frac{\\sqrt{3}}{2}$", isCorrect: false },
+      { letter: "C", text: "$M = \\frac{\\sqrt{2}}{2}$", isCorrect: false },
+      { letter: "D", text: "$M = 1$", isCorrect: false }
+    ],
+    blankAnswer: "1/2",
+    explanation: "Theo bảng giá trị lượng giác các góc đặc biệt, $\\sin(30^\\circ) = \\sin\\frac{\\pi}{6} = \\frac{1}{2}$."
+  },
+  {
+    id: "lg4",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Đẳng thức lượng giác nào sau đây là hệ thức lượng giác cơ bản?",
+    options: [
+      { letter: "A", text: "$\\sin^2 x + \\cos^2 x = 1$", isCorrect: true },
+      { letter: "B", text: "$\\sin^2 x - \\cos^2 x = 1$", isCorrect: false },
+      { letter: "C", text: "$\\sin x + \\cos x = 1$", isCorrect: false },
+      { letter: "D", text: "$\\tan^2 x + 1 = \\sin^2 x$", isCorrect: false }
+    ],
+    blankAnswer: "sin^2+cos^2=1",
+    explanation: "Hệ thức lượng giác cơ bản nhất là $\\sin^2 x + \\cos^2 x = 1$."
+  },
+  {
+    id: "lg5",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Công thức nào sau đây biểu diễn chính xác $\\cos(a + b)$?",
+    options: [
+      { letter: "A", text: "$\\cos(a+b) = \\cos a \\cos b - \\sin a \\sin b$", isCorrect: true },
+      { letter: "B", text: "$\\cos(a+b) = \\cos a \\cos b + \\sin a \\sin b$", isCorrect: false },
+      { letter: "C", text: "$\\cos(a+b) = \\sin a \\cos b - \\cos a \\sin b$", isCorrect: false },
+      { letter: "D", text: "$\\cos(a+b) = \\sin a \\cos b + \\cos a \\sin b$", isCorrect: false }
+    ],
+    blankAnswer: "cos cos - sin sin",
+    explanation: "Công thức cộng của cosin: $\\cos(a + b) = \\cos a \\cos b - \\sin a \\sin b$."
+  },
+  {
+    id: "lg6",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tính giá trị của lượng giác $N = \\cos\\frac{\\pi}{3}$.",
+    options: [
+      { letter: "A", text: "$N = \\frac{1}{2}$", isCorrect: true },
+      { letter: "B", text: "$N = \\frac{\\sqrt{3}}{2}$", isCorrect: false },
+      { letter: "C", text: "$N = \\frac{\\sqrt{2}}{2}$", isCorrect: false },
+      { letter: "D", text: "$N = 0$", isCorrect: false }
+    ],
+    blankAnswer: "1/2",
+    explanation: "Theo bảng lượng giác cơ bản: $\\cos(60^\\circ) = \\cos\\frac{\\pi}{3} = \\frac{1}{2}$."
+  },
+  {
+    id: "lg7",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Công thức nhân đôi nào sau đây đúng đối với $\\sin 2x$?",
+    options: [
+      { letter: "A", text: "$\\sin 2x = 2\\sin x \\cos x$", isCorrect: true },
+      { letter: "B", text: "$\\sin 2x = \\sin x \\cos x$", isCorrect: false },
+      { letter: "C", text: "$\\sin 2x = 2\\cos^2 x$", isCorrect: false },
+      { letter: "D", text: "$\\sin 2x = \\cos^2 x - \\sin^2 x$", isCorrect: false }
+    ],
+    blankAnswer: "2sin cos",
+    explanation: "Công thức nhân đôi đối với sin: $\\sin 2x = 2\\sin x \\cos x$."
+  },
+  {
+    id: "lg8",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tính giá trị của biểu thức $P = \\tan\\frac{\\pi}{4}$.",
+    options: [
+      { letter: "A", text: "$P = 1$", isCorrect: true },
+      { letter: "B", text: "$P = \\sqrt{3}$", isCorrect: false },
+      { letter: "C", text: "$P = \\frac{\\sqrt{3}}{3}$", isCorrect: false },
+      { letter: "D", text: "$P = 0$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "Ta có $\\tan(45^\\circ) = \\tan\\frac{\\pi}{4} = 1$."
+  },
+  {
+    id: "lg9",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tập giá trị $T$ của hàm số $y = \\sin x$ là:",
+    options: [
+      { letter: "A", text: "$T = [-1; 1]$", isCorrect: true },
+      { letter: "B", text: "$T = (-1; 1)$", isCorrect: false },
+      { letter: "C", text: "$T = [0; 1]$", isCorrect: false },
+      { letter: "D", text: "$T = \\mathbb{R}$", isCorrect: false }
+    ],
+    blankAnswer: "[-1; 1]",
+    explanation: "Với mọi $x \\in \\mathbb{R}$, ta luôn có $-1 \\le \\sin x \\le 1$. Do đó tập giá trị của hàm số sin là $[-1; 1]$."
+  },
+  {
+    id: "lg10",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Chu kỳ tuần hoàn $T$ của hàm số $y = \\sin x$ là:",
+    options: [
+      { letter: "A", text: "$T = 2\\pi$", isCorrect: true },
+      { letter: "B", text: "$T = \\pi$", isCorrect: false },
+      { letter: "C", text: "$T = \\frac{\\pi}{2}$", isCorrect: false },
+      { letter: "D", text: "$T = 4\\pi$", isCorrect: false }
+    ],
+    blankAnswer: "2pi",
+    explanation: "Hàm số lượng giác $y = \\sin x$ tuần hoàn với chu kỳ cơ sở là $T = 2\\pi$."
+  },
+  {
+    id: "lg11",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Chu kỳ tuần hoàn $T$ của hàm số $y = \\tan x$ là:",
+    options: [
+      { letter: "A", text: "$T = \\pi$", isCorrect: true },
+      { letter: "B", text: "$T = 2\\pi$", isCorrect: false },
+      { letter: "C", text: "$T = \\frac{\\pi}{2}$", isCorrect: false },
+      { letter: "D", text: "$T = 4\\pi$", isCorrect: false }
+    ],
+    blankAnswer: "pi",
+    explanation: "Hàm số lượng giác tang $y = \\tan x$ tuần hoàn với chu kỳ cơ sở là $T = \\pi$."
+  },
+  {
+    id: "lg12",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tìm tất cả các nghiệm của phương trình $\\cos x = 1$.",
+    options: [
+      { letter: "A", text: "$x = k2\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: true },
+      { letter: "B", text: "$x = k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "C", text: "$x = \\frac{\\pi}{2} + k2\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "D", text: "$x = \\pi + k2\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false }
+    ],
+    blankAnswer: "k2pi",
+    explanation: "Phương trình lượng giác đặc biệt $\\cos x = 1$ có nghiệm duy nhất ứng với điểm cực đông đường tròn: $x = k2\\pi$."
+  },
+  {
+    id: "lg13",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Công thức biểu diễn mối quan hệ giữa $\\tan x, \\sin x$ và $\\cos x$ (khi biểu thức xác định) là:",
+    options: [
+      { letter: "A", text: "$\\tan x = \\frac{\\sin x}{\\cos x}$", isCorrect: true },
+      { letter: "B", text: "$\\tan x = \\frac{\\cos x}{\\sin x}$", isCorrect: false },
+      { letter: "C", text: "$\\tan x = \\sin x \\cdot \\cos x$", isCorrect: false },
+      { letter: "D", text: "$\\tan x = \\sin x + \\cos x$", isCorrect: false }
+    ],
+    blankAnswer: "sin/cos",
+    explanation: "Theo định nghĩa lượng giác, tang bằng sin chia cos: $\\tan x = \\frac{\\sin x}{\\cos x}$."
+  },
+  {
+    id: "lg14",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tìm tất cả các nghiệm của phương trình $\\tan x = 1$.",
+    options: [
+      { letter: "A", text: "$x = \\frac{\\pi}{4} + k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: true },
+      { letter: "B", text: "$x = \\frac{\\pi}{4} + k2\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "C", text: "$x = -\\frac{\\pi}{4} + k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "D", text: "$x = k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false }
+    ],
+    blankAnswer: "pi/4 + kpi",
+    explanation: "Ta có $\\tan x = 1 \\iff x = \\arctan(1) + k\\pi = \\frac{\\pi}{4} + k\\pi \\quad (k \\in \\mathbb{Z})$."
+  },
+  {
+    id: "lg15",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tính giá trị của lượng giác $Q = \\sin\\frac{\\pi}{2}$.",
+    options: [
+      { letter: "A", text: "$Q = 1$", isCorrect: true },
+      { letter: "B", text: "$Q = 0$", isCorrect: false },
+      { letter: "C", text: "$Q = -1$", isCorrect: false },
+      { letter: "D", text: "$Q = \\frac{1}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "Điểm biểu diễn $\\frac{\\pi}{2}$ nằm ở cực bắc trục tung của đường tròn lượng giác nên có tung độ (giá trị sin) bằng 1."
+  },
+  {
+    id: "lg16",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tính giá trị của lượng giác $R = \\cos\\pi$.",
+    options: [
+      { letter: "A", text: "$R = -1$", isCorrect: true },
+      { letter: "B", text: "$R = 1$", isCorrect: false },
+      { letter: "C", text: "$R = 0$", isCorrect: false },
+      { letter: "D", text: "$R = \\frac{\\sqrt{2}}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "-1",
+    explanation: "Điểm biểu diễn $\\pi$ nằm ở cực tây trục hoành đường tròn lượng giác nên có hoành độ (giá trị cos) bằng -1."
+  },
+  {
+    id: "lg17",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Đổi số đo góc $180^\\circ$ sang đơn vị radian.",
+    options: [
+      { letter: "A", text: "$\\pi$ rad", isCorrect: true },
+      { letter: "B", text: "$2\\pi$ rad", isCorrect: false },
+      { letter: "C", text: "$\\frac{\\pi}{2}$ rad", isCorrect: false },
+      { letter: "D", text: "$\\frac{\\pi}{4}$ rad", isCorrect: false }
+    ],
+    blankAnswer: "pi",
+    explanation: "Theo định nghĩa chuyển đổi số đo góc, nửa vòng tròn có số đo góc $180^\\circ$ tương ứng với $\\pi$ radian."
+  },
+  {
+    id: "lg18",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Công thức nào sau đây biểu diễn chính xác $\\sin(a - b)$?",
+    options: [
+      { letter: "A", text: "$\\sin(a-b) = \\sin a \\cos b - \\cos a \\sin b$", isCorrect: true },
+      { letter: "B", text: "$\\sin(a-b) = \\sin a \\cos b + \\cos a \\sin b$", isCorrect: false },
+      { letter: "C", text: "$\\sin(a-b) = \\cos a \\cos b - \\sin a \\sin b$", isCorrect: false },
+      { letter: "D", text: "$\\sin(a-b) = \\sin a \\sin b - \\cos a \\cos b$", isCorrect: false }
+    ],
+    blankAnswer: "sin cos - cos sin",
+    explanation: "Công thức cộng của sin: $\\sin(a - b) = \\sin a \\cos b - \\cos a \\sin b$."
+  },
+  {
+    id: "lg19",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tìm điều kiện xác định của hàm số $y = \\tan x$.",
+    options: [
+      { letter: "A", text: "$x \\neq \\frac{\\pi}{2} + k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: true },
+      { letter: "B", text: "$x \\neq k\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "C", text: "$x \\neq \\frac{\\pi}{2} + k2\\pi \\quad (k \\in \\mathbb{Z})$", isCorrect: false },
+      { letter: "D", text: "$x \\in \\mathbb{R}$", isCorrect: false }
+    ],
+    blankAnswer: "pi/2 + kpi",
+    explanation: "Hàm số $y = \\tan x = \\frac{\\sin x}{\\cos x}$ xác định khi $\\cos x \\neq 0 \\iff x \\neq \\frac{\\pi}{2} + k\\pi$."
+  },
+  {
+    id: "lg20",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Cho góc lượng giác $x$ thỏa mãn $0 < x < \\frac{\\pi}{2}$ và $\\cos x = \\frac{4}{5}$. Tính giá trị của $\\sin x$.",
+    options: [
+      { letter: "A", text: "$\\sin x = \\frac{3}{5}$", isCorrect: true },
+      { letter: "B", text: "$\\sin x = -\\frac{3}{5}$", isCorrect: false },
+      { letter: "C", text: "$\\sin x = \\frac{9}{25}$", isCorrect: false },
+      { letter: "D", text: "$\\sin x = \\frac{1}{5}$", isCorrect: false }
+    ],
+    blankAnswer: "3/5",
+    explanation: "Vì $0 < x < \\frac{\\pi}{2}$ nên $\\sin x > 0$. Ta có $\\sin^2 x = 1 - \\cos^2 x = 1 - \\frac{16}{25} = \\frac{9}{25} \\implies \\sin x = \\frac{3}{5}$."
+  }
+];

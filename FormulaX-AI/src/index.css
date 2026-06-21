@@ -1,0 +1,20 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+  background-color: #F2F4F7;
+  color: #1E3A5F;
+  overflow-x: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  outline: none;
+}
