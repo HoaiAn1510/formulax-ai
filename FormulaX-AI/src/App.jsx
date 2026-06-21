@@ -349,6 +349,10 @@ export default function App() {
         onResetStats={handleResetStats}
         onLogout={handleLogout}
         isLoggedIn={isLoggedIn}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        displayName={displayName}
+        onSetDisplayName={handleSetDisplayName}
       />
 
       {renderView()}
