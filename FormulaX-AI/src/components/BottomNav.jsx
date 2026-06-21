@@ -43,8 +43,7 @@ export default function BottomNav({
 
       {/* Logo header */}
       <div className="nav-logo-header">
-        <img src="/logo.png" alt="FormulaX"
-          onError={e => { e.target.style.display = "none"; }} />
+        <img src="/favicon.svg" alt="FormulaX" style={{ width: "28px", height: "28px", borderRadius: "7px" }} />
         <span>FormulaX AI</span>
       </div>
 
