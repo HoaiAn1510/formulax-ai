@@ -91,9 +91,14 @@ export default function App() {
         const storedViewed = localStorage.getItem(`formulax_viewed_${user.googleId}`);
         setViewedFormulaIds(storedViewed ? JSON.parse(storedViewed) : []);
         dataLoadedRef.current = true; // từ giờ mới cho phép save
-        // Hiện onboarding nếu user chưa từng hoàn thành
-        const onboarded = localStorage.getItem(`formulax_onboarded_${user.googleId}`);
-        if (!onboarded) setShowOnboarding(true);
+        // Hiện onboarding nếu user thực sự chưa có dữ liệu nào (kiểm tra Supabase lẫn localStorage)
+        const onboardedLocal = localStorage.getItem(`formulax_onboarded_${user.googleId}`);
+        const hasAnyData = data.bookmarkedIds.length > 0
+          || data.searchHistory.length > 0
+          || data.stats.formulasViewed > 0
+          || data.stats.flashcardsStudied > 0
+          || data.stats.quizzesCompleted > 0;
+        if (!onboardedLocal && !hasAnyData) setShowOnboarding(true);
       })
       .catch((err) => console.error("[Supabase] loadUserData:", err))
       .finally(() => setIsLoadingData(false));

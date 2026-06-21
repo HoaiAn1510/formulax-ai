@@ -36,14 +36,14 @@ export async function loadUserData(googleId) {
     ? { formulasViewed: statsRow.formulas_viewed, flashcardsStudied: statsRow.flashcards_studied, quizzesCompleted: statsRow.quizzes_completed }
     : { formulasViewed: 0, flashcardsStudied: 0, quizzesCompleted: 0 };
 
-  // Merge với localStorage backup — lấy giá trị cao hơn (stats chỉ tăng)
+  // Merge với localStorage backup — luôn lấy giá trị cao nhất (stats chỉ tăng, không bao giờ giảm)
   const localRaw = localStorage.getItem(`formulax_stats_${googleId}`);
   const statsFromLocal = localRaw ? JSON.parse(localRaw) : null;
-  const stats = statsFromLocal ? {
-    formulasViewed:    Math.max(statsFromDB.formulasViewed,    statsFromLocal.formulasViewed    ?? 0),
-    flashcardsStudied: Math.max(statsFromDB.flashcardsStudied, statsFromLocal.flashcardsStudied ?? 0),
-    quizzesCompleted:  Math.max(statsFromDB.quizzesCompleted,  statsFromLocal.quizzesCompleted  ?? 0),
-  } : statsFromDB;
+  const stats = {
+    formulasViewed:    Math.max(statsFromDB.formulasViewed    ?? 0, statsFromLocal?.formulasViewed    ?? 0),
+    flashcardsStudied: Math.max(statsFromDB.flashcardsStudied ?? 0, statsFromLocal?.flashcardsStudied ?? 0),
+    quizzesCompleted:  Math.max(statsFromDB.quizzesCompleted  ?? 0, statsFromLocal?.quizzesCompleted  ?? 0),
+  };
 
   if (sRes.error) console.error("[Supabase] learning_stats load error:", sRes.error);
 
