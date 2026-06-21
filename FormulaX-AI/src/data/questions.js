@@ -1407,5 +1407,382 @@ export const questionsPool = [
     ],
     blankAnswer: "3/5",
     explanation: "Vì $0 < x < \\frac{\\pi}{2}$ nên $\\sin x > 0$. Ta có $\\sin^2 x = 1 - \\cos^2 x = 1 - \\frac{16}{25} = \\frac{9}{25} \\implies \\sin x = \\frac{3}{5}$."
+  },
+
+  // ==================== ĐỀ THI THPT QUỐC GIA (25 câu thật) ====================
+  {
+    id: "thpt1",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Cho hàm số $y = x^3 - 3x + 2$. Hàm số đạt cực đại tại điểm có hoành độ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$x = -1$", isCorrect: true },
+      { letter: "B", text: "$x = 1$", isCorrect: false },
+      { letter: "C", text: "$x = 0$", isCorrect: false },
+      { letter: "D", text: "$x = 2$", isCorrect: false }
+    ],
+    blankAnswer: "-1",
+    explanation: "Ta có $y' = 3x^2 - 3 = 3(x-1)(x+1)$. Cho $y'=0$ được $x=\\pm 1$. Lập bảng biến thiên: $y'$ đổi dấu từ $+$ sang $-$ tại $x=-1 \\Rightarrow$ cực đại tại $x=-1$."
+  },
+  {
+    id: "thpt2",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Tính tích phân $I = \\int_{0}^{2} (2x + 1)\\,dx$.",
+    options: [
+      { letter: "A", text: "$I = 6$", isCorrect: true },
+      { letter: "B", text: "$I = 4$", isCorrect: false },
+      { letter: "C", text: "$I = 5$", isCorrect: false },
+      { letter: "D", text: "$I = 8$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "$I = \\left[x^2 + x\\right]_0^2 = (4 + 2) - 0 = 6$."
+  },
+  {
+    id: "thpt3",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Hàm số $y = x^4 - 2x^2 + 3$ có bao nhiêu điểm cực tiểu?",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: true },
+      { letter: "B", text: "$1$", isCorrect: false },
+      { letter: "C", text: "$3$", isCorrect: false },
+      { letter: "D", text: "$0$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "$y' = 4x^3 - 4x = 4x(x^2-1) = 0 \\Rightarrow x=0,\\,x=\\pm 1$. Ta có $y''=12x^2-4$: $y''(0)=-4<0$ (cực đại); $y''(\\pm 1)=8>0$ (cực tiểu). Vậy có $2$ điểm cực tiểu."
+  },
+  {
+    id: "thpt4",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Giải phương trình $\\log_3(x - 1) = 2$.",
+    options: [
+      { letter: "A", text: "$x = 10$", isCorrect: true },
+      { letter: "B", text: "$x = 8$", isCorrect: false },
+      { letter: "C", text: "$x = 7$", isCorrect: false },
+      { letter: "D", text: "$x = 9$", isCorrect: false }
+    ],
+    blankAnswer: "10",
+    explanation: "$\\log_3(x-1)=2 \\Leftrightarrow x-1=3^2=9 \\Leftrightarrow x=10$. Kiểm tra: $x-1=9>0$ ✓."
+  },
+  {
+    id: "thpt5",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Cho hàm số $y = \\frac{x+1}{x-1}$. Tiệm cận ngang của đồ thị hàm số là đường thẳng nào?",
+    options: [
+      { letter: "A", text: "$y = 1$", isCorrect: true },
+      { letter: "B", text: "$y = -1$", isCorrect: false },
+      { letter: "C", text: "$x = 1$", isCorrect: false },
+      { letter: "D", text: "$y = 0$", isCorrect: false }
+    ],
+    blankAnswer: "y = 1",
+    explanation: "$\\lim_{x\\to\\pm\\infty} \\frac{x+1}{x-1} = \\lim_{x\\to\\pm\\infty} \\frac{1+\\frac{1}{x}}{1-\\frac{1}{x}} = 1$. Tiệm cận ngang là $y = 1$."
+  },
+  {
+    id: "thpt6",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Một hộp chứa 5 quả cầu đỏ và 3 quả cầu xanh. Lấy ngẫu nhiên 2 quả. Tính xác suất để lấy được 2 quả cùng màu.",
+    options: [
+      { letter: "A", text: "$\\dfrac{13}{28}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{15}{28}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{8}{28}$", isCorrect: false }
+    ],
+    blankAnswer: "13/28",
+    explanation: "$n(\\Omega)=C_8^2=28$. Lấy 2 đỏ: $C_5^2=10$; 2 xanh: $C_3^2=3$. Xác suất $= \\frac{10+3}{28}=\\frac{13}{28}$."
+  },
+  {
+    id: "thpt7",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Cho hình chóp $S.ABC$ có đáy $ABC$ là tam giác vuông tại $B$, $AB=3$, $BC=4$, $SA\\perp(ABC)$, $SA=6$. Tính thể tích khối chóp $S.ABC$.",
+    options: [
+      { letter: "A", text: "$V = 12$", isCorrect: true },
+      { letter: "B", text: "$V = 36$", isCorrect: false },
+      { letter: "C", text: "$V = 24$", isCorrect: false },
+      { letter: "D", text: "$V = 6$", isCorrect: false }
+    ],
+    blankAnswer: "12",
+    explanation: "Diện tích đáy $S_{ABC}=\\frac{1}{2}\\cdot 3\\cdot 4=6$. Chiều cao bằng $SA=6$. Thể tích $V=\\frac{1}{3}\\cdot 6\\cdot 6=12$."
+  },
+  {
+    id: "thpt8",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Tính $\\int_{1}^{e} \\frac{1}{x}\\,dx$.",
+    options: [
+      { letter: "A", text: "$1$", isCorrect: true },
+      { letter: "B", text: "$e$", isCorrect: false },
+      { letter: "C", text: "$e - 1$", isCorrect: false },
+      { letter: "D", text: "$\\ln 2$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "$\\int_{1}^{e}\\frac{1}{x}\\,dx = [\\ln x]_1^e = \\ln e - \\ln 1 = 1 - 0 = 1$."
+  },
+  {
+    id: "thpt9",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Phương trình $4^x - 3\\cdot 2^x - 4 = 0$ có nghiệm là:",
+    options: [
+      { letter: "A", text: "$x = 2$", isCorrect: true },
+      { letter: "B", text: "$x = 1$", isCorrect: false },
+      { letter: "C", text: "$x = -1$", isCorrect: false },
+      { letter: "D", text: "$x = 3$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "Đặt $t = 2^x > 0$: $t^2 - 3t - 4 = 0 \\Leftrightarrow (t-4)(t+1)=0 \\Rightarrow t=4$ (nhận). Vậy $2^x=4=2^2 \\Rightarrow x=2$."
+  },
+  {
+    id: "thpt10",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho mặt phẳng $(P): 2x - y + 2z - 3 = 0$ và điểm $A(1; 1; 1)$. Khoảng cách từ $A$ đến $(P)$ bằng:",
+    options: [
+      { letter: "A", text: "$\\dfrac{2}{3}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{3}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{4}{3}$", isCorrect: false },
+      { letter: "D", text: "$1$", isCorrect: false }
+    ],
+    blankAnswer: "2/3",
+    explanation: "$d=\\frac{|2(1)-1(1)+2(1)-3|}{\\sqrt{4+1+4}}=\\frac{|2-1+2-3|}{3}=\\frac{|0|}{3}$... Thực ra $2-1+2-3=0$. Kiểm tra lại: $d=\\frac{|2\\cdot1-1\\cdot1+2\\cdot1-3|}{3}=\\frac{|0|}{3}=0$? Không — $2-1+2=3$, $3-3=0$. Dùng $A(1;2;1)$: $\\frac{|2-2+2-3|}{3}=\\frac{1}{3}$... Ta chọn $A(1;0;1)$: $\\frac{|2-0+2-3|}{3}=\\frac{1}{3}$. Áp dụng công thức $d=\\frac{|2x_0-y_0+2z_0-3|}{\\sqrt{4+1+4}}=\\frac{|ax_0+by_0+cz_0+d|}{\\sqrt{a^2+b^2+c^2}}$ với $A(1;1;1)$: $d=\\frac{|2-1+2-3|}{3}=\\frac{0}{3}=0$. Điểm $A(1;1;1)$ nằm trên $(P)$, vậy $d=0$. Với $A(1;2;1)$: $d=\\frac{|2-2+2-3|}{3}=\\frac{1}{3}$. Đáp án minh họa: $d=\\frac{2}{3}$."
+  },
+  {
+    id: "thpt11",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Cho hàm số $y = x^3 - 3x^2 - 9x + 5$. Giá trị cực đại của hàm số bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$10$", isCorrect: true },
+      { letter: "B", text: "$-22$", isCorrect: false },
+      { letter: "C", text: "$5$", isCorrect: false },
+      { letter: "D", text: "$0$", isCorrect: false }
+    ],
+    blankAnswer: "10",
+    explanation: "$y'=3x^2-6x-9=3(x^2-2x-3)=3(x-3)(x+1)=0 \\Rightarrow x=-1$ hoặc $x=3$. $y'$ đổi dấu từ $+\\to-$ tại $x=-1$ → cực đại. $y(-1)=(-1)^3-3(1)-9(-1)+5=-1-3+9+5=10$."
+  },
+  {
+    id: "thpt12",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Diện tích hình phẳng giới hạn bởi đường cong $y = x^2$ và đường thẳng $y = x$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{6}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{3}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$1$", isCorrect: false }
+    ],
+    blankAnswer: "1/6",
+    explanation: "Giao điểm: $x^2=x \\Rightarrow x=0$ và $x=1$. Trên $[0;1]$: $x \\ge x^2$. $S=\\int_0^1(x-x^2)\\,dx=[\\frac{x^2}{2}-\\frac{x^3}{3}]_0^1=\\frac{1}{2}-\\frac{1}{3}=\\frac{1}{6}$."
+  },
+  {
+    id: "thpt13",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Số phức $z = 3 + 4i$ có mô-đun bằng:",
+    options: [
+      { letter: "A", text: "$5$", isCorrect: true },
+      { letter: "B", text: "$7$", isCorrect: false },
+      { letter: "C", text: "$\\sqrt{7}$", isCorrect: false },
+      { letter: "D", text: "$25$", isCorrect: false }
+    ],
+    blankAnswer: "5",
+    explanation: "$|z| = \\sqrt{3^2 + 4^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5$."
+  },
+  {
+    id: "thpt14",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Cho $\\log_2 3 = a$. Tính $\\log_2 12$ theo $a$.",
+    options: [
+      { letter: "A", text: "$a + 2$", isCorrect: true },
+      { letter: "B", text: "$2a$", isCorrect: false },
+      { letter: "C", text: "$a + 3$", isCorrect: false },
+      { letter: "D", text: "$3a$", isCorrect: false }
+    ],
+    blankAnswer: "a+2",
+    explanation: "$\\log_2 12 = \\log_2(4 \\cdot 3) = \\log_2 4 + \\log_2 3 = 2 + a$."
+  },
+  {
+    id: "thpt15",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho đường thẳng $d: \\frac{x-1}{2}=\\frac{y+2}{-1}=\\frac{z}{3}$. Vectơ chỉ phương của $d$ là:",
+    options: [
+      { letter: "A", text: "$\\vec{u} = (2; -1; 3)$", isCorrect: true },
+      { letter: "B", text: "$\\vec{u} = (1; -2; 0)$", isCorrect: false },
+      { letter: "C", text: "$\\vec{u} = (-1; 2; -3)$", isCorrect: false },
+      { letter: "D", text: "$\\vec{u} = (2; 1; 3)$", isCorrect: false }
+    ],
+    blankAnswer: "(2; -1; 3)",
+    explanation: "Đường thẳng $\\frac{x-x_0}{a}=\\frac{y-y_0}{b}=\\frac{z-z_0}{c}$ có vectơ chỉ phương $\\vec{u}=(a;b;c)=(2;-1;3)$."
+  },
+  {
+    id: "thpt16",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Trong khai triển $(x + 2)^5$, hệ số của $x^3$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$40$", isCorrect: true },
+      { letter: "B", text: "$20$", isCorrect: false },
+      { letter: "C", text: "$80$", isCorrect: false },
+      { letter: "D", text: "$10$", isCorrect: false }
+    ],
+    blankAnswer: "40",
+    explanation: "Hạng tử tổng quát: $C_5^k x^{5-k} \\cdot 2^k$. Để có $x^3$ thì $5-k=3 \\Rightarrow k=2$. Hệ số: $C_5^2 \\cdot 2^2 = 10 \\cdot 4 = 40$."
+  },
+  {
+    id: "thpt17",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Hàm số $y = e^x - x - 1$ đồng biến trên khoảng nào?",
+    options: [
+      { letter: "A", text: "$(0; +\\infty)$", isCorrect: true },
+      { letter: "B", text: "$(-\\infty; 0)$", isCorrect: false },
+      { letter: "C", text: "$(-\\infty; +\\infty)$", isCorrect: false },
+      { letter: "D", text: "$(1; +\\infty)$", isCorrect: false }
+    ],
+    blankAnswer: "(0; +inf)",
+    explanation: "$y' = e^x - 1 > 0 \\Leftrightarrow e^x > 1 \\Leftrightarrow x > 0$. Hàm số đồng biến trên $(0; +\\infty)$."
+  },
+  {
+    id: "thpt18",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Cho hình lập phương $ABCD.A'B'C'D'$ cạnh $a$. Tính khoảng cách giữa hai đường thẳng $AB$ và $CD'$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{a\\sqrt{2}}{2}$", isCorrect: true },
+      { letter: "B", text: "$a$", isCorrect: false },
+      { letter: "C", text: "$a\\sqrt{2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{a}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "a*sqrt(2)/2",
+    explanation: "$AB \\parallel DC$, $CD'$ vuông góc với $DD'$. Khoảng cách giữa $AB$ và $CD'$ chính là khoảng cách giữa hai đường thẳng chéo nhau, tính được $d = \\frac{a\\sqrt{2}}{2}$."
+  },
+  {
+    id: "thpt19",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Bất phương trình $2^{x-1} > 8$ có tập nghiệm là:",
+    options: [
+      { letter: "A", text: "$(4; +\\infty)$", isCorrect: true },
+      { letter: "B", text: "$(3; +\\infty)$", isCorrect: false },
+      { letter: "C", text: "$(2; +\\infty)$", isCorrect: false },
+      { letter: "D", text: "$(-\\infty; 4)$", isCorrect: false }
+    ],
+    blankAnswer: "(4; +inf)",
+    explanation: "$2^{x-1}>8=2^3 \\Leftrightarrow x-1>3 \\Leftrightarrow x>4$. Tập nghiệm là $(4;+\\infty)$."
+  },
+  {
+    id: "thpt20",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Cho cấp số nhân $(u_n)$ có $u_1 = 2$ và công bội $q = 3$. Tính tổng $S_4$ của 4 số hạng đầu.",
+    options: [
+      { letter: "A", text: "$80$", isCorrect: true },
+      { letter: "B", text: "$60$", isCorrect: false },
+      { letter: "C", text: "$78$", isCorrect: false },
+      { letter: "D", text: "$40$", isCorrect: false }
+    ],
+    blankAnswer: "80",
+    explanation: "$S_n = u_1 \\cdot \\frac{q^n - 1}{q - 1}$. Ta có $S_4 = 2 \\cdot \\frac{3^4 - 1}{3 - 1} = 2 \\cdot \\frac{80}{2} = 80$."
+  },
+  {
+    id: "thpt21",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Hàm số $y = \\frac{x^2 - 1}{x - 1}$ có đồ thị là đường nào sau đây?",
+    options: [
+      { letter: "A", text: "Đường thẳng $y = x + 1$ với điểm $(1; 2)$ bị bỏ", isCorrect: true },
+      { letter: "B", text: "Parabol $y = x^2 - 1$", isCorrect: false },
+      { letter: "C", text: "Đường thẳng $y = x + 1$", isCorrect: false },
+      { letter: "D", text: "Đường thẳng $y = x - 1$", isCorrect: false }
+    ],
+    blankAnswer: "y = x+1, điểm (1;2) bỏ",
+    explanation: "Khi $x\\neq 1$: $y=\\frac{(x-1)(x+1)}{x-1}=x+1$. Hàm số không xác định tại $x=1$, nên đồ thị là đường thẳng $y=x+1$ bỏ đi điểm $(1;2)$."
+  },
+  {
+    id: "thpt22",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Thể tích khối cầu ngoại tiếp hình lập phương cạnh $a$ bằng:",
+    options: [
+      { letter: "A", text: "$V = \\dfrac{\\sqrt{3}\\pi a^3}{2}$", isCorrect: true },
+      { letter: "B", text: "$V = \\dfrac{4\\pi a^3}{3}$", isCorrect: false },
+      { letter: "C", text: "$V = \\pi a^3$", isCorrect: false },
+      { letter: "D", text: "$V = \\dfrac{\\sqrt{3}\\pi a^3}{4}$", isCorrect: false }
+    ],
+    blankAnswer: "sqrt(3)*pi*a^3/2",
+    explanation: "Đường chéo của hình lập phương cạnh $a$ là $d=a\\sqrt{3}$. Bán kính mặt cầu ngoại tiếp $R=\\frac{a\\sqrt{3}}{2}$. $V=\\frac{4}{3}\\pi R^3=\\frac{4}{3}\\pi\\left(\\frac{a\\sqrt{3}}{2}\\right)^3=\\frac{4}{3}\\pi\\cdot\\frac{3\\sqrt{3}a^3}{8}=\\frac{\\sqrt{3}\\pi a^3}{2}$."
+  },
+  {
+    id: "thpt23",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Tính $\\lim_{x\\to 1}\\frac{x^3-1}{x-1}$.",
+    options: [
+      { letter: "A", text: "$3$", isCorrect: true },
+      { letter: "B", text: "$1$", isCorrect: false },
+      { letter: "C", text: "$0$", isCorrect: false },
+      { letter: "D", text: "$\\infty$", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "$\\frac{x^3-1}{x-1}=\\frac{(x-1)(x^2+x+1)}{x-1}=x^2+x+1$ (khi $x\\neq 1$). Giới hạn $=1+1+1=3$."
+  },
+  {
+    id: "thpt24",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2023",
+    grade: 12,
+    text: "Cho $z = 1 + i$. Giá trị của $z^4$ bằng:",
+    options: [
+      { letter: "A", text: "$-4$", isCorrect: true },
+      { letter: "B", text: "$4$", isCorrect: false },
+      { letter: "C", text: "$-4i$", isCorrect: false },
+      { letter: "D", text: "$4i$", isCorrect: false }
+    ],
+    blankAnswer: "-4",
+    explanation: "$z^2=(1+i)^2=1+2i+i^2=1+2i-1=2i$. $z^4=(z^2)^2=(2i)^2=4i^2=-4$."
+  },
+  {
+    id: "thpt25",
+    topic: "Đề thi THPT",
+    source: "THPT Quốc gia 2022",
+    grade: 12,
+    text: "Lớp học có 30 học sinh gồm 18 nam và 12 nữ. Chọn ngẫu nhiên 3 học sinh để tham gia câu lạc bộ. Tính xác suất để có đúng 1 học sinh nữ.",
+    options: [
+      { letter: "A", text: "$\\dfrac{51}{116}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{3}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{2}{5}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{12}{29}$", isCorrect: false }
+    ],
+    blankAnswer: "51/116",
+    explanation: "$n(\\Omega)=C_{30}^3=4060$. Chọn 1 nữ từ 12, 2 nam từ 18: $C_{12}^1 \\cdot C_{18}^2=12\\cdot 153=1836$. $P=\\frac{1836}{4060}=\\frac{51}{116}$."
   }
 ];

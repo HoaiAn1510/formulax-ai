@@ -106,8 +106,16 @@ export default function QuizView({
 
     const filtered = getFilteredQuestions(topic);
     const shuffled = [...filtered].sort(() => 0.5 - Math.random()).slice(0, questionCount);
-    
-    setQuestions(shuffled);
+
+    // Shuffle A/B/C/D options for every question so order varies each quiz
+    const letters = ["A", "B", "C", "D"];
+    const questionsWithShuffledOptions = shuffled.map(q => {
+      const opts = [...q.options].sort(() => 0.5 - Math.random())
+        .map((opt, i) => ({ ...opt, letter: letters[i] }));
+      return { ...q, options: opts };
+    });
+
+    setQuestions(questionsWithShuffledOptions);
     setCurrentQIdx(0);
     setUserAnswers({});
     setScore(0);
@@ -197,7 +205,7 @@ export default function QuizView({
   };
 
   const currentQ = questions[currentQIdx];
-  const topicsList = ["Tất cả chủ đề", "Đại số", "Hình học", "Giải tích", "Xác suất", "Tổ hợp", "Lượng giác"];
+  const topicsList = ["Tất cả chủ đề", "Đề thi THPT", "Đại số", "Hình học", "Giải tích", "Xác suất", "Tổ hợp", "Lượng giác"];
   const filteredQuestions = getFilteredQuestions(topic);
   const questionCountOptions = getQuestionCountOptions(filteredQuestions.length);
 
