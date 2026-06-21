@@ -37,17 +37,10 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
   const isLast = step === STEPS.length - 1;
 
   const handleAction = () => {
-    if (step === 0) {
-      // Grade selected — go to next step
-      setStep(1);
-    } else if (step === 1) {
-      // Go to Finder
-      onFinish(selectedGrade);
-      onGoToFinder();
+    if (step < STEPS.length - 1) {
+      setStep(s => s + 1);
     } else {
-      // Go to Quiz
       onFinish(selectedGrade);
-      onGoToQuiz();
     }
   };
 
@@ -163,11 +156,8 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
             transition: "all 0.2s",
           }}
         >
-          {step === 0 && "Tiếp theo"}
-          {step === 1 && (<><Sparkles size={16} /> Mở Finder AI</>)}
-          {step === 2 && (<><ClipboardList size={16} /> Làm quiz ngay</>)}
-          {step < STEPS.length - 1 && step !== 0 ? null : null}
-          {step < STEPS.length - 1 ? <ArrowRight size={16} /> : null}
+          {step < STEPS.length - 1 ? "Tiếp theo" : "Bắt đầu học!"}
+          <ArrowRight size={16} />
         </button>
 
         {step > 0 && (
