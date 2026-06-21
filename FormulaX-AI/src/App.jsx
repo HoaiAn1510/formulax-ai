@@ -90,7 +90,10 @@ export default function App() {
         // Load danh sách công thức đã xem từ localStorage
         const storedViewed = localStorage.getItem(`formulax_viewed_${user.googleId}`);
         setViewedFormulaIds(storedViewed ? JSON.parse(storedViewed) : []);
-        dataLoadedRef.current = true; // từ giờ mới cho phép save
+        dataLoadedRef.current = true;
+        // Force sync stats vào Supabase ngay sau khi merge — đảm bảo Supabase luôn có giá trị mới nhất
+        // (quan trọng khi Supabase bị lag hoặc trước đó RLS chặn update)
+        saveStats(user.googleId, data.stats).catch(console.error);
         // Hiện onboarding nếu user thực sự chưa có dữ liệu nào (kiểm tra Supabase lẫn localStorage)
         const onboardedLocal = localStorage.getItem(`formulax_onboarded_${user.googleId}`);
         const hasAnyData = data.bookmarkedIds.length > 0
