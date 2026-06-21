@@ -55,8 +55,7 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
           </button>
 
           {showNotifications && (
-            <div className="autocomplete-dropdown"
-              style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, left: "auto", width: "min(260px, calc(100vw - 24px))", padding: "10px", zIndex: 1000, maxHeight: "240px", overflowY: "auto" }}>
+            <div style={{ position: "fixed", top: "68px", right: "12px", width: "min(260px, calc(100vw - 24px))", padding: "10px", zIndex: 1000, maxHeight: "260px", overflowY: "auto", background: "white", borderRadius: "14px", boxShadow: "0 8px 28px rgba(0,0,0,0.14)", border: "1px solid #E2E8F0" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", paddingBottom: "6px", borderBottom: "1px solid #f1f5f9" }}>
                 <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#1E3A5F" }}>Thông báo</span>
                 <button onClick={() => setShowNotifications(false)}
@@ -99,8 +98,7 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
           </button>
 
           {dropdownOpen && (
-            <div className="autocomplete-dropdown"
-              style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, left: "auto", width: "min(220px, calc(100vw - 24px))", padding: "0", zIndex: 1000, overflow: "hidden" }}>
+            <div style={{ position: "fixed", top: "68px", right: "12px", width: "min(230px, calc(100vw - 24px))", padding: "0", zIndex: 1000, overflow: "hidden", background: "white", borderRadius: "16px", boxShadow: "0 8px 28px rgba(0,0,0,0.14)", border: "1px solid #E2E8F0" }}>
 
               {/* Header card */}
               <div style={{
