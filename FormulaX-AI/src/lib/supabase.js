@@ -20,8 +20,7 @@ export async function loadUserData(googleId) {
       .order("updated_at", { ascending: false }).limit(1),
     supabase.from("search_history").select("query").eq("google_id", googleId)
       .order("searched_at", { ascending: false }).limit(20),
-    supabase.from("quiz_daily").select("*").eq("google_id", googleId)
-      .order("updated_at", { ascending: false }).limit(1),
+    supabase.from("quiz_daily").select("*").eq("google_id", googleId).limit(1),
   ]);
 
   // Bookmarks → mảng id
