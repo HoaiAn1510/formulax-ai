@@ -131,16 +131,6 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
           </div>
         )}
 
-        {/* Step 2 — example prompt */}
-        {step === 1 && (
-          <div style={{
-            background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: "10px",
-            padding: "12px 14px", marginBottom: "24px", fontSize: "0.82rem", color: "#475569",
-            fontStyle: "italic",
-          }}>
-            💬 "cho tôi công thức tính thể tích khối cầu"
-          </div>
-        )}
 
         {/* Step 3 — quiz types */}
         {step === 2 && (
