@@ -28,8 +28,7 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn 
       {/* Logo — chỉ hiện trên mobile (desktop dùng sidebar) */}
       <div className="logo-section">
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <img src="/logo.png" alt="FormulaX" style={{ width: "30px", height: "30px", borderRadius: "7px" }}
-            onError={e => { e.target.style.display = "none"; }} />
+          <img src="/favicon.svg" alt="FormulaX" style={{ width: "30px", height: "30px", borderRadius: "7px" }} />
           <span style={{ fontWeight: "800", fontSize: "1.15rem", letterSpacing: "-0.5px" }}>FormulaX AI</span>
         </div>
       </div>

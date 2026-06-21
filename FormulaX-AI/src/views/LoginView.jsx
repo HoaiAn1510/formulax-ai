@@ -80,14 +80,10 @@ export default function LoginView() {
       }}>
         {/* Logo */}
         <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <div style={{
+          <img src="/favicon.svg" alt="FormulaX" style={{
             width: "52px", height: "52px", borderRadius: "14px",
-            background: "linear-gradient(135deg, #3B82F6, #1E3A5F)",
-            display: "flex", alignItems: "center", justifyContent: "center",
             boxShadow: "0 4px 12px rgba(59,130,246,0.3)"
-          }}>
-            <LayoutGrid size={24} color="white" />
-          </div>
+          }} />
           <div>
             <h2 style={{ fontSize: "1.3rem", fontWeight: "800", color: "#1E3A5F", margin: "0 0 4px 0", letterSpacing: "-0.5px" }}>
               FormulaX AI
