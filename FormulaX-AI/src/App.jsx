@@ -11,6 +11,7 @@ import {
   resetStats,
   addSearchHistoryEntry,
   saveQuizDaily,
+  saveDisplayName,
 } from "./lib/supabase";
 
 import Header from "./components/Header";
@@ -48,6 +49,7 @@ export default function App() {
   const handleSetDisplayName = (name) => {
     setDisplayName(name);
     localStorage.setItem("formulax_display_name", name);
+    if (user?.googleId) saveDisplayName(user.googleId, name).catch(console.error);
   };
 
   // ─── User data ────────────────────────────────────────────────────────────
@@ -91,9 +93,13 @@ export default function App() {
         const storedViewed = localStorage.getItem(`formulax_viewed_${user.googleId}`);
         setViewedFormulaIds(storedViewed ? JSON.parse(storedViewed) : []);
         dataLoadedRef.current = true;
-        // Force sync stats vào Supabase ngay sau khi merge — đảm bảo Supabase luôn có giá trị mới nhất
-        // (quan trọng khi Supabase bị lag hoặc trước đó RLS chặn update)
-        saveStats(user.googleId, data.stats).catch(console.error);
+        // Sync display name từ Supabase (ưu tiên Supabase, fallback localStorage)
+        const nameFromDB = data.displayName;
+        const nameFromLocal = localStorage.getItem("formulax_display_name") || "";
+        const finalName = nameFromDB || nameFromLocal;
+        if (finalName) { setDisplayName(finalName); localStorage.setItem("formulax_display_name", finalName); }
+        // Force sync stats + display name vào Supabase
+        saveStats(user.googleId, data.stats, finalName || undefined).catch(console.error);
         // Hiện onboarding nếu user thực sự chưa có dữ liệu nào (kiểm tra Supabase lẫn localStorage)
         const onboardedLocal = localStorage.getItem(`formulax_onboarded_${user.googleId}`);
         const hasAnyData = data.bookmarkedIds.length > 0

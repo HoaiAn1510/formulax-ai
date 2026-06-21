@@ -35,6 +35,7 @@ export async function loadUserData(googleId) {
   const statsFromDB = statsRow
     ? { formulasViewed: statsRow.formulas_viewed, flashcardsStudied: statsRow.flashcards_studied, quizzesCompleted: statsRow.quizzes_completed }
     : { formulasViewed: 0, flashcardsStudied: 0, quizzesCompleted: 0 };
+  const displayNameFromDB = statsRow?.display_name || "";
 
   // Merge với localStorage backup — luôn lấy giá trị cao nhất (stats chỉ tăng, không bao giờ giảm)
   const localRaw = localStorage.getItem(`formulax_stats_${googleId}`);
@@ -57,7 +58,7 @@ export async function loadUserData(googleId) {
     remainingQuizzes = qRow.reset_date === today ? qRow.remaining_count : 10;
   }
 
-  return { bookmarkedIds, userNotes, stats, searchHistory, remainingQuizzes };
+  return { bookmarkedIds, userNotes, stats, searchHistory, remainingQuizzes, displayName: displayNameFromDB };
 }
 
 // ─── Bookmark ───────────────────────────────────────────────────────────────
@@ -82,12 +83,18 @@ export async function saveNote(googleId, formulaId, noteText) {
 
 // ─── Stats ──────────────────────────────────────────────────────────────────
 
-export async function saveStats(googleId, stats) {
-  const { error } = await supabase.from("learning_stats").upsert(
-    { google_id: googleId, formulas_viewed: stats.formulasViewed, flashcards_studied: stats.flashcardsStudied, quizzes_completed: stats.quizzesCompleted, updated_at: new Date().toISOString() },
+export async function saveStats(googleId, stats, displayName) {
+  const payload = { google_id: googleId, formulas_viewed: stats.formulasViewed, flashcards_studied: stats.flashcardsStudied, quizzes_completed: stats.quizzesCompleted, updated_at: new Date().toISOString() };
+  if (displayName !== undefined) payload.display_name = displayName;
+  const { error } = await supabase.from("learning_stats").upsert(payload, { onConflict: "google_id" });
+  if (error) console.error("[Supabase] saveStats error:", error);
+}
+
+export async function saveDisplayName(googleId, displayName) {
+  await supabase.from("learning_stats").upsert(
+    { google_id: googleId, display_name: displayName, updated_at: new Date().toISOString() },
     { onConflict: "google_id" }
   );
-  if (error) console.error("[Supabase] saveStats error:", error);
 }
 
 export async function resetStats(googleId) {
