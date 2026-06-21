@@ -58,7 +58,7 @@ export const formulas = [
     example: "Tính thể tích khối tròn xoay sinh ra khi quay hình phẳng giới hạn bởi $y = \\sqrt{x}$, trục hoành và hai đường $x=0$, $x=4$ quanh trục $Ox$.\n\n**Lời giải:**\nBán kính lát cắt tại $x$ là $r = \\sqrt{x}$.\n$$V = \\pi \\int_{0}^{4} (\\sqrt{x})^2\\,dx = \\pi \\int_{0}^{4} x\\,dx = \\pi \\left[\\frac{x^2}{2}\\right]_0^4 = \\pi \\cdot \\frac{16}{2} = 8\\pi$$\n\n**Kiểm tra chiều:** Đây là một nửa parabol xoay, thể tích $8\\pi \\approx 25.1$ đơn vị khối — hợp lý.",
     tags: ["Tích phân", "Ứng dụng hình học", "Tròn xoay"],
     difficulty: "Khó",
-    mnemonic: "Hình tròn xoay = 'Bánh pizza' vô số lớp mỏng: mỗi lát là hình tròn bán kính f(x). Tích phân các lát: V = π∫f²dx. Nhớ: **Pi** vì **Pirate** xoay tròn — có Pi là có xoay tròn!"
+    mnemonic: "Hình tròn xoay = vô số lát mỏng hình tròn bán kính f(x), diện tích πr². Tổng các lát cho V = π∫f²dx. Nhớ: có π vì mỗi lát là hình tròn. Không quên bình phương f(x)!"
   },
   // --- HÌNH HỌC LỚP 12 ---
   {
@@ -228,7 +228,7 @@ export const formulas = [
     example: "**Ví dụ 1:** Tính $L_1 = \\lim_{x \\to 0} \\dfrac{\\sin 3x}{x}$.\n\n**Lời giải:** Nhân cả tử và mẫu với 3:\n$$L_1 = 3 \\cdot \\lim_{x \\to 0} \\frac{\\sin 3x}{3x} = 3 \\cdot 1 = 3$$\n\n**Ví dụ 2:** Tính $L_2 = \\lim_{x \\to 0} \\dfrac{\\sin 5x}{\\sin 2x}$.\n\n**Lời giải:** Chia cả tử và mẫu cho $x$:\n$$L_2 = \\lim_{x \\to 0} \\frac{\\sin 5x / x}{\\sin 2x / x} = \\frac{5 \\cdot 1}{2 \\cdot 1} = \\frac{5}{2}$$",
     tags: ["Giới hạn", "Lượng giác", "Vô định"],
     difficulty: "Trung bình",
-    mnemonic: "**sin x ≈ x** khi x rất nhỏ (tính bằng radian). Vì vậy sin x / x → 1. Mẹo nhớ: 'sin và x song song về 0 — bước đi đều nhau nên tỉ lệ = 1'. Kỹ thuật: luôn đưa về dạng sin(□)/□ = 1."
+    mnemonic: "sin x ≈ x khi x rất nhỏ (đo bằng radian), nên sin x / x → 1. Kỹ thuật: nhân tử mẫu để đưa về dạng sin(u)/u = 1. Tổng quát: lim sin(ax)/bx = a/b."
   },
   {
     id: "gt11-daoham-sin",
@@ -419,11 +419,11 @@ export const formulas = [
     topic: "Giải tích",
     grade: 11,
     latex: "[f(u(x))]' = f'(u) \\cdot u'(x)",
-    explanation: "**Quy tắc dây chuyền (Chain Rule):** Hàm hợp $y = f(u(x))$ gồm hai tầng:\n- **Hàm trong:** $u = u(x)$ — là biểu thức bên trong.\n- **Hàm ngoài:** $f$ — là hàm bọc bên ngoài $u$.\n\nQuy tắc: lấy đạo hàm hàm ngoài (coi $u$ là biến) rồi nhân với đạo hàm hàm trong.\n\nTrong đó:\n- $f'(u)$: Đạo hàm của hàm ngoài, **giữ nguyên hàm trong** $u$ bên trong.\n- $u'(x)$: Đạo hàm của hàm trong theo $x$.\n\n**Bảng công thức hàm hợp thường gặp:**\n| Hàm ngoài $f$ | Đạo hàm $[f(u)]'$ |\n|---|---|\n| $u^n$ | $n u^{n-1} \\cdot u'$ |\n| $\\sin u$ | $\\cos u \\cdot u'$ |\n| $\\cos u$ | $-\\sin u \\cdot u'$ |\n| $e^u$ | $e^u \\cdot u'$ |\n| $a^u$ | $a^u \\ln a \\cdot u'$ |\n| $\\ln u$ | $\\dfrac{u'}{u}$ |\n| $\\sqrt{u}$ | $\\dfrac{u'}{2\\sqrt{u}}$ |",
-    example: "**Ví dụ 1:** Tính $y' $ của $y = (2x^2 - 3)^5$.\n\n**Lời giải:**\n- Hàm trong: $u = 2x^2 - 3$, $u' = 4x$.\n- Hàm ngoài: $f(u) = u^5$, $f'(u) = 5u^4$.\n$$y' = 5(2x^2-3)^4 \\cdot 4x = 20x(2x^2-3)^4$$\n\n**Ví dụ 2:** Tính $y'$ của $y = e^{\\sin x}$.\n\n**Lời giải:**\n- Hàm trong: $u = \\sin x$, $u' = \\cos x$.\n- Hàm ngoài: $f(u) = e^u$, $f'(u) = e^u$.\n$$y' = e^{\\sin x} \\cdot \\cos x$$",
+    explanation: "Quy tắc dây chuyền (Chain Rule): lấy đạo hàm hàm ngoài (giữ nguyên hàm trong) rồi nhân với đạo hàm hàm trong.\n\nTrong đó và các dạng phổ biến:\n- **Hàm trong** $u = u(x)$: Biểu thức bên trong — đạo hàm cho ta $u'(x)$.\n- **Hàm ngoài** $f$: Hàm bọc bên ngoài — lấy đạo hàm coi $u$ là biến, cho ta $f'(u)$.\n- $[u^n]'$: $n\\,u^{n-1}\\cdot u'$\n- $[\\sin u]'$: $\\cos u\\cdot u'$\n- $[\\cos u]'$: $-\\sin u\\cdot u'$\n- $[e^u]'$: $e^u\\cdot u'$\n- $[a^u]'$: $a^u\\ln a\\cdot u'$\n- $[\\ln u]'$: $u'/u$\n- $[\\sqrt{u}]'$: $u'/(2\\sqrt{u})$",
+    example: "**Ví dụ 1:** Tính $y'$ của $y = (2x^2 - 3)^5$.\n\n**Lời giải:**\n- Hàm trong: $u = 2x^2 - 3$, $u' = 4x$.\n- Hàm ngoài: $f(u) = u^5$, $f'(u) = 5u^4$.\n$$y' = 5(2x^2-3)^4 \\cdot 4x = 20x(2x^2-3)^4$$\n\n**Ví dụ 2:** Tính $y'$ của $y = e^{\\sin x}$.\n\n**Lời giải:**\n- Hàm trong: $u = \\sin x$, $u' = \\cos x$.\n- Hàm ngoài: $f(u) = e^u$, $f'(u) = e^u$.\n$$y' = e^{\\sin x} \\cdot \\cos x$$",
     tags: ["Đạo hàm", "Hàm hợp", "Chain Rule", "Quy tắc"],
     difficulty: "Trung bình",
-    mnemonic: "**Hành trình từ ngoài vào trong:** đạo hàm hàm ngoài (giữ nguyên hàm trong), rồi NHÂN đạo hàm hàm trong. Ví dụ nhanh: $[\\sin(3x)]' = \\cos(3x) \\cdot 3$. Không bao giờ quên nhân $u'$ ở cuối!"
+    mnemonic: "Đạo hàm từ ngoài vào trong: đạo hàm hàm ngoài (giữ nguyên hàm trong), rồi NHÂN đạo hàm hàm trong. Ví dụ: [sin(3x)]' = cos(3x) × 3. Không bao giờ quên nhân u' ở cuối!"
   },
   {
     id: "gt12-tiemcan",
@@ -435,7 +435,7 @@ export const formulas = [
     example: "**Ví dụ 1 — TCN và TCD:** Tìm tiệm cận của $y = \\dfrac{2x+1}{x-3}$.\n\n- **TCN:** $\\lim_{x \\to \\pm\\infty} \\dfrac{2x+1}{x-3} = \\lim \\dfrac{2 + 1/x}{1 - 3/x} = 2 \\Rightarrow$ TCN: $y = 2$.\n- **TCD:** Mẫu $x-3=0 \\Rightarrow x=3$; tử $2(3)+1=7 \\neq 0$. Kiểm tra: $\\lim_{x\\to 3^+}\\dfrac{2x+1}{x-3}=+\\infty \\Rightarrow$ TCD: $x=3$.\n\n**Ví dụ 2 — TCX:** Tìm tiệm cận xiên của $y = \\dfrac{x^2 + x + 1}{x}$.\n\n- $k = \\lim_{x\\to\\infty}\\dfrac{y}{x} = \\lim\\dfrac{x^2+x+1}{x^2} = 1$.\n- $b = \\lim_{x\\to\\infty}(y - kx) = \\lim\\left(\\dfrac{x^2+x+1}{x}-x\\right) = \\lim\\dfrac{x+1}{x} = 1$.\n- TCX: $y = x + 1$. Kiểm tra: $y - (x+1) = \\dfrac{1}{x} \\to 0$ ✓.",
     tags: ["Tiệm cận", "Giới hạn", "Khảo sát hàm số"],
     difficulty: "Trung bình",
-    mnemonic: "**Ba loại tiệm cận — 3T:**\n- **TCN** (ngang): x→∞, ra số → y = số đó.\n- **TCD** (đứng): mẫu=0, tử≠0 → x = nghiệm mẫu.\n- **TCX** (xiên): tìm k=lim(y/x), b=lim(y−kx), rồi y=kx+b. TCX chỉ có khi bậc tử = bậc mẫu + 1."
+    mnemonic: "Ba loại tiệm cận: TCN (ngang) khi x→±∞ ra số L thì y=L. TCD (đứng) khi mẫu=0 và tử≠0 thì x=nghiệm đó. TCX (xiên) khi bậc tử = bậc mẫu+1: tìm k=lim(y/x), b=lim(y−kx), ra y=kx+b."
   },
 
   // --- THÊM TỪ PDF: NGUYÊN HÀM VÀ TÍCH PHÂN ---
@@ -449,7 +449,7 @@ export const formulas = [
     example: "Tính $\\int \\left(e^x + 3\\cos x - \\dfrac{2}{x}\\right) dx$.\n\n**Lời giải:**\n$$= \\int e^x\\,dx + 3\\int \\cos x\\,dx - 2\\int \\frac{1}{x}\\,dx = e^x + 3\\sin x - 2\\ln|x| + C$$\n\n**Lưu ý:** Kiểm tra lại bằng cách lấy đạo hàm kết quả: $(e^x + 3\\sin x - 2\\ln|x| + C)' = e^x + 3\\cos x - \\dfrac{2}{x}$ ✓",
     tags: ["Nguyên hàm", "Bảng công thức", "Tích phân"],
     difficulty: "Trung bình",
-    mnemonic: "Nguyên hàm ngược đạo hàm: e^x → e^x, sin → −cos, cos → sin, 1/x → ln|x|, a^x → a^x/ln(a). Luôn thêm **+C** — vì mọi hằng số đều biến mất khi lấy đạo hàm, nên nguyên hàm có vô số đáp án lệch nhau 1 hằng số."
+    mnemonic: "Nguyên hàm ngược đạo hàm: e^x → e^x, sin → -cos, cos → sin, 1/x → ln|x|, a^x → a^x/ln(a). Luôn thêm +C vì mọi hằng số mất đi khi lấy đạo hàm, nên nguyên hàm có vô số đáp án lệch nhau 1 hằng số."
   },
   {
     id: "gt12-nguyenham-morong",
@@ -511,7 +511,7 @@ export const formulas = [
     example: "Viết phương trình mặt phẳng đi qua $M(1, 2, 3)$ và nhận $\\vec{n} = (2, -1, 4)$ làm pháp tuyến.\n\n**Lời giải:**\nThay vào công thức điểm-pháp tuyến:\n$$2(x-1) - 1(y-2) + 4(z-3) = 0$$\n$$2x - 2 - y + 2 + 4z - 12 = 0$$\n$$\\boxed{2x - y + 4z - 12 = 0}$$\n\n**Kiểm tra:** Thay $M(1,2,3)$ vào: $2(1) - 2 + 4(3) - 12 = 2 - 2 + 12 - 12 = 0$ ✓\nPháp tuyến $(2,-1,4)$ trùng với hệ số $(A,B,C)$ của phương trình ✓",
     tags: ["Mặt phẳng", "Oxyz", "Pháp tuyến", "Tọa độ không gian"],
     difficulty: "Trung bình",
-    mnemonic: "Nhân từng tọa độ của pháp tuyến $(A,B,C)$ với hiệu tọa độ: $A(x-x_0)+B(y-y_0)+C(z-z_0)=0$. Khai triển ra dạng tổng quát $Ax+By+Cz+D=0$. Kiểm tra: thay điểm gốc vào phải ra 0."
+    mnemonic: "Nhân từng tọa độ pháp tuyến (A,B,C) với hiệu tọa độ: A(x-x₀)+B(y-y₀)+C(z-z₀)=0. Khai triển ra dạng tổng quát Ax+By+Cz+D=0. Kiểm tra: thay điểm gốc vào phải ra 0."
   },
   {
     id: "hh12-oxyz-duongthang",
@@ -523,7 +523,7 @@ export const formulas = [
     example: "Viết phương trình đường thẳng đi qua $A(1, -2, 3)$ và $B(3, 0, -1)$.\n\n**Lời giải:**\n- Vectơ chỉ phương: $\\vec{AB} = (3-1,\\; 0-(-2),\\; -1-3) = (2, 2, -4)$, giản ước: $\\vec{u} = (1, 1, -2)$.\n\n**Phương trình tham số** (qua điểm $A$):\n$$\\begin{cases} x = 1 + t \\\\ y = -2 + t \\\\ z = 3 - 2t \\end{cases} \\quad (t \\in \\mathbb{R})$$\n\n**Phương trình chính tắc:**\n$$\\dfrac{x-1}{1} = \\dfrac{y+2}{1} = \\dfrac{z-3}{-2}$$\n\n**Kiểm tra:** Khi $t=0$: điểm $(1,-2,3) = A$ ✓. Khi $t=2$: điểm $(3,0,-1) = B$ ✓.",
     tags: ["Đường thẳng", "Oxyz", "Vectơ chỉ phương", "Tọa độ không gian"],
     difficulty: "Trung bình",
-    mnemonic: "Đường thẳng = 1 điểm + 1 vectơ chỉ phương $(a,b,c)$. **Tham số** dễ tính toán: $x=x_0+at, y=y_0+bt, z=z_0+ct$. **Chính tắc** viết gọn: $\\frac{x-x_0}{a}=\\frac{y-y_0}{b}=\\frac{z-z_0}{c}$. Hai cách viết là tương đương."
+    mnemonic: "Đường thẳng = 1 điểm + 1 vectơ chỉ phương (a,b,c). Tham số: x=x₀+at, y=y₀+bt, z=z₀+ct. Chính tắc: (x-x₀)/a=(y-y₀)/b=(z-z₀)/c. Hai cách viết tương đương nhau."
   },
   {
     id: "hh12-oxyz-goc-hai-matphang",
@@ -535,7 +535,7 @@ export const formulas = [
     example: "**Ví dụ 1 — Góc:** Tìm góc giữa $(P): 2x - y + 2z - 1 = 0$ và $(Q): x + 2y - 2z + 3 = 0$.\n\n**Lời giải:**\n- $\\vec{n_1} = (2,-1,2)$, $|\\vec{n_1}| = 3$; $\\vec{n_2} = (1,2,-2)$, $|\\vec{n_2}| = 3$.\n- $\\vec{n_1}\\cdot\\vec{n_2} = 2(1)+(-1)(2)+2(-2) = 2-2-4 = -4$.\n$$\\cos\\varphi = \\frac{|-4|}{3 \\cdot 3} = \\frac{4}{9} \\Rightarrow \\varphi = \\arccos\\frac{4}{9} \\approx 63.6°$$\n\n**Ví dụ 2 — Khoảng cách:** Tính khoảng cách giữa $2x-y+2z-1=0$ và $2x-y+2z+5=0$.\n$$d = \\frac{|5-(-1)|}{\\sqrt{4+1+4}} = \\frac{6}{3} = 2$$",
     tags: ["Mặt phẳng", "Góc", "Oxyz", "Quan hệ", "Khoảng cách"],
     difficulty: "Khó",
-    mnemonic: "**Góc = góc pháp tuyến (lấy giá trị tuyệt đối để luôn có góc nhọn).** Hai mặt phẳng ⊥ khi tích vô hướng pháp tuyến = 0. Song song khi pháp tuyến tỉ lệ nhưng D khác nhau. Khoảng cách 2 mp song song = |chênh D| / độ dài pháp tuyến."
+    mnemonic: "Góc hai mặt phẳng = góc pháp tuyến (lấy trị tuyệt đối để ra góc nhọn). Vuông góc khi tích vô hướng pháp tuyến = 0. Song song khi pháp tuyến tỉ lệ nhưng D khác. Khoảng cách hai mp song song = |chênh D| / độ dài pháp tuyến."
   },
 
   // --- THÊM TỪ PDF: THỐNG KÊ ---
@@ -563,7 +563,7 @@ export const formulas = [
     example: "**Ví dụ 1 — Có điều kiện:** Tung xúc xắc 6 mặt. Biết kết quả là số chẵn ($B$), tính xác suất ra số $> 3$ ($A$).\n- $B = \\{2,4,6\\}$, $P(B) = 1/2$; $A \\cap B = \\{4,6\\}$, $P(A\\cap B)=1/3$.\n$$P(A|B) = \\frac{1/3}{1/2} = \\frac{2}{3}$$\nSo sánh: nếu không có điều kiện $P(A) = P(\\{4,5,6\\})=1/2 \\neq 2/3$ — điều kiện $B$ đã làm thay đổi xác suất.\n\n**Ví dụ 2 — Độc lập:** Tung đồng xu 2 lần. $A$ = lần 1 ra mặt H, $B$ = lần 2 ra mặt H.\n- $P(A)=1/2$, $P(B)=1/2$, $P(A\\cap B)=1/4$.\n- Kiểm tra: $P(A)\\cdot P(B) = \\frac{1}{2}\\cdot\\frac{1}{2}=\\frac{1}{4}=P(A\\cap B)$ → **A và B độc lập** ✓.",
     tags: ["Xác suất", "Có điều kiện", "Nhân xác suất", "Độc lập"],
     difficulty: "Trung bình",
-    mnemonic: "**P(A|B):** Thu hẹp không gian mẫu về $B$, rồi tính $A$ trong đó. Công thức: P(A∩B)/P(B). **Độc lập:** B không ảnh hưởng A → P(A|B)=P(A) → P(A∩B)=P(A)·P(B). Kiểm tra độc lập: so sánh P(A∩B) với P(A)·P(B)."
+    mnemonic: "P(A|B): thu hẹp không gian mẫu về B rồi tính A trong đó. Công thức: P(A∩B)/P(B). Độc lập: B không ảnh hưởng A nên P(A|B)=P(A), tức P(A∩B)=P(A)·P(B). Kiểm tra: so sánh P(A∩B) với P(A)·P(B)."
   },
   {
     id: "xs12-xacsuat-toanphan",
@@ -737,7 +737,7 @@ export const formulas = [
     example: "Tính $\\dfrac{3+4i}{1-2i}$.\n\n**Lời giải:**\nNhân cả tử và mẫu với liên hợp của mẫu $\\overline{(1-2i)} = 1+2i$:\n$$\\frac{(3+4i)(1+2i)}{(1-2i)(1+2i)}$$\n- Tử: $(3+4i)(1+2i) = 3+6i+4i+8i^2 = 3+10i+8(-1) = -5+10i$\n- Mẫu: $(1)^2+(2)^2 = 5$\n$$= \\frac{-5+10i}{5} = -1+2i$$",
     tags: ["Số phức", "Nhân chia", "Liên hợp"],
     difficulty: "Trung bình",
-    mnemonic: "**i² = −1** là chìa khóa vàng. Nhân số phức: khai triển như đa thức rồi đổi $i^2$ thành $-1$. Chia số phức: nhân tử và mẫu với **liên hợp** của mẫu (đổi dấu phần ảo) để khử $i$ khỏi mẫu."
+    mnemonic: "i² = -1 là chìa khóa. Nhân số phức: khai triển như đa thức rồi đổi i² thành -1. Chia số phức: nhân tử và mẫu với liên hợp của mẫu (đổi dấu phần ảo) để khử i khỏi mẫu."
   },
   {
     id: "ds12-sophuc-luonggiac",
@@ -799,7 +799,7 @@ export const formulas = [
     example: "**Ví dụ 1 — Khai triển đầy đủ:** Khai triển $(x+1)^4$.\n\n$$C_4^0 x^4 + C_4^1 x^3 \\cdot 1 + C_4^2 x^2 \\cdot 1^2 + C_4^3 x \\cdot 1^3 + C_4^4 \\cdot 1^4$$\n$$= x^4 + 4x^3 + 6x^2 + 4x + 1$$\n(Hệ số: 1, 4, 6, 4, 1 — hàng thứ 4 của tam giác Pascal)\n\n**Ví dụ 2 — Tìm số hạng:** Tìm số hạng thứ 4 trong $(x+2)^6$.\n\nSố hạng thứ 4 → $k=3$:\n$$T_4 = C_6^3 \\cdot x^{6-3} \\cdot 2^3 = 20 \\cdot x^3 \\cdot 8 = 160x^3$$",
     tags: ["Nhị thức Newton", "Tổ hợp", "Khai triển"],
     difficulty: "Trung bình",
-    mnemonic: "**Số mũ a xuống, b lên, tổng = n.** Số hạng thứ $(k+1)$ có $k$ bắt đầu từ 0: $T_{k+1} = C_n^k a^{n-k} b^k$. Nhớ: 'số hạng thứ $m$' → $k = m-1$. Hệ số nhị thức: tam giác Pascal (1, 1; 1, 2, 1; 1, 3, 3, 1; ...)."
+    mnemonic: "Số mũ a xuống, b lên, tổng luôn = n. Số hạng thứ (k+1) có k bắt đầu từ 0: T(k+1) = C(n,k) × a^(n-k) × b^k. Nhớ: số hạng thứ m → k = m-1. Hệ số: tam giác Pascal (1,1; 1,2,1; 1,3,3,1; ...)."
   },
   {
     id: "gt12-gtln-gtnn",
