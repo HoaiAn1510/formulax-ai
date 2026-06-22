@@ -212,8 +212,12 @@ app.post("/api/chat", async (req, res) => {
 
   } catch (error) {
     console.error("[FormulaX Backend] Groq API error:", error.message);
-    res.status(500).json({
-      error: "Không thể kết nối AI",
+    const status = error.status || error.statusCode || 500;
+    let errorMsg = "Không thể kết nối AI";
+    if (status === 429) errorMsg = "Groq API đã đạt giới hạn request, thử lại sau vài giây";
+    else if (status === 401) errorMsg = "Groq API key không hợp lệ";
+    res.status(status >= 400 && status < 600 ? status : 500).json({
+      error: errorMsg,
       message: error.message
     });
   }
