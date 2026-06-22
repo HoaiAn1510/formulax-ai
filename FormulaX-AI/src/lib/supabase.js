@@ -119,3 +119,38 @@ export async function saveQuizDaily(googleId, remaining) {
     { onConflict: "google_id" }
   );
 }
+
+// ─── Chat Sessions ────────────────────────────────────────────────────────────
+
+export async function loadChatSessions(googleId) {
+  const { data, error } = await supabase
+    .from("chat_sessions")
+    .select("*")
+    .eq("google_id", googleId)
+    .order("updated_at", { ascending: false });
+  if (error) { console.error("[Supabase] loadChatSessions:", error); return null; }
+  return (data || []).map(row => ({
+    id: row.id,
+    name: row.name,
+    messages: row.messages || [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
+}
+
+export async function upsertChatSession(googleId, session) {
+  const { error } = await supabase.from("chat_sessions").upsert({
+    id: session.id,
+    google_id: googleId,
+    name: session.name,
+    messages: session.messages,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "id,google_id" });
+  if (error) console.error("[Supabase] upsertChatSession:", error);
+}
+
+export async function deleteChatSession(googleId, sessionId) {
+  const { error } = await supabase.from("chat_sessions").delete()
+    .eq("google_id", googleId).eq("id", sessionId);
+  if (error) console.error("[Supabase] deleteChatSession:", error);
+}

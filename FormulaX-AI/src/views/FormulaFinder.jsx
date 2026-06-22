@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Send, ArrowLeft, History, Search, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
+import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB } from "../lib/supabase";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -42,6 +43,7 @@ export default function FormulaFinder({
   const [renameValue, setRenameValue] = useState("");
   const [deletingId, setDeletingId] = useState(null);
   const sessionIdRef = useRef(null);
+  const sessionsRef = useRef(sessions);
 
   // Saved formula popup
   const [savedPopup, setSavedPopup] = useState(null);
@@ -50,14 +52,27 @@ export default function FormulaFinder({
   const fileInputRef = useRef(null);
   const renameInputRef = useRef(null);
 
-  // Reload sessions khi user đổi (đăng nhập/đăng xuất)
+  // Giữ sessionsRef luôn sync với state mới nhất
+  useEffect(() => { sessionsRef.current = sessions; }, [sessions]);
+
+  // Reload sessions khi user đổi (đăng nhập/đăng xuất) — ưu tiên Supabase
   useEffect(() => {
-    const loaded = loadSessionsFromStorage(sessionsKey);
-    setSessions(loaded);
     setCurrentSessionId(null);
     sessionIdRef.current = null;
     setMessages([]);
-  }, [sessionsKey]);
+    if (user?.googleId) {
+      loadChatSessions(user.googleId).then(cloudSessions => {
+        if (cloudSessions !== null) {
+          setSessions(cloudSessions);
+          saveSessionsToStorage(sessionsKey, cloudSessions);
+        } else {
+          setSessions(loadSessionsFromStorage(sessionsKey));
+        }
+      });
+    } else {
+      setSessions(loadSessionsFromStorage(sessionsKey));
+    }
+  }, [user?.googleId]);
 
   useEffect(() => {
     if (chatMessagesRef.current) {
@@ -101,13 +116,18 @@ export default function FormulaFinder({
     const sesId = sessionIdRef.current;
 
     if (sesId) {
+      const updatedAt = new Date().toISOString();
       setSessions(prev => {
         const updated = prev.map(s =>
-          s.id === sesId ? { ...s, messages, updatedAt: new Date().toISOString() } : s
+          s.id === sesId ? { ...s, messages, updatedAt } : s
         );
         saveSessionsToStorage(sessionsKey, updated);
         return updated;
       });
+      if (user?.googleId) {
+        const existing = sessionsRef.current.find(s => s.id === sesId);
+        upsertChatSession(user.googleId, { id: sesId, name: existing?.name || "", messages, updatedAt });
+      }
     } else {
       const newId = Date.now().toString();
       sessionIdRef.current = newId;
@@ -127,6 +147,7 @@ export default function FormulaFinder({
         saveSessionsToStorage(sessionsKey, updated);
         return updated;
       });
+      if (user?.googleId) upsertChatSession(user.googleId, newSession);
     }
   }, [messages, sessionsKey]);
 
@@ -226,6 +247,7 @@ export default function FormulaFinder({
       saveSessionsToStorage(sessionsKey, updated);
       return updated;
     });
+    if (user?.googleId) deleteChatSessionDB(user.googleId, sessionId);
     if (sessionIdRef.current === sessionId) {
       setMessages([]);
       setCurrentSessionId(null);
@@ -236,13 +258,18 @@ export default function FormulaFinder({
 
   const confirmRename = () => {
     if (!renameValue.trim()) { setRenamingId(null); return; }
+    const newName = renameValue.trim();
     setSessions(prev => {
       const updated = prev.map(s =>
-        s.id === renamingId ? { ...s, name: renameValue.trim() } : s
+        s.id === renamingId ? { ...s, name: newName } : s
       );
       saveSessionsToStorage(sessionsKey, updated);
       return updated;
     });
+    if (user?.googleId) {
+      const session = sessionsRef.current.find(s => s.id === renamingId);
+      if (session) upsertChatSession(user.googleId, { ...session, name: newName });
+    }
     setRenamingId(null);
   };
 
