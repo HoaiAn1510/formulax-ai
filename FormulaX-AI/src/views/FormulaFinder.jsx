@@ -62,11 +62,20 @@ export default function FormulaFinder({
     setMessages([]);
     if (user?.googleId) {
       loadChatSessions(user.googleId).then(cloudSessions => {
-        if (cloudSessions !== null) {
+        if (cloudSessions === null) {
+          // Lỗi kết nối → giữ local
+          setSessions(loadSessionsFromStorage(sessionsKey));
+        } else if (cloudSessions.length > 0) {
+          // Cloud có data → dùng cloud (source of truth)
           setSessions(cloudSessions);
           saveSessionsToStorage(sessionsKey, cloudSessions);
         } else {
-          setSessions(loadSessionsFromStorage(sessionsKey));
+          // Cloud rỗng → upload local sessions lên (lần đầu sync)
+          const localSessions = loadSessionsFromStorage(sessionsKey);
+          if (localSessions.length > 0) {
+            localSessions.forEach(s => upsertChatSession(user.googleId, s));
+            setSessions(localSessions);
+          }
         }
       });
     } else {
