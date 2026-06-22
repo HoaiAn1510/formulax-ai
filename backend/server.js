@@ -100,93 +100,67 @@ const FORMULA_LIST = [
   { id: "ds10-bpt-bac2",              name: "Bất phương trình bậc hai — dấu tam thức",          topic: "Đại số",             grade: 10 },
 ];
 
-const SYSTEM_PROMPT = String.raw`Bạn là FormulaX AI - trợ lý toán học thông minh cho học sinh THPT Việt Nam.
+const SYSTEM_PROMPT = String.raw`Bạn là FormulaX AI — trợ lý toán THPT Việt Nam. Trả lời tiếng Việt, thân thiện.
 
-NHIỆM VỤ CHÍNH:
-1. Xác định công thức phù hợp nhất trong thư viện
-2. Nếu có số liệu cụ thể → TÍNH LUÔN ra đáp số, trình bày từng bước đánh số rõ ràng
-3. Nếu không có số liệu → giải thích khi nào dùng công thức và cách áp dụng
-4. Thân thiện như người anh/chị hướng dẫn em
+NHIỆM VỤ: Xác định công thức → chỉ ra dấu hiệu nhận biết → giải từng bước (nếu có số) hoặc giải thích cách dùng (nếu không có số).
 
-ĐỊNH DẠNG CÔNG THỨC TOÁN (BẮT BUỘC):
-- Dùng $...$ cho công thức inline: $x^2 + 5x + 6 = 0$, $\Delta = b^2 - 4ac$, $\frac{a}{b}$
-- Dùng $$...$$ cho công thức hiển thị riêng dòng: $$V = \frac{4}{3}\pi R^3$$
-- LUÔN dùng LaTeX — KHÔNG dùng ASCII thuần như x^2, sqrt(), pi
+TOÁN: Dùng $...$ (inline) và $$...$$ (block). Không dùng ASCII.
 
-ĐỊNH DẠNG TRÌNH BÀY:
-- Bài toán có tính toán: trình bày **Bước 1:**, **Bước 2:**... mỗi bước trên một dòng riêng
-- Câu hỏi lý thuyết: giải thích ngắn gọn, có thể dùng - bullet list
-- Dùng **in đậm** cho kết quả quan trọng và kết luận cuối
+KHI CÓ CÔNG THỨC, trả lời theo cấu trúc:
+**Dấu hiệu nhận biết:** Dùng khi...
+- [từ khóa / điều kiện đề cho]
+- [yêu cầu tìm gì]
+**Bước 1:** ... **Bước 2:** ... **Kết quả:** ...
 
-DANH SÁCH CÔNG THỨC TRONG THƯ VIỆN (chỉ dùng các ID này):
-${FORMULA_LIST.map(f => `- ${f.id}: ${f.name} | Lớp ${f.grade} | ${f.topic}`).join('\n')}
+CÔNG THỨC THƯ VIỆN — chỉ dùng các ID này:
+${FORMULA_LIST.map(f => `${f.id}: ${f.name}`).join('\n')}
 
-ĐỊNH DẠNG TRẢ LỜI (BẮT BUỘC — KHÔNG dùng JSON, KHÔNG dùng markdown code block):
+ĐỊNH DẠNG TRẢ LỜI (bắt buộc):
 REPLY_START
-[câu trả lời tiếng Việt, nhiều dòng, có LaTeX $...$ và $$...$$]
+[nội dung]
 REPLY_END
-ID:[formulaId hoặc null]
+ID:[id hoặc null]
 
-QUY TẮC:
-- Luôn bắt đầu bằng REPLY_START và kết thúc bằng REPLY_END trên dòng riêng
-- Dòng cuối cùng là ID:tên-id hoặc ID:null
-- Dùng LaTeX thật sự: $\frac{a}{b}$, $\sqrt{x}$, $\geq$, $\leq$, $\pi$, $\infty$, $\Leftrightarrow$
-- CHỈ dùng ID trong danh sách trên
-
-VÍ DỤ MẪU:
-
-Hỏi: "tìm giá trị nhỏ nhất của A = x + 1/x với x > 0"
+VÍ DỤ:
 REPLY_START
-Áp dụng **bất đẳng thức AM-GM**: với $a, b > 0$ thì $\frac{a+b}{2} \geq \sqrt{ab}$.
-**Bước 1:** Đặt $a = x$, $b = \frac{1}{x}$, ta có:
-$$\frac{x + \frac{1}{x}}{2} \geq \sqrt{x \cdot \frac{1}{x}} = 1$$
-**Bước 2:** Suy ra $A = x + \frac{1}{x} \geq 2$.
-**Bước 3:** Dấu bằng xảy ra khi $x = \frac{1}{x} \Leftrightarrow x = 1$.
-**Kết quả:** $\min A = 2$ đạt tại $x = 1$.
-REPLY_END
-ID:null
+**Dấu hiệu nhận biết:** Dùng khi...
+- Đề cho bán kính $R$ của khối cầu/hình cầu
+- Yêu cầu tính thể tích
 
-Hỏi: "đạo hàm y = x³ - 2x² + 5x - 1"
-REPLY_START
-Áp dụng công thức $\left(x^n\right)' = nx^{n-1}$.
-**Bước 1:** Tính đạo hàm từng hạng tử:
-- $\left(x^3\right)' = 3x^2$
-- $\left(2x^2\right)' = 4x$
-- $\left(5x\right)' = 5$, $\left(1\right)' = 0$
-**Bước 2:** Kết quả: $y' = 3x^2 - 4x + 5$.
+Áp dụng: $$V = \frac{4}{3}\pi R^3$$
+**Bước 1:** Thay $R=5$: $V=\frac{4}{3}\pi\cdot125=\frac{500\pi}{3}$
+**Kết quả:** $V\approx523{,}6\text{ cm}^3$
 REPLY_END
-ID:gt12-daoham-basic
-
-Hỏi: "thể tích khối cầu R = 5cm"
-REPLY_START
-Áp dụng công thức:
-$$V = \frac{4}{3}\pi R^3$$
-**Bước 1:** Thay $R = 5$ cm vào công thức.
-**Bước 2:** $V = \frac{4}{3} \times \pi \times 5^3 = \frac{4}{3} \times 125\pi = \frac{500\pi}{3}$
-**Kết quả:** $V \approx 523{,}6 \text{ cm}^3$
-REPLY_END
-ID:hh12-matcau-thetich
-
-Hỏi: "hôm nay ăn gì?"
-REPLY_START
-Mình chỉ giỏi toán thôi bạn ơi! Bạn đang cần ôn công thức hay giải bài toán nào không?
-REPLY_END
-ID:null`;
+ID:hh12-matcau-thetich`;
 
 // Parse định dạng REPLY_START...REPLY_END\nID:xxx
 function parseReplyFormat(text) {
   if (!text) return null;
 
-  const replyMatch = text.match(/REPLY_START\s*([\s\S]*?)\s*REPLY_END/);
   const idMatch = text.match(/^ID:\s*(.+)$/m);
-
-  if (!replyMatch) return null;
-
-  const reply = replyMatch[1].trim();
   const rawId = idMatch ? idMatch[1].trim() : 'null';
   const formulaId = rawId === 'null' ? null : rawId;
 
-  return { reply, formulaId };
+  // Case 1: đúng format REPLY_START...REPLY_END
+  const fullMatch = text.match(/REPLY_START\s*([\s\S]*?)\s*REPLY_END/);
+  if (fullMatch) {
+    return { reply: fullMatch[1].trim(), formulaId };
+  }
+
+  // Case 2: AI bỏ REPLY_START nhưng có REPLY_END
+  const endOnlyMatch = text.match(/^([\s\S]*?)\s*REPLY_END/);
+  if (endOnlyMatch) {
+    return { reply: endOnlyMatch[1].trim(), formulaId };
+  }
+
+  // Case 3: AI bỏ hết markers — clean toàn bộ markers rồi dùng text còn lại
+  const cleaned = text
+    .replace(/REPLY_START\n?/g, '')
+    .replace(/\n?REPLY_END[\s\S]*/g, '')
+    .replace(/^ID:.*$/m, '')
+    .trim();
+
+  return cleaned ? { reply: cleaned, formulaId } : null;
 }
 
 app.post("/api/chat", async (req, res) => {
@@ -217,7 +191,7 @@ app.post("/api/chat", async (req, res) => {
         { role: "user", content: message }
       ],
       temperature: 0.3,
-      max_tokens: 1200,
+      max_tokens: 1800,
     });
 
     const rawText = completion.choices[0].message.content.trim();

@@ -27,6 +27,9 @@ export default function FormulaFinder({
 
   const [messages, setMessages] = useState([]);
   const [query, setQuery] = useState("");
+  const textareaRef = useRef(null);
+  const handleSendRef = useRef(null);
+  const shiftHeldRef = useRef(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
@@ -61,6 +64,26 @@ export default function FormulaFinder({
       chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
     }
   }, [messages, isAnalyzing]);
+
+  // Luôn giữ ref trỏ tới handleSend mới nhất (tránh stale closure)
+  useEffect(() => { handleSendRef.current = handleSend; });
+
+  // Native listener: track Shift thủ công, tránh React synthetic event lag
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const onDown = (e) => {
+      if (e.key === 'Shift') { shiftHeldRef.current = true; return; }
+      if (e.key === 'Enter' && !shiftHeldRef.current && !e.shiftKey) {
+        e.preventDefault();
+        handleSendRef.current(el.value);
+      }
+    };
+    const onUp = (e) => { if (e.key === 'Shift') shiftHeldRef.current = false; };
+    el.addEventListener('keydown', onDown);
+    el.addEventListener('keyup', onUp);
+    return () => { el.removeEventListener('keydown', onDown); el.removeEventListener('keyup', onUp); };
+  }, []);
 
   useEffect(() => {
     if (renamingId && renameInputRef.current) {
@@ -142,12 +165,16 @@ export default function FormulaFinder({
     const updatedMessages = [...messages, userMsg];
     setMessages(updatedMessages);
     setQuery("");
+    if (textareaRef.current) {
+      textareaRef.current.value = "";
+      textareaRef.current.style.height = "auto";
+    }
     if (onAddSearchHistory) onAddSearchHistory(textToSend);
     setIsAnalyzing(true);
     try {
       const historyForAPI = updatedMessages
         .filter(m => !m.isImage && !m.isFile)
-        .slice(-10)
+        .slice(-6)
         .map(m => ({ sender: m.sender, text: m.text }));
       const { reply, formulaId } = await callAI(textToSend, historyForAPI.slice(0, -1));
       const matchedFormula = formulaId ? formulas.find(f => f.id === formulaId) : null;
@@ -583,10 +610,7 @@ export default function FormulaFinder({
 
           {/* Chat input */}
           <div style={{ padding: "12px", borderTop: "1px solid var(--border-slate)", background: "white" }}>
-            <form
-              className="finder-input-container"
-              onSubmit={(e) => { e.preventDefault(); handleSend(query); }}
-            >
+            <div className="finder-input-container">
               <button type="button" onClick={() => setCameraOpen(true)}
                 style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "8px 4px 8px 8px" }}
                 title="Quét đề bài bằng Camera AI"
@@ -600,25 +624,31 @@ export default function FormulaFinder({
                 <Paperclip size={18} />
               </button>
               <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} accept="image/*,.pdf,.txt,.docx" />
-              <input
-                type="text"
+              <textarea
+                ref={textareaRef}
                 className="finder-input-field"
                 placeholder="Hỏi AI về bất kỳ công thức toán nào..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                rows={1}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  e.target.style.height = '1px';
+                  e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+                }}
                 disabled={isAnalyzing}
+                style={{ resize: "none", overflow: "hidden", lineHeight: "1.5" }}
               />
               <button
-                type="submit"
+                type="button"
                 className={`finder-send-btn ${query.trim() ? "active" : ""}`}
                 disabled={isAnalyzing || !query.trim()}
+                onClick={() => handleSend(textareaRef.current?.value || "")}
                 title="Gửi câu hỏi"
               >
                 <Send size={16} />
               </button>
-            </form>
+            </div>
             <div style={{ textAlign: "center", fontSize: "0.7rem", color: "#94a3b8", marginTop: "6px", fontWeight: "600" }}>
-              Powered by Llama 3.3 · Groq · Nhấn Enter để gửi
+              Powered by Llama 3.3 · Groq · Enter để gửi · Shift+Enter xuống dòng
             </div>
           </div>
         </div>
