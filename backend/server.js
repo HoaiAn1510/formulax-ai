@@ -184,7 +184,7 @@ app.post("/api/chat", async (req, res) => {
       }));
 
     const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "llama-3.1-8b-instant",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         ...chatHistory,
@@ -227,7 +227,7 @@ app.post("/api/chat", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    model: "llama-3.3-70b-versatile (Groq)",
+    model: "llama-3.1-8b-instant (Groq)",
     formulasLoaded: FORMULA_LIST.length
   });
 });
