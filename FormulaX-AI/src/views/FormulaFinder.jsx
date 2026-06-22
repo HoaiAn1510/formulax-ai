@@ -683,9 +683,6 @@ export default function FormulaFinder({
                 <Send size={16} />
               </button>
             </div>
-            <div style={{ textAlign: "center", fontSize: "0.7rem", color: "#94a3b8", marginTop: "6px", fontWeight: "600" }}>
-              Powered by Llama 3.3 · Groq · Enter để gửi · Shift+Enter xuống dòng
-            </div>
           </div>
         </div>
       </div>
