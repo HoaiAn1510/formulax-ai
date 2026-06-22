@@ -257,7 +257,7 @@ export default function FormulaFinder({
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="view-container" style={{ padding: "10px", height: "calc(100vh - 120px)", display: "flex", flexDirection: "column" }}>
+    <div className="view-container" style={{ padding: "10px", height: "calc(100vh - 124px)", display: "flex", flexDirection: "column" }}>
 
       {/* Top action row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
@@ -291,6 +291,14 @@ export default function FormulaFinder({
           </button>
         </div>
       </div>
+
+      {/* Backdrop khi sidebar mở trên mobile */}
+      {sidebarOpen && (
+        <div
+          onClick={() => setSidebarOpen(false)}
+          style={{ position: "fixed", inset: 0, zIndex: 299, background: "rgba(0,0,0,0.3)" }}
+        />
+      )}
 
       <div className="chat-layout">
         {/* ─── Session Sidebar ─── */}

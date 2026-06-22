@@ -1341,33 +1341,47 @@
 @media (max-width: 767px) {
   .chat-layout {
     flex-direction: column;
+    position: relative;
   }
+
+  /* Sidebar ẩn mặc định trên mobile */
   .history-sidebar {
-    width: 100%;
-    border: none;
-    box-shadow: none;
-    padding: 8px 0;
-    background: transparent;
-    flex-direction: row;
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none;
-  }
-  .history-sidebar::-webkit-scrollbar {
     display: none;
+    position: fixed;
+    top: 68px;
+    left: 0;
+    right: 0;
+    bottom: 56px;
+    z-index: 300;
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid #E2E8F0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.10);
+    padding: 16px;
+    background: white;
+    flex-direction: column;
+    overflow-y: auto;
+    white-space: normal;
+    gap: 8px;
   }
-  .sidebar-title {
+
+  /* Chỉ hiện khi có class .open */
+  .history-sidebar.open {
     display: flex;
-    align-items: center;
-    font-size: 0.75rem;
-    margin-bottom: 0;
-    margin-right: 8px;
-    white-space: nowrap;
   }
+
+  .sidebar-title {
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+
   .history-item {
-    display: inline-block;
-    padding: 6px 12px;
-    margin-right: 6px;
+    display: block;
+    padding: 8px 12px;
+    margin-right: 0;
+    margin-bottom: 6px;
   }
 }
 
