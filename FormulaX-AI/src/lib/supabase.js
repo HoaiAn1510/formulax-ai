@@ -145,7 +145,7 @@ export async function upsertChatSession(googleId, session) {
     name: session.name,
     messages: session.messages,
     updated_at: new Date().toISOString(),
-  }, { onConflict: "id,google_id" });
+  }, { onConflict: "id" });
   if (error) console.error("[Supabase] upsertChatSession:", error);
 }
 
