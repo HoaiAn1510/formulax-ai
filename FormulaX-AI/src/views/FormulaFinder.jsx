@@ -614,18 +614,6 @@ export default function FormulaFinder({
                           Chi tiết
                         </button>
                       </div>
-                      {msg.related && msg.related.length > 0 && (
-                        <div className="ai-related-section">
-                          <div className="ai-related-title">Gợi ý liên quan:</div>
-                          <div className="ai-related-list">
-                            {msg.related.map((rel) => rel && (
-                              <button key={rel.id} className="ai-related-item" onClick={() => onViewDetail(rel)}>
-                                {rel.name} (Lớp {rel.grade})
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
