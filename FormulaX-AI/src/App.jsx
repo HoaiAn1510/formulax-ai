@@ -37,7 +37,13 @@ export default function App() {
 
   // ─── Preferences ─────────────────────────────────────────────────────────
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("formulax_dark") === "true");
-  const [displayName, setDisplayName] = useState(() => localStorage.getItem("formulax_display_name") || "");
+  const [displayName, setDisplayName] = useState(() => {
+    const saved = localStorage.getItem("formulax_user");
+    const gId = saved ? JSON.parse(saved)?.googleId : null;
+    return (gId && localStorage.getItem(`formulax_display_name_${gId}`))
+      || localStorage.getItem("formulax_display_name")
+      || "";
+  });
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
@@ -48,6 +54,7 @@ export default function App() {
 
   const handleSetDisplayName = (name) => {
     setDisplayName(name);
+    if (user?.googleId) localStorage.setItem(`formulax_display_name_${user.googleId}`, name);
     localStorage.setItem("formulax_display_name", name);
     if (user?.googleId) saveDisplayName(user.googleId, name).catch(console.error);
   };
@@ -93,11 +100,21 @@ export default function App() {
         const storedViewed = localStorage.getItem(`formulax_viewed_${user.googleId}`);
         setViewedFormulaIds(storedViewed ? JSON.parse(storedViewed) : []);
         dataLoadedRef.current = true;
-        // Sync display name từ Supabase (ưu tiên Supabase, fallback localStorage)
+        // Sync display name: ưu tiên Supabase, fallback localStorage (user-specific → shared)
         const nameFromDB = data.displayName;
-        const nameFromLocal = localStorage.getItem("formulax_display_name") || "";
+        const nameFromLocal =
+          localStorage.getItem(`formulax_display_name_${user.googleId}`) ||
+          localStorage.getItem("formulax_display_name") || "";
         const finalName = nameFromDB || nameFromLocal;
-        if (finalName) { setDisplayName(finalName); localStorage.setItem("formulax_display_name", finalName); }
+        if (finalName) {
+          setDisplayName(finalName);
+          localStorage.setItem(`formulax_display_name_${user.googleId}`, finalName);
+          localStorage.setItem("formulax_display_name", finalName);
+          // Upload lên Supabase nếu local có tên mà DB chưa có
+          if (!nameFromDB && nameFromLocal) {
+            saveDisplayName(user.googleId, nameFromLocal).catch(console.error);
+          }
+        }
         // Force sync stats + display name vào Supabase
         saveStats(user.googleId, data.stats, finalName || undefined).catch(console.error);
         // Hiện onboarding nếu user thực sự chưa có dữ liệu nào (kiểm tra Supabase lẫn localStorage)
