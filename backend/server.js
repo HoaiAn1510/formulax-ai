@@ -133,14 +133,30 @@ REPLY_START
 REPLY_END
 ID:hh12-matcau-thetich`;
 
-// Chuẩn hóa ký hiệu LaTeX: \[...\] → $$...$$ và \(...\) → $...$
+// Chuẩn hóa ký hiệu LaTeX để KaTeX render đúng
 function normalizeMath(text) {
   if (!text) return text;
-  return text
-    .replace(/\\\[/g, '$$')
-    .replace(/\\\]/g, '$$')
-    .replace(/\\\(/g, '$')
-    .replace(/\\\)/g, '$');
+
+  // 1. \[...\] block → $$...$$
+  text = text.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
+
+  // 2. \(...\) inline → $...$
+  text = text.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
+
+  // 3. Wrap các dòng LaTeX bare (không có $) với $$...$$
+  text = text.split('\n').map(line => {
+    const t = line.trim();
+    // Bỏ qua: rỗng, đã có $, markdown bullet/header
+    if (!t || t.includes('$') || /^[*#>\-•]/.test(t)) return line;
+    // Dòng bắt đầu bằng lệnh LaTeX: \Delta, \frac, \sqrt...
+    if (/^\\[A-Za-z]/.test(t)) return `$$${t}$$`;
+    // Dòng dạng "x=\frac...", "=\frac...", "x_1=..."
+    if (/^[a-zA-Z_]?\w*\s*=\s*\\/.test(t)) return `$$${t}$$`;
+    if (/^=\\/.test(t)) return `$$${t}$$`;
+    return line;
+  }).join('\n');
+
+  return text;
 }
 
 // Parse định dạng REPLY_START...REPLY_END\nID:xxx
