@@ -178,6 +178,7 @@ app.post("/api/chat", async (req, res) => {
     // Chuyển lịch sử sang format OpenAI-compatible (Groq dùng chuẩn này)
     const chatHistory = history
       .filter(h => h.sender === "user" || h.sender === "bot")
+      .slice(-10)
       .map(h => ({
         role: h.sender === "user" ? "user" : "assistant",
         content: h.text || ""
