@@ -185,7 +185,7 @@ app.post("/api/chat", async (req, res) => {
       }));
 
     const geminiModel = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash",
       systemInstruction: SYSTEM_PROMPT,
       generationConfig: { temperature: 0.3, maxOutputTokens: 1800 },
     });
@@ -209,14 +209,14 @@ app.post("/api/chat", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("[FormulaX Backend] Gemini API error:", error.message);
+    console.error("[FormulaX Backend] Gemini error:", error.status, error.statusText, error.message);
     const status = error.status || error.statusCode || 500;
     let errorMsg = "Không thể kết nối AI";
-    if (status === 429) errorMsg = "Gemini API đã đạt giới hạn request, thử lại sau vài giây";
+    if (status === 429) errorMsg = "AI đang bận, thử lại sau vài giây";
     else if (status === 401 || status === 403) errorMsg = "Gemini API key không hợp lệ";
     res.status(status >= 400 && status < 600 ? status : 500).json({
       error: errorMsg,
-      message: error.message
+      debug: `status=${status} | ${error.message?.slice(0, 200)}`
     });
   }
 });
@@ -225,7 +225,7 @@ app.post("/api/chat", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    model: "gemini-2.0-flash (Google)",
+    model: "gemini-1.5-flash (Google)",
     formulasLoaded: FORMULA_LIST.length
   });
 });
