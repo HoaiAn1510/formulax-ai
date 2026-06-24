@@ -225,7 +225,7 @@ app.post("/api/chat", async (req, res) => {
         ...chatHistory,
         { role: "user", content: message }
       ],
-      temperature: 0.3,
+      temperature: 0.2,
       max_tokens: 1800,
     });
 
