@@ -185,7 +185,7 @@ app.post("/api/chat", async (req, res) => {
       }));
 
     const geminiModel = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.0-flash-lite",
       systemInstruction: SYSTEM_PROMPT,
       generationConfig: { temperature: 0.3, maxOutputTokens: 1800 },
     });
@@ -225,7 +225,7 @@ app.post("/api/chat", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    model: "gemini-1.5-flash (Google)",
+    model: "gemini-2.0-flash-lite (Google)",
     formulasLoaded: FORMULA_LIST.length
   });
 });
