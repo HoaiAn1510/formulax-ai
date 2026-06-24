@@ -133,6 +133,16 @@ REPLY_START
 REPLY_END
 ID:hh12-matcau-thetich`;
 
+// Chuẩn hóa ký hiệu LaTeX: \[...\] → $$...$$ và \(...\) → $...$
+function normalizeMath(text) {
+  if (!text) return text;
+  return text
+    .replace(/\\\[/g, '$$')
+    .replace(/\\\]/g, '$$')
+    .replace(/\\\(/g, '$')
+    .replace(/\\\)/g, '$');
+}
+
 // Parse định dạng REPLY_START...REPLY_END\nID:xxx
 function parseReplyFormat(text) {
   if (!text) return null;
@@ -207,7 +217,7 @@ app.post("/api/chat", async (req, res) => {
     }
 
     res.json({
-      reply: parsed.reply || rawText,
+      reply: normalizeMath(parsed.reply || rawText),
       formulaId: parsed.formulaId || null
     });
 
