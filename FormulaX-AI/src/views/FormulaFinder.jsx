@@ -338,7 +338,7 @@ export default function FormulaFinder({
             fontSize: "0.7rem", fontWeight: "700", color: "#059669"
           }}>
             <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#10B981" }}></div>
-            Llama 3.3 (Groq)
+            GPT-OSS 20B (Groq)
           </div>
 
           <button className="chat-history-toggle" onClick={() => setSidebarOpen(!sidebarOpen)} style={{ marginBottom: 0 }}>
@@ -503,7 +503,7 @@ export default function FormulaFinder({
                   Xin chào! Mình là FormulaX AI
                 </h2>
                 <p style={{ fontSize: "0.85rem", color: "#64748B", lineHeight: "1.5" }}>
-                  Được hỗ trợ bởi <strong>Llama 3.3 · Groq</strong>. Hỏi bất kỳ bài toán nào,
+                  Được hỗ trợ bởi <strong>GPT-OSS 20B · Groq</strong>. Hỏi bất kỳ bài toán nào,
                   mình sẽ giải từng bước và gợi ý công thức phù hợp.
                 </p>
                 <div className="finder-suggestions-grid">
