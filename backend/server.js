@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import Groq from "groq-sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -18,7 +18,7 @@ const allowedOrigins = [
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Danh sách toàn bộ công thức trong hệ thống FormulaX
 const FORMULA_LIST = [
@@ -171,31 +171,28 @@ app.post("/api/chat", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    if (!process.env.GROQ_API_KEY) {
-      return res.status(500).json({ error: "GROQ_API_KEY chưa được cấu hình trong file .env" });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: "GEMINI_API_KEY chưa được cấu hình trong file .env" });
     }
 
-    // Chuyển lịch sử sang format OpenAI-compatible (Groq dùng chuẩn này)
+    // Chuyển lịch sử sang format Gemini (role: "user" | "model")
     const chatHistory = history
       .filter(h => h.sender === "user" || h.sender === "bot")
       .slice(-10)
       .map(h => ({
-        role: h.sender === "user" ? "user" : "assistant",
-        content: h.text || ""
+        role: h.sender === "user" ? "user" : "model",
+        parts: [{ text: h.text || "" }]
       }));
 
-    const completion = await groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        ...chatHistory,
-        { role: "user", content: message }
-      ],
-      temperature: 0.3,
-      max_tokens: 1800,
+    const geminiModel = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash",
+      systemInstruction: SYSTEM_PROMPT,
+      generationConfig: { temperature: 0.3, maxOutputTokens: 1800 },
     });
 
-    const rawText = completion.choices[0].message.content.trim();
+    const chat = geminiModel.startChat({ history: chatHistory });
+    const result = await chat.sendMessage(message);
+    const rawText = result.response.text().trim();
 
     // Parse định dạng REPLY_START...REPLY_END\nID:xxx
     const parsed = parseReplyFormat(rawText) || { reply: rawText, formulaId: null };
@@ -212,11 +209,11 @@ app.post("/api/chat", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("[FormulaX Backend] Groq API error:", error.message);
+    console.error("[FormulaX Backend] Gemini API error:", error.message);
     const status = error.status || error.statusCode || 500;
     let errorMsg = "Không thể kết nối AI";
-    if (status === 429) errorMsg = "Groq API đã đạt giới hạn request, thử lại sau vài giây";
-    else if (status === 401) errorMsg = "Groq API key không hợp lệ";
+    if (status === 429) errorMsg = "Gemini API đã đạt giới hạn request, thử lại sau vài giây";
+    else if (status === 401 || status === 403) errorMsg = "Gemini API key không hợp lệ";
     res.status(status >= 400 && status < 600 ? status : 500).json({
       error: errorMsg,
       message: error.message
@@ -228,7 +225,7 @@ app.post("/api/chat", async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    model: "openai/gpt-oss-20b (Groq)",
+    model: "gemini-2.0-flash (Google)",
     formulasLoaded: FORMULA_LIST.length
   });
 });
