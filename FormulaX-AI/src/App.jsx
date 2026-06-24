@@ -12,6 +12,7 @@ import {
   addSearchHistoryEntry,
   saveQuizDaily,
   saveDisplayName,
+  loadFlashcardDecks, upsertFlashcardDeck, deleteFlashcardDeck as deleteFlashcardDeckDB,
 } from "./lib/supabase";
 
 import Header from "./components/Header";
@@ -66,6 +67,8 @@ export default function App() {
   const [remainingQuizzes, setRemainingQuizzes] = useState(10);
   const [searchHistory, setSearchHistory]     = useState([]);
   const [viewedFormulaIds, setViewedFormulaIds] = useState([]);
+  const [flashcardDecks, setFlashcardDecks] = useState([]);
+  const [addFormulaModal, setAddFormulaModal] = useState(null); // { formula } | null
 
   // Dùng ref để debounce save stats và track trạng thái đã load xong chưa
   const statsTimer     = useRef(null);
@@ -100,6 +103,10 @@ export default function App() {
         const storedViewed = localStorage.getItem(`formulax_viewed_${user.googleId}`);
         setViewedFormulaIds(storedViewed ? JSON.parse(storedViewed) : []);
         dataLoadedRef.current = true;
+        // Load flashcard decks from Supabase
+        loadFlashcardDecks(user.googleId).then(cloudDecks => {
+          if (cloudDecks !== null) setFlashcardDecks(cloudDecks);
+        });
         // Sync display name: ưu tiên Supabase, fallback localStorage (user-specific → shared)
         const nameFromDB = data.displayName;
         const nameFromLocal =
@@ -207,8 +214,12 @@ export default function App() {
   };
 
   const handleQuickFlashcard = (formula) => {
-    setActiveTab("flashcard");
-    alert(`Đã chuyển đến Flashcard — ôn tập "${formula.name}"!`);
+    const favoriteDecks = flashcardDecks.filter(d => d.type === "favorite");
+    if (favoriteDecks.length === 0) {
+      setActiveTab("flashcard");
+    } else {
+      setAddFormulaModal({ formula });
+    }
   };
 
   const handleResetStats = async () => {
@@ -231,6 +242,55 @@ export default function App() {
       await saveStats(user.googleId, stats).catch(console.error);
     }
     logout();
+  };
+
+  // ─── Flashcard deck handlers ──────────────────────────────────────────────
+
+  const handleAddFlashcardDeck = (deck) => {
+    setFlashcardDecks(prev => [...prev, deck]);
+    if (user?.googleId) upsertFlashcardDeck(user.googleId, deck).catch(console.error);
+  };
+
+  const handleDeleteFlashcardDeck = (deckId) => {
+    setFlashcardDecks(prev => prev.filter(d => d.id !== deckId));
+    if (user?.googleId) deleteFlashcardDeckDB(user.googleId, deckId).catch(console.error);
+  };
+
+  const handleRenameFlashcardDeck = (deckId, newName) => {
+    setFlashcardDecks(prev => {
+      const updated = prev.map(d => d.id === deckId ? { ...d, name: newName, updatedAt: new Date().toISOString() } : d);
+      if (user?.googleId) {
+        const deck = updated.find(d => d.id === deckId);
+        if (deck) upsertFlashcardDeck(user.googleId, deck).catch(console.error);
+      }
+      return updated;
+    });
+  };
+
+  const handleAddFormulaToFavoriteDeck = (formulaId, deckId) => {
+    setFlashcardDecks(prev => {
+      const updated = prev.map(d => {
+        if (d.id !== deckId) return d;
+        if (d.formulaIds.includes(formulaId)) return d;
+        const updatedDeck = { ...d, formulaIds: [...d.formulaIds, formulaId], updatedAt: new Date().toISOString() };
+        if (user?.googleId) upsertFlashcardDeck(user.googleId, updatedDeck).catch(console.error);
+        return updatedDeck;
+      });
+      return updated;
+    });
+    setAddFormulaModal(null);
+  };
+
+  const handleRemoveFormulaFromDeck = (formulaId, deckId) => {
+    setFlashcardDecks(prev => {
+      const updated = prev.map(d => {
+        if (d.id !== deckId) return d;
+        const updatedDeck = { ...d, formulaIds: d.formulaIds.filter(id => id !== formulaId), updatedAt: new Date().toISOString() };
+        if (user?.googleId) upsertFlashcardDeck(user.googleId, updatedDeck).catch(console.error);
+        return updatedDeck;
+      });
+      return updated;
+    });
   };
 
   // ─── Onboarding ───────────────────────────────────────────────────────────
@@ -316,7 +376,12 @@ export default function App() {
             isPremium={isPremium}
             stats={stats}
             setStats={setStats}
-            viewedFormulaIds={viewedFormulaIds}
+            user={user}
+            decks={flashcardDecks}
+            onAddDeck={handleAddFlashcardDeck}
+            onDeleteDeck={handleDeleteFlashcardDeck}
+            onRenameDeck={handleRenameFlashcardDeck}
+            onRemoveFormula={handleRemoveFormulaFromDeck}
           />
         );
       case "quiz":
@@ -404,6 +469,31 @@ export default function App() {
           onSaveNote={handleSaveNote}
           onToggleBookmark={handleToggleBookmark}
         />
+      )}
+
+      {addFormulaModal && (
+        <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:9999, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px" }}
+          onClick={() => setAddFormulaModal(null)}>
+          <div style={{ background:"white", borderRadius:"16px", padding:"24px", width:"100%", maxWidth:"400px", boxShadow:"0 20px 60px rgba(0,0,0,0.3)" }}
+            onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize:"1.1rem", fontWeight:"800", color:"#1E3A5F", marginBottom:"4px" }}>Thêm vào bộ yêu thích</h3>
+            <p style={{ fontSize:"0.8rem", color:"#64748B", marginBottom:"16px" }}>Chọn bộ để thêm <strong>"{addFormulaModal.formula.name}"</strong></p>
+            <div style={{ display:"flex", flexDirection:"column", gap:"8px", maxHeight:"300px", overflowY:"auto" }}>
+              {flashcardDecks.filter(d => d.type === "favorite").map(deck => (
+                <button key={deck.id}
+                  onClick={() => handleAddFormulaToFavoriteDeck(addFormulaModal.formula.id, deck.id)}
+                  style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"12px 16px", border:"1.5px solid #E2E8F0", borderRadius:"10px", background:"white", cursor:"pointer", textAlign:"left", fontSize:"0.9rem", fontWeight:"600", color:"#1E3A5F" }}>
+                  <span>{deck.name}</span>
+                  <span style={{ fontSize:"0.75rem", color:"#94A3B8" }}>{deck.formulaIds.length} công thức</span>
+                </button>
+              ))}
+            </div>
+            <button onClick={() => setAddFormulaModal(null)}
+              style={{ marginTop:"16px", width:"100%", padding:"10px", border:"1.5px solid #E2E8F0", borderRadius:"10px", background:"white", cursor:"pointer", fontSize:"0.85rem", color:"#64748B", fontWeight:"600" }}>
+              Huỷ
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

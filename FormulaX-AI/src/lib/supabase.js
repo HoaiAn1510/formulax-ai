@@ -154,3 +154,44 @@ export async function deleteChatSession(googleId, sessionId) {
     .eq("google_id", googleId).eq("id", sessionId);
   if (error) console.error("[Supabase] deleteChatSession:", error);
 }
+
+// ─── Flashcard Decks ─────────────────────────────────────────────────────────
+
+export async function loadFlashcardDecks(googleId) {
+  const { data, error } = await supabase
+    .from("flashcard_decks")
+    .select("*")
+    .eq("google_id", googleId)
+    .order("created_at", { ascending: true });
+  if (error) { console.error("[Supabase] loadFlashcardDecks:", error); return null; }
+  return (data || []).map(row => ({
+    id: row.id,
+    type: row.type,
+    name: row.name,
+    topic: row.topic,
+    grade: row.grade,
+    formulaIds: row.formula_ids || [],
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
+}
+
+export async function upsertFlashcardDeck(googleId, deck) {
+  const { error } = await supabase.from("flashcard_decks").upsert({
+    id: deck.id,
+    google_id: googleId,
+    name: deck.name,
+    type: deck.type,
+    formula_ids: deck.formulaIds,
+    topic: deck.topic || null,
+    grade: deck.grade || null,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "id" });
+  if (error) console.error("[Supabase] upsertFlashcardDeck:", error);
+}
+
+export async function deleteFlashcardDeck(googleId, deckId) {
+  const { error } = await supabase.from("flashcard_decks").delete()
+    .eq("google_id", googleId).eq("id", deckId);
+  if (error) console.error("[Supabase] deleteFlashcardDeck:", error);
+}
