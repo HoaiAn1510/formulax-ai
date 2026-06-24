@@ -233,5 +233,5 @@ app.get("/api/health", (req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 FormulaX AI Backend đang chạy tại http://localhost:${PORT}`);
   console.log(`📚 Đã tải ${FORMULA_LIST.length} công thức vào context AI`);
-  console.log(`🔑 Groq API Key: ${process.env.GROQ_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}\n`);
+  console.log(`🔑 Gemini API Key: ${process.env.GEMINI_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}\n`);
 });
