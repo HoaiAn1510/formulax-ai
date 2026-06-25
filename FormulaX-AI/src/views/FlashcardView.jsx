@@ -13,43 +13,63 @@ const GRADES = ["Tất cả", "Lớp 10", "Lớp 11", "Lớp 12"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function getFilteredFormulas(formulas, topic, grade) {
+function getFilteredFormulas(formulas, topics, grades) {
   return formulas.filter(f => {
-    const matchTopic = !topic || topic === "Tất cả" || f.topic === topic;
-    const matchGrade = !grade || grade === "Tất cả" || f.grade === parseInt(grade.replace("Lớp ", ""));
+    const matchTopic = topics.length === 0 || topics.includes(f.topic);
+    const matchGrade = grades.length === 0 || grades.includes(`Lớp ${f.grade}`);
     return matchTopic && matchGrade;
   });
 }
 
-function buildDeckName(topic, grade) {
-  const t = (!topic || topic === "Tất cả") ? "Tất cả" : topic;
-  const g = (!grade || grade === "Tất cả") ? null : grade;
-  if (g) return `${t} · ${g}`;
-  return t;
+function buildDeckName(topics, grades) {
+  const tLabel = topics.length === 0 ? "Tất cả" : topics.join(" & ");
+  const gLabel = grades.length === 0 ? null : grades.join(" & ");
+  return gLabel ? `${tLabel} · ${gLabel}` : tLabel;
 }
 
 // ─── Create Filtered Deck Modal ───────────────────────────────────────────────
 
 function CreateFilteredDeckModal({ formulas, onClose, onConfirm }) {
-  const [selTopic, setSelTopic] = useState("Tất cả");
-  const [selGrade, setSelGrade] = useState("Tất cả");
+  const [selTopics, setSelTopics] = useState([]);  // empty = Tất cả
+  const [selGrades, setSelGrades] = useState([]);  // empty = Tất cả
 
-  const matched = getFilteredFormulas(formulas, selTopic, selGrade);
+  const matched = getFilteredFormulas(formulas, selTopics, selGrades);
+
+  const toggleTopic = (t) => {
+    if (t === "Tất cả") { setSelTopics([]); return; }
+    setSelTopics(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+  };
+
+  const toggleGrade = (g) => {
+    if (g === "Tất cả") { setSelGrades([]); return; }
+    setSelGrades(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g]);
+  };
+
+  const isTopicActive = (t) => t === "Tất cả" ? selTopics.length === 0 : selTopics.includes(t);
+  const isGradeActive = (g) => g === "Tất cả" ? selGrades.length === 0 : selGrades.includes(g);
 
   const handleCreate = () => {
     const now = new Date().toISOString();
     const deck = {
       id: Date.now().toString(),
       type: "filtered",
-      name: buildDeckName(selTopic, selGrade),
-      topic: selTopic === "Tất cả" ? null : selTopic,
-      grade: selGrade === "Tất cả" ? null : parseInt(selGrade.replace("Lớp ", "")),
+      name: buildDeckName(selTopics, selGrades),
+      topic: selTopics.length === 1 ? selTopics[0] : null,
+      grade: selGrades.length === 1 ? parseInt(selGrades[0].replace("Lớp ", "")) : null,
       formulaIds: matched.map(f => f.id),
       createdAt: now,
       updatedAt: now,
     };
     onConfirm(deck);
   };
+
+  const chipStyle = (active) => ({
+    padding:"6px 14px", borderRadius:"20px", fontSize:"0.8rem", fontWeight:"600",
+    border: active ? "1.5px solid #3B82F6" : "1.5px solid #E2E8F0",
+    background: active ? "#EFF6FF" : "white",
+    color: active ? "#3B82F6" : "#64748B",
+    cursor:"pointer", transition:"all 0.15s",
+  });
 
   return (
     <div
@@ -61,46 +81,26 @@ function CreateFilteredDeckModal({ formulas, onClose, onConfirm }) {
         onClick={e => e.stopPropagation()}
       >
         <h3 style={{ fontSize:"1.1rem", fontWeight:"800", color:"#1E3A5F", marginBottom:"4px" }}>Tạo bộ thẻ theo chủ đề</h3>
-        <p style={{ fontSize:"0.8rem", color:"#64748B", marginBottom:"20px" }}>Chọn chủ đề và lớp để tạo bộ thẻ tự động</p>
+        <p style={{ fontSize:"0.8rem", color:"#64748B", marginBottom:"20px" }}>Chọn nhiều chủ đề và lớp để tạo bộ thẻ tự động</p>
 
-        {/* Topic chips */}
+        {/* Topic chips — multi-select */}
         <div style={{ marginBottom:"16px" }}>
           <p style={{ fontSize:"0.8rem", fontWeight:"700", color:"#1E3A5F", marginBottom:"8px" }}>Chủ đề</p>
           <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
             {TOPICS.map(t => (
-              <button
-                key={t}
-                onClick={() => setSelTopic(t)}
-                style={{
-                  padding:"6px 14px", borderRadius:"20px", fontSize:"0.8rem", fontWeight:"600",
-                  border: selTopic === t ? "1.5px solid #3B82F6" : "1.5px solid #E2E8F0",
-                  background: selTopic === t ? "#EFF6FF" : "white",
-                  color: selTopic === t ? "#3B82F6" : "#64748B",
-                  cursor:"pointer", transition:"all 0.15s",
-                }}
-              >
+              <button key={t} onClick={() => toggleTopic(t)} style={chipStyle(isTopicActive(t))}>
                 {t}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Grade chips */}
+        {/* Grade chips — multi-select */}
         <div style={{ marginBottom:"20px" }}>
           <p style={{ fontSize:"0.8rem", fontWeight:"700", color:"#1E3A5F", marginBottom:"8px" }}>Lớp</p>
           <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
             {GRADES.map(g => (
-              <button
-                key={g}
-                onClick={() => setSelGrade(g)}
-                style={{
-                  padding:"6px 14px", borderRadius:"20px", fontSize:"0.8rem", fontWeight:"600",
-                  border: selGrade === g ? "1.5px solid #3B82F6" : "1.5px solid #E2E8F0",
-                  background: selGrade === g ? "#EFF6FF" : "white",
-                  color: selGrade === g ? "#3B82F6" : "#64748B",
-                  cursor:"pointer", transition:"all 0.15s",
-                }}
-              >
+              <button key={g} onClick={() => toggleGrade(g)} style={chipStyle(isGradeActive(g))}>
                 {g}
               </button>
             ))}
