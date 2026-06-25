@@ -6,6 +6,25 @@ import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSes
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
+const MATH_KEYWORDS = [
+  "tính", "giải", "công thức", "phương trình", "đạo hàm",
+  "tích phân", "logarit", "hình", "góc", "diện tích", "thể tích",
+  "delta", "nghiệm", "bất phương trình", "sin", "cos", "tan",
+  "lim", "log", "đồ thị", "hàm số", "toán", "cấp số",
+  "xác suất", "tổ hợp", "chỉnh hợp", "nhị thức", "vectơ",
+  "tọa độ", "đường thẳng", "đường tròn", "mặt phẳng",
+  "nguyên hàm", "giới hạn", "căn", "lũy thừa", "cực trị",
+  "bài toán", "chứng minh", "định lý", "số phức", "parabol",
+  "tiếp tuyến", "bán kính", "chu vi", "tổng", "hiệu", "tích", "thương"
+];
+
+const isMathRelated = (msg) => {
+  if (/\d/.test(msg)) return true;
+  if (/[+\-*/^=√∑∫∆]/.test(msg)) return true;
+  const lower = msg.toLowerCase();
+  return MATH_KEYWORDS.some(k => lower.includes(k));
+};
+
 function loadSessionsFromStorage(key) {
   try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch { return []; }
 }
@@ -200,6 +219,16 @@ export default function FormulaFinder({
       textareaRef.current.style.height = "auto";
     }
     if (onAddSearchHistory) onAddSearchHistory(textToSend);
+
+    if (!isMathRelated(textToSend)) {
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        sender: "bot",
+        text: "Mình chỉ hỗ trợ các câu hỏi liên quan đến toán học THPT thôi nhé! Bạn thử hỏi về công thức, bài toán, hoặc giải phương trình xem."
+      }]);
+      return;
+    }
+
     setIsAnalyzing(true);
     try {
       const historyForAPI = updatedMessages

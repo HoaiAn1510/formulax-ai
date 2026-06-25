@@ -112,6 +112,8 @@ KHI CÓ CÔNG THỨC, trả lời theo cấu trúc:
 - [yêu cầu tìm gì]
 **Bước 1:** ... **Bước 2:** ... **Kết quả:** ...
 
+NGOÀI TOÁN: Nếu câu hỏi hoàn toàn không liên quan đến toán học, từ chối lịch sự trong 1 câu và trả ID:null.
+
 CÔNG THỨC THƯ VIỆN — chỉ dùng các ID này:
 ${FORMULA_LIST.map(f => `${f.id}: ${f.name}`).join('\n')}
 
