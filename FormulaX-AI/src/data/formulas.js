@@ -635,7 +635,7 @@ export const formulas = [
     topic: "Đại số",
     grade: 11,
     latex: "\\begin{aligned}\\sin 2a &= 2\\sin a\\cos a \\\\ \\cos 2a &= \\cos^2 a - \\sin^2 a \\\\ &= 2\\cos^2 a - 1 = 1 - 2\\sin^2 a\\end{aligned}",
-    explanation: "Công thức nhân đôi — trường hợp đặc biệt của công thức cộng khi $\\alpha = \\beta = a$.\nTrong đó:\n- $a$: Góc bất kỳ (tính bằng radian hoặc độ).\n- $k$: Số nguyên bất kỳ ($k \\in \\mathbb{Z}$).\n\n$$\\sin 2a = 2\\sin a \\cos a$$\n$$\\cos 2a = \\cos^2 a - \\sin^2 a = 1 - 2\\sin^2 a = 2\\cos^2 a - 1$$\n$$\\tan 2a = \\frac{2\\tan a}{1 - \\tan^2 a} \\quad \\left(a \\neq \\frac{\\pi}{4} + \\frac{k\\pi}{2}\\right)$$\n\n**Ứng dụng:** Rút gọn biểu thức, giải phương trình, tính tích phân.",
+    explanation: "Công thức nhân đôi — trường hợp đặc biệt của công thức cộng khi $\\alpha = \\beta = a$.\nTrong đó:\n- $a$: Góc bất kỳ (tính bằng radian hoặc độ).\n- $k$: Số nguyên bất kỳ ($k \\in \\mathbb{Z}$).\n\n$$\\begin{aligned}\\sin 2a &= 2\\sin a \\cos a \\\\ \\cos 2a &= \\cos^2 a - \\sin^2 a \\\\ &= 1 - 2\\sin^2 a = 2\\cos^2 a - 1 \\\\ \\tan 2a &= \\dfrac{2\\tan a}{1 - \\tan^2 a} \\quad \\left(a \\neq \\dfrac{\\pi}{4} + \\dfrac{k\\pi}{2}\\right)\\end{aligned}$$\n\n**Ứng dụng:** Rút gọn biểu thức, giải phương trình, tính tích phân.",
     example: "Tính $\\sin 2a$ biết $\\sin a = \\dfrac{3}{5}$ và $a \\in \\left(0; \\dfrac{\\pi}{2}\\right)$.\n\n**Lời giải:**\n- $\\cos a = \\sqrt{1 - \\sin^2 a} = \\sqrt{1 - \\frac{9}{25}} = \\frac{4}{5}$ (dương vì $a$ ở góc phần tư I).\n- $\\sin 2a = 2 \\cdot \\frac{3}{5} \\cdot \\frac{4}{5} = \\frac{24}{25}$",
     tags: ["Lượng giác", "Nhân đôi", "Công thức biến đổi"],
     difficulty: "Trung bình",

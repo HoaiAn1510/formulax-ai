@@ -2402,7 +2402,7 @@
 /* 3D Flip Card Styles */
 .card-scene {
   width: 100%;
-  height: 320px;
+  height: 380px;
   perspective: 1000px;
   cursor: pointer;
   margin-bottom: var(--sp-2);
@@ -2432,6 +2432,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  overflow: hidden;
   box-shadow: 0 10px 25px -5px rgba(30, 58, 95, 0.08), 0 8px 16px -6px rgba(30, 58, 95, 0.04);
   border: 1px solid var(--border-slate);
   background: white;
@@ -2476,10 +2477,13 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--sp-4);
+  gap: var(--sp-3);
   width: 100%;
   flex: 1;
-  justify-content: center;
+  min-height: 0;
+  justify-content: flex-start;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .formula-display-box {
@@ -2490,6 +2494,10 @@
   align-items: center;
   justify-content: center;
   min-height: 70px;
+  max-height: 200px;
+  overflow-x: auto;
+  overflow-y: auto;
+  flex-shrink: 0;
   border: 1px solid #e2e8f0;
 }
 

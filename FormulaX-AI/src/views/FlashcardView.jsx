@@ -571,7 +571,7 @@ export default function FlashcardView({
                   <div className="formula-display-box" style={{ width:"100%" }}>
                     <MathElement math={currentCard.latex} block={true} />
                   </div>
-                  <div style={{ fontSize:"0.8rem", color:"#475569", textAlign:"left", width:"100%", maxHeight:"100px", overflowY:"auto" }}>
+                  <div style={{ fontSize:"0.8rem", color:"#475569", textAlign:"left", width:"100%", overflowX:"auto" }}>
                     <strong>Giải thích:</strong>
                     <div style={{ marginTop:"2px" }}>
                       <RichTextRenderer text={currentCard.explanation} />
