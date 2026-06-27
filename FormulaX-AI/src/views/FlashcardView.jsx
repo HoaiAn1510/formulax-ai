@@ -4,7 +4,7 @@ import {
   Plus, FileDown, Lock, ChevronRight, Book, HelpCircle, BarChart3, Clock,
   Eye, Heart, Pencil, Trash2, X, Check, BookOpen, Star,
 } from "lucide-react";
-import { MathElement } from "../utils/katexHelper";
+import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -573,8 +573,8 @@ export default function FlashcardView({
                   </div>
                   <div style={{ fontSize:"0.8rem", color:"#475569", textAlign:"left", width:"100%", maxHeight:"100px", overflowY:"auto" }}>
                     <strong>Giải thích:</strong>
-                    <div style={{ whiteSpace:"pre-line", marginTop:"2px" }}>
-                      {currentCard.explanation.replace(/\$/g, "")}
+                    <div style={{ marginTop:"2px" }}>
+                      <RichTextRenderer text={currentCard.explanation} />
                     </div>
                   </div>
                 </div>
