@@ -33,7 +33,7 @@ export default function App() {
   const { user, logout, isLoggedIn } = useAuth();
 
   const [activeTab, setActiveTab]   = useState("dashboard");
-  const [isPremium, setIsPremium]   = useState(false);
+  const [isPremium, setIsPremium]   = useState(() => localStorage.getItem("formulax_premium") === "true");
   const [selectedFormula, setSelectedFormula] = useState(null);
   const [isLoadingData, setIsLoadingData]     = useState(false);
 
@@ -232,6 +232,10 @@ export default function App() {
       await resetStats(user.googleId).catch(console.error);
     }
   };
+
+  useEffect(() => {
+    localStorage.setItem("formulax_premium", isPremium);
+  }, [isPremium]);
 
   // Flush stats ngay lập tức rồi mới logout — tránh debounce bị cancel
   const handleLogout = async () => {
