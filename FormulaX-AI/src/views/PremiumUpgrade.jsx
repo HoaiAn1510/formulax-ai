@@ -60,24 +60,6 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
     { name: "Xuất PDF/Ảnh Flashcard", free: "Khóa", premium: "Tải về chất lượng cao" }
   ];
 
-  const testimonials = [
-    {
-      quote: "Nhờ sử dụng gói Premium để ôn luyện flashcard hằng ngày và giải các dạng bài tập bằng Finder AI, mình đã tự tin thuộc lòng toàn bộ công thức Hình học và đạt 9.2 điểm môn Toán THPTQG.",
-      author: "Lê Minh Đức",
-      badge: "Đỗ ĐH Ngoại Thương"
-    },
-    {
-      quote: "Giao diện trực quan dễ học, đặc biệt là tính năng trắc nghiệm tự điền đáp án giúp mình sửa được lỗi sai ngay lập tức. Cực kỳ khuyên dùng cho các bạn sĩ tử đang ôn thi THPT Quốc gia.",
-      author: "Mai Thảo Vy",
-      badge: "Lớp 12 Chuyên Toán"
-    },
-    {
-      quote: "Finder AI trả kết quả siêu nhanh, dịch nghĩa LaTeX cực chuẩn và công thức được lưu gọn gàng. Gói 49k quá rẻ so với những lợi ích nhận được để chuẩn bị cho kỳ thi sắp tới.",
-      author: "Nguyễn Hoàng Nam",
-      badge: "Đỗ ĐH Bách Khoa"
-    }
-  ];
-
   const faqs = [
     {
       q: "Tôi có thể hủy gói đăng ký bất cứ lúc nào không?",
@@ -348,33 +330,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
           </div>
         </div>
 
-        {/* Section 7: Testimonials */}
-        <div>
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1E3A5F", margin: 0 }}>
-              Học sinh nói gì về Premium?
-            </h2>
-            <p style={{ fontSize: "0.8rem", color: "#64748B", marginTop: "4px" }}>Chia sẻ thực tế từ các học sinh đã ôn luyện</p>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "16px" }} className="goals-grid">
-            {testimonials.map((t, idx) => (
-              <div key={idx} className="testimonial-card" style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", backgroundColor: "white", borderRadius: "12px", border: "1px solid #E2E8F0" }}>
-                <p style={{ fontSize: "0.8rem", color: "#475569", lineHeight: "1.5", margin: 0, fontStyle: "italic" }}>
-                  "{t.quote}"
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "4px" }}>
-                  <Sparkles size={12} style={{ color: "#F59E0B" }} />
-                  <div>
-                    <span style={{ fontSize: "0.8rem", fontWeight: "800", color: "#1E3A5F" }}>{t.author}</span>
-                    <span style={{ fontSize: "0.7rem", color: "#64748B", marginLeft: "6px" }}>— {t.badge}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Section 8: FAQs Accordion */}
+        {/* Section 7: FAQs Accordion */}
         <div>
           <h2 className="section-title" style={{ justifyContent: "center", fontSize: "1.15rem", fontWeight: "800" }}>Câu hỏi thường gặp</h2>
           <div className="faq-accordion">
