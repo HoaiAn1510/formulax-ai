@@ -405,6 +405,7 @@ export default function App() {
             formulas={formulas}
             setActiveTab={setActiveTab}
             onViewDetail={handleViewDetail}
+            isPremium={isPremium}
           />
         );
       case "premium":

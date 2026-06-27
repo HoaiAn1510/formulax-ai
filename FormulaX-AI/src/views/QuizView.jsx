@@ -23,6 +23,7 @@ export default function QuizView({
   const [questions, setQuestions] = useState([]);
   const [currentQIdx, setCurrentQIdx] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
+  const [fillInputs, setFillInputs] = useState({});
   const [score, setScore] = useState(0);
   const [failedQuestions, setFailedQuestions] = useState([]);
   
@@ -120,6 +121,7 @@ export default function QuizView({
     setQuestions(questionsWithShuffledOptions);
     setCurrentQIdx(0);
     setUserAnswers({});
+    setFillInputs({});
     setScore(0);
     setFailedQuestions([]);
     
@@ -135,6 +137,14 @@ export default function QuizView({
     
     setQuizState("active");
   };
+
+  // True if question at idx should be fill-in style
+  const isFillQuestion = (idx) =>
+    quizType === "fill-in" || (quizType === "hybrid" && idx % 2 === 1);
+
+  // Normalize strings for fill-in comparison
+  const normalizeAnswer = (s) =>
+    (s || "").trim().toLowerCase().replace(/\s+/g, "").replace(/π/g, "pi").replace(/√/g, "sqrt");
 
   const handleSelectOption = (option) => {
     setUserAnswers(prev => ({
@@ -158,21 +168,43 @@ export default function QuizView({
   const handleSubmitQuizAuto = () => {
     let finalScore = 0;
     const failedList = [];
-    
+
     questions.forEach((q, idx) => {
-      const selected = userAnswers[idx];
-      if (selected && selected.isCorrect) {
-        finalScore += 1;
+      const correctOpt = q.options.find(o => o.isCorrect);
+      if (isFillQuestion(idx)) {
+        const userInput = fillInputs[idx] || "";
+        const isCorrect = userInput.trim() !== "" &&
+          normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
+        if (isCorrect) {
+          finalScore += 1;
+        } else {
+          failedList.push({
+            questionText: q.text,
+            userAnswer: userInput || "Bỏ qua",
+            userAnswerText: userInput || "Chưa trả lời",
+            correctAnswer: correctOpt?.letter || "",
+            correctAnswerText: correctOpt?.text || "",
+            explanation: q.explanation,
+            wasSkipped: !userInput.trim(),
+            isFillIn: true,
+          });
+        }
       } else {
-        failedList.push({
-          questionText: q.text,
-          userAnswer: selected ? selected.letter : "Bỏ qua",
-          userAnswerText: selected ? selected.text : "Chưa trả lời",
-          correctAnswer: q.options.find(o => o.isCorrect).letter,
-          correctAnswerText: q.options.find(o => o.isCorrect).text,
-          explanation: q.explanation,
-          wasSkipped: !selected
-        });
+        const selected = userAnswers[idx];
+        if (selected && selected.isCorrect) {
+          finalScore += 1;
+        } else {
+          failedList.push({
+            questionText: q.text,
+            userAnswer: selected ? selected.letter : "Bỏ qua",
+            userAnswerText: selected ? selected.text : "Chưa trả lời",
+            correctAnswer: correctOpt?.letter || "",
+            correctAnswerText: correctOpt?.text || "",
+            explanation: q.explanation,
+            wasSkipped: !selected,
+            isFillIn: false,
+          });
+        }
       }
     });
 
@@ -199,7 +231,9 @@ export default function QuizView({
   };
 
   const handleSubmitQuiz = () => {
-    const unansweredCount = questions.length - Object.keys(userAnswers).length;
+    const unansweredCount = questions.filter((_, idx) =>
+      isFillQuestion(idx) ? !fillInputs[idx]?.trim() : !userAnswers[idx]
+    ).length;
     if (unansweredCount > 0) {
       const confirmSubmit = window.confirm(`Bạn còn ${unansweredCount} câu hỏi chưa trả lời. Bạn có chắc chắn muốn nộp bài?`);
       if (!confirmSubmit) return;
@@ -558,7 +592,7 @@ export default function QuizView({
             
             <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "700" }}>
               <span>Câu hỏi {currentQIdx + 1} / {questions.length}</span>
-              <span>Đã trả lời: {Object.keys(userAnswers).length} / {questions.length}</span>
+              <span>Đã trả lời: {questions.filter((_, i) => isFillQuestion(i) ? !!fillInputs[i]?.trim() : !!userAnswers[i]).length} / {questions.length}</span>
             </div>
           </div>
 
@@ -567,22 +601,46 @@ export default function QuizView({
               <RichTextRenderer text={currentQ.text} />
             </div>
 
-            <div className="quiz-options-list">
-              {currentQ.options.map((option) => {
-                const isSelected = userAnswers[currentQIdx] === option;
-
-                return (
-                  <button
-                    key={option.letter}
-                    className={`quiz-option-btn ${isSelected ? "selected" : ""}`}
-                    onClick={() => handleSelectOption(option)}
-                  >
-                    <div className="option-letter">{option.letter}</div>
-                    <div style={{ flex: 1 }}><RichTextRenderer text={option.text} /></div>
-                  </button>
-                );
-              })}
-            </div>
+            {isFillQuestion(currentQIdx) ? (
+              <div style={{ marginTop: "8px" }}>
+                <div style={{ fontSize: "0.78rem", color: "#64748B", fontWeight: "600", marginBottom: "8px" }}>
+                  ✏️ Điền đáp án của bạn vào ô bên dưới:
+                </div>
+                <input
+                  type="text"
+                  value={fillInputs[currentQIdx] || ""}
+                  onChange={e => setFillInputs(prev => ({ ...prev, [currentQIdx]: e.target.value }))}
+                  onKeyDown={e => { if (e.key === "Enter" && currentQIdx + 1 < questions.length) setCurrentQIdx(p => p + 1); }}
+                  placeholder="Nhập đáp án..."
+                  style={{
+                    width: "100%", padding: "12px 14px", fontSize: "0.95rem",
+                    borderRadius: "10px", border: "2px solid #3B82F6",
+                    outline: "none", fontWeight: "600", color: "#1E3A5F",
+                    background: "#F8FAFF", boxSizing: "border-box",
+                  }}
+                  autoFocus
+                />
+                <div style={{ fontSize: "0.72rem", color: "#94A3B8", marginTop: "6px" }}>
+                  Gợi ý: nhập số, biểu thức, hoặc tên công thức ngắn gọn
+                </div>
+              </div>
+            ) : (
+              <div className="quiz-options-list">
+                {currentQ.options.map((option) => {
+                  const isSelected = userAnswers[currentQIdx] === option;
+                  return (
+                    <button
+                      key={option.letter}
+                      className={`quiz-option-btn ${isSelected ? "selected" : ""}`}
+                      onClick={() => handleSelectOption(option)}
+                    >
+                      <div className="option-letter">{option.letter}</div>
+                      <div style={{ flex: 1 }}><RichTextRenderer text={option.text} /></div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="quiz-bottom-actions" style={{ display: "flex", justifyContent: "space-between", marginTop: "var(--sp-4)" }}>
@@ -642,14 +700,59 @@ export default function QuizView({
               </h4>
               <div className="review-questions-list" style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
                 {questions.map((q, idx) => {
+                  const isFillQ = isFillQuestion(idx);
+                  const correctOpt = q.options.find(o => o.isCorrect);
+
+                  // Fill-in review
+                  if (isFillQ) {
+                    const userInput = fillInputs[idx] || "";
+                    const isCorrect = userInput.trim() !== "" &&
+                      normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
+                    const cardBorderColor = !userInput.trim() ? "var(--border-slate)"
+                      : isCorrect ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)";
+                    const cardBgColor = !userInput.trim() ? "#F8FAFC"
+                      : isCorrect ? "rgba(16,185,129,0.01)" : "rgba(239,68,68,0.01)";
+                    const statusLabel = !userInput.trim() ? "Chưa trả lời" : isCorrect ? "Đúng" : "Sai";
+                    const statusColor = !userInput.trim() ? "var(--text-muted)" : isCorrect ? "var(--success)" : "var(--error)";
+
+                    return (
+                      <div key={q.id} className="review-item-card"
+                        style={{ border: `1.5px solid ${cardBorderColor}`, backgroundColor: cardBgColor, borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}
+                      >
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem", fontWeight: "700" }}>
+                          <span style={{ color: "var(--text-muted)" }}>Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span style={{ background: "rgba(59,130,246,0.1)", color: "#3B82F6", borderRadius: "4px", padding: "1px 5px", marginLeft: "4px" }}>Điền đáp án</span></span>
+                          <span style={{ color: statusColor, background: `${statusColor}15`, padding: "4px 8px", borderRadius: "4px" }}>{statusLabel}</span>
+                        </div>
+                        <div style={{ fontSize: "0.9rem", fontWeight: "700", color: "var(--primary)" }}>
+                          <RichTextRenderer text={q.text} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", background: "white", borderRadius: "8px", padding: "10px", border: "1px solid #E2E8F0" }}>
+                          <div style={{ fontSize: "0.82rem" }}>
+                            <span style={{ color: "#64748B", fontWeight: "600" }}>Bạn trả lời: </span>
+                            <span style={{ fontWeight: "700", color: isCorrect ? "var(--success)" : "var(--error)" }}>{userInput || "(bỏ qua)"}</span>
+                          </div>
+                          <div style={{ fontSize: "0.82rem" }}>
+                            <span style={{ color: "#64748B", fontWeight: "600" }}>Đáp án đúng: </span>
+                            <span style={{ fontWeight: "700", color: "var(--success)" }}>{correctOpt?.text}</span>
+                          </div>
+                        </div>
+                        <div style={{ backgroundColor: "white", border: "1px dashed rgba(30,58,95,0.15)", borderRadius: "8px", padding: "12px", fontSize: "0.8rem", color: "#475569", lineHeight: "1.5" }}>
+                          <strong style={{ display: "block", color: "var(--primary)", marginBottom: "4px", fontSize: "0.8rem", fontWeight: "800" }}>Lời giải chi tiết:</strong>
+                          <RichTextRenderer text={q.explanation} />
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Multiple-choice review
                   const selected = userAnswers[idx];
                   const isCorrect = selected && selected.isCorrect;
-                  
+
                   let cardBorderColor = "var(--border-slate)";
                   let cardBgColor = "#F8FAFC";
                   let statusLabel = "Chưa trả lời";
                   let statusColor = "var(--text-muted)";
-                  
+
                   if (selected) {
                     if (isCorrect) {
                       cardBorderColor = "rgba(16, 185, 129, 0.2)";

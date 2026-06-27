@@ -314,9 +314,48 @@ export default function FlashcardView({
   const handlePdfExport = () => {
     if (!isPremium) {
       setActiveTab("premium");
-    } else {
-      alert("Tính năng Pro: Đang xuất danh sách Flashcard của bạn ra file PDF...");
+      return;
     }
+    const deckName = activeDeck?.name || "Flashcard";
+    const exportDate = new Date().toLocaleDateString("vi-VN");
+    const cardRows = cards.map((card, i) => `
+      <div class="card">
+        <div class="card-num">${i + 1}</div>
+        <div class="card-body">
+          <div class="card-name">${card.name}</div>
+          <div class="card-meta">Lớp ${card.grade} · ${card.topic}</div>
+          <div class="card-latex">${card.latex}</div>
+          ${card.explanation ? `<div class="card-exp">${card.explanation.replace(/\$\$?[^$]+\$?\$/g, m => m).replace(/\*\*(.*?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>")}</div>` : ""}
+        </div>
+      </div>`).join("");
+
+    const html = `<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8">
+      <title>FormulaX – ${deckName}</title>
+      <style>
+        body{font-family:'Segoe UI',sans-serif;padding:32px 40px;color:#1e293b;background:#fff}
+        h1{font-size:22px;font-weight:800;color:#1E3A5F;margin:0 0 4px}
+        .sub{font-size:13px;color:#64748B;margin:0 0 28px}
+        .card{display:flex;gap:14px;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;margin-bottom:14px;page-break-inside:avoid;background:#fafbfc}
+        .card-num{font-size:13px;font-weight:800;color:#3B82F6;min-width:22px;padding-top:2px}
+        .card-name{font-size:15px;font-weight:800;color:#1E3A5F;margin-bottom:4px}
+        .card-meta{font-size:11px;color:#64748B;margin-bottom:8px}
+        .card-latex{font-family:'Courier New',monospace;font-size:13px;background:#f1f5f9;border-radius:6px;padding:8px 10px;margin-bottom:8px;word-break:break-all}
+        .card-exp{font-size:12px;color:#475569;line-height:1.55}
+        @media print{@page{margin:16mm 18mm}body{padding:0}.no-print{display:none}}
+      </style></head><body>
+      <h1>Bộ thẻ: ${deckName}</h1>
+      <p class="sub">Xuất từ FormulaX AI · ${exportDate} · ${cards.length} công thức</p>
+      ${cardRows}
+      <div class="no-print" style="text-align:center;margin-top:28px">
+        <button onclick="window.print()" style="padding:10px 28px;background:#1E3A5F;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">
+          🖨️ In / Lưu PDF
+        </button>
+      </div></body></html>`;
+
+    const win = window.open("", "_blank");
+    win.document.write(html);
+    win.document.close();
+    win.focus();
   };
 
   // ─── LIST VIEW ────────────────────────────────────────────────────────────

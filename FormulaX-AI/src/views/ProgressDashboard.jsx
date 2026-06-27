@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Flame, ClipboardList, Layers, TrendingUp, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2 } from "lucide-react";
+import { ArrowLeft, Flame, ClipboardList, Layers, TrendingUp, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock } from "lucide-react";
 import { getAnalyticsSummary } from "../lib/supabase";
-import { MathElement } from "../utils/katexHelper";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -104,7 +103,7 @@ function EmptyState({ message, ctaLabel, onCta }) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ProgressDashboard({ user, stats, formulas, setActiveTab, onViewDetail }) {
+export default function ProgressDashboard({ user, stats, formulas, setActiveTab, onViewDetail, isPremium }) {
   const [topicPerf, setTopicPerf]   = useState([]);
   const [streak, setStreak]         = useState(0);
   const [loading, setLoading]       = useState(true);
@@ -158,6 +157,33 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
         </div>
       </div>
 
+      {/* Premium gate */}
+      {!isPremium && (
+        <div style={{
+          background: "linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)",
+          borderRadius: "16px", padding: "20px", color: "white",
+          textAlign: "center", marginBottom: "20px",
+        }}>
+          <Crown size={28} fill="#F59E0B" color="#F59E0B" style={{ margin: "0 auto 10px" }} />
+          <h3 style={{ margin: "0 0 6px", fontSize: "1rem", fontWeight: "800" }}>Tính năng Premium</h3>
+          <p style={{ margin: "0 0 14px", fontSize: "0.8rem", opacity: 0.85 }}>
+            Phân tích tiến độ chi tiết theo chủ đề, phát hiện điểm yếu và nhận gợi ý ôn tập cá nhân hóa.
+          </p>
+          <button
+            onClick={() => setActiveTab("premium")}
+            style={{
+              background: "#F59E0B", color: "#1E3A5F", border: "none",
+              borderRadius: "10px", padding: "10px 24px",
+              fontSize: "0.85rem", fontWeight: "800", cursor: "pointer",
+              display: "inline-flex", alignItems: "center", gap: "6px",
+            }}
+          >
+            <Crown size={14} fill="#1E3A5F" color="#1E3A5F" />
+            Nâng cấp Premium để mở khóa
+          </button>
+        </div>
+      )}
+
       {/* Stat cards: 2x2 grid */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
         <StatCard icon={<Flame size={20} />}         value={`${streak} ngày`}              label="Chuỗi học"       color="#F97316" />
@@ -171,6 +197,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
         background: "white", borderRadius: "16px", padding: "16px",
         border: "1px solid #E2E8F0", marginBottom: "16px",
         boxShadow: "0 2px 8px rgba(30,58,95,0.05)",
+        position: "relative", overflow: "hidden",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
           <BarChart2 size={16} color="#3B82F6" />
@@ -183,6 +210,27 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
           <div style={{ textAlign: "center", padding: "20px", color: "#94A3B8", fontSize: "0.82rem" }}>
             Đang tải...
           </div>
+        ) : !isPremium ? (
+          <>
+            {/* Blurred placeholder bars for non-premium */}
+            {["Giải tích","Đại số","Hình học","Xác suất"].map(t => (
+              <div key={t} style={{ marginBottom: "14px", filter: "blur(4px)", pointerEvents: "none", userSelect: "none" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
+                  <span style={{ fontSize:"0.82rem", fontWeight:"700" }}>{t}</span>
+                  <span style={{ fontSize:"0.78rem", fontWeight:"700" }}>??%</span>
+                </div>
+                <div style={{ background:"#F1F5F9", borderRadius:"6px", height:"8px" }}>
+                  <div style={{ height:"100%", width:`${40 + Math.random()*40}%`, background:"#94A3B8", borderRadius:"6px" }} />
+                </div>
+              </div>
+            ))}
+            <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(255,255,255,0.6)" }}>
+              <div style={{ textAlign:"center" }}>
+                <Lock size={22} color="#3B82F6" style={{ margin:"0 auto 6px" }} />
+                <div style={{ fontSize:"0.8rem", fontWeight:"700", color:"#1E3A5F" }}>Cần Premium để xem</div>
+              </div>
+            </div>
+          </>
         ) : hasQuizData ? (
           topicPerf.map(t => <TopicBar key={t.topic} {...t} />)
         ) : (
