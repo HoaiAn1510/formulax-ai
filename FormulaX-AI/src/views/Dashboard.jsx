@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, Trash2 } from "lucide-react";
+import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, Trash2, BarChart2, Flame } from "lucide-react";
 import { MathElement } from "../utils/katexHelper";
 
 export default function Dashboard({
@@ -76,6 +76,35 @@ export default function Dashboard({
           </div>
           <span className="grid-card-label">Kiểm tra</span>
         </div>
+      </div>
+
+      {/* Analytics CTA Banner */}
+      <div
+        onClick={() => setActiveTab("progress")}
+        style={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          background: "linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)",
+          borderRadius: "14px", padding: "13px 16px", cursor: "pointer",
+          color: "white", marginBottom: "16px",
+          boxShadow: "0 4px 14px rgba(30,58,95,0.2)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div style={{
+            width: "36px", height: "36px", borderRadius: "10px",
+            background: "rgba(255,255,255,0.15)", display: "flex",
+            alignItems: "center", justifyContent: "center", flexShrink: 0,
+          }}>
+            <BarChart2 size={18} />
+          </div>
+          <div>
+            <div style={{ fontSize: "0.88rem", fontWeight: "700" }}>Xem tiến độ học tập</div>
+            <div style={{ fontSize: "0.7rem", opacity: 0.75, marginTop: "1px" }}>
+              Phân tích điểm mạnh · yếu · gợi ý ôn tập
+            </div>
+          </div>
+        </div>
+        <ChevronRight size={18} style={{ opacity: 0.7, flexShrink: 0 }} />
       </div>
 
       {/* Stats Section: Tiến độ học tập */}

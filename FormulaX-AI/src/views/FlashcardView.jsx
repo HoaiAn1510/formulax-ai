@@ -5,6 +5,7 @@ import {
   Eye, Heart, Pencil, Trash2, X, Check, BookOpen, Star,
 } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
+import { saveFlashcardActivity } from "../lib/supabase";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -251,6 +252,16 @@ export default function FlashcardView({
     else setReviewCount(prev => prev + 1);
 
     setStats(prev => ({ ...prev, flashcardsStudied: prev.flashcardsStudied + 1 }));
+
+    if (user?.googleId && currentCard) {
+      saveFlashcardActivity(user.googleId, {
+        formulaId: currentCard.id,
+        result: remembered ? "remembered" : "review",
+        topic: currentCard.topic,
+        grade: currentCard.grade,
+      }).catch(console.error);
+    }
+
     setIsFlipped(false);
 
     setTimeout(() => {

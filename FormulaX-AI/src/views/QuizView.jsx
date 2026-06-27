@@ -2,14 +2,16 @@ import React, { useState, useEffect } from "react";
 import { GraduationCap, Timer, CheckCircle, XCircle, Award, Crown, Lock, ArrowLeft, ArrowRight, Play, BookOpen, Layers, Check, Clipboard, BarChart2, List, Pencil, Shuffle } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { questionsPool as pool } from "../data/questions";
+import { saveQuizResult } from "../lib/supabase";
 
-export default function QuizView({ 
-  setActiveTab, 
-  isPremium, 
-  remainingQuizzes, 
+export default function QuizView({
+  setActiveTab,
+  isPremium,
+  remainingQuizzes,
   setRemainingQuizzes,
   stats,
-  setStats
+  setStats,
+  user,
 }) {
   const [quizState, setQuizState] = useState("setup"); // setup, active, result
   const [showQuotaModal, setShowQuotaModal] = useState(false);
@@ -186,6 +188,14 @@ export default function QuizView({
       ...prev,
       quizzesCompleted: prev.quizzesCompleted + 1
     }));
+
+    if (user?.googleId) {
+      saveQuizResult(user.googleId, {
+        topic,
+        questionsTotal: questions.length,
+        questionsCorrect: finalScore,
+      }).catch(console.error);
+    }
   };
 
   const handleSubmitQuiz = () => {

@@ -27,6 +27,7 @@ import FlashcardView from "./views/FlashcardView";
 import QuizView from "./views/QuizView";
 import PremiumUpgrade from "./views/PremiumUpgrade";
 import LoginView from "./views/LoginView";
+import ProgressDashboard from "./views/ProgressDashboard";
 
 export default function App() {
   const { user, logout, isLoggedIn } = useAuth();
@@ -393,6 +394,17 @@ export default function App() {
             setRemainingQuizzes={setRemainingQuizzes}
             stats={stats}
             setStats={setStats}
+            user={user}
+          />
+        );
+      case "progress":
+        return (
+          <ProgressDashboard
+            user={user}
+            stats={stats}
+            formulas={formulas}
+            setActiveTab={setActiveTab}
+            onViewDetail={handleViewDetail}
           />
         );
       case "premium":

@@ -195,3 +195,95 @@ export async function deleteFlashcardDeck(googleId, deckId) {
     .eq("google_id", googleId).eq("id", deckId);
   if (error) console.error("[Supabase] deleteFlashcardDeck:", error);
 }
+
+// ─── Quiz Results ─────────────────────────────────────────────────────────────
+
+export async function saveQuizResult(googleId, { topic, questionsTotal, questionsCorrect }) {
+  if (!googleId) return;
+  const scorePercent = questionsTotal > 0 ? Math.round((questionsCorrect / questionsTotal) * 100) : 0;
+  const savedTopic = topic === "Tất cả chủ đề" ? "Tổng hợp" : topic;
+  const { error } = await supabase.from("quiz_results").insert({
+    google_id: googleId,
+    topic: savedTopic,
+    score_percent: scorePercent,
+    questions_total: questionsTotal,
+    questions_correct: questionsCorrect,
+  });
+  if (error) console.error("[Supabase] saveQuizResult:", error);
+}
+
+// ─── Flashcard Activity ───────────────────────────────────────────────────────
+
+export async function saveFlashcardActivity(googleId, { formulaId, result, topic, grade }) {
+  if (!googleId) return;
+  const { error } = await supabase.from("flashcard_activity").insert({
+    google_id: googleId,
+    formula_id: formulaId,
+    result,
+    topic: topic || null,
+    grade: grade ? Number(grade) : null,
+  });
+  if (error) console.error("[Supabase] saveFlashcardActivity:", error);
+}
+
+// ─── Analytics ────────────────────────────────────────────────────────────────
+
+export async function getTopicPerformance(googleId) {
+  const { data, error } = await supabase
+    .from("quiz_results")
+    .select("topic, questions_total, questions_correct")
+    .eq("google_id", googleId);
+  if (error) { console.error("[Supabase] getTopicPerformance:", error); return []; }
+
+  const map = {};
+  (data || []).forEach(({ topic, questions_total, questions_correct }) => {
+    if (!map[topic]) map[topic] = { total: 0, correct: 0 };
+    map[topic].total += questions_total;
+    map[topic].correct += questions_correct;
+  });
+
+  return Object.entries(map)
+    .map(([topic, { total, correct }]) => ({
+      topic,
+      total,
+      correct,
+      rate: total > 0 ? Math.round((correct / total) * 100) : 0,
+    }))
+    .sort((a, b) => a.rate - b.rate);
+}
+
+export async function getActivityStreak(googleId) {
+  const [qRes, fRes] = await Promise.all([
+    supabase.from("quiz_results").select("created_at").eq("google_id", googleId),
+    supabase.from("flashcard_activity").select("created_at").eq("google_id", googleId),
+  ]);
+
+  const dateSet = new Set();
+  [...(qRes.data || []), ...(fRes.data || [])].forEach(row => {
+    dateSet.add(new Date(row.created_at).toISOString().slice(0, 10));
+  });
+
+  const sorted = [...dateSet].sort().reverse();
+  if (sorted.length === 0) return 0;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (sorted[0] !== today && sorted[0] !== yesterday) return 0;
+
+  let streak = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    const prev = new Date(sorted[i - 1]);
+    prev.setDate(prev.getDate() - 1);
+    if (sorted[i] === prev.toISOString().slice(0, 10)) streak++;
+    else break;
+  }
+  return streak;
+}
+
+export async function getAnalyticsSummary(googleId) {
+  const [topicPerformance, streak] = await Promise.all([
+    getTopicPerformance(googleId),
+    getActivityStreak(googleId),
+  ]);
+  return { topicPerformance, streak };
+}
