@@ -10,14 +10,67 @@ export default function FormulaLibrary({
   setActiveTab 
 }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("Tất cả");
-  const [selectedGrade, setSelectedGrade] = useState("Tất cả");
+  // topicMode: "all" | "saved" | "custom" (custom uses selectedTopics array, multi-select)
+  const [topicMode, setTopicMode] = useState("all");
+  const [selectedTopics, setSelectedTopics] = useState([]);
+  // gradeMode: "all" | "custom" (custom uses selectedGrades array, multi-select)
+  const [gradeMode, setGradeMode] = useState("all");
+  const [selectedGrades, setSelectedGrades] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
-  
+
   const searchContainerRef = useRef(null);
 
   const topics = ["Tất cả", "Đã lưu", "Đại số", "Hình học", "Giải tích", "Lượng giác", "Xác suất & Thống kê", "Mở rộng"];
+
+  const handleTopicClick = (topic) => {
+    if (topic === "Tất cả") {
+      setTopicMode("all");
+      setSelectedTopics([]);
+      return;
+    }
+    if (topic === "Đã lưu") {
+      setTopicMode("saved");
+      setSelectedTopics([]);
+      return;
+    }
+    if (topicMode !== "custom") {
+      setTopicMode("custom");
+      setSelectedTopics([topic]);
+      return;
+    }
+    const next = selectedTopics.includes(topic)
+      ? selectedTopics.filter(t => t !== topic)
+      : [...selectedTopics, topic];
+    if (next.length === 0) {
+      setTopicMode("all");
+      setSelectedTopics([]);
+    } else {
+      setSelectedTopics(next);
+    }
+  };
+
+  const handleGradeClick = (grade) => {
+    if (grade === "Tất cả") {
+      setGradeMode("all");
+      setSelectedGrades([]);
+      return;
+    }
+    if (gradeMode !== "custom") {
+      setGradeMode("custom");
+      setSelectedGrades([grade]);
+      return;
+    }
+    const next = selectedGrades.includes(grade)
+      ? selectedGrades.filter(g => g !== grade)
+      : [...selectedGrades, grade];
+    if (next.length === 0) {
+      setGradeMode("all");
+      setSelectedGrades([]);
+    } else {
+      setSelectedGrades(next);
+    }
+  };
 
   // Click outside listener for suggestions
   useEffect(() => {
@@ -56,12 +109,12 @@ export default function FormulaLibrary({
 
   // Filter formulas
   const filteredFormulas = formulas.filter(f => {
-    const matchesTopic = selectedTopic === "Tất cả"
+    const matchesTopic = topicMode === "all"
       ? true
-      : selectedTopic === "Đã lưu"
+      : topicMode === "saved"
         ? bookmarkedIds.includes(f.id)
-        : f.topic === selectedTopic;
-    const matchesGrade = selectedGrade === "Tất cả" || f.grade.toString() === selectedGrade;
+        : selectedTopics.includes(f.topic);
+    const matchesGrade = gradeMode === "all" || selectedGrades.includes(f.grade.toString());
     const matchesSearch = searchQuery.trim() === "" ||
       f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       f.explanation.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -90,7 +143,7 @@ export default function FormulaLibrary({
           Thư viện công thức
         </h2>
         <p style={{ fontSize: "0.85rem", color: "#64748B", fontWeight: "500", marginTop: "4px" }}>
-          {selectedTopic === "Đã lưu"
+          {topicMode === "saved"
             ? `${filteredFormulas.length} công thức đã lưu`
             : `Khám phá ${filteredFormulas.length} công thức Toán THPT`}
         </p>
@@ -138,18 +191,25 @@ export default function FormulaLibrary({
       <div className="filters-container">
         {/* Topics row */}
         <div className="filter-row">
-          {topics.map((topic) => (
-            <button
-              key={topic}
-              className={`filter-pill ${selectedTopic === topic ? "active" : ""}`}
-              onClick={() => setSelectedTopic(topic)}
-              style={topic === "Đã lưu" && selectedTopic !== "Đã lưu" ? {
-                borderColor: "#E74C3C", color: "#E74C3C"
-              } : {}}
-            >
-              {topic === "Đã lưu" ? <><Heart size={11} fill={selectedTopic === "Đã lưu" ? "white" : "#E74C3C"} color={selectedTopic === "Đã lưu" ? "white" : "#E74C3C"} style={{ display: "inline", marginRight: "3px", verticalAlign: "middle" }} /> Đã lưu</> : topic}
-            </button>
-          ))}
+          {topics.map((topic) => {
+            const isActive = topic === "Tất cả"
+              ? topicMode === "all"
+              : topic === "Đã lưu"
+                ? topicMode === "saved"
+                : topicMode === "custom" && selectedTopics.includes(topic);
+            return (
+              <button
+                key={topic}
+                className={`filter-pill ${isActive ? "active" : ""}`}
+                onClick={() => handleTopicClick(topic)}
+                style={topic === "Đã lưu" && !isActive ? {
+                  borderColor: "#E74C3C", color: "#E74C3C"
+                } : {}}
+              >
+                {topic === "Đã lưu" ? <><Heart size={11} fill={isActive ? "white" : "#E74C3C"} color={isActive ? "white" : "#E74C3C"} style={{ display: "inline", marginRight: "3px", verticalAlign: "middle" }} /> Đã lưu</> : topic}
+              </button>
+            );
+          })}
         </div>
 
         {/* Grade filters matching Screenshot 2 */}
@@ -157,11 +217,13 @@ export default function FormulaLibrary({
           <span style={{ fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F" }}>Lớp:</span>
           <div style={{ display: "flex", gap: "8px" }}>
             {["Tất cả", "10", "11", "12"].map((grade) => {
-              const isActive = selectedGrade === (grade === "Tất cả" ? "Tất cả" : grade);
+              const isActive = grade === "Tất cả"
+                ? gradeMode === "all"
+                : gradeMode === "custom" && selectedGrades.includes(grade);
               return (
                 <button
                   key={grade}
-                  onClick={() => setSelectedGrade(grade)}
+                  onClick={() => handleGradeClick(grade)}
                   style={{
                     width: "36px",
                     height: "36px",
