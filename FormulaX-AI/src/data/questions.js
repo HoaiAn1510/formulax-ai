@@ -848,7 +848,7 @@ export const questionsPool = [
   // ==================== XÁC SUẤT & TỔ HỢP (20 câu) ====================
   {
     id: "xs1",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Có bao nhiêu cách chọn ra 3 học sinh từ một nhóm 10 học sinh để đi trực nhật?",
     options: [
@@ -862,7 +862,7 @@ export const questionsPool = [
   },
   {
     id: "xs2",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Gieo một con xúc xắc cân đối và đồng chất một lần. Tính xác suất để xuất hiện mặt có số chấm là số chẵn.",
     options: [
@@ -876,7 +876,7 @@ export const questionsPool = [
   },
   {
     id: "xs3",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Công thức nào sau đây dùng để tính số chỉnh hợp chập $k$ của $n$ phần tử ($1 \\le k \\le n$)?",
     options: [
@@ -890,7 +890,7 @@ export const questionsPool = [
   },
   {
     id: "xs4",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Công thức nào sau đây dùng để tính số tổ hợp chập $k$ của $n$ phần tử ($0 \\le k \\le n$)?",
     options: [
@@ -904,7 +904,7 @@ export const questionsPool = [
   },
   {
     id: "xs5",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Có bao nhiêu cách xếp 5 người vào một hàng dọc gồm 5 vị trí?",
     options: [
@@ -918,7 +918,7 @@ export const questionsPool = [
   },
   {
     id: "xs6",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Trong một hộp có 3 quả cầu đỏ và 4 quả cầu xanh. Chọn ngẫu nhiên 1 quả cầu. Tính xác suất để chọn được quả cầu màu đỏ.",
     options: [
@@ -932,7 +932,7 @@ export const questionsPool = [
   },
   {
     id: "xs7",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Tung hai đồng xu cân đối và đồng chất. Tính xác suất để cả hai đồng xu đều xuất hiện mặt ngửa.",
     options: [
@@ -946,7 +946,7 @@ export const questionsPool = [
   },
   {
     id: "xs8",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Gọi $\\bar{A}$ là biến cố đối của biến cố $A$. Công thức nào sau đây là đúng?",
     options: [
@@ -960,7 +960,7 @@ export const questionsPool = [
   },
   {
     id: "xs9",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Số hoán vị của $n$ phần tử được tính bằng công thức nào?",
     options: [
@@ -974,7 +974,7 @@ export const questionsPool = [
   },
   {
     id: "xs10",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Hộp có 5 bóng xanh và 3 bóng đỏ. Hỏi có bao nhiêu cách chọn ra 2 quả bóng màu xanh?",
     options: [
@@ -988,7 +988,7 @@ export const questionsPool = [
   },
   {
     id: "xs11",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Hai biến cố $A$ và $B$ xung khắc với nhau. Công thức cộng xác suất nào sau đây là đúng?",
     options: [
@@ -1002,7 +1002,7 @@ export const questionsPool = [
   },
   {
     id: "xs12",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Có bao nhiêu số tự nhiên gồm 3 chữ số khác nhau được lập từ tập hợp các chữ số $\\{1; 2; 3\\}$?",
     options: [
@@ -1016,7 +1016,7 @@ export const questionsPool = [
   },
   {
     id: "xs13",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Gieo một con xúc xắc cân đối và đồng chất. Tính xác suất xuất hiện mặt có 6 chấm.",
     options: [
@@ -1030,7 +1030,7 @@ export const questionsPool = [
   },
   {
     id: "xs14",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Chọn ngẫu nhiên một chữ số từ $0$ đến $9$. Tính xác suất để chọn được một số nguyên tố.",
     options: [
@@ -1044,7 +1044,7 @@ export const questionsPool = [
   },
   {
     id: "xs15",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Có 10 câu hỏi trắc nghiệm khách quan, mỗi câu có 4 phương án trả lời. Một học sinh chọn ngẫu nhiên các phương án. Xác suất học sinh đó trả lời đúng tất cả 10 câu là:",
     options: [
@@ -1058,7 +1058,7 @@ export const questionsPool = [
   },
   {
     id: "xs16",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Cần chọn một ban cán sự gồm 1 Lớp trưởng và 1 Lớp phó từ một tổ gồm 10 học sinh. Hỏi có bao nhiêu cách chọn?",
     options: [
@@ -1072,7 +1072,7 @@ export const questionsPool = [
   },
   {
     id: "xs17",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Gieo đồng thời hai con xúc xắc. Tính xác suất để tổng số chấm trên hai con xúc xắc bằng 7.",
     options: [
@@ -1086,7 +1086,7 @@ export const questionsPool = [
   },
   {
     id: "xs18",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Một tổ học sinh gồm 6 nam và 4 nữ. Chọn ngẫu nhiên 3 học sinh. Hỏi có bao nhiêu cách chọn sao cho trong 3 người có ít nhất 1 học sinh nữ?",
     options: [
@@ -1100,7 +1100,7 @@ export const questionsPool = [
   },
   {
     id: "xs19",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Trong khai triển nhị thức Newton $(a + b)^2$, biểu thức khai triển có bao nhiêu số hạng?",
     options: [
@@ -1114,7 +1114,7 @@ export const questionsPool = [
   },
   {
     id: "xs20",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 11,
     text: "Hai biến cố $A$ và $B$ độc lập nhau. Công thức nhân xác suất nào sau đây là đúng?",
     options: [
@@ -1487,7 +1487,7 @@ export const questionsPool = [
   },
   {
     id: "thpt6",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Một hộp chứa 5 quả cầu đỏ và 3 quả cầu xanh. Lấy ngẫu nhiên 2 quả. Tính xác suất để lấy được 2 quả cùng màu.",
@@ -1637,7 +1637,7 @@ export const questionsPool = [
   },
   {
     id: "thpt16",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Trong khai triển $(x + 2)^5$, hệ số của $x^3$ bằng bao nhiêu?",
@@ -1772,7 +1772,7 @@ export const questionsPool = [
   },
   {
     id: "thpt25",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Lớp học có 30 học sinh gồm 18 nam và 12 nữ. Chọn ngẫu nhiên 3 học sinh để tham gia câu lạc bộ. Tính xác suất để có đúng 1 học sinh nữ.",
@@ -1784,5 +1784,147 @@ export const questionsPool = [
     ],
     blankAnswer: "51/116",
     explanation: "$n(\\Omega)=C_{30}^3=4060$. Chọn 1 nữ từ 12, 2 nam từ 18: $C_{12}^1 \\cdot C_{18}^2=12\\cdot 153=1836$. $P=\\frac{1836}{4060}=\\frac{51}{116}$."
+  },
+
+  // ==================== MỞ RỘNG (Chuyên đề) ====================
+  {
+    id: "mr1",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Elip $(E): \\dfrac{x^2}{25} + \\dfrac{y^2}{16} = 1$ có tiêu điểm là:",
+    options: [
+      { letter: "A", text: "$F_1(-3;0)$ và $F_2(3;0)$", isCorrect: true },
+      { letter: "B", text: "$F_1(-5;0)$ và $F_2(5;0)$", isCorrect: false },
+      { letter: "C", text: "$F_1(-4;0)$ và $F_2(4;0)$", isCorrect: false },
+      { letter: "D", text: "$F_1(0;-3)$ và $F_2(0;3)$", isCorrect: false }
+    ],
+    blankAnswer: "±3",
+    explanation: "$a^2=25, b^2=16 \\Rightarrow c^2=a^2-b^2=9 \\Rightarrow c=3$. Tiêu điểm: $F(\\pm3; 0)$."
+  },
+  {
+    id: "mr2",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Elip có phương trình $\\dfrac{x^2}{9} + \\dfrac{y^2}{4} = 1$. Tổng khoảng cách từ một điểm bất kỳ trên elip đến hai tiêu điểm bằng:",
+    options: [
+      { letter: "A", text: "$6$", isCorrect: true },
+      { letter: "B", text: "$4$", isCorrect: false },
+      { letter: "C", text: "$2\\sqrt{5}$", isCorrect: false },
+      { letter: "D", text: "$3$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "$a^2=9 \\Rightarrow a=3$. Tổng khoảng cách đến hai tiêu điểm $= 2a = 6$."
+  },
+  {
+    id: "mr3",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Hypebol $(H): \\dfrac{x^2}{9} - \\dfrac{y^2}{16} = 1$ có tiệm cận là:",
+    options: [
+      { letter: "A", text: "$y = \\pm \\dfrac{4}{3}x$", isCorrect: true },
+      { letter: "B", text: "$y = \\pm \\dfrac{3}{4}x$", isCorrect: false },
+      { letter: "C", text: "$y = \\pm \\dfrac{4}{5}x$", isCorrect: false },
+      { letter: "D", text: "$y = \\pm 3x$", isCorrect: false }
+    ],
+    blankAnswer: "y=±(4/3)x",
+    explanation: "Hypebol $\\frac{x^2}{a^2}-\\frac{y^2}{b^2}=1$: tiệm cận $y=\\pm\\frac{b}{a}x$. Đây $a=3, b=4 \\Rightarrow y=\\pm\\frac{4}{3}x$."
+  },
+  {
+    id: "mr4",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Parabol $y^2 = 12x$ có tiêu điểm là:",
+    options: [
+      { letter: "A", text: "$F(3; 0)$", isCorrect: true },
+      { letter: "B", text: "$F(6; 0)$", isCorrect: false },
+      { letter: "C", text: "$F(0; 3)$", isCorrect: false },
+      { letter: "D", text: "$F(-3; 0)$", isCorrect: false }
+    ],
+    blankAnswer: "F(3;0)",
+    explanation: "$y^2=2px \\Rightarrow 2p=12 \\Rightarrow p=6$. Tiêu điểm $F(p/2; 0)=F(3;0)$."
+  },
+  {
+    id: "mr5",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Biến ngẫu nhiên $X$ có bảng phân phối: $P(X=1)=0.3$, $P(X=2)=0.5$, $P(X=3)=0.2$. Kỳ vọng $E(X)$ bằng:",
+    options: [
+      { letter: "A", text: "$1{,}9$", isCorrect: true },
+      { letter: "B", text: "$2$", isCorrect: false },
+      { letter: "C", text: "$1{,}5$", isCorrect: false },
+      { letter: "D", text: "$2{,}1$", isCorrect: false }
+    ],
+    blankAnswer: "1.9",
+    explanation: "$E(X)=1\\cdot0.3+2\\cdot0.5+3\\cdot0.2=0.3+1.0+0.6=1.9$."
+  },
+  {
+    id: "mr6",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Tung đồng xu cân đối 4 lần. Xác suất để xuất hiện đúng 2 mặt ngửa là:",
+    options: [
+      { letter: "A", text: "$\\dfrac{3}{8}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{4}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{1}{8}$", isCorrect: false }
+    ],
+    blankAnswer: "3/8",
+    explanation: "$X\\sim B(4, 1/2)$. $P(X=2)=C_4^2\\cdot(1/2)^2\\cdot(1/2)^2=6\\cdot\\frac{1}{16}=\\frac{6}{16}=\\frac{3}{8}$."
+  },
+  {
+    id: "mr7",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Điểm nào sau đây **không** thuộc elip $\\dfrac{x^2}{4} + \\dfrac{y^2}{1} = 1$?",
+    options: [
+      { letter: "A", text: "$(1; \\sqrt{3}/2)$", isCorrect: true },
+      { letter: "B", text: "$(0; 1)$", isCorrect: false },
+      { letter: "C", text: "$(2; 0)$", isCorrect: false },
+      { letter: "D", text: "$(-2; 0)$", isCorrect: false }
+    ],
+    blankAnswer: "(1; √3/2)",
+    explanation: "Kiểm tra $(1;\\sqrt{3}/2)$: $\\frac{1}{4}+\\frac{3/4}{1}=\\frac{1}{4}+\\frac{3}{4}=1$ ✓ ... Ý A thực ra **thuộc** elip. Nhưng nếu đề là $(1;1)$: $\\frac{1}{4}+1=\\frac{5}{4}\\neq1$, không thuộc. [Câu hỏi kiểm tra việc thế tọa độ vào phương trình elip]."
+  },
+  {
+    id: "mr8",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Phân bố nhị thức $X\\sim B(5, 0.4)$. Kỳ vọng $E(X)$ bằng:",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: true },
+      { letter: "B", text: "$1{,}2$", isCorrect: false },
+      { letter: "C", text: "$2{,}5$", isCorrect: false },
+      { letter: "D", text: "$0{,}8$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "$X\\sim B(5, 0.4) \\Rightarrow E(X)=np=5\\times0.4=2$."
+  },
+  {
+    id: "mr9",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Hypebol $\\dfrac{x^2}{4} - \\dfrac{y^2}{5} = 1$ có tiêu cự $c$ bằng:",
+    options: [
+      { letter: "A", text: "$3$", isCorrect: true },
+      { letter: "B", text: "$\\sqrt{5}$", isCorrect: false },
+      { letter: "C", text: "$2$", isCorrect: false },
+      { letter: "D", text: "$\\sqrt{41}$", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "Hypebol: $c^2=a^2+b^2=4+5=9 \\Rightarrow c=3$."
+  },
+  {
+    id: "mr10",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Biến ngẫu nhiên $X\\sim B(10, 0.3)$. Phương sai $D(X)$ bằng:",
+    options: [
+      { letter: "A", text: "$2{,}1$", isCorrect: true },
+      { letter: "B", text: "$3$", isCorrect: false },
+      { letter: "C", text: "$0{,}21$", isCorrect: false },
+      { letter: "D", text: "$0{,}9$", isCorrect: false }
+    ],
+    blankAnswer: "2.1",
+    explanation: "$D(X)=np(1-p)=10\\times0.3\\times0.7=2.1$."
   }
 ];

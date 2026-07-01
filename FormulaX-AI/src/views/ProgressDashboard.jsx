@@ -251,9 +251,6 @@ function EmptyState({ message, ctaLabel, onCta }) {
 const QUIZ_TOPIC_MAP = {
   "Đề thi THPT": null,
   "Tổng hợp":    null,
-  "Xác suất":    "Xác suất & Tổ hợp",
-  "Tổ hợp":      "Xác suất & Tổ hợp",
-  "Lượng giác":  "Đại số",
 };
 
 function getFormulasForQuizTopic(quizTopic, formulas) {
@@ -408,7 +405,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
         ) : !isPremium ? (
           <>
             {/* Blurred placeholder bars for non-premium — fixed widths to avoid re-render flicker */}
-            {[["Giải tích","72%"],["Đại số","45%"],["Hình học","61%"],["Xác suất","38%"]].map(([t, w]) => (
+            {[["Giải tích","72%"],["Đại số","45%"],["Hình học","61%"],["Lượng giác","55%"],["Xác suất & Thống kê","38%"],["Mở rộng","30%"]].map(([t, w]) => (
               <div key={t} style={{ marginBottom: "14px", filter: "blur(4px)", pointerEvents: "none", userSelect: "none" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
                   <span style={{ fontSize:"0.82rem", fontWeight:"700" }}>{t}</span>

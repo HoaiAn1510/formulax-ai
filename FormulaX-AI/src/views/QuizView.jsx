@@ -36,14 +36,7 @@ export default function QuizView({
   // Filter questions based on allMode / selectedTopics
   const getFilteredQuestions = () => {
     if (allMode || selectedTopics.length === 0) return [...pool];
-    return pool.filter(q =>
-      selectedTopics.some(t => {
-        if (t === "Xác suất" || t === "Tổ hợp") {
-          return q.topic === "Xác suất & Tổ hợp";
-        }
-        return q.topic === t;
-      })
-    );
+    return pool.filter(q => selectedTopics.includes(q.topic));
   };
 
   // Cap questionCountInput when available pool shrinks
@@ -217,7 +210,7 @@ export default function QuizView({
   };
 
   const currentQ = questions[currentQIdx];
-  const specificTopics = ["Đại số", "Hình học", "Giải tích", "Xác suất", "Tổ hợp", "Lượng giác"];
+  const specificTopics = ["Đại số", "Hình học", "Giải tích", "Lượng giác", "Xác suất & Thống kê", "Mở rộng"];
   const filteredQuestions = getFilteredQuestions();
   const maxQuestions = filteredQuestions.length;
 

@@ -16,7 +16,7 @@ export const formulas = [
     id: "gt12-daoham-mu",
     name: "Đạo hàm hàm số mũ",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     latex: "(a^x)' = a^x \\ln a \\quad (a > 0, a \\neq 1)",
     explanation: "Trong đó:\n- $a$: Cơ số ($a > 0$ và $a \\neq 1$).\n- $\\ln a$: Logarit tự nhiên (cơ số $e$) của $a$.\n- Nếu cơ số là $e$, ta có trường hợp đặc biệt: $(e^x)' = e^x$.",
     example: "Tính đạo hàm của hàm số $y = 3^x$.\n\n**Lời giải:**\nÁp dụng công thức với cơ số $a = 3$, ta có:\n$$y' = (3^x)' = 3^x \\cdot \\ln 3$$",
@@ -27,8 +27,8 @@ export const formulas = [
   {
     id: "gt12-logarit",
     name: "Các tính chất của Logarit",
-    topic: "Giải tích",
-    grade: 12,
+    topic: "Đại số",
+    grade: 11,
     latex: "\\log_a(x \\cdot y) = \\log_a x + \\log_a y",
     explanation: "Điều kiện: $a > 0, a \\neq 1$ và $x, y > 0$.\nTrong đó:\n- $a$: Cơ số logarit ($a > 0$, $a \\neq 1$).\n- $x$: Thừa số thứ nhất bên trong logarit ($x > 0$).\n- $y$: Thừa số thứ hai bên trong logarit ($y > 0$).\n- Phép nhân hai số dương trong logarit bằng tổng hai logarit cùng cơ số.",
     example: "Tính giá trị của biểu thức $P = \\log_2 4 + \\log_2 8$.\n\n**Lời giải:**\nÁp dụng công thức biến đổi ngược lại:\n$$P = \\log_2(4 \\cdot 8) = \\log_2 32 = \\log_2(2^5) = 5$$",
@@ -65,7 +65,7 @@ export const formulas = [
     id: "hh12-thetich-chopsen",
     name: "Thể tích khối chóp",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     latex: "V = \\frac{1}{3} B \\cdot h",
     explanation: "Trong đó:\n- $B$: Diện tích mặt đáy của khối chóp.\n- $h$: Chiều cao của khối chóp (khoảng cách từ đỉnh chóp đến mặt phẳng đáy).",
     example: "Cho khối chóp có chiều cao $h = 6\\text{ cm}$ và diện tích đáy $B = 10\\text{ cm}^2$. Tính thể tích $V$.\n\n**Lời giải:**\nÁp dụng công thức thể tích khối chóp:\n$$V = \\frac{1}{3} \\cdot 10 \\cdot 6 = 20\\text{ cm}^3$$",
@@ -77,7 +77,7 @@ export const formulas = [
     id: "hh12-thetich-langtru",
     name: "Thể tích khối lăng trụ",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     latex: "V = B \\cdot h",
     explanation: "Trong đó:\n- $B$: Diện tích đáy của lăng trụ đứng hoặc xiên.\n- $h$: Chiều cao của lăng trụ (khoảng cách vuông góc giữa hai mặt đáy song song).",
     example: "Tính thể tích của khối lăng trụ có đáy là hình vuông cạnh $3\\text{ cm}$ và chiều cao $h = 5\\text{ cm}$.\n\n**Lời giải:**\n- Diện tích đáy $B = 3^2 = 9\\text{ cm}^2$.\n- Áp dụng công thức: $V = B \\cdot h = 9 \\cdot 5 = 45\\text{ cm}^3$.",
@@ -113,7 +113,7 @@ export const formulas = [
     id: "hh12-khino-thetich",
     name: "Thể tích khối nón",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     latex: "V = \\frac{1}{3} \\pi r^2 h",
     explanation: "Trong đó:\n- $r$: Bán kính đường tròn đáy của khối nón.\n- $h$: Chiều cao của khối nón (khoảng cách từ đỉnh nón đến tâm đáy).\n- $V$: Thể tích khối nón.",
     example: "Tính thể tích khối nón có bán kính đáy $r = 3\\text{ cm}$ và chiều cao $h = 4\\text{ cm}$.\n\n**Lời giải:**\nÁp dụng công thức:\n$$V = \\frac{1}{3} \\pi \\cdot 3^2 \\cdot 4 = 12\\pi \\text{ cm}^3$$",
@@ -125,7 +125,7 @@ export const formulas = [
     id: "hh12-khitru-thetich",
     name: "Thể tích khối trụ",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     latex: "V = \\pi r^2 h",
     explanation: "Trong đó:\n- $r$: Bán kính đường tròn đáy của khối trụ.\n- $h$: Chiều cao của khối trụ (khoảng cách giữa hai mặt đáy song song).\n- $V$: Thể tích khối trụ.",
     example: "Tính thể tích khối trụ có bán kính đáy $r = 2\\text{ cm}$ và chiều cao $h = 5\\text{ cm}$.\n\n**Lời giải:**\nÁp dụng công thức:\n$$V = \\pi \\cdot 2^2 \\cdot 5 = 20\\pi \\text{ cm}^3$$",
@@ -173,7 +173,7 @@ export const formulas = [
   {
     id: "xs11-tohop",
     name: "Số tổ hợp chập k của n phần tử",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Đại số",
     grade: 10,
     latex: "C_n^k = \\frac{n!}{k!(n-k)!} \\quad (0 \\le k \\le n)",
     explanation: "Dùng khi chọn ra $k$ phần tử từ $n$ phần tử khác nhau mà KHÔNG quan tâm đến thứ tự sắp xếp.\nTrong đó:\n- $n!$: Giai thừa của $n$ ($n! = 1 \\cdot 2 \\dots n$).\n- $k$: Số phần tử chọn ra.\n- $n$: Tổng số phần tử.",
@@ -185,7 +185,7 @@ export const formulas = [
   {
     id: "xs11-chinhhop",
     name: "Số chỉnh hợp chập k của n phần tử",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Đại số",
     grade: 10,
     latex: "A_n^k = \\frac{n!}{(n-k)!} \\quad (0 \\le k \\le n)",
     explanation: "Dùng khi chọn ra $k$ phần tử từ $n$ phần tử khác nhau VÀ CÓ sắp xếp thứ tự giữa $k$ phần tử đó.\nTrong đó:\n- $A_n^k$: Số chỉnh hợp.\n- Sự khác biệt với Tổ hợp: Chỉnh hợp nhân thêm với $k!$ để phản ánh thứ tự.",
@@ -197,7 +197,7 @@ export const formulas = [
   {
     id: "xs11-xacsuat",
     name: "Công thức định nghĩa xác suất",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 10,
     latex: "P(A) = \\frac{n(A)}{n(\\Omega)}",
     explanation: "Định nghĩa xác suất cổ điển của biến cố $A$ xảy ra trong không gian mẫu $\\Omega$.\nTrong đó:\n- $n(A)$: Số phần tử của tập hợp biến cố $A$ (số kết quả thuận lợi).\n- $n(\\Omega)$: Số phần tử của không gian mẫu $\\Omega$ (tổng số kết quả có thể xảy ra).",
@@ -209,7 +209,7 @@ export const formulas = [
   {
     id: "ds11-luonggiac-cong",
     name: "Công thức lượng giác - Công thức cộng",
-    topic: "Đại số",
+    topic: "Lượng giác",
     grade: 11,
     latex: "\\cos(a - b) = \\cos a \\cos b + \\sin a \\sin b",
     explanation: "Công thức lượng giác biến đổi tổng hoặc hiệu hai góc.\nTrong đó:\n- $a$: Góc thứ nhất (tính bằng radian hoặc độ).\n- $b$: Góc thứ hai (tính bằng radian hoặc độ).\nCác công thức tương đương:\n- $\\cos(a + b) = \\cos a \\cos b - \\sin a \\sin b$\n- $\\sin(a \\pm b) = \\sin a \\cos b \\pm \\cos a \\sin b$",
@@ -364,18 +364,6 @@ export const formulas = [
     mnemonic: "Đạo hàm tích: u phẩy v cộng v phẩy u. Đạo hàm thương: u phẩy v trừ v phẩy u chia v bình."
   },
   {
-    id: "ds12-sophuc-modun",
-    name: "Môđun của số phức",
-    topic: "Đại số",
-    grade: 12,
-    latex: "|z| = \\sqrt{a^2 + b^2} \\quad (z = a + bi)",
-    explanation: "Cho số phức $z = a + bi$ ($a, b \\in \\mathbb{R}$).\nTrong đó:\n- $a$: Phần thực của số phức $z$.\n- $b$: Phần ảo của số phức $z$.\n- $i$: Đơn vị ảo ($i^2 = -1$).\n- $|z|$: Môđun của số phức $z$, bằng khoảng cách từ gốc tọa độ $O$ đến điểm biểu diễn $M(a, b)$ trên mặt phẳng phức.",
-    example: "Tính môđun của số phức $z = 3 - 4i$.\n\n**Lời giải:**\n- Xác định phần thực $a = 3$, phần ảo $b = -4$.\n- Áp dụng công thức:\n  $$|z| = \\sqrt{3^2 + (-4)^2} = \\sqrt{9 + 16} = 5$$",
-    tags: ["Số phức", "Môđun", "Hình học phức"],
-    difficulty: "Dễ",
-    mnemonic: "Giống độ dài đường chéo trong hệ tọa độ: Căn bậc hai của thực bình cộng ảo bình."
-  },
-  {
     id: "hh12-oxyz-matcau",
     name: "Phương trình mặt cầu trong Oxyz",
     topic: "Hình học",
@@ -405,7 +393,7 @@ export const formulas = [
     id: "gt12-daoham-log",
     name: "Đạo hàm hàm logarit (ln và log cơ số a)",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     latex: "(\\ln x)' = \\frac{1}{x}, \\quad (\\log_a x)' = \\frac{1}{x \\ln a} \\quad (x > 0, a > 0, a \\neq 1)",
     explanation: "Đạo hàm của hai dạng hàm logarit cơ bản:\n- $(\\ln x)' = \\dfrac{1}{x}$: Đây là trường hợp đặc biệt $a = e$, đơn giản nhất.\n- $(\\log_a x)' = \\dfrac{1}{x \\ln a}$: Quy về logarit tự nhiên thông qua hệ số $\\dfrac{1}{\\ln a}$.\n\nCả hai chỉ xác định với $x > 0$.",
     example: "Tính đạo hàm của hàm số $y = \\log_3 x + 4\\ln x$.\n\n**Lời giải:**\n$$y' = \\frac{1}{x \\ln 3} + \\frac{4}{x} = \\frac{1}{x}\\left(\\frac{1}{\\ln 3} + 4\\right)$$",
@@ -542,7 +530,7 @@ export const formulas = [
   {
     id: "ds12-thongke-phuongsai",
     name: "Phương sai và độ lệch chuẩn (mẫu ghép nhóm)",
-    topic: "Đại số",
+    topic: "Xác suất & Thống kê",
     grade: 12,
     latex: "s^2 = \\frac{1}{n}\\sum_{i=1}^{k} n_i (\\bar{x}_i - \\bar{x})^2, \\quad s = \\sqrt{s^2}",
     explanation: "Cho mẫu số liệu ghép nhóm với $k$ nhóm, mỗi nhóm $i$ có:\n- $n_i$: Tần số (số phần tử trong nhóm $i$).\n- $\\bar{x}_i$: Giá trị đại diện của nhóm $i$ (thường là trung điểm khoảng).\n- $n = \\sum n_i$: Cỡ mẫu.\n- $\\bar{x}$: Số trung bình mẫu.\n\n**Công thức:**\n$$\\bar{x} = \\frac{1}{n}\\sum_{i=1}^{k} n_i \\bar{x}_i$$\n$$s^2 = \\frac{1}{n}\\sum_{i=1}^{k} n_i (\\bar{x}_i - \\bar{x})^2$$\n$$s = \\sqrt{s^2} \\text{ (độ lệch chuẩn)}$$\n\n$s^2$ và $s$ đo mức độ phân tán của dữ liệu quanh giá trị trung bình.",
@@ -556,8 +544,8 @@ export const formulas = [
   {
     id: "xs12-xacsuat-dieukien",
     name: "Xác suất có điều kiện P(A|B)",
-    topic: "Xác suất & Tổ hợp",
-    grade: 11,
+    topic: "Xác suất & Thống kê",
+    grade: 12,
     latex: "P(A|B) = \\frac{P(A \\cap B)}{P(B)} \\quad (P(B) > 0)",
     explanation: "$P(A|B)$ là xác suất xảy ra sự kiện $A$ **khi biết** sự kiện $B$ đã xảy ra — không gian mẫu thu hẹp từ $\\Omega$ xuống $B$.\n\nTrong đó:\n- $P(A|B)$: Xác suất có điều kiện của $A$ khi $B$ đã xảy ra.\n- $P(A \\cap B)$: Xác suất cả $A$ và $B$ cùng xảy ra.\n- $P(B) > 0$: Điều kiện phải là sự kiện có thể xảy ra.\n\n**Công thức nhân xác suất** (suy ra từ định nghĩa):\n$$P(A \\cap B) = P(B) \\cdot P(A|B) = P(A) \\cdot P(B|A)$$\n\n**Độc lập thống kê:** Hai sự kiện $A$ và $B$ **độc lập** khi biết $B$ không làm thay đổi xác suất $A$:\n$$P(A|B) = P(A) \\quad \\Leftrightarrow \\quad P(A \\cap B) = P(A) \\cdot P(B)$$\nKhi độc lập: xác suất đồng thời bằng tích từng xác suất.",
     example: "**Ví dụ 1 — Có điều kiện:** Tung xúc xắc 6 mặt. Biết kết quả là số chẵn ($B$), tính xác suất ra số $> 3$ ($A$).\n- $B = \\{2,4,6\\}$, $P(B) = 1/2$; $A \\cap B = \\{4,6\\}$, $P(A\\cap B)=1/3$.\n$$P(A|B) = \\frac{1/3}{1/2} = \\frac{2}{3}$$\nSo sánh: nếu không có điều kiện $P(A) = P(\\{4,5,6\\})=1/2 \\neq 2/3$ — điều kiện $B$ đã làm thay đổi xác suất.\n\n**Ví dụ 2 — Độc lập:** Tung đồng xu 2 lần. $A$ = lần 1 ra mặt H, $B$ = lần 2 ra mặt H.\n- $P(A)=1/2$, $P(B)=1/2$, $P(A\\cap B)=1/4$.\n- Kiểm tra: $P(A)\\cdot P(B) = \\frac{1}{2}\\cdot\\frac{1}{2}=\\frac{1}{4}=P(A\\cap B)$ → **A và B độc lập** ✓.",
@@ -568,8 +556,8 @@ export const formulas = [
   {
     id: "xs12-xacsuat-toanphan",
     name: "Công thức xác suất toàn phần",
-    topic: "Xác suất & Tổ hợp",
-    grade: 11,
+    topic: "Xác suất & Thống kê",
+    grade: 12,
     latex: "P(A) = \\sum_{i=1}^{n} P(H_i) \\cdot P(A|H_i)",
     explanation: "Cho hệ đầy đủ các sự kiện $H_1, H_2, \\ldots, H_n$ (phân hoạch không gian mẫu, tức là các $H_i$ xung khắc nhau và $\\bigcup H_i = \\Omega$). Khi đó xác suất của sự kiện $A$ là:\n$$P(A) = P(H_1)P(A|H_1) + P(H_2)P(A|H_2) + \\cdots + P(H_n)P(A|H_n)$$\n\n**Trường hợp đặc biệt (2 giả thuyết $H$ và $\\bar{H}$):**\n$$P(A) = P(H) \\cdot P(A|H) + P(\\bar{H}) \\cdot P(A|\\bar{H})$$",
     example: "Hộp 1 có 3 bi đỏ, 2 bi xanh. Hộp 2 có 1 bi đỏ, 4 bi xanh. Lấy ngẫu nhiên một hộp (mỗi hộp xác suất 1/2) rồi lấy 1 bi. Tính xác suất lấy được bi đỏ.\n\n**Lời giải:**\n$$P(A) = P(H_1) \\cdot P(A|H_1) + P(H_2) \\cdot P(A|H_2) = \\frac{1}{2} \\cdot \\frac{3}{5} + \\frac{1}{2} \\cdot \\frac{1}{5} = \\frac{3}{10} + \\frac{1}{10} = \\frac{2}{5}$$",
@@ -580,8 +568,8 @@ export const formulas = [
   {
     id: "xs12-bayes",
     name: "Công thức Bayes",
-    topic: "Xác suất & Tổ hợp",
-    grade: 11,
+    topic: "Xác suất & Thống kê",
+    grade: 12,
     latex: "P(H_k|A) = \\frac{P(H_k) \\cdot P(A|H_k)}{\\sum_{i=1}^{n} P(H_i) \\cdot P(A|H_i)}",
     explanation: "Công thức Bayes cho phép **cập nhật** xác suất của giả thuyết $H_k$ sau khi biết sự kiện $A$ đã xảy ra.\n\n**Ý nghĩa:**\n- $P(H_k)$: Xác suất *tiên nghiệm* của giả thuyết $H_k$ (trước khi có kết quả).\n- $P(A|H_k)$: Xác suất quan sát được $A$ nếu $H_k$ đúng.\n- $P(H_k|A)$: Xác suất *hậu nghiệm* của $H_k$ sau khi biết $A$.\n- Mẫu số $\\sum P(H_i)P(A|H_i) = P(A)$ là công thức xác suất toàn phần.",
     example: "Dùng ví dụ trên. Biết lấy được bi đỏ (sự kiện $A$), tính xác suất bi đó từ Hộp 1.\n\n**Lời giải:**\n$$P(H_1|A) = \\frac{P(H_1)\\cdot P(A|H_1)}{P(A)} = \\frac{\\frac{1}{2}\\cdot\\frac{3}{5}}{\\frac{2}{5}} = \\frac{3/10}{2/5} = \\frac{3}{4}$$",
@@ -618,7 +606,7 @@ export const formulas = [
   {
     id: "xs10-quitac-dem",
     name: "Quy tắc cộng và quy tắc nhân",
-    topic: "Xác suất & Tổ hợp",
+    topic: "Xác suất & Thống kê",
     grade: 10,
     latex: "|A \\cup B| = |A| + |B| - |A \\cap B|, \\qquad |A \\times B| = |A| \\cdot |B|",
     explanation: "Hai quy tắc đếm cơ bản trong tổ hợp:\n\n**Quy tắc cộng:** Nếu công việc $A$ có $m$ cách thực hiện và công việc $B$ có $n$ cách thực hiện (xung khắc nhau — không làm đồng thời), thì có $m + n$ cách.\n$$|A \\cup B| = |A| + |B| \\quad \\text{(khi } A \\cap B = \\emptyset\\text{)}$$\n\n**Quy tắc nhân:** Nếu công việc gồm 2 bước: bước 1 có $m$ cách, bước 2 có $n$ cách, thì tổng số cách là $m \\times n$.\n$$|A \\times B| = |A| \\cdot |B|$$\n\n**Ghi nhớ:** Cộng → \"hoặc\" (chọn 1 trong các phương án). Nhân → \"và\" (làm lần lượt các bước).",
@@ -632,7 +620,7 @@ export const formulas = [
   {
     id: "ds11-luonggiac-nhandoi",
     name: "Công thức nhân đôi (sin 2a, cos 2a, tan 2a)",
-    topic: "Đại số",
+    topic: "Lượng giác",
     grade: 11,
     latex: "\\begin{aligned}\\sin 2a &= 2\\sin a\\cos a \\\\ \\cos 2a &= \\cos^2 a - \\sin^2 a \\\\ &= 2\\cos^2 a - 1 = 1 - 2\\sin^2 a\\end{aligned}",
     explanation: "Công thức nhân đôi — trường hợp đặc biệt của công thức cộng khi $\\alpha = \\beta = a$.\nTrong đó:\n- $a$: Góc bất kỳ (tính bằng radian hoặc độ).\n- $k$: Số nguyên bất kỳ ($k \\in \\mathbb{Z}$).\n\n$$\\begin{aligned}\\sin 2a &= 2\\sin a \\cos a \\\\ \\cos 2a &= \\cos^2 a - \\sin^2 a \\\\ &= 1 - 2\\sin^2 a = 2\\cos^2 a - 1 \\\\ \\tan 2a &= \\dfrac{2\\tan a}{1 - \\tan^2 a} \\quad \\left(a \\neq \\dfrac{\\pi}{4} + \\dfrac{k\\pi}{2}\\right)\\end{aligned}$$\n\n**Ứng dụng:** Rút gọn biểu thức, giải phương trình, tính tích phân.",
@@ -644,7 +632,7 @@ export const formulas = [
   {
     id: "ds11-luonggiac-habac",
     name: "Công thức hạ bậc (sin², cos²)",
-    topic: "Đại số",
+    topic: "Lượng giác",
     grade: 11,
     latex: "\\sin^2 a = \\frac{1 - \\cos 2a}{2}, \\qquad \\cos^2 a = \\frac{1 + \\cos 2a}{2}",
     explanation: "Công thức hạ bậc — suy từ công thức nhân đôi.\nTrong đó:\n- $a$: Góc cần hạ bậc (tính bằng radian hoặc độ).\n- $b$: Góc thứ hai (dùng trong công thức tích thành tổng).\n\n$$\\sin^2 a = \\frac{1 - \\cos 2a}{2}$$\n$$\\cos^2 a = \\frac{1 + \\cos 2a}{2}$$\n\n**Tích thành tổng:**\n$$\\sin a \\cos b = \\frac{1}{2}[\\sin(a+b) + \\sin(a-b)]$$\n$$\\cos a \\cos b = \\frac{1}{2}[\\cos(a-b) + \\cos(a+b)]$$\n$$\\sin a \\sin b = \\frac{1}{2}[\\cos(a-b) - \\cos(a+b)]$$\n\n**Ứng dụng chính:** Tính tích phân $\\int \\sin^2 x\\,dx$, $\\int \\cos^2 x\\,dx$.",
@@ -656,7 +644,7 @@ export const formulas = [
   {
     id: "gt11-ptluonggiac-sincos",
     name: "Phương trình lượng giác cơ bản (sin và cos)",
-    topic: "Giải tích",
+    topic: "Lượng giác",
     grade: 11,
     latex: "\\begin{aligned}\\sin x = \\sin\\alpha &\\Rightarrow \\begin{cases} x = \\alpha + 2k\\pi \\\\ x = \\pi - \\alpha + 2k\\pi \\end{cases} \\\\ \\cos x = \\cos\\alpha &\\Rightarrow x = \\pm\\alpha + 2k\\pi\\end{aligned}\\quad(k\\in\\mathbb{Z})",
     explanation: "Trong đó:\n- $x$: Ẩn số cần tìm nghiệm.\n- $\\alpha$: Góc đã biết (giá trị cụ thể được đặt là $\\arcsin m$ hoặc $\\arccos m$).\n- $k$: Số nguyên bất kỳ ($k \\in \\mathbb{Z}$), thể hiện tính tuần hoàn của hàm lượng giác.\n- $m$: Giá trị cho trước của hàm lượng giác (cần $|m| \\leq 1$ để có nghiệm).\n\n**Phương trình $\\sin x = m$:**\n- Đặt $\\alpha = \\arcsin m$.\n- Nghiệm: $x = \\alpha + 2k\\pi$ hoặc $x = \\pi - \\alpha + 2k\\pi$ $(k \\in \\mathbb{Z})$.\n\n**Phương trình $\\cos x = m$:**\n- Đặt $\\alpha = \\arccos m$.\n- Nghiệm: $x = \\pm\\alpha + 2k\\pi$ $(k \\in \\mathbb{Z})$.\n\n**Giá trị đặc biệt cần nhớ:** $\\arcsin(0)=0$, $\\arcsin(1)=\\pi/2$, $\\arccos(0)=\\pi/2$, $\\arccos(1)=0$.",
@@ -668,7 +656,7 @@ export const formulas = [
   {
     id: "gt11-ptluonggiac-tancot",
     name: "Phương trình lượng giác cơ bản (tan và cot)",
-    topic: "Giải tích",
+    topic: "Lượng giác",
     grade: 11,
     latex: "\\tan x = \\tan \\alpha \\Rightarrow x = \\alpha + k\\pi, \\qquad \\cot x = \\cot \\alpha \\Rightarrow x = \\alpha + k\\pi",
     explanation: "Trong đó:\n- $x$: Ẩn số cần tìm nghiệm.\n- $\\alpha$: Góc đã biết (đặt là $\\arctan m$ hoặc $\\text{arccot}\\, m$).\n- $k$: Số nguyên bất kỳ ($k \\in \\mathbb{Z}$), thể hiện tính tuần hoàn chu kỳ $\\pi$.\n- $m$: Giá trị cho trước của hàm tan hoặc cot (không có hạn chế về giá trị).\n\n**Phương trình $\\tan x = m$:**\n- Đặt $\\alpha = \\arctan m$.\n- Nghiệm: $x = \\alpha + k\\pi$ $(k \\in \\mathbb{Z})$.\n- Điều kiện xác định: $x \\neq \\dfrac{\\pi}{2} + k\\pi$.\n\n**Phương trình $\\cot x = m$:**\n- Đặt $\\alpha = \\text{arccot}\\, m$.\n- Nghiệm: $x = \\alpha + k\\pi$ $(k \\in \\mathbb{Z})$.\n- Điều kiện xác định: $x \\neq k\\pi$.\n\n**Nhận xét:** Tan và cot đều có chu kỳ $\\pi$ nên nghiệm chỉ cộng $k\\pi$ (không phải $2k\\pi$).",
@@ -706,8 +694,8 @@ export const formulas = [
   {
     id: "gt12-mu-log-phuongtrinh",
     name: "Phương trình mũ và logarit cơ bản",
-    topic: "Giải tích",
-    grade: 12,
+    topic: "Đại số",
+    grade: 11,
     latex: "\\begin{aligned}a^{f(x)}=a^{g(x)} &\\Leftrightarrow f(x)=g(x) \\\\ \\log_a f(x)=\\log_a g(x) &\\Leftrightarrow \\begin{cases}f(x)=g(x)\\\\f(x)>0\\end{cases}\\end{aligned}",
     explanation: "**Phương trình mũ cơ bản** $(a > 0, a \\neq 1)$:\n$$a^{f(x)} = a^{g(x)} \\Leftrightarrow f(x) = g(x)$$\n$$a^{f(x)} = b \\Leftrightarrow f(x) = \\log_a b \\quad (b > 0)$$\n\n**Phương trình logarit cơ bản** $(a > 0, a \\neq 1)$:\n$$\\log_a f(x) = \\log_a g(x) \\Leftrightarrow \\begin{cases} f(x) = g(x) \\\\ f(x) > 0 \\end{cases}$$\n$$\\log_a f(x) = b \\Leftrightarrow f(x) = a^b$$\n\n**Kỹ thuật hay dùng:** Đặt $t = a^x$ hoặc $t = \\log_a x$ để đưa về phương trình bậc 2.",
     example: "Giải phương trình $2^{x^2 - 3} = 2^{2x}$.\n\n**Lời giải:**\nCùng cơ số $a = 2 > 0, a \\neq 1$:\n$$x^2 - 3 = 2x \\Rightarrow x^2 - 2x - 3 = 0 \\Rightarrow (x-3)(x+1) = 0 \\Rightarrow x = 3 \\text{ hoặc } x = -1$$",
@@ -718,38 +706,14 @@ export const formulas = [
   {
     id: "gt12-logarit-doicooso",
     name: "Công thức đổi cơ số logarit",
-    topic: "Giải tích",
-    grade: 12,
+    topic: "Đại số",
+    grade: 11,
     latex: "\\log_a b = \\frac{\\log_c b}{\\log_c a} = \\frac{\\ln b}{\\ln a} \\qquad (a, b, c > 0;\\; a, c \\neq 1)",
     explanation: "Công thức đổi cơ số cho phép chuyển bất kỳ logarit về cơ số $e$ (tự nhiên) hoặc cơ số 10.\nTrong đó:\n- $a$: Cơ số cũ cần đổi ($a > 0$, $a \\neq 1$).\n- $b$: Đối số của logarit ($b > 0$).\n- $c$: Cơ số mới dùng để đổi ($c > 0$, $c \\neq 1$).\n- $\\ln$: Logarit tự nhiên (cơ số $e$).\n- $\\lg$: Logarit thập phân (cơ số $10$).\n\n$$\\log_a b = \\frac{\\ln b}{\\ln a} = \\frac{\\lg b}{\\lg a}$$\n\n**Hệ quả quan trọng:**\n$$\\log_a b = \\frac{1}{\\log_b a}$$\n$$\\log_{a^n} b = \\frac{1}{n} \\log_a b$$\n$$\\log_{a^n} b^m = \\frac{m}{n} \\log_a b$$\n\n**Ứng dụng:** Tính giá trị logarit trên máy tính, đưa về cùng cơ số khi giải phương trình.",
     example: "Tính $\\log_4 8$ không dùng máy tính.\n\n**Lời giải:**\nĐổi về cơ số $2$:\n$$\\log_4 8 = \\frac{\\log_2 8}{\\log_2 4} = \\frac{3}{2}$$\n*Hoặc:* $\\log_4 8 = \\log_{2^2} 2^3 = \\dfrac{3}{2} \\log_2 2 = \\dfrac{3}{2}$",
     tags: ["Logarit", "Đổi cơ số", "Biến đổi"],
     difficulty: "Trung bình",
     mnemonic: "Log_a(b) = log(b)/log(a) — tử là đối số, mẫu là cơ số, cùng log tự nhiên hoặc log thập phân. 'Cơ số xuống mẫu, đối số lên tử'."
-  },
-  {
-    id: "ds12-sophuc-pheptoan",
-    name: "Phép toán số phức (nhân và chia)",
-    topic: "Đại số",
-    grade: 12,
-    latex: "(a+bi)(c+di) = (ac-bd)+(ad+bc)i, \\quad \\frac{a+bi}{c+di} = \\frac{(a+bi)(c-di)}{c^2+d^2}",
-    explanation: "Cho hai số phức $z_1 = a + bi$ và $z_2 = c + di$.\nTrong đó:\n- $a$: Phần thực của $z_1$.\n- $b$: Phần ảo của $z_1$.\n- $c$: Phần thực của $z_2$.\n- $d$: Phần ảo của $z_2$.\n- $i$: Đơn vị ảo ($i^2 = -1$).\n\n**Cộng và trừ** (cộng/trừ từng phần thực và phần ảo):\n$$z_1 \\pm z_2 = (a \\pm c) + (b \\pm d)i$$\n\n**Nhân** (khai triển như đa thức, dùng $i^2=-1$):\n$$z_1 \\cdot z_2 = (a+bi)(c+di) = ac + adi + bci + bdi^2$$\n$$= ac + (ad+bc)i + bd(-1) = (ac-bd) + (ad+bc)i$$\n\n**Chia** (nhân tử số và mẫu số với **liên hợp** $\\bar{z}_2 = c - di$ để triệt tiêu $i$ ở mẫu):\n$$\\frac{z_1}{z_2} = \\frac{(a+bi)(c-di)}{(c+di)(c-di)} = \\frac{(ac+bd)+(bc-ad)i}{c^2+d^2}$$\nVì $(c+di)(c-di) = c^2 + d^2$ (không có $i$!) nhờ $i^2=-1$.\n\n**Liên hợp:** $\\bar{z} = a - bi$. Luôn có: $z \\cdot \\bar{z} = a^2 + b^2 = |z|^2$.",
-    example: "Tính $\\dfrac{3+4i}{1-2i}$.\n\n**Lời giải:**\nNhân cả tử và mẫu với liên hợp của mẫu $\\overline{(1-2i)} = 1+2i$:\n$$\\frac{(3+4i)(1+2i)}{(1-2i)(1+2i)}$$\n- Tử: $(3+4i)(1+2i) = 3+6i+4i+8i^2 = 3+10i+8(-1) = -5+10i$\n- Mẫu: $(1)^2+(2)^2 = 5$\n$$= \\frac{-5+10i}{5} = -1+2i$$",
-    tags: ["Số phức", "Nhân chia", "Liên hợp"],
-    difficulty: "Trung bình",
-    mnemonic: "i² = -1 là chìa khóa. Nhân số phức: khai triển như đa thức rồi đổi i² thành -1. Chia số phức: nhân tử và mẫu với liên hợp của mẫu (đổi dấu phần ảo) để khử i khỏi mẫu."
-  },
-  {
-    id: "ds12-sophuc-luonggiac",
-    name: "Dạng lượng giác của số phức",
-    topic: "Đại số",
-    grade: 12,
-    latex: "z = r(\\cos\\theta + i\\sin\\theta), \\quad r = |z|, \\quad \\theta = \\arg(z)",
-    explanation: "Mọi số phức $z = a + bi$ $(z \\neq 0)$ đều có **dạng lượng giác**:\n$$z = r(\\cos\\theta + i\\sin\\theta)$$\nTrong đó:\n- $r = |z| = \\sqrt{a^2 + b^2}$: Môđun (khoảng cách từ gốc O đến điểm $M(a,b)$).\n- $\\theta = \\arg(z)$: Argument (góc hợp bởi tia $OM$ và tia $Ox$ dương).\n\n**Nhân và chia dạng lượng giác:**\n$$z_1 z_2 = r_1 r_2 [\\cos(\\theta_1+\\theta_2) + i\\sin(\\theta_1+\\theta_2)]$$\n$$\\frac{z_1}{z_2} = \\frac{r_1}{r_2} [\\cos(\\theta_1-\\theta_2) + i\\sin(\\theta_1-\\theta_2)]$$\n\n**Công thức De Moivre:**\n$$z^n = r^n(\\cos n\\theta + i\\sin n\\theta)$$",
-    example: "Viết $z = 1 + \\sqrt{3}\\,i$ dưới dạng lượng giác.\n\n**Lời giải:**\n- $r = \\sqrt{1^2 + (\\sqrt{3})^2} = 2$\n- $\\cos\\theta = \\frac{1}{2}$, $\\sin\\theta = \\frac{\\sqrt{3}}{2} \\Rightarrow \\theta = \\frac{\\pi}{3}$\n- $z = 2\\left(\\cos\\dfrac{\\pi}{3} + i\\sin\\dfrac{\\pi}{3}\\right)$",
-    tags: ["Số phức", "Dạng lượng giác", "Môđun", "Argument", "De Moivre"],
-    difficulty: "Khó",
-    mnemonic: "z = r(cos θ + i sin θ): r là độ dài, θ là góc. Nhân → nhân r, cộng θ. Chia → chia r, trừ θ. Lũy thừa → lũy thừa r, nhân θ (De Moivre)."
   },
   {
     id: "gt12-cuctrituoc",
@@ -778,22 +742,10 @@ export const formulas = [
     mnemonic: "Trung bình cộng luôn lớn hơn hoặc bằng trung bình nhân: (a+b)/2 ≥ √(ab). Dấu bằng khi hai số bằng nhau."
   },
   {
-    id: "ds-bdt-cauchy-schwarz",
-    name: "Bất đẳng thức Cauchy-Schwarz",
-    topic: "Đại số",
-    grade: 11,
-    latex: "(a^2 + b^2)(x^2 + y^2) \\geq (ax + by)^2",
-    explanation: "Trong đó:\n- $a, b$: Các số thực bất kỳ (vế trái dạng 2D).\n- $x, y$: Các số thực bất kỳ (vế trái dạng 2D).\n- Dấu bằng xảy ra khi và chỉ khi $\\dfrac{a}{x} = \\dfrac{b}{y}$.\n\n**Bất đẳng thức Cauchy-Schwarz** (dạng 2D):\n$$(a^2 + b^2)(x^2 + y^2) \\geq (ax + by)^2$$\n\n**Dạng phân thức** (Engel / Titu Andrescu) — hay gặp trong thi THPT:\n$$\\frac{a^2}{x} + \\frac{b^2}{y} + \\frac{c^2}{z} \\geq \\frac{(a+b+c)^2}{x+y+z} \\quad (x,y,z > 0)$$\n\nDấu bằng khi $\\frac{a}{x} = \\frac{b}{y} = \\frac{c}{z}$.",
-    example: "Chứng minh: với $a,b > 0$ thì $\\frac{1}{a} + \\frac{1}{b} \\geq \\frac{4}{a+b}$.\n\n**Lời giải:**\nDùng dạng Titu với $a_1=b_1=1$, $x_1=a$, $x_2=b$:\n$$\\frac{1^2}{a} + \\frac{1^2}{b} \\geq \\frac{(1+1)^2}{a+b} = \\frac{4}{a+b}$$\nDấu bằng khi $a = b$.",
-    tags: ["Bất đẳng thức", "Cauchy-Schwarz", "Chứng minh"],
-    difficulty: "Khó",
-    mnemonic: "Tích tổng bình phương lớn hơn bình phương tổng tích: (a²+b²)(x²+y²) ≥ (ax+by)²."
-  },
-  {
     id: "ds11-nhi-thuc-newton",
     name: "Nhị thức Newton",
-    topic: "Xác suất & Tổ hợp",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     latex: "(a + b)^n = \\sum_{k=0}^{n} C_n^k \\, a^{n-k} b^k",
     explanation: "Khai triển lũy thừa của tổng hai số theo công thức Nhị thức Newton.\nTrong đó:\n- $a$: Số hạng thứ nhất.\n- $b$: Số hạng thứ hai.\n- $n$: Số mũ của nhị thức ($n \\in \\mathbb{N}$).\n- $k$: Chỉ số chạy từ $0$ đến $n$ → tổng có $n+1$ số hạng.\n- $C_n^k = \\dfrac{n!}{k!(n-k)!}$: Hệ số nhị thức (tổ hợp chập $k$ của $n$).\n- $T_{k+1} = C_n^k a^{n-k} b^k$: Số hạng tổng quát (số hạng thứ $k+1$).\n\n$$(a+b)^n = C_n^0 a^n + C_n^1 a^{n-1}b + C_n^2 a^{n-2}b^2 + \\cdots + C_n^n b^n = \\sum_{k=0}^{n} C_n^k a^{n-k} b^k$$\n\n**Tính chất đặc biệt:**\n- Tổng tất cả hệ số: thay $a=b=1$ → $\\sum C_n^k = 2^n$.\n- Tổng hệ số số hạng bậc chẵn = tổng số hạng bậc lẻ = $2^{n-1}$.",
     example: "**Ví dụ 1 — Khai triển đầy đủ:** Khai triển $(x+1)^4$.\n\n$$C_4^0 x^4 + C_4^1 x^3 \\cdot 1 + C_4^2 x^2 \\cdot 1^2 + C_4^3 x \\cdot 1^3 + C_4^4 \\cdot 1^4$$\n$$= x^4 + 4x^3 + 6x^2 + 4x + 1$$\n(Hệ số: 1, 4, 6, 4, 1 — hàng thứ 4 của tam giác Pascal)\n\n**Ví dụ 2 — Tìm số hạng:** Tìm số hạng thứ 4 trong $(x+2)^6$.\n\nSố hạng thứ 4 → $k=3$:\n$$T_4 = C_6^3 \\cdot x^{6-3} \\cdot 2^3 = 20 \\cdot x^3 \\cdot 8 = 160x^3$$",
@@ -824,5 +776,245 @@ export const formulas = [
     tags: ["Bất phương trình", "Bậc hai", "Tam thức"],
     difficulty: "Trung bình",
     mnemonic: "Parabola hướng lên (a>0): âm ở trong khoảng giữa hai nghiệm, dương ở ngoài. Parabola hướng xuống (a<0): ngược lại."
+  },
+
+  // ===== LƯỢNG GIÁC (Lớp 11 - Kết nối tri thức) =====
+  {
+    id: "lg11-congthuc-coban",
+    name: "Công thức lượng giác cơ bản",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "\\sin^2 x + \\cos^2 x = 1, \\quad \\tan x = \\frac{\\sin x}{\\cos x}, \\quad 1 + \\tan^2 x = \\frac{1}{\\cos^2 x}",
+    explanation: "Ba hệ thức cơ bản liên hệ bốn hàm lượng giác:\n\n- $\\sin^2 x + \\cos^2 x = 1$: Xuất phát từ định lý Pythagore trên đường tròn đơn vị.\n- $\\tan x = \\dfrac{\\sin x}{\\cos x}$ (khi $\\cos x \\neq 0$).\n- $1 + \\tan^2 x = \\dfrac{1}{\\cos^2 x}$ (chia hệ thức 1 cho $\\cos^2 x$).\n- $1 + \\cot^2 x = \\dfrac{1}{\\sin^2 x}$ (chia hệ thức 1 cho $\\sin^2 x$).\n- $\\tan x \\cdot \\cot x = 1$ (khi $\\sin x \\neq 0$, $\\cos x \\neq 0$).\n\n**Ứng dụng:** Rút gọn biểu thức, chứng minh đẳng thức, tính giá trị khi biết một hàm.",
+    example: "Biết $\\sin x = \\dfrac{3}{5}$ và $x \\in \\left(\\dfrac{\\pi}{2}; \\pi\\right)$. Tính $\\cos x$ và $\\tan x$.\n\n**Lời giải:**\n- $\\cos^2 x = 1 - \\sin^2 x = 1 - \\frac{9}{25} = \\frac{16}{25}$\n- Vì $x \\in (\\pi/2; \\pi)$: $\\cos x < 0 \\Rightarrow \\cos x = -\\frac{4}{5}$\n- $\\tan x = \\frac{\\sin x}{\\cos x} = \\frac{3/5}{-4/5} = -\\frac{3}{4}$",
+    tags: ["Lượng giác", "Công thức cơ bản", "Đường tròn đơn vị"],
+    difficulty: "Dễ",
+    mnemonic: "sin² + cos² = 1: cạnh huyền bình phương. Chia cả hai vế cho cos²: 1 + tan² = 1/cos². Chia cho sin²: 1 + cot² = 1/sin²."
+  },
+  {
+    id: "lg11-goc-dacbiet",
+    name: "Giá trị lượng giác góc đặc biệt",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "\\sin\\frac{\\pi}{6}=\\frac{1}{2},\\;\\sin\\frac{\\pi}{4}=\\frac{\\sqrt{2}}{2},\\;\\sin\\frac{\\pi}{3}=\\frac{\\sqrt{3}}{2},\\;\\sin\\frac{\\pi}{2}=1",
+    explanation: "Bảng giá trị lượng giác các góc thường gặp:\n\n| Góc | $0$ | $\\pi/6$ | $\\pi/4$ | $\\pi/3$ | $\\pi/2$ |\n|-----|-----|---------|---------|---------|--------|\n| sin | $0$ | $1/2$ | $\\sqrt{2}/2$ | $\\sqrt{3}/2$ | $1$ |\n| cos | $1$ | $\\sqrt{3}/2$ | $\\sqrt{2}/2$ | $1/2$ | $0$ |\n| tan | $0$ | $1/\\sqrt{3}$ | $1$ | $\\sqrt{3}$ | KXĐ |\n\n**Góc bù** ($\\pi - x$): $\\sin(\\pi - x) = \\sin x$, $\\cos(\\pi - x) = -\\cos x$.\n**Góc phụ** ($\\pi/2 - x$): $\\sin(\\pi/2 - x) = \\cos x$, $\\cos(\\pi/2 - x) = \\sin x$.",
+    example: "Tính $\\sin 135° + \\cos 120° - \\tan 60°$.\n\n**Lời giải:**\n- $\\sin 135° = \\sin(180°-45°) = \\sin 45° = \\dfrac{\\sqrt{2}}{2}$\n- $\\cos 120° = -\\cos 60° = -\\dfrac{1}{2}$\n- $\\tan 60° = \\sqrt{3}$\n\n$= \\dfrac{\\sqrt{2}}{2} - \\dfrac{1}{2} - \\sqrt{3}$",
+    tags: ["Lượng giác", "Góc đặc biệt", "Bảng giá trị"],
+    difficulty: "Dễ",
+    mnemonic: "Nhớ sin tăng dần từ 0 đến 1: sin(0°,30°,45°,60°,90°) = 0; 1/2; √2/2; √3/2; 1. Cos ngược lại. Tam giác 30-60-90 (1:√3:2) và 45-45-90 (1:1:√2)."
+  },
+  {
+    id: "lg11-hamso-luonggiac",
+    name: "Hàm số lượng giác (sin, cos, tan, cot)",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "y = \\sin x:\\; T=2\\pi,\\; [-1;1];\\quad y = \\cos x:\\; T=2\\pi,\\; [-1;1];\\quad y = \\tan x:\\; T=\\pi",
+    explanation: "**Hàm số $y = \\sin x$:**\n- TXĐ: $\\mathbb{R}$; Tập giá trị: $[-1;1]$; Chu kỳ: $T = 2\\pi$.\n- Hàm lẻ: $\\sin(-x) = -\\sin x$; Đơn điệu tăng trên $[-\\pi/2; \\pi/2]$.\n\n**Hàm số $y = \\cos x$:**\n- TXĐ: $\\mathbb{R}$; Tập giá trị: $[-1;1]$; Chu kỳ: $T = 2\\pi$.\n- Hàm chẵn: $\\cos(-x) = \\cos x$; Đơn điệu giảm trên $[0; \\pi]$.\n\n**Hàm số $y = \\tan x$:**\n- TXĐ: $\\{x \\in \\mathbb{R} \\mid x \\neq \\pi/2 + k\\pi\\}$; Tập giá trị: $\\mathbb{R}$; Chu kỳ: $T = \\pi$.\n- Hàm lẻ, đơn điệu tăng trên từng khoảng xác định.\n\n**Hàm số $y = \\cot x$:**\n- TXĐ: $\\{x \\in \\mathbb{R} \\mid x \\neq k\\pi\\}$; Chu kỳ: $T = \\pi$.\n- Hàm lẻ, đơn điệu giảm trên từng khoảng xác định.",
+    example: "Tìm TXĐ của $y = \\dfrac{1}{\\cos 2x - 1}$.\n\n**Lời giải:**\nĐiều kiện: $\\cos 2x - 1 \\neq 0 \\Leftrightarrow \\cos 2x \\neq 1 \\Leftrightarrow 2x \\neq 2k\\pi \\Leftrightarrow x \\neq k\\pi$ $(k \\in \\mathbb{Z})$.\n\nTXĐ: $D = \\mathbb{R} \\setminus \\{k\\pi \\mid k \\in \\mathbb{Z}\\}$.",
+    tags: ["Hàm số lượng giác", "Chu kỳ", "Tập giá trị", "TXĐ"],
+    difficulty: "Trung bình",
+    mnemonic: "Sin và cos: chu kỳ 2π, giá trị [-1;1]. Tan và cot: chu kỳ π, giá trị R. Sin lẻ, cos chẵn (nhớ: s-odd, c-even). Tan tăng, cot giảm."
+  },
+  {
+    id: "lg11-congthuc-phu",
+    name: "Công thức biến đổi lượng giác (góc phụ, bù, đối, hơn kém π)",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "\\sin(\\pi - x) = \\sin x, \\quad \\cos(\\pi - x) = -\\cos x, \\quad \\sin\\!\\left(\\tfrac{\\pi}{2} - x\\right) = \\cos x",
+    explanation: "Bảng công thức rút gọn lượng giác:\n\n**Góc đối $(-x)$:** (hàm chẵn/lẻ)\n$\\sin(-x) = -\\sin x$; $\\cos(-x) = \\cos x$; $\\tan(-x) = -\\tan x$.\n\n**Góc bù $(\\pi - x)$:**\n$\\sin(\\pi - x) = \\sin x$; $\\cos(\\pi - x) = -\\cos x$; $\\tan(\\pi - x) = -\\tan x$.\n\n**Góc phụ $(\\pi/2 - x)$:** (sin ↔ cos, tan ↔ cot)\n$\\sin(\\pi/2 - x) = \\cos x$; $\\cos(\\pi/2 - x) = \\sin x$; $\\tan(\\pi/2 - x) = \\cot x$.\n\n**Góc hơn kém $\\pi$ $(\\pi + x)$:**\n$\\sin(\\pi + x) = -\\sin x$; $\\cos(\\pi + x) = -\\cos x$; $\\tan(\\pi + x) = \\tan x$.\n\n**Góc hơn kém $\\pi/2$ $(\\pi/2 + x)$:**\n$\\sin(\\pi/2 + x) = \\cos x$; $\\cos(\\pi/2 + x) = -\\sin x$.",
+    example: "Rút gọn $A = \\sin(\\pi + x) \\cdot \\cos(\\pi/2 - x) + \\cos(\\pi + x) \\cdot \\sin(\\pi/2 + x)$.\n\n**Lời giải:**\n- $\\sin(\\pi + x) = -\\sin x$; $\\cos(\\pi/2 - x) = \\sin x$\n- $\\cos(\\pi + x) = -\\cos x$; $\\sin(\\pi/2 + x) = \\cos x$\n\n$A = (-\\sin x)(\\sin x) + (-\\cos x)(\\cos x) = -\\sin^2 x - \\cos^2 x = -1$",
+    tags: ["Lượng giác", "Công thức biến đổi", "Góc phụ", "Góc bù"],
+    difficulty: "Trung bình",
+    mnemonic: "Quy tắc: Góc phụ (π/2±x): đổi hàm (sin↔cos, tan↔cot). Góc bù/đối/hơn kém π (π±x, -x): giữ nguyên tên hàm, xét dấu theo góc phần tư."
+  },
+
+  // ===== ĐẠI SỐ MỚI (Kết nối tri thức) =====
+  {
+    id: "ds10-hoanvi",
+    name: "Hoán vị và giai thừa",
+    topic: "Đại số",
+    grade: 10,
+    latex: "P_n = n! = 1 \\cdot 2 \\cdot 3 \\cdots n",
+    explanation: "**Hoán vị** của $n$ phần tử là số cách xếp thứ tự tất cả $n$ phần tử đó.\n$$P_n = n! = 1 \\times 2 \\times 3 \\times \\cdots \\times n$$\n\nQuy ước: $0! = 1$.\n\n**Mối quan hệ:**\n- Chỉnh hợp: $A_n^k = \\dfrac{n!}{(n-k)!} = n(n-1)\\cdots(n-k+1)$\n- Tổ hợp: $C_n^k = \\dfrac{n!}{k!(n-k)!}$\n\n**So sánh:** Hoán vị = Chỉnh hợp khi chọn toàn bộ = $A_n^n = n!$.",
+    example: "Có bao nhiêu cách xếp 5 học sinh vào một hàng ngang?\n\n**Lời giải:**\nĐây là hoán vị của 5 phần tử:\n$$P_5 = 5! = 1 \\times 2 \\times 3 \\times 4 \\times 5 = 120 \\text{ cách}$$",
+    tags: ["Hoán vị", "Giai thừa", "Đếm", "Tổ hợp"],
+    difficulty: "Dễ",
+    mnemonic: "n! = n nhân xuống dần đến 1. Cách nhớ: 5! = 5×4×3×2×1 = 120. Hoán vị = tất cả đều tham gia và thứ tự quan trọng."
+  },
+  {
+    id: "ds11-hamso-mu",
+    name: "Hàm số mũ và tính chất",
+    topic: "Đại số",
+    grade: 11,
+    latex: "y = a^x \\; (a>0,a\\neq 1):\\; \\text{TXĐ}=\\mathbb{R},\\; \\text{TGT}=(0;+\\infty)",
+    explanation: "**Định nghĩa:** Hàm số mũ $y = a^x$ với $a > 0$, $a \\neq 1$.\n\n**Tính chất:**\n- TXĐ: $\\mathbb{R}$; Tập giá trị: $(0; +\\infty)$ — không bao giờ âm.\n- Đơn điệu **tăng** khi $a > 1$; đơn điệu **giảm** khi $0 < a < 1$.\n- Đồ thị luôn đi qua điểm $(0; 1)$ vì $a^0 = 1$.\n- Tiệm cận ngang: $y = 0$ (trục $Ox$).\n\n**Tính chất đại số:**\n$$a^m \\cdot a^n = a^{m+n}, \\quad \\frac{a^m}{a^n} = a^{m-n}, \\quad (a^m)^n = a^{mn}$$",
+    example: "So sánh $2^{3.7}$ và $2^{3.5}$.\n\n**Lời giải:**\nHàm $y = 2^x$ với cơ số $a = 2 > 1$ nên **đơn điệu tăng**.\nVì $3.7 > 3.5 \\Rightarrow 2^{3.7} > 2^{3.5}$.",
+    tags: ["Hàm số mũ", "Đơn điệu", "Tính chất"],
+    difficulty: "Dễ",
+    mnemonic: "a>1: mũ lớn → kết quả lớn (đồ thị tăng). 0<a<1: mũ lớn → kết quả nhỏ (đồ thị giảm). Đồ thị qua (0;1), không chạm trục Ox."
+  },
+  {
+    id: "ds11-hamso-log",
+    name: "Hàm số logarit và tính chất",
+    topic: "Đại số",
+    grade: 11,
+    latex: "y = \\log_a x \\; (a>0,a\\neq 1):\\; \\text{TXĐ}=(0;+\\infty),\\; \\text{TGT}=\\mathbb{R}",
+    explanation: "**Định nghĩa:** Hàm số logarit $y = \\log_a x$ là hàm ngược của $y = a^x$.\n\n**Điều kiện:** Cơ số $a > 0$, $a \\neq 1$; đối số $x > 0$.\n\n**Tính chất:**\n- TXĐ: $(0; +\\infty)$; Tập giá trị: $\\mathbb{R}$.\n- Đơn điệu **tăng** khi $a > 1$; đơn điệu **giảm** khi $0 < a < 1$.\n- Đồ thị qua điểm $(1; 0)$ vì $\\log_a 1 = 0$.\n\n**Tính chất logarit:**\n$$\\log_a(xy) = \\log_a x + \\log_a y$$\n$$\\log_a \\frac{x}{y} = \\log_a x - \\log_a y$$\n$$\\log_a x^n = n \\log_a x$$",
+    example: "Tính $P = \\log_2 3 + \\log_2 \\dfrac{8}{3}$.\n\n**Lời giải:**\n$$P = \\log_2\\left(3 \\cdot \\frac{8}{3}\\right) = \\log_2 8 = \\log_2 2^3 = 3$$",
+    tags: ["Hàm số logarit", "Đơn điệu", "Tính chất", "TXĐ"],
+    difficulty: "Dễ",
+    mnemonic: "Log là ngược của mũ: mũ qua (0;1), log qua (1;0). Cùng chiều đơn điệu với hàm mũ: a>1 → tăng, 0<a<1 → giảm."
+  },
+
+  // ===== XÁC SUẤT & THỐNG KÊ MỚI =====
+  {
+    id: "xs10-thongke-so",
+    name: "Số trung bình, số trung vị và mốt",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "\\bar{x} = \\frac{1}{n}\\sum_{i=1}^n x_i = \\frac{x_1 n_1 + x_2 n_2 + \\cdots + x_k n_k}{n}",
+    explanation: "**Số trung bình** $\\bar{x}$: Tổng tất cả giá trị chia cho số phần tử.\n$$\\bar{x} = \\frac{\\sum x_i}{n}$$\nVới dữ liệu ghép nhóm (tần số $n_i$): $\\bar{x} = \\dfrac{\\sum n_i x_i}{n}$.\n\n**Số trung vị** $M_e$: Giá trị ở giữa khi sắp xếp tăng dần.\n- $n$ lẻ: Phần tử thứ $\\dfrac{n+1}{2}$.\n- $n$ chẵn: Trung bình của phần tử thứ $\\dfrac{n}{2}$ và $\\dfrac{n}{2}+1$.\n\n**Mốt** $M_o$: Giá trị xuất hiện nhiều nhất trong mẫu.\n\n**So sánh:** Trung bình bị ảnh hưởng bởi giá trị cực đoan; trung vị bền vững hơn với ngoại lệ.",
+    example: "Điểm kiểm tra: 6, 7, 8, 8, 9, 10. Tính $\\bar{x}$, $M_e$, $M_o$.\n\n**Lời giải:**\n- $\\bar{x} = \\dfrac{6+7+8+8+9+10}{6} = \\dfrac{48}{6} = 8$\n- $n = 6$ (chẵn): $M_e = \\dfrac{x_3 + x_4}{2} = \\dfrac{8+8}{2} = 8$\n- $M_o = 8$ (xuất hiện 2 lần, nhiều nhất)",
+    tags: ["Thống kê", "Trung bình", "Trung vị", "Mốt"],
+    difficulty: "Dễ",
+    mnemonic: "Mean (trung bình) = cộng tất cả rồi chia. Median (trung vị) = giá trị chính giữa sau khi sắp xếp. Mode (mốt) = hay xuất hiện nhất."
+  },
+  {
+    id: "xs10-thongke-phuongsai",
+    name: "Phương sai và độ lệch chuẩn mẫu",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "s^2 = \\frac{1}{n}\\sum_{i=1}^n (x_i - \\bar{x})^2, \\qquad s = \\sqrt{s^2}",
+    explanation: "**Phương sai** $s^2$ đo mức độ phân tán của dữ liệu quanh giá trị trung bình:\n$$s^2 = \\frac{(x_1 - \\bar{x})^2 + (x_2 - \\bar{x})^2 + \\cdots + (x_n - \\bar{x})^2}{n}$$\n\n**Công thức tính nhanh:**\n$$s^2 = \\overline{x^2} - \\bar{x}^2 = \\frac{\\sum x_i^2}{n} - \\bar{x}^2$$\n\n**Độ lệch chuẩn** $s = \\sqrt{s^2}$ có cùng đơn vị với dữ liệu — dễ diễn giải hơn phương sai.\n\n**Ý nghĩa:** $s$ nhỏ → dữ liệu tập trung gần trung bình; $s$ lớn → dữ liệu phân tán.",
+    example: "Cho mẫu số liệu: $1, 3, 5, 7, 9$. Tính phương sai và độ lệch chuẩn.\n\n**Lời giải:**\n- $\\bar{x} = \\dfrac{1+3+5+7+9}{5} = 5$\n- $s^2 = \\dfrac{(1-5)^2+(3-5)^2+(5-5)^2+(7-5)^2+(9-5)^2}{5} = \\dfrac{16+4+0+4+16}{5} = 8$\n- $s = \\sqrt{8} = 2\\sqrt{2} \\approx 2.83$",
+    tags: ["Thống kê", "Phương sai", "Độ lệch chuẩn"],
+    difficulty: "Trung bình",
+    mnemonic: "Phương sai = trung bình bình phương độ lệch so với trung bình. Hoặc dùng: s² = mean(x²) - (mean(x))². Độ lệch chuẩn = căn phương sai."
+  },
+  {
+    id: "xs10-xacsuat-cong",
+    name: "Xác suất của biến cố hợp và xung khắc",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "P(A \\cup B) = P(A) + P(B) - P(A \\cap B)",
+    explanation: "**Công thức cộng xác suất** (công thức tổng quát):\n$$P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$$\n\n**Biến cố xung khắc** (không thể xảy ra đồng thời: $A \\cap B = \\emptyset$):\n$$P(A \\cup B) = P(A) + P(B)$$\n\n**Biến cố đối** $\\bar{A}$ (không xảy ra $A$):\n$$P(\\bar{A}) = 1 - P(A)$$\n\n**Biến cố chắc chắn:** $P(\\Omega) = 1$. **Biến cố không thể:** $P(\\emptyset) = 0$.\n\n**Điều kiện:** $0 \\leq P(A) \\leq 1$ với mọi biến cố $A$.",
+    example: "Tung xúc xắc 1 lần. $A$ = ra số chẵn, $B$ = ra số $\\leq 3$. Tính $P(A \\cup B)$.\n\n**Lời giải:**\n- $A = \\{2,4,6\\}$, $P(A) = 1/2$\n- $B = \\{1,2,3\\}$, $P(B) = 1/2$\n- $A \\cap B = \\{2\\}$, $P(A \\cap B) = 1/6$\n\n$P(A \\cup B) = 1/2 + 1/2 - 1/6 = 5/6$",
+    tags: ["Xác suất", "Công thức cộng", "Biến cố hợp", "Xung khắc"],
+    difficulty: "Dễ",
+    mnemonic: "P(A hoặc B) = P(A) + P(B) - P(A và B). Trừ đi phần giao vì đã đếm 2 lần. Xung khắc: không giao → chỉ cộng."
+  },
+  {
+    id: "xs11-xacsuat-nhan",
+    name: "Công thức nhân xác suất",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "P(A \\cap B) = P(A) \\cdot P(B|A) = P(B) \\cdot P(A|B)",
+    explanation: "**Công thức nhân** (suy ra từ định nghĩa xác suất có điều kiện):\n$$P(A \\cap B) = P(A) \\cdot P(A|B) = P(B) \\cdot P(A|B)$$\n\n**Hai sự kiện độc lập** ($A$ và $B$ không ảnh hưởng nhau): $P(A|B) = P(A)$, do đó:\n$$P(A \\cap B) = P(A) \\cdot P(B)$$\n\n**Mở rộng cho nhiều sự kiện độc lập:**\n$$P(A_1 \\cap A_2 \\cap \\cdots \\cap A_n) = P(A_1) \\cdot P(A_2) \\cdots P(A_n)$$",
+    example: "Rút 2 lần (không hoàn lại) từ hộp gồm 4 bi đỏ, 2 bi xanh. Tính xác suất cả hai lần đều ra bi đỏ.\n\n**Lời giải:**\n- $A$ = lần 1 ra đỏ: $P(A) = 4/6 = 2/3$\n- $B|A$ = lần 2 ra đỏ khi lần 1 đã ra đỏ: $P(B|A) = 3/5$\n\n$P(A \\cap B) = \\dfrac{2}{3} \\cdot \\dfrac{3}{5} = \\dfrac{2}{5}$",
+    tags: ["Xác suất", "Công thức nhân", "Độc lập", "Có điều kiện"],
+    difficulty: "Trung bình",
+    mnemonic: "P(A và B) = P(A) × P(B|A). Rút không hoàn lại: lần sau phụ thuộc lần trước → nhân xác suất có điều kiện. Độc lập: P(A và B) = P(A)×P(B)."
+  },
+
+  // ===== HÌNH HỌC KHÔNG GIAN LỚP 11 =====
+  {
+    id: "hh11-songsong",
+    name: "Quan hệ song song trong không gian",
+    topic: "Hình học",
+    grade: 11,
+    latex: "d \\parallel (\\alpha) \\Leftrightarrow d \\parallel d' \\subset (\\alpha),\\quad (\\alpha) \\parallel (\\beta) \\Leftrightarrow (\\alpha) \\cap (\\beta) = \\emptyset",
+    explanation: "**Đường thẳng song song mặt phẳng:**\n$d \\parallel (\\alpha)$ khi và chỉ khi $d$ không có điểm chung với $(\\alpha)$ và tồn tại đường thẳng $d' \\subset (\\alpha)$ sao cho $d \\parallel d'$.\n\n**Định lý:** Nếu $a \\parallel b$ và $b \\subset (\\alpha)$ thì hoặc $a \\parallel (\\alpha)$ hoặc $a \\subset (\\alpha)$.\n\n**Hai mặt phẳng song song:**\n$(\\alpha) \\parallel (\\beta)$ khi và chỉ khi mọi đường thẳng $d \\subset (\\alpha)$ đều song song với $(\\beta)$.\n\n**Định lý Thalès trong không gian:** Mặt phẳng cắt hai mặt phẳng song song tạo ra hai giao tuyến song song.\n\n**Phép chiếu song song:** Bảo toàn tính song song và tỉ số chia đoạn.",
+    example: "Cho hình hộp $ABCD.A'B'C'D'$. Chứng minh $AA' \\parallel (ABCD)$.\n\n**Lời giải:**\n$AA'$ và $DD'$ là hai đường thẳng song song (cạnh hình hộp).\n$DD' \\subset (ABB'A')$... [lý luận dùng định nghĩa].\nMặt khác $AA' \\not\\subset (ABCD)$, và $AA' \\parallel DD' \\subset (ABCD)$, nên $AA' \\parallel (ABCD)$.",
+    tags: ["Không gian", "Song song", "Mặt phẳng", "Đường thẳng"],
+    difficulty: "Trung bình",
+    mnemonic: "Đường thẳng song song mặt phẳng: không cắt + có bạn song song trong mp đó. Hai mặt phẳng song song: không chung điểm nào. Giao tuyến với mp thứ 3 → song song nhau (Thalès)."
+  },
+  {
+    id: "hh11-vuonggoc",
+    name: "Quan hệ vuông góc trong không gian",
+    topic: "Hình học",
+    grade: 11,
+    latex: "d \\perp (\\alpha) \\Leftrightarrow d \\perp a,\\; d \\perp b \\;(a,b\\text{ cắt nhau},\\; a,b\\subset(\\alpha))",
+    explanation: "**Đường thẳng vuông góc mặt phẳng:**\n$d \\perp (\\alpha)$ khi $d$ vuông góc với mọi đường thẳng nằm trong $(\\alpha)$.\n\n**Điều kiện:** $d \\perp (\\alpha)$ khi và chỉ khi $d$ vuông góc với hai đường thẳng **cắt nhau** trong $(\\alpha)$.\n\n**Khoảng cách từ điểm đến mặt phẳng:**\n$d(M, (\\alpha)) = $ độ dài đoạn $MH$ với $H$ là chân đường vuông góc từ $M$ lên $(\\alpha)$.\n\n**Hai mặt phẳng vuông góc:** $(\\alpha) \\perp (\\beta)$ khi góc nhị diện giữa chúng là $90°$.\n\n**Khoảng cách:** $d(A, (\\alpha)) = \\dfrac{|Aa + Bb + Cc + D|}{\\sqrt{A^2+B^2+C^2}}$ (mp: $Ax+By+Cz+D=0$, điểm $M(a,b,c)$).",
+    example: "Cho tứ diện $SABC$ vuông tại $S$ ($SA \\perp SB$, $SA \\perp SC$). Chứng minh $SA \\perp (SBC)$.\n\n**Lời giải:**\n$SA \\perp SB$ và $SA \\perp SC$, mà $SB$ và $SC$ cắt nhau tại $S$ và cùng nằm trong $(SBC)$.\nVậy $SA \\perp (SBC)$.",
+    tags: ["Vuông góc", "Không gian", "Khoảng cách", "Mặt phẳng"],
+    difficulty: "Trung bình",
+    mnemonic: "Đt vuông góc mp: vuông góc 2 đt cắt nhau trong mp là đủ. Khoảng cách điểm-mp: chiều dài đoạn thẳng từ điểm thả vuông góc xuống mp."
+  },
+
+  // ===== GIẢI TÍCH LỚP 11 - GIỚI HẠN =====
+  {
+    id: "gt11-gioihan-day",
+    name: "Giới hạn của dãy số",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "\\lim_{n\\to\\infty} \\frac{1}{n} = 0, \\quad \\lim_{n\\to\\infty} q^n = 0 \\;(|q|<1)",
+    explanation: "**Định nghĩa:** Dãy số $(u_n)$ có giới hạn $L$ khi $n \\to \\infty$ nếu $u_n$ tiến gần $L$ tùy ý khi $n$ đủ lớn.\n\n**Các giới hạn cơ bản:**\n- $\\lim \\dfrac{1}{n} = 0$, $\\lim \\dfrac{1}{n^2} = 0$, ...\n- $\\lim q^n = 0$ khi $|q| < 1$; $\\lim q^n = +\\infty$ khi $q > 1$.\n- $\\lim \\sqrt[n]{n} = 1$, $\\lim \\sqrt[n]{a} = 1$ (với $a > 0$).\n\n**Giới hạn vô cực của phân thức:**\n$$\\lim_{n\\to\\infty}\\frac{a_0 n^k + \\cdots}{b_0 n^m + \\cdots} = \\begin{cases} \\frac{a_0}{b_0} & k = m \\\\ 0 & k < m \\\\ \\pm\\infty & k > m \\end{cases}$$\n\n**Quy tắc:** Chia tử và mẫu cho $n^m$ (bậc cao nhất của mẫu) để giải dạng $\\infty/\\infty$.",
+    example: "Tính $\\lim_{n\\to\\infty} \\dfrac{3n^2 + 2n - 1}{n^2 + 5}$.\n\n**Lời giải:**\nChia tử và mẫu cho $n^2$:\n$$\\lim = \\lim \\frac{3 + 2/n - 1/n^2}{1 + 5/n^2} = \\frac{3 + 0 - 0}{1 + 0} = 3$$",
+    tags: ["Giới hạn", "Dãy số", "Vô cực"],
+    difficulty: "Trung bình",
+    mnemonic: "Giới hạn dãy: 1/n → 0, q^n → 0 khi |q|<1. Phân thức bậc bằng nhau: hệ số đầu/hệ số đầu. Chia cho n bậc cao nhất của mẫu."
+  },
+  {
+    id: "gt11-gioihan-ham",
+    name: "Giới hạn hàm số và dạng vô định",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "\\lim_{x\\to x_0}\\frac{f(x)}{g(x)},\\; g(x_0)=0:\\; \\text{phân tích nhân tử hoặc liên hợp}",
+    explanation: "**Dạng vô định $0/0$:** Khi $f(x_0) = g(x_0) = 0$.\n\n**Cách giải:**\n1. Phân tích nhân tử để triệt tiêu nhân tử chung gây ra $g(x_0) = 0$.\n2. Nhân liên hợp (với căn thức).\n3. Dùng các giới hạn đặc biệt.\n\n**Giới hạn đặc biệt quan trọng:**\n$$\\lim_{x\\to 0}\\frac{\\sin x}{x} = 1, \\quad \\lim_{x\\to 0}\\frac{1 - \\cos x}{x^2} = \\frac{1}{2}, \\quad \\lim_{x\\to 0}\\frac{\\ln(1+x)}{x} = 1$$\n\n**Giới hạn một phía:** $\\lim_{x\\to x_0^+} f(x)$ và $\\lim_{x\\to x_0^-} f(x)$. Giới hạn tồn tại khi hai giới hạn một phía bằng nhau.",
+    example: "Tính $\\lim_{x\\to 2} \\dfrac{x^2 - 4}{x - 2}$.\n\n**Lời giải:**\nDạng $0/0$. Phân tích tử: $x^2 - 4 = (x-2)(x+2)$.\n$$\\lim_{x\\to 2}\\frac{(x-2)(x+2)}{x-2} = \\lim_{x\\to 2}(x+2) = 4$$",
+    tags: ["Giới hạn", "Hàm số", "Vô định", "0/0"],
+    difficulty: "Trung bình",
+    mnemonic: "Dạng 0/0: phân tích nhân tử, triệt tiêu nhân tử 0. Dạng ∞/∞: chia cho bậc cao nhất. Căn: nhân liên hợp. Nhớ: lim(sinx/x)=1 khi x→0."
+  },
+
+  // ===== MỞ RỘNG (Chuyên đề - Kết nối tri thức) =====
+  {
+    id: "mr-elip",
+    name: "Phương trình chính tắc của Elip",
+    topic: "Mở rộng",
+    grade: 10,
+    latex: "\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1 \\quad (a > b > 0)",
+    explanation: "Elip là tập hợp các điểm $M$ trong mặt phẳng thỏa mãn: tổng khoảng cách từ $M$ đến hai tiêu điểm $F_1$, $F_2$ bằng hằng số $2a$.\n\n**Các yếu tố:**\n- $a$: Nửa trục lớn ($a > b > 0$).\n- $b$: Nửa trục nhỏ.\n- $c = \\sqrt{a^2 - b^2}$: Tiêu cự ($c < a$).\n- $F_1(-c, 0)$, $F_2(c, 0)$: Hai tiêu điểm.\n- Tâm sai: $e = c/a \\in (0;1)$.\n\n**Tính chất:** $MF_1 + MF_2 = 2a$ với mọi $M$ trên elip.\n\n**Đặc biệt:** $a = b$ → đường tròn bán kính $a$.",
+    example: "Elip $(E): \\dfrac{x^2}{25} + \\dfrac{y^2}{9} = 1$. Tìm các yếu tố.\n\n**Lời giải:**\n- $a^2 = 25 \\Rightarrow a = 5$; $b^2 = 9 \\Rightarrow b = 3$.\n- $c = \\sqrt{25 - 9} = 4$.\n- Tiêu điểm: $F_1(-4;0)$, $F_2(4;0)$.\n- Tâm sai: $e = 4/5 = 0.8$.",
+    tags: ["Elip", "Đường conic", "Mở rộng", "Chuyên đề"],
+    difficulty: "Trung bình",
+    mnemonic: "Elip: x²/a² + y²/b² = 1 với a>b. Tổng khoảng cách đến 2 tiêu điểm = 2a. Tiêu điểm nằm trên trục lớn: F(±c, 0) với c²=a²-b²."
+  },
+  {
+    id: "mr-hypebol",
+    name: "Phương trình chính tắc của Hypebol",
+    topic: "Mở rộng",
+    grade: 10,
+    latex: "\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1 \\quad (a, b > 0)",
+    explanation: "Hypebol là tập hợp các điểm $M$ thỏa mãn: **hiệu** (trị tuyệt đối) khoảng cách từ $M$ đến hai tiêu điểm bằng $2a$.\n\n**Các yếu tố:**\n- $c = \\sqrt{a^2 + b^2}$: Tiêu cự (khác elip: cộng thêm $b^2$).\n- $F_1(-c,0)$, $F_2(c,0)$: Hai tiêu điểm.\n- $|MF_1 - MF_2| = 2a$ với mọi $M$ trên hypebol.\n- Tâm sai: $e = c/a > 1$.\n- **Tiệm cận:** $y = \\pm \\dfrac{b}{a} x$.\n\n**So sánh với elip:** Elip dùng $+$ (c²=a²-b²); Hypebol dùng $-$ (c²=a²+b²).",
+    example: "Hypebol $(H): \\dfrac{x^2}{16} - \\dfrac{y^2}{9} = 1$. Tìm tiêu điểm và tiệm cận.\n\n**Lời giải:**\n- $a=4$, $b=3$, $c = \\sqrt{16+9} = 5$.\n- Tiêu điểm: $F_1(-5;0)$, $F_2(5;0)$.\n- Tiệm cận: $y = \\pm \\dfrac{3}{4}x$.",
+    tags: ["Hypebol", "Đường conic", "Tiệm cận", "Mở rộng"],
+    difficulty: "Trung bình",
+    mnemonic: "Hypebol: x²/a² - y²/b² = 1 (dấu trừ!). Hiệu khoảng cách đến tiêu điểm = 2a. c²=a²+b² (cộng, khác elip). Tiệm cận y=±(b/a)x."
+  },
+  {
+    id: "mr-parabol-conic",
+    name: "Phương trình chính tắc của Parabol",
+    topic: "Mở rộng",
+    grade: 10,
+    latex: "y^2 = 2px \\quad (p > 0)",
+    explanation: "Parabol là tập hợp các điểm $M$ cách đều tiêu điểm $F$ và đường chuẩn $d$.\n\n**Dạng chính tắc $y^2 = 2px$ ($p > 0$):**\n- Tiêu điểm: $F\\left(\\dfrac{p}{2}; 0\\right)$.\n- Đường chuẩn: $x = -\\dfrac{p}{2}$.\n- Đỉnh: $O(0;0)$.\n- Trục đối xứng: trục $Ox$.\n- Tập xác định: $x \\geq 0$.\n\n**Dạng $x^2 = 2py$:** Mở lên trên, tiêu điểm $F(0; p/2)$, đường chuẩn $y = -p/2$.\n\n**Tính chất:** $MF = d(M, d)$ với mọi $M$ trên parabol.",
+    example: "Parabol $y^2 = 8x$. Tìm tiêu điểm và đường chuẩn.\n\n**Lời giải:**\n$2p = 8 \\Rightarrow p = 4$.\n- Tiêu điểm: $F(2; 0)$.\n- Đường chuẩn: $x = -2$.",
+    tags: ["Parabol", "Đường conic", "Tiêu điểm", "Mở rộng"],
+    difficulty: "Trung bình",
+    mnemonic: "y²=2px: mở sang phải, tiêu điểm F(p/2; 0), đường chuẩn x=-p/2. x²=2py: mở lên trên. Điểm trên parabol cách tiêu điểm = cách đường chuẩn."
+  },
+  {
+    id: "mr-bnn-roit-rac",
+    name: "Biến ngẫu nhiên rời rạc (E, D, σ)",
+    topic: "Mở rộng",
+    grade: 11,
+    latex: "E(X) = \\sum x_i p_i, \\quad D(X) = E(X^2) - [E(X)]^2",
+    explanation: "**Biến ngẫu nhiên rời rạc** $X$ nhận các giá trị $x_1, x_2, \\ldots, x_n$ với xác suất tương ứng $p_1, p_2, \\ldots, p_n$.\n\n**Điều kiện:** $\\sum p_i = 1$, $p_i \\geq 0$.\n\n**Kỳ vọng** (giá trị trung bình):\n$$E(X) = \\sum_{i=1}^n x_i p_i$$\n\n**Phương sai:**\n$$D(X) = \\sum_{i=1}^n (x_i - E(X))^2 p_i = E(X^2) - [E(X)]^2$$\n\n**Độ lệch chuẩn:** $\\sigma(X) = \\sqrt{D(X)}$\n\n**Phân bố nhị thức** $X \\sim B(n, p)$:\n$$P(X=k) = C_n^k p^k (1-p)^{n-k}, \\quad E(X) = np, \\quad D(X) = np(1-p)$$",
+    example: "Tung đồng xu 3 lần. $X$ = số lần ra mặt H. Tìm $E(X)$.\n\n**Lời giải:**\n$X \\sim B(3, 1/2)$. $E(X) = np = 3 \\times \\dfrac{1}{2} = \\dfrac{3}{2}$.\n\nKiểm tra: $P(X=0) = 1/8$, $P(X=1) = 3/8$, $P(X=2) = 3/8$, $P(X=3) = 1/8$.\n$E(X) = 0(1/8) + 1(3/8) + 2(3/8) + 3(1/8) = 12/8 = 3/2$ ✓",
+    tags: ["Biến ngẫu nhiên", "Kỳ vọng", "Phương sai", "Nhị thức", "Mở rộng"],
+    difficulty: "Khó",
+    mnemonic: "E(X) = tổng (giá trị × xác suất). D(X) = E(X²) - [E(X)]². Nhị thức B(n,p): E=np, D=np(1-p). σ = căn D."
   }
 ];
