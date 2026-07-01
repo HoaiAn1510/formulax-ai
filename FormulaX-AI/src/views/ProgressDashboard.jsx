@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { ArrowLeft, Flame, ClipboardList, Layers, TrendingUp, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock } from "lucide-react";
-import { getAnalyticsSummary } from "../lib/supabase";
+import React, { useState, useEffect, useMemo } from "react";
+import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, ChevronDown } from "lucide-react";
+import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -161,6 +161,75 @@ function StreakChart({ activityDates, streak }) {
   );
 }
 
+function DayHistoryCard({ date, quizzes, flashcardIds, formulaMap }) {
+  const [expanded, setExpanded] = useState(true);
+  const today     = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const [y, mo, d] = date.split("-");
+  const dateLabel = date === today ? "Hôm nay" : date === yesterday ? "Hôm qua" : `${d}/${mo}/${y}`;
+  const SHOW_MAX = 4;
+
+  const scoreColor = (p) => p >= 80 ? "#10B981" : p >= 60 ? "#F59E0B" : "#EF4444";
+
+  return (
+    <div style={{ background: "white", borderRadius: "14px", border: "1px solid #E2E8F0", overflow: "hidden", marginBottom: "10px", boxShadow: "0 2px 8px rgba(30,58,95,0.04)" }}>
+      <div
+        onClick={() => setExpanded(v => !v)}
+        style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", cursor: "pointer" }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#3B82F6", flexShrink: 0 }} />
+          <span style={{ fontWeight: "800", color: "#1E3A5F", fontSize: "0.88rem" }}>{dateLabel}</span>
+          {date !== today && date !== yesterday && (
+            <span style={{ fontSize: "0.7rem", color: "#94A3B8" }}>{d}/{mo}/{y}</span>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          {quizzes.length > 0 && <span style={{ fontSize: "0.68rem", background: "#EFF6FF", color: "#3B82F6", fontWeight: "700", borderRadius: "5px", padding: "2px 7px" }}>{quizzes.length} quiz</span>}
+          {flashcardIds.length > 0 && <span style={{ fontSize: "0.68rem", background: "#F0FDF4", color: "#10B981", fontWeight: "700", borderRadius: "5px", padding: "2px 7px" }}>{flashcardIds.length} thẻ</span>}
+          <ChevronDown size={14} color="#94A3B8" style={{ transform: expanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+        </div>
+      </div>
+
+      {expanded && (
+        <div style={{ borderTop: "1px solid #F1F5F9", padding: "10px 14px" }}>
+          {quizzes.length > 0 && (
+            <div style={{ marginBottom: flashcardIds.length > 0 ? "10px" : 0 }}>
+              <div style={{ fontSize: "0.68rem", fontWeight: "700", color: "#94A3B8", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Quiz</div>
+              {quizzes.map((q, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: i < quizzes.length - 1 ? "1px solid #F8FAFC" : "none" }}>
+                  <span style={{ fontSize: "0.8rem", color: "#1E3A5F", fontWeight: "600" }}>{q.topic}</span>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>{q.questionsCorrect}/{q.questionsTotal} câu</span>
+                    <span style={{ fontSize: "0.75rem", fontWeight: "800", color: scoreColor(q.scorePercent), minWidth: "38px", textAlign: "right" }}>{q.scorePercent}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {flashcardIds.length > 0 && (
+            <div>
+              <div style={{ fontSize: "0.68rem", fontWeight: "700", color: "#94A3B8", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Flashcard</div>
+              {flashcardIds.slice(0, SHOW_MAX).map(id => (
+                <div key={id} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "3px 0" }}>
+                  <BookOpen size={11} color="#10B981" style={{ flexShrink: 0 }} />
+                  <span style={{ fontSize: "0.78rem", color: "#475569" }}>{formulaMap[id]?.name || id}</span>
+                </div>
+              ))}
+              {flashcardIds.length > SHOW_MAX && (
+                <div style={{ fontSize: "0.72rem", color: "#94A3B8", fontWeight: "600", marginTop: "4px", paddingLeft: "17px" }}>
+                  +{flashcardIds.length - SHOW_MAX} công thức khác
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function EmptyState({ message, ctaLabel, onCta }) {
   return (
     <div style={{ textAlign: "center", padding: "28px 16px" }}>
@@ -201,28 +270,35 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
   const [topicPerf, setTopicPerf]         = useState([]);
   const [streak, setStreak]               = useState(0);
   const [activityDates, setActivityDates] = useState([]);
+  const [dailyHistory, setDailyHistory]   = useState([]);
   const [loading, setLoading]             = useState(true);
+
+  const formulaMap = useMemo(() => {
+    const m = {};
+    formulas.forEach(f => { m[f.id] = f; });
+    return m;
+  }, [formulas]);
 
   useEffect(() => {
     if (!user?.googleId) { setLoading(false); return; }
-    getAnalyticsSummary(user.googleId)
-      .then(({ topicPerformance, streak: s, activityDates: dates }) => {
+    Promise.all([
+      getAnalyticsSummary(user.googleId),
+      getDailyHistory(user.googleId),
+    ])
+      .then(([{ topicPerformance, streak: s, activityDates: dates }, history]) => {
         setTopicPerf(topicPerformance);
         setStreak(s);
         setActivityDates(dates || []);
+        setDailyHistory(history || []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [user?.googleId]);
 
-  const hasQuizData = topicPerf.length > 0;
-
-  const totalCorrect   = topicPerf.reduce((s, t) => s + t.correct, 0);
-  const totalQuestions = topicPerf.reduce((s, t) => s + t.total, 0);
-  const avgRate        = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
-
-  const weakTopics   = topicPerf.filter(t => t.rate < 60);
-  const strongTopics = topicPerf.filter(t => t.rate >= 80);
+  const filteredTopicPerf = topicPerf.filter(t => t.topic !== "Đề thi THPT");
+  const hasQuizData = filteredTopicPerf.length > 0;
+  const weakTopics   = filteredTopicPerf.filter(t => t.rate < 60);
+  const strongTopics = filteredTopicPerf.filter(t => t.rate >= 80);
 
   return (
     <div className="view-container">
@@ -275,15 +351,41 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
         </div>
       )}
 
-      {/* Stat cards: 3-column row */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "12px" }}>
-        <StatCard icon={<ClipboardList size={20} />}  value={stats.quizzesCompleted}            label="Quiz đã làm"  color="#3B82F6" />
-        <StatCard icon={<Layers size={20} />}         value={stats.flashcardsStudied}            label="Thẻ đã ôn"   color="#10B981" />
-        <StatCard icon={<TrendingUp size={20} />}     value={hasQuizData ? `${avgRate}%` : "—"} label="Tỷ lệ đúng"  color="#8B5CF6" />
+      {/* Stat cards: 2-column row */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+        <StatCard icon={<ClipboardList size={20} />} value={stats.quizzesCompleted}  label="Quiz đã làm" color="#3B82F6" />
+        <StatCard icon={<Layers size={20} />}        value={stats.flashcardsStudied} label="Thẻ đã ôn"   color="#10B981" />
       </div>
 
       {/* Streak activity chart */}
       <StreakChart activityDates={activityDates} streak={streak} />
+
+      {/* Daily history */}
+      <div style={{ marginBottom: "16px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+          <BarChart2 size={15} color="#3B82F6" />
+          <h2 style={{ margin: 0, fontSize: "0.92rem", fontWeight: "800", color: "#1E3A5F" }}>Lịch sử hoạt động</h2>
+        </div>
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "20px", color: "#94A3B8", fontSize: "0.82rem" }}>Đang tải...</div>
+        ) : dailyHistory.length === 0 ? (
+          <EmptyState
+            message="Chưa có hoạt động nào. Làm quiz hoặc ôn flashcard để bắt đầu!"
+            ctaLabel="Bắt đầu quiz"
+            onCta={() => setActiveTab("quiz")}
+          />
+        ) : (
+          dailyHistory.map(day => (
+            <DayHistoryCard
+              key={day.date}
+              date={day.date}
+              quizzes={day.quizzes}
+              flashcardIds={day.flashcardIds}
+              formulaMap={formulaMap}
+            />
+          ))
+        )}
+      </div>
 
       {/* Topic performance */}
       <div style={{
@@ -325,7 +427,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
             </div>
           </>
         ) : hasQuizData ? (
-          topicPerf.map(t => <TopicBar key={t.topic} {...t} />)
+          filteredTopicPerf.map(t => <TopicBar key={t.topic} {...t} />)
         ) : (
           <EmptyState
             message="Chưa có dữ liệu quiz. Làm ít nhất 1 bài quiz để xem phân tích!"

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, Trash2, BarChart2, Flame } from "lucide-react";
+import React from "react";
+import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, BarChart2 } from "lucide-react";
 import { MathElement } from "../utils/katexHelper";
 
 export default function Dashboard({
@@ -11,11 +11,9 @@ export default function Dashboard({
   isPremium,
   remainingQuizzes,
   stats,
-  onResetStats,
+  todayStats,
 }) {
-  // Ưu tiên tên tùy chỉnh, nếu không có thì lấy tên cuối từ tài khoản Google
   const firstName = displayName || user?.name?.split(" ").slice(-1)[0] || "bạn";
-  const [showResetModal, setShowResetModal] = useState(false);
   // Recommend 3 math formulas based on ID
   const recommendedFormulas = formulas.filter(f => 
     f.id === "gt12-daoham-mu" || 
@@ -109,27 +107,20 @@ export default function Dashboard({
 
       {/* Stats Section: Tiến độ học tập */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <h2 className="section-title" style={{ fontSize: "1rem", color: "#1E3A5F", fontWeight: "800", margin: 0 }}>Tiến độ học tập</h2>
-        <button
-          onClick={() => setShowResetModal(true)}
-          style={{ display: "flex", alignItems: "center", gap: "4px", background: "none", border: "none", cursor: "pointer", fontSize: "0.72rem", color: "#CBD5E1", fontWeight: "600", padding: "2px 0" }}
-        >
-          <Trash2 size={11} />
-          Xóa tiến độ
-        </button>
+        <h2 className="section-title" style={{ fontSize: "1rem", color: "#1E3A5F", fontWeight: "800", margin: 0 }}>Hôm nay</h2>
       </div>
       <div className="stats-card-container">
         <div className="stat-column">
-          <div className="stat-column-val" style={{ color: "#3B82F6" }}>{stats.formulasViewed}</div>
-          <div className="stat-column-lbl">Công thức đã xem</div>
+          <div className="stat-column-val" style={{ color: "#3B82F6" }}>{todayStats?.formulasViewed ?? 0}</div>
+          <div className="stat-column-lbl">Công thức xem</div>
         </div>
         <div className="stat-column">
-          <div className="stat-column-val" style={{ color: "#10B981" }}>{stats.flashcardsStudied}</div>
-          <div className="stat-column-lbl">Flashcard đã học</div>
+          <div className="stat-column-val" style={{ color: "#10B981" }}>{todayStats?.flashcardsStudied ?? 0}</div>
+          <div className="stat-column-lbl">Flashcard đã ôn</div>
         </div>
         <div className="stat-column">
-          <div className="stat-column-val" style={{ color: "#F59E0B" }}>{stats.quizzesCompleted}</div>
-          <div className="stat-column-lbl">Quiz đã hoàn thành</div>
+          <div className="stat-column-val" style={{ color: "#F59E0B" }}>{todayStats?.quizzesCompleted ?? 0}</div>
+          <div className="stat-column-lbl">Quiz hôm nay</div>
         </div>
       </div>
 
@@ -215,55 +206,6 @@ export default function Dashboard({
         </div>
       </div>
 
-      {showResetModal && (
-        <div
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "16px" }}
-          onClick={() => setShowResetModal(false)}
-        >
-          <div
-            style={{ background: "white", borderRadius: "20px", padding: "24px", width: "100%", maxWidth: "360px", boxShadow: "0 20px 60px rgba(0,0,0,0.3)" }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div style={{ textAlign: "center", marginBottom: "18px" }}>
-              <div style={{ width: "48px", height: "48px", borderRadius: "50%", background: "#FEE2E2", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
-                <Trash2 size={22} color="#EF4444" />
-              </div>
-              <h3 style={{ margin: "0 0 6px", fontSize: "1.1rem", fontWeight: "800", color: "#1E3A5F" }}>Xóa tiến độ học tập?</h3>
-              <p style={{ margin: 0, fontSize: "0.8rem", color: "#64748B" }}>Thao tác này không thể hoàn tác.</p>
-            </div>
-
-            <div style={{ background: "#FEF2F2", borderRadius: "10px", padding: "12px 14px", marginBottom: "12px" }}>
-              <div style={{ fontSize: "0.78rem", fontWeight: "700", color: "#EF4444", marginBottom: "8px" }}>Sẽ xóa vĩnh viễn:</div>
-              {["Tất cả kết quả quiz", "Lịch sử hoạt động flashcard", "Số liệu: Công thức đã xem, Flashcard đã học, Quiz đã hoàn thành"].map(item => (
-                <div key={item} style={{ display: "flex", alignItems: "flex-start", gap: "6px", marginBottom: "4px" }}>
-                  <span style={{ color: "#EF4444", fontWeight: "700", fontSize: "0.75rem", lineHeight: "1.5", flexShrink: 0 }}>✕</span>
-                  <span style={{ fontSize: "0.75rem", color: "#475569", lineHeight: "1.5" }}>{item}</span>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ background: "#F0FDF4", borderRadius: "10px", padding: "10px 14px", marginBottom: "18px", display: "flex", alignItems: "center", gap: "6px" }}>
-              <Flame size={14} color="#10B981" />
-              <span style={{ fontSize: "0.75rem", color: "#047857", fontWeight: "600" }}>Chuỗi học của bạn sẽ được giữ lại</span>
-            </div>
-
-            <div style={{ display: "flex", gap: "10px" }}>
-              <button
-                onClick={() => setShowResetModal(false)}
-                style={{ flex: 1, padding: "11px", border: "1.5px solid #E2E8F0", borderRadius: "10px", background: "white", cursor: "pointer", fontSize: "0.85rem", fontWeight: "700", color: "#64748B" }}
-              >
-                Hủy
-              </button>
-              <button
-                onClick={() => { onResetStats?.(); setShowResetModal(false); }}
-                style={{ flex: 1, padding: "11px", border: "none", borderRadius: "10px", background: "#EF4444", cursor: "pointer", fontSize: "0.85rem", fontWeight: "700", color: "white" }}
-              >
-                Xóa tất cả
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

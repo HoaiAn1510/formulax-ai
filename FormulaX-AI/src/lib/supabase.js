@@ -12,7 +12,7 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 export async function loadUserData(googleId) {
   const today = new Date().toISOString().slice(0, 10);
 
-  const [bRes, nRes, sRes, hRes, qRes] = await Promise.all([
+  const [bRes, nRes, sRes, hRes, qRes, todayQRes, todayFRes] = await Promise.all([
     supabase.from("bookmarks").select("formula_id").eq("google_id", googleId),
     supabase.from("user_notes").select("formula_id, note_text").eq("google_id", googleId),
     // Dùng limit(1) + order thay vì maybeSingle() để tránh throw khi có duplicate rows
@@ -21,6 +21,10 @@ export async function loadUserData(googleId) {
     supabase.from("search_history").select("query").eq("google_id", googleId)
       .order("searched_at", { ascending: false }).limit(20),
     supabase.from("quiz_daily").select("*").eq("google_id", googleId).limit(1),
+    supabase.from("quiz_results").select("*", { count: "exact", head: true })
+      .eq("google_id", googleId).gte("created_at", today),
+    supabase.from("flashcard_activity").select("*", { count: "exact", head: true })
+      .eq("google_id", googleId).gte("created_at", today).neq("formula_id", "sys_streak"),
   ]);
 
   // Bookmarks → mảng id
@@ -58,7 +62,12 @@ export async function loadUserData(googleId) {
     remainingQuizzes = qRow.reset_date === today ? qRow.remaining_count : 10;
   }
 
-  return { bookmarkedIds, userNotes, stats, searchHistory, remainingQuizzes, displayName: displayNameFromDB };
+  return {
+    bookmarkedIds, userNotes, stats, searchHistory, remainingQuizzes,
+    displayName: displayNameFromDB,
+    todayQuizCount: todayQRes.count ?? 0,
+    todayFlashcardCount: todayFRes.count ?? 0,
+  };
 }
 
 // ─── Bookmark ───────────────────────────────────────────────────────────────
@@ -316,4 +325,45 @@ export async function getAnalyticsSummary(googleId) {
     getActivityData(googleId),
   ]);
   return { topicPerformance, streak, activityDates };
+}
+
+export async function getDailyHistory(googleId) {
+  const [qRes, fRes] = await Promise.all([
+    supabase.from("quiz_results")
+      .select("topic, score_percent, questions_total, questions_correct, created_at")
+      .eq("google_id", googleId)
+      .order("created_at", { ascending: false })
+      .limit(300),
+    supabase.from("flashcard_activity")
+      .select("formula_id, created_at")
+      .eq("google_id", googleId)
+      .neq("formula_id", "sys_streak")
+      .order("created_at", { ascending: false })
+      .limit(1000),
+  ]);
+
+  const days = {};
+
+  (qRes.data || []).forEach(row => {
+    const date = new Date(row.created_at).toISOString().slice(0, 10);
+    if (!days[date]) days[date] = { quizzes: [], flashcardIds: [] };
+    days[date].quizzes.push({
+      topic: row.topic,
+      scorePercent: row.score_percent,
+      questionsTotal: row.questions_total,
+      questionsCorrect: row.questions_correct,
+    });
+  });
+
+  (fRes.data || []).forEach(row => {
+    const date = new Date(row.created_at).toISOString().slice(0, 10);
+    if (!days[date]) days[date] = { quizzes: [], flashcardIds: [] };
+    if (!days[date].flashcardIds.includes(row.formula_id)) {
+      days[date].flashcardIds.push(row.formula_id);
+    }
+  });
+
+  return Object.entries(days)
+    .map(([date, data]) => ({ date, ...data }))
+    .sort((a, b) => b.date.localeCompare(a.date));
 }

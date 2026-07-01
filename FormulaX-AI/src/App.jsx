@@ -66,6 +66,7 @@ export default function App() {
   const [bookmarkedIds, setBookmarkedIds]     = useState([]);
   const [userNotes, setUserNotes]             = useState({});
   const [stats, setStats]                     = useState({ formulasViewed: 0, flashcardsStudied: 0, quizzesCompleted: 0 });
+  const [todayStats, setTodayStats]           = useState({ formulasViewed: 0, quizzesCompleted: 0, flashcardsStudied: 0 });
   const [remainingQuizzes, setRemainingQuizzes] = useState(10);
   const [searchHistory, setSearchHistory]     = useState([]);
   const [viewedFormulaIds, setViewedFormulaIds] = useState([]);
@@ -75,6 +76,7 @@ export default function App() {
   // Dùng ref để debounce save stats và track trạng thái đã load xong chưa
   const statsTimer     = useRef(null);
   const dataLoadedRef  = useRef(false); // chặn save trước khi load xong
+  const prevStatsRef   = useRef(null);  // delta tracker cho todayStats
 
   // ─── Load data khi user đăng nhập / đổi tài khoản ────────────────────────
   useEffect(() => {
@@ -90,6 +92,8 @@ export default function App() {
         setBookmarkedIds(data.bookmarkedIds);
         setUserNotes(data.userNotes);
         setStats(data.stats);
+        setTodayStats({ formulasViewed: 0, quizzesCompleted: data.todayQuizCount, flashcardsStudied: data.todayFlashcardCount });
+        prevStatsRef.current = data.stats;
         setSearchHistory(data.searchHistory);
         // Merge quiz daily: so sánh Supabase vs localStorage, lấy giá trị nhỏ hơn (hạn chế hơn)
         const today = new Date().toISOString().slice(0, 10);
@@ -151,6 +155,22 @@ export default function App() {
     }, 500); // giảm debounce 500ms để lưu nhanh hơn
     return () => clearTimeout(statsTimer.current);
   }, [stats, user?.googleId]);
+
+  // Theo dõi delta stats trong session → cộng vào todayStats
+  useEffect(() => {
+    if (!dataLoadedRef.current || !prevStatsRef.current) return;
+    const dv = stats.formulasViewed  - prevStatsRef.current.formulasViewed;
+    const dq = stats.quizzesCompleted - prevStatsRef.current.quizzesCompleted;
+    const df = stats.flashcardsStudied - prevStatsRef.current.flashcardsStudied;
+    if (dv > 0 || dq > 0 || df > 0) {
+      setTodayStats(prev => ({
+        formulasViewed:    prev.formulasViewed    + Math.max(dv, 0),
+        quizzesCompleted:  prev.quizzesCompleted  + Math.max(dq, 0),
+        flashcardsStudied: prev.flashcardsStudied + Math.max(df, 0),
+      }));
+    }
+    prevStatsRef.current = { ...stats };
+  }, [stats]);
 
   // Lưu Supabase ngay khi người dùng tắt/rời tab — tránh mất dữ liệu
   useEffect(() => {
@@ -350,7 +370,7 @@ export default function App() {
             isPremium={isPremium}
             remainingQuizzes={remainingQuizzes}
             stats={stats}
-            onResetStats={handleResetStats}
+            todayStats={todayStats}
           />
         );
       case "library":
@@ -435,7 +455,7 @@ export default function App() {
             isPremium={isPremium}
             remainingQuizzes={remainingQuizzes}
             stats={stats}
-            onResetStats={handleResetStats}
+            todayStats={todayStats}
           />
         );
     }
