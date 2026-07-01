@@ -18,6 +18,9 @@ export default function QuizView({
   // Topic: allMode=true → tất cả chủ đề (other buttons disabled); allMode=false → chọn nhiều chủ đề
   const [allMode, setAllMode] = useState(true);
   const [selectedTopics, setSelectedTopics] = useState([]);
+  // Grade: allGradeMode=true → tất cả các lớp; allGradeMode=false → chọn nhiều lớp
+  const [allGradeMode, setAllGradeMode] = useState(true);
+  const [selectedGrades, setSelectedGrades] = useState([]);
   const [questionCountInput, setQuestionCountInput] = useState("10");
   const [quizType, setQuizType] = useState("multiple-choice"); // multiple-choice, fill-in, hybrid
   const [timeLimitInput, setTimeLimitInput] = useState("0"); // phút, 0 = không giới hạn
@@ -33,10 +36,16 @@ export default function QuizView({
   const [timeLeft, setTimeLeft] = useState(600);
   const [timerActive, setTimerActive] = useState(false);
 
-  // Filter questions based on allMode / selectedTopics
+  // Filter questions based on allMode/selectedTopics and allGradeMode/selectedGrades
   const getFilteredQuestions = () => {
-    if (allMode || selectedTopics.length === 0) return [...pool];
-    return pool.filter(q => selectedTopics.includes(q.topic));
+    let list = [...pool];
+    if (!allMode && selectedTopics.length > 0) {
+      list = list.filter(q => selectedTopics.includes(q.topic));
+    }
+    if (!allGradeMode && selectedGrades.length > 0) {
+      list = list.filter(q => selectedGrades.includes(q.grade));
+    }
+    return list;
   };
 
   // Cap questionCountInput when available pool shrinks
@@ -44,7 +53,7 @@ export default function QuizView({
     const max = getFilteredQuestions().length;
     const cur = parseInt(questionCountInput) || 1;
     if (cur > max) setQuestionCountInput(String(max));
-  }, [allMode, selectedTopics]);
+  }, [allMode, selectedTopics, allGradeMode, selectedGrades]);
 
   // Timer Effect
   useEffect(() => {
@@ -235,6 +244,26 @@ export default function QuizView({
     setSelectedTopics(next);
   };
 
+  const handleGradeClick = (g) => {
+    if (g === "Tất cả các lớp") {
+      setAllGradeMode(true);
+      setSelectedGrades([]);
+      return;
+    }
+    if (allGradeMode) {
+      setAllGradeMode(false);
+      setSelectedGrades([g]);
+      return;
+    }
+    const next = selectedGrades.includes(g)
+      ? selectedGrades.filter(x => x !== g)
+      : [...selectedGrades, g];
+    if (next.length === 0) {
+      setAllGradeMode(true);
+    }
+    setSelectedGrades(next);
+  };
+
   return (
     <div className="view-container">
 
@@ -420,6 +449,58 @@ export default function QuizView({
               )}
             </div>
 
+            {/* Section 1b: Chọn lớp */}
+            <div>
+              <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
+                <GraduationCap size={15} style={{ color: "#3B82F6" }} />
+                <span>Chọn lớp</span>
+                {!allGradeMode && selectedGrades.length > 0 && (
+                  <span style={{ fontSize: "0.7rem", fontWeight: "600", color: "#3B82F6", background: "rgba(59,130,246,0.08)", borderRadius: "10px", padding: "2px 8px" }}>
+                    {selectedGrades.length} đã chọn
+                  </span>
+                )}
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                <button
+                  onClick={() => handleGradeClick("Tất cả các lớp")}
+                  style={{
+                    padding: "8px 16px", borderRadius: "20px",
+                    border: `1.5px solid ${allGradeMode ? "#1E3A5F" : "#E2E8F0"}`,
+                    backgroundColor: allGradeMode ? "#1E3A5F" : "#F8FAFC",
+                    color: allGradeMode ? "white" : "#475569",
+                    fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.2s",
+                  }}
+                >
+                  Tất cả các lớp
+                </button>
+                {[10, 11, 12].map(g => {
+                  const isActive = !allGradeMode && selectedGrades.includes(g);
+                  return (
+                    <button
+                      key={g}
+                      onClick={() => handleGradeClick(g)}
+                      style={{
+                        padding: "8px 16px", borderRadius: "20px",
+                        border: `1.5px solid ${isActive ? "#3B82F6" : "#E2E8F0"}`,
+                        backgroundColor: isActive ? "#3B82F6" : "#F8FAFC",
+                        color: isActive ? "white" : "#475569",
+                        fontSize: "0.8rem", fontWeight: "700",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      Lớp {g}
+                    </button>
+                  );
+                })}
+              </div>
+              {!allGradeMode && selectedGrades.length === 0 && (
+                <p style={{ fontSize: "0.72rem", color: "#F59E0B", marginTop: "6px", fontWeight: "600" }}>
+                  Chưa chọn lớp nào — sẽ lấy tất cả các lớp
+                </p>
+              )}
+            </div>
+
             {/* Section 2: Số câu hỏi */}
             <div>
               <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
@@ -548,10 +629,14 @@ export default function QuizView({
             <span>
               {isPremium ? "Premium — Không giới hạn lượt" : `Miễn phí — Còn ${remainingQuizzes}/10 lượt hôm nay`}
             </span>
-            <span style={{ color: "#94A3B8", fontSize: "0.72rem" }}>
+            <span style={{ color: "#94A3B8", fontSize: "0.72rem", textAlign: "right" }}>
               {allMode || selectedTopics.length === 0
                 ? "Tất cả chủ đề"
                 : selectedTopics.join(" + ")}
+              {" · "}
+              {allGradeMode || selectedGrades.length === 0
+                ? "Tất cả các lớp"
+                : selectedGrades.map(g => `Lớp ${g}`).join(" + ")}
             </span>
           </div>
 

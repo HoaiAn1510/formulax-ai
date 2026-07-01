@@ -3,7 +3,7 @@ export const questionsPool = [
   {
     id: "gt1",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Tìm đạo hàm của hàm số $y = x^3$ trên tập số thực.",
     options: [
       { letter: "A", text: "$y' = 3x^2$", isCorrect: true },
@@ -59,7 +59,7 @@ export const questionsPool = [
   {
     id: "gt5",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Tìm đạo hàm của hàm số $y = \\ln x$ trên khoảng $(0; +\\infty)$.",
     options: [
       { letter: "A", text: "$y' = \\frac{1}{x}$", isCorrect: true },
@@ -73,7 +73,7 @@ export const questionsPool = [
   {
     id: "gt6",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Tìm đạo hàm của hàm số $y = \\sin x$.",
     options: [
       { letter: "A", text: "$y' = \\cos x$", isCorrect: true },
@@ -87,7 +87,7 @@ export const questionsPool = [
   {
     id: "gt7",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Tìm đạo hàm của hàm số $y = e^x$.",
     options: [
       { letter: "A", text: "$y' = e^x$", isCorrect: true },
@@ -143,7 +143,7 @@ export const questionsPool = [
   {
     id: "gt11",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Tìm đạo hàm của hàm số $y = \\tan x$.",
     options: [
       { letter: "A", text: "$y' = \\frac{1}{\\cos^2 x}$", isCorrect: true },
@@ -171,7 +171,7 @@ export const questionsPool = [
   {
     id: "gt13",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Tìm đạo hàm của hàm số $y = x^4$.",
     options: [
       { letter: "A", text: "$y' = 4x^3$", isCorrect: true },
@@ -213,7 +213,7 @@ export const questionsPool = [
   {
     id: "gt16",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Tìm đạo hàm của hàm số $y = \\cos(2x)$.",
     options: [
       { letter: "A", text: "$y' = -2\\sin(2x)$", isCorrect: true },
@@ -227,7 +227,7 @@ export const questionsPool = [
   {
     id: "gt17",
     topic: "Giải tích",
-    grade: 12,
+    grade: 11,
     text: "Viết phương trình tiếp tuyến của đồ thị hàm số $y = x^2$ tại điểm có hoành độ $x_0 = 1$.",
     options: [
       { letter: "A", text: "$y = 2x - 1$", isCorrect: true },
@@ -285,7 +285,7 @@ export const questionsPool = [
   {
     id: "hh1",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Cho khối chóp có diện tích đáy $B = 10\\text{ cm}^2$ và chiều cao $h = 6\\text{ cm}$. Tính thể tích $V$ của khối chóp.",
     options: [
       { letter: "A", text: "$V = 60\\text{ cm}^3$", isCorrect: false },
@@ -313,7 +313,7 @@ export const questionsPool = [
   {
     id: "hh3",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Tính thể tích của khối lăng trụ đứng có diện tích đáy $B = 9\\text{ cm}^2$ và chiều cao $h = 5\\text{ cm}$.",
     options: [
       { letter: "A", text: "$V = 15\\text{ cm}^3$", isCorrect: false },
@@ -383,7 +383,7 @@ export const questionsPool = [
   {
     id: "hh8",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Tính diện tích xung quanh của hình nón có bán kính đáy $r = 3\\text{ cm}$ và đường sinh $l = 5\\text{ cm}$.",
     options: [
       { letter: "A", text: "$15\\pi\\text{ cm}^2$", isCorrect: true },
@@ -397,7 +397,7 @@ export const questionsPool = [
   {
     id: "hh9",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Tính diện tích xung quanh của hình trụ có bán kính đáy $r = 4\\text{ cm}$ và chiều cao $h = 6\\text{ cm}$.",
     options: [
       { letter: "A", text: "$48\\pi\\text{ cm}^2$", isCorrect: true },
@@ -411,7 +411,7 @@ export const questionsPool = [
   {
     id: "hh10",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Tính thể tích $V$ của khối trụ có bán kính đáy $r = 3\\text{ cm}$ và chiều cao $h = 4\\text{ cm}$.",
     options: [
       { letter: "A", text: "$V = 36\\pi\\text{ cm}^3$", isCorrect: true },
@@ -425,7 +425,7 @@ export const questionsPool = [
   {
     id: "hh11",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Cho hình hộp chữ nhật có ba kích thước lần lượt là $3\\text{ cm}$, $4\\text{ cm}$, $5\\text{ cm}$. Tính thể tích $V$ của khối hộp.",
     options: [
       { letter: "A", text: "$60\\text{ cm}^3$", isCorrect: true },
@@ -523,7 +523,7 @@ export const questionsPool = [
   {
     id: "hh18",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Tính thể tích $V$ của khối lập phương cạnh $3\\text{ cm}$.",
     options: [
       { letter: "A", text: "$V = 27\\text{ cm}^3$", isCorrect: true },
@@ -537,7 +537,7 @@ export const questionsPool = [
   {
     id: "hh19",
     topic: "Hình học",
-    grade: 12,
+    grade: 11,
     text: "Tính diện tích xung quanh của hình nón có bán kính đáy $r = 5\\text{ cm}$ và đường sinh $l = 10\\text{ cm}$.",
     options: [
       { letter: "A", text: "$50\\pi\\text{ cm}^2$", isCorrect: true },
@@ -561,6 +561,76 @@ export const questionsPool = [
     ],
     blankAnswer: "z - 3 = 0",
     explanation: "Mặt phẳng song song với $(Oxy)$ có phương trình dạng $z + D = 0$. Vì mặt phẳng đi qua $M(1; 2; 3)$ nên $3 + D = 0 \\iff D = -3$. Phương trình mặt phẳng là $z - 3 = 0$."
+  },
+  {
+    id: "hh21",
+    topic: "Hình học",
+    grade: 10,
+    text: "Trong mặt phẳng tọa độ $Oxy$, cho $\\vec{u} = (3; -1)$ và $\\vec{v} = (2; 4)$. Tính tích vô hướng $\\vec{u} \\cdot \\vec{v}$.",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: true },
+      { letter: "B", text: "$10$", isCorrect: false },
+      { letter: "C", text: "$-2$", isCorrect: false },
+      { letter: "D", text: "$6$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "$\\vec{u}\\cdot\\vec{v} = u_1v_1 + u_2v_2 = 3\\cdot2 + (-1)\\cdot4 = 6 - 4 = 2$."
+  },
+  {
+    id: "hh22",
+    topic: "Hình học",
+    grade: 10,
+    text: "Viết phương trình tổng quát của đường thẳng đi qua điểm $A(2; -1)$ và nhận $\\vec{n}=(1; 3)$ làm vectơ pháp tuyến.",
+    options: [
+      { letter: "A", text: "$x + 3y + 1 = 0$", isCorrect: true },
+      { letter: "B", text: "$x + 3y - 1 = 0$", isCorrect: false },
+      { letter: "C", text: "$3x + y - 5 = 0$", isCorrect: false },
+      { letter: "D", text: "$x - 3y - 5 = 0$", isCorrect: false }
+    ],
+    blankAnswer: "x + 3y + 1 = 0",
+    explanation: "Phương trình: $1(x-2) + 3(y+1) = 0 \\iff x - 2 + 3y + 3 = 0 \\iff x + 3y + 1 = 0$."
+  },
+  {
+    id: "hh23",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tìm tâm và bán kính của đường tròn $(x-2)^2 + (y+1)^2 = 9$.",
+    options: [
+      { letter: "A", text: "Tâm $I(2;-1)$, bán kính $R=3$", isCorrect: true },
+      { letter: "B", text: "Tâm $I(-2;1)$, bán kính $R=3$", isCorrect: false },
+      { letter: "C", text: "Tâm $I(2;-1)$, bán kính $R=9$", isCorrect: false },
+      { letter: "D", text: "Tâm $I(-2;1)$, bán kính $R=9$", isCorrect: false }
+    ],
+    blankAnswer: "I(2;-1), R=3",
+    explanation: "Đối chiếu $(x-a)^2+(y-b)^2=R^2$: tâm $I(a;b)=I(2;-1)$, bán kính $R=\\sqrt{9}=3$."
+  },
+  {
+    id: "hh24",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho tam giác $ABC$ có $a=6$, góc $A=30°$. Bán kính đường tròn ngoại tiếp $R$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$R=6$", isCorrect: true },
+      { letter: "B", text: "$R=3$", isCorrect: false },
+      { letter: "C", text: "$R=12$", isCorrect: false },
+      { letter: "D", text: "$R=6\\sqrt{3}$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "Định lý Sin: $\\dfrac{a}{\\sin A}=2R \\Rightarrow 2R=\\dfrac{6}{\\sin 30°}=\\dfrac{6}{0.5}=12 \\Rightarrow R=6$."
+  },
+  {
+    id: "hh25",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tam giác $ABC$ có ba cạnh $a=13$, $b=14$, $c=15$. Tính diện tích tam giác theo công thức Hê-rông.",
+    options: [
+      { letter: "A", text: "$S=84$", isCorrect: true },
+      { letter: "B", text: "$S=42$", isCorrect: false },
+      { letter: "C", text: "$S=168$", isCorrect: false },
+      { letter: "D", text: "$S=21$", isCorrect: false }
+    ],
+    blankAnswer: "84",
+    explanation: "Nửa chu vi $p=\\dfrac{13+14+15}{2}=21$. $S=\\sqrt{p(p-a)(p-b)(p-c)}=\\sqrt{21\\cdot8\\cdot7\\cdot6}=\\sqrt{7056}=84$."
   },
 
   // ==================== ĐẠI SỐ (20 câu) ====================
@@ -637,7 +707,7 @@ export const questionsPool = [
   {
     id: "ds6",
     topic: "Đại số",
-    grade: 12,
+    grade: 11,
     text: "Tìm nghiệm của phương trình $\\log_2 x = 3$.",
     options: [
       { letter: "A", text: "$x = 8$", isCorrect: true },
@@ -679,7 +749,7 @@ export const questionsPool = [
   {
     id: "ds9",
     topic: "Đại số",
-    grade: 12,
+    grade: 11,
     text: "Tìm tập nghiệm của phương trình $2^x = 8$.",
     options: [
       { letter: "A", text: "$S = \\{3\\}$", isCorrect: true },
@@ -763,7 +833,7 @@ export const questionsPool = [
   {
     id: "ds15",
     topic: "Đại số",
-    grade: 12,
+    grade: 11,
     text: "Cho $a > 0, a \\neq 1$. Tính giá trị của biểu thức $P = \\log_a(a^2)$.",
     options: [
       { letter: "A", text: "$P = 2$", isCorrect: true },
@@ -791,7 +861,7 @@ export const questionsPool = [
   {
     id: "ds17",
     topic: "Đại số",
-    grade: 12,
+    grade: 11,
     text: "Tìm tập xác định của hàm số $y = \\log_3 x$.",
     options: [
       { letter: "A", text: "$D = (0; +\\infty)$", isCorrect: true },
@@ -848,8 +918,8 @@ export const questionsPool = [
   // ==================== XÁC SUẤT & TỔ HỢP (20 câu) ====================
   {
     id: "xs1",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Có bao nhiêu cách chọn ra 3 học sinh từ một nhóm 10 học sinh để đi trực nhật?",
     options: [
       { letter: "A", text: "$720$ cách", isCorrect: false },
@@ -863,7 +933,7 @@ export const questionsPool = [
   {
     id: "xs2",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Gieo một con xúc xắc cân đối và đồng chất một lần. Tính xác suất để xuất hiện mặt có số chấm là số chẵn.",
     options: [
       { letter: "A", text: "$\\frac{1}{2}$", isCorrect: true },
@@ -876,8 +946,8 @@ export const questionsPool = [
   },
   {
     id: "xs3",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Công thức nào sau đây dùng để tính số chỉnh hợp chập $k$ của $n$ phần tử ($1 \\le k \\le n$)?",
     options: [
       { letter: "A", text: "$A_n^k = \\frac{n!}{(n-k)!}$", isCorrect: true },
@@ -890,8 +960,8 @@ export const questionsPool = [
   },
   {
     id: "xs4",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Công thức nào sau đây dùng để tính số tổ hợp chập $k$ của $n$ phần tử ($0 \\le k \\le n$)?",
     options: [
       { letter: "A", text: "$C_n^k = \\frac{n!}{k!(n-k)!}$", isCorrect: true },
@@ -904,8 +974,8 @@ export const questionsPool = [
   },
   {
     id: "xs5",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Có bao nhiêu cách xếp 5 người vào một hàng dọc gồm 5 vị trí?",
     options: [
       { letter: "A", text: "$120$", isCorrect: true },
@@ -919,7 +989,7 @@ export const questionsPool = [
   {
     id: "xs6",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Trong một hộp có 3 quả cầu đỏ và 4 quả cầu xanh. Chọn ngẫu nhiên 1 quả cầu. Tính xác suất để chọn được quả cầu màu đỏ.",
     options: [
       { letter: "A", text: "$\\frac{3}{7}$", isCorrect: true },
@@ -933,7 +1003,7 @@ export const questionsPool = [
   {
     id: "xs7",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Tung hai đồng xu cân đối và đồng chất. Tính xác suất để cả hai đồng xu đều xuất hiện mặt ngửa.",
     options: [
       { letter: "A", text: "$\\frac{1}{4}$", isCorrect: true },
@@ -947,7 +1017,7 @@ export const questionsPool = [
   {
     id: "xs8",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Gọi $\\bar{A}$ là biến cố đối của biến cố $A$. Công thức nào sau đây là đúng?",
     options: [
       { letter: "A", text: "$P(\\bar{A}) = 1 - P(A)$", isCorrect: true },
@@ -960,8 +1030,8 @@ export const questionsPool = [
   },
   {
     id: "xs9",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Số hoán vị của $n$ phần tử được tính bằng công thức nào?",
     options: [
       { letter: "A", text: "$P_n = n!$", isCorrect: true },
@@ -974,8 +1044,8 @@ export const questionsPool = [
   },
   {
     id: "xs10",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Hộp có 5 bóng xanh và 3 bóng đỏ. Hỏi có bao nhiêu cách chọn ra 2 quả bóng màu xanh?",
     options: [
       { letter: "A", text: "$10$ cách", isCorrect: true },
@@ -989,7 +1059,7 @@ export const questionsPool = [
   {
     id: "xs11",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Hai biến cố $A$ và $B$ xung khắc với nhau. Công thức cộng xác suất nào sau đây là đúng?",
     options: [
       { letter: "A", text: "$P(A \\cup B) = P(A) + P(B)$", isCorrect: true },
@@ -1002,8 +1072,8 @@ export const questionsPool = [
   },
   {
     id: "xs12",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Có bao nhiêu số tự nhiên gồm 3 chữ số khác nhau được lập từ tập hợp các chữ số $\\{1; 2; 3\\}$?",
     options: [
       { letter: "A", text: "$6$", isCorrect: true },
@@ -1017,7 +1087,7 @@ export const questionsPool = [
   {
     id: "xs13",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Gieo một con xúc xắc cân đối và đồng chất. Tính xác suất xuất hiện mặt có 6 chấm.",
     options: [
       { letter: "A", text: "$\\frac{1}{6}$", isCorrect: true },
@@ -1031,7 +1101,7 @@ export const questionsPool = [
   {
     id: "xs14",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Chọn ngẫu nhiên một chữ số từ $0$ đến $9$. Tính xác suất để chọn được một số nguyên tố.",
     options: [
       { letter: "A", text: "$\\frac{2}{5}$", isCorrect: true },
@@ -1058,8 +1128,8 @@ export const questionsPool = [
   },
   {
     id: "xs16",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Cần chọn một ban cán sự gồm 1 Lớp trưởng và 1 Lớp phó từ một tổ gồm 10 học sinh. Hỏi có bao nhiêu cách chọn?",
     options: [
       { letter: "A", text: "$90$ cách", isCorrect: true },
@@ -1073,7 +1143,7 @@ export const questionsPool = [
   {
     id: "xs17",
     topic: "Xác suất & Thống kê",
-    grade: 11,
+    grade: 10,
     text: "Gieo đồng thời hai con xúc xắc. Tính xác suất để tổng số chấm trên hai con xúc xắc bằng 7.",
     options: [
       { letter: "A", text: "$\\frac{1}{6}$", isCorrect: true },
@@ -1086,8 +1156,8 @@ export const questionsPool = [
   },
   {
     id: "xs18",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Một tổ học sinh gồm 6 nam và 4 nữ. Chọn ngẫu nhiên 3 học sinh. Hỏi có bao nhiêu cách chọn sao cho trong 3 người có ít nhất 1 học sinh nữ?",
     options: [
       { letter: "A", text: "$100$ cách", isCorrect: true },
@@ -1100,8 +1170,8 @@ export const questionsPool = [
   },
   {
     id: "xs19",
-    topic: "Xác suất & Thống kê",
-    grade: 11,
+    topic: "Đại số",
+    grade: 10,
     text: "Trong khai triển nhị thức Newton $(a + b)^2$, biểu thức khai triển có bao nhiêu số hạng?",
     options: [
       { letter: "A", text: "$3$", isCorrect: true },
@@ -1125,6 +1195,76 @@ export const questionsPool = [
     ],
     blankAnswer: "P(A)*P(B)",
     explanation: "Nếu hai biến cố độc lập thì xác suất đồng thời xảy ra bằng tích các xác suất riêng lẻ: $P(A \\cap B) = P(A) \\cdot P(B)$."
+  },
+  {
+    id: "xs21",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Mẫu số liệu: $2, 4, 6, 8, 10$. Tính số trung bình $\\bar{x}$.",
+    options: [
+      { letter: "A", text: "$6$", isCorrect: true },
+      { letter: "B", text: "$5$", isCorrect: false },
+      { letter: "C", text: "$8$", isCorrect: false },
+      { letter: "D", text: "$30$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "$\\bar{x}=\\dfrac{2+4+6+8+10}{5}=\\dfrac{30}{5}=6$."
+  },
+  {
+    id: "xs22",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Mẫu số liệu: $1, 3, 5, 7, 9$. Tính phương sai $s^2$.",
+    options: [
+      { letter: "A", text: "$8$", isCorrect: true },
+      { letter: "B", text: "$4$", isCorrect: false },
+      { letter: "C", text: "$2\\sqrt{2}$", isCorrect: false },
+      { letter: "D", text: "$5$", isCorrect: false }
+    ],
+    blankAnswer: "8",
+    explanation: "$\\bar{x}=5$. $s^2=\\dfrac{(1-5)^2+(3-5)^2+(5-5)^2+(7-5)^2+(9-5)^2}{5}=\\dfrac{16+4+0+4+16}{5}=8$."
+  },
+  {
+    id: "xs23",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Điểm kiểm tra của một tổ: $6, 7, 7, 8, 9, 10$. Tìm số trung vị $M_e$ của mẫu số liệu.",
+    options: [
+      { letter: "A", text: "$7{,}5$", isCorrect: true },
+      { letter: "B", text: "$7$", isCorrect: false },
+      { letter: "C", text: "$8$", isCorrect: false },
+      { letter: "D", text: "$8{,}5$", isCorrect: false }
+    ],
+    blankAnswer: "7.5",
+    explanation: "$n=6$ (chẵn), dãy đã sắp xếp tăng dần. Trung vị là trung bình của số hạng thứ 3 và thứ 4: $M_e=\\dfrac{7+8}{2}=7{,}5$."
+  },
+  {
+    id: "xs24",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Hộp 1 có 4 bi đỏ, 6 bi xanh. Hộp 2 có 2 bi đỏ, 8 bi xanh. Lấy ngẫu nhiên một hộp (xác suất mỗi hộp là $\\frac{1}{2}$) rồi lấy 1 bi. Tính xác suất lấy được bi đỏ (dùng công thức xác suất toàn phần).",
+    options: [
+      { letter: "A", text: "$0{,}3$", isCorrect: true },
+      { letter: "B", text: "$0{,}4$", isCorrect: false },
+      { letter: "C", text: "$0{,}2$", isCorrect: false },
+      { letter: "D", text: "$0{,}6$", isCorrect: false }
+    ],
+    blankAnswer: "0.3",
+    explanation: "$P(A) = P(H_1)P(A|H_1) + P(H_2)P(A|H_2) = \\dfrac{1}{2}\\cdot\\dfrac{4}{10} + \\dfrac{1}{2}\\cdot\\dfrac{2}{10} = 0{,}2+0{,}1=0{,}3$."
+  },
+  {
+    id: "xs25",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Một hộp có 5 bi đỏ và 3 bi xanh. Lấy ngẫu nhiên lần lượt 2 bi không hoàn lại. Biết bi thứ nhất là bi đỏ, tính xác suất bi thứ hai cũng là bi đỏ (xác suất có điều kiện).",
+    options: [
+      { letter: "A", text: "$\\dfrac{4}{7}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{5}{8}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{5}{7}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{1}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "4/7",
+    explanation: "Sau khi lấy 1 bi đỏ, hộp còn 4 bi đỏ, 3 bi xanh (7 bi). $P(\\text{đỏ lần 2}|\\text{đỏ lần 1}) = \\dfrac{4}{7}$."
   },
 
   // ==================== LƯỢNG GIÁC (20 câu) ====================
@@ -1459,7 +1599,7 @@ export const questionsPool = [
     id: "thpt4",
     topic: "Đại số",
     source: "THPT Quốc gia 2023",
-    grade: 12,
+    grade: 11,
     text: "Giải phương trình $\\log_3(x - 1) = 2$.",
     options: [
       { letter: "A", text: "$x = 10$", isCorrect: true },
@@ -1534,7 +1674,7 @@ export const questionsPool = [
     id: "thpt9",
     topic: "Đại số",
     source: "THPT Quốc gia 2022",
-    grade: 12,
+    grade: 11,
     text: "Phương trình $4^x - 3\\cdot 2^x - 4 = 0$ có nghiệm là:",
     options: [
       { letter: "A", text: "$x = 2$", isCorrect: true },
@@ -1591,25 +1731,10 @@ export const questionsPool = [
     explanation: "Giao điểm: $x^2=x \\Rightarrow x=0$ và $x=1$. Trên $[0;1]$: $x \\ge x^2$. $S=\\int_0^1(x-x^2)\\,dx=[\\frac{x^2}{2}-\\frac{x^3}{3}]_0^1=\\frac{1}{2}-\\frac{1}{3}=\\frac{1}{6}$."
   },
   {
-    id: "thpt13",
-    topic: "Đại số",
-    source: "THPT Quốc gia 2022",
-    grade: 12,
-    text: "Số phức $z = 3 + 4i$ có mô-đun bằng:",
-    options: [
-      { letter: "A", text: "$5$", isCorrect: true },
-      { letter: "B", text: "$7$", isCorrect: false },
-      { letter: "C", text: "$\\sqrt{7}$", isCorrect: false },
-      { letter: "D", text: "$25$", isCorrect: false }
-    ],
-    blankAnswer: "5",
-    explanation: "$|z| = \\sqrt{3^2 + 4^2} = \\sqrt{9 + 16} = \\sqrt{25} = 5$."
-  },
-  {
     id: "thpt14",
     topic: "Đại số",
     source: "THPT Quốc gia 2023",
-    grade: 12,
+    grade: 11,
     text: "Cho $\\log_2 3 = a$. Tính $\\log_2 12$ theo $a$.",
     options: [
       { letter: "A", text: "$a + 2$", isCorrect: true },
@@ -1637,9 +1762,9 @@ export const questionsPool = [
   },
   {
     id: "thpt16",
-    topic: "Xác suất & Thống kê",
+    topic: "Đại số",
     source: "THPT Quốc gia 2023",
-    grade: 12,
+    grade: 10,
     text: "Trong khai triển $(x + 2)^5$, hệ số của $x^3$ bằng bao nhiêu?",
     options: [
       { letter: "A", text: "$40$", isCorrect: true },
@@ -1684,7 +1809,7 @@ export const questionsPool = [
     id: "thpt19",
     topic: "Đại số",
     source: "THPT Quốc gia 2022",
-    grade: 12,
+    grade: 11,
     text: "Bất phương trình $2^{x-1} > 8$ có tập nghiệm là:",
     options: [
       { letter: "A", text: "$(4; +\\infty)$", isCorrect: true },
@@ -1699,7 +1824,7 @@ export const questionsPool = [
     id: "thpt20",
     topic: "Đại số",
     source: "THPT Quốc gia 2023",
-    grade: 12,
+    grade: 11,
     text: "Cho cấp số nhân $(u_n)$ có $u_1 = 2$ và công bội $q = 3$. Tính tổng $S_4$ của 4 số hạng đầu.",
     options: [
       { letter: "A", text: "$80$", isCorrect: true },
@@ -1754,21 +1879,6 @@ export const questionsPool = [
     ],
     blankAnswer: "3",
     explanation: "$\\frac{x^3-1}{x-1}=\\frac{(x-1)(x^2+x+1)}{x-1}=x^2+x+1$ (khi $x\\neq 1$). Giới hạn $=1+1+1=3$."
-  },
-  {
-    id: "thpt24",
-    topic: "Đại số",
-    source: "THPT Quốc gia 2023",
-    grade: 12,
-    text: "Cho $z = 1 + i$. Giá trị của $z^4$ bằng:",
-    options: [
-      { letter: "A", text: "$-4$", isCorrect: true },
-      { letter: "B", text: "$4$", isCorrect: false },
-      { letter: "C", text: "$-4i$", isCorrect: false },
-      { letter: "D", text: "$4i$", isCorrect: false }
-    ],
-    blankAnswer: "-4",
-    explanation: "$z^2=(1+i)^2=1+2i+i^2=1+2i-1=2i$. $z^4=(z^2)^2=(2i)^2=4i^2=-4$."
   },
   {
     id: "thpt25",
@@ -1846,7 +1956,7 @@ export const questionsPool = [
   {
     id: "mr5",
     topic: "Mở rộng",
-    grade: 11,
+    grade: 12,
     text: "Biến ngẫu nhiên $X$ có bảng phân phối: $P(X=1)=0.3$, $P(X=2)=0.5$, $P(X=3)=0.2$. Kỳ vọng $E(X)$ bằng:",
     options: [
       { letter: "A", text: "$1{,}9$", isCorrect: true },
@@ -1860,7 +1970,7 @@ export const questionsPool = [
   {
     id: "mr6",
     topic: "Mở rộng",
-    grade: 11,
+    grade: 12,
     text: "Tung đồng xu cân đối 4 lần. Xác suất để xuất hiện đúng 2 mặt ngửa là:",
     options: [
       { letter: "A", text: "$\\dfrac{3}{8}$", isCorrect: true },
@@ -1874,21 +1984,21 @@ export const questionsPool = [
   {
     id: "mr7",
     topic: "Mở rộng",
-    grade: 10,
-    text: "Điểm nào sau đây **không** thuộc elip $\\dfrac{x^2}{4} + \\dfrac{y^2}{1} = 1$?",
+    grade: 11,
+    text: "Trong mặt phẳng tọa độ $Oxy$, phép quay tâm $O$ góc $90°$ biến điểm $M(2; 0)$ thành điểm $M'$ có tọa độ là:",
     options: [
-      { letter: "A", text: "$(1; \\sqrt{3}/2)$", isCorrect: true },
-      { letter: "B", text: "$(0; 1)$", isCorrect: false },
-      { letter: "C", text: "$(2; 0)$", isCorrect: false },
-      { letter: "D", text: "$(-2; 0)$", isCorrect: false }
+      { letter: "A", text: "$M'(0; 2)$", isCorrect: true },
+      { letter: "B", text: "$M'(-2; 0)$", isCorrect: false },
+      { letter: "C", text: "$M'(0; -2)$", isCorrect: false },
+      { letter: "D", text: "$M'(2; 0)$", isCorrect: false }
     ],
-    blankAnswer: "(1; √3/2)",
-    explanation: "Kiểm tra $(1;\\sqrt{3}/2)$: $\\frac{1}{4}+\\frac{3/4}{1}=\\frac{1}{4}+\\frac{3}{4}=1$ ✓ ... Ý A thực ra **thuộc** elip. Nhưng nếu đề là $(1;1)$: $\\frac{1}{4}+1=\\frac{5}{4}\\neq1$, không thuộc. [Câu hỏi kiểm tra việc thế tọa độ vào phương trình elip]."
+    blankAnswer: "(0; 2)",
+    explanation: "Phép quay tâm $O$ góc $\\alpha$: $x' = x\\cos\\alpha - y\\sin\\alpha$, $y' = x\\sin\\alpha + y\\cos\\alpha$. Với $\\alpha=90°$: $\\cos 90°=0$, $\\sin 90°=1$. Thay $M(2;0)$: $x' = 2(0) - 0(1) = 0$, $y' = 2(1) + 0(0) = 2$. Vậy $M'(0; 2)$."
   },
   {
     id: "mr8",
     topic: "Mở rộng",
-    grade: 11,
+    grade: 12,
     text: "Phân bố nhị thức $X\\sim B(5, 0.4)$. Kỳ vọng $E(X)$ bằng:",
     options: [
       { letter: "A", text: "$2$", isCorrect: true },
@@ -1916,7 +2026,7 @@ export const questionsPool = [
   {
     id: "mr10",
     topic: "Mở rộng",
-    grade: 11,
+    grade: 12,
     text: "Biến ngẫu nhiên $X\\sim B(10, 0.3)$. Phương sai $D(X)$ bằng:",
     options: [
       { letter: "A", text: "$2{,}1$", isCorrect: true },
@@ -1926,5 +2036,75 @@ export const questionsPool = [
     ],
     blankAnswer: "2.1",
     explanation: "$D(X)=np(1-p)=10\\times0.3\\times0.7=2.1$."
+  },
+  {
+    id: "mr11",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Một đồ thị $G$ có 5 đỉnh với bậc lần lượt là $2, 2, 2, 2, 2$. Đồ thị này có chu trình Euler không, vì sao?",
+    options: [
+      { letter: "A", text: "Có, vì mọi đỉnh đều có bậc chẵn", isCorrect: true },
+      { letter: "B", text: "Không, vì có đỉnh bậc lẻ", isCorrect: false },
+      { letter: "C", text: "Không, vì đồ thị không liên thông", isCorrect: false },
+      { letter: "D", text: "Có, vì đồ thị có 5 đỉnh", isCorrect: false }
+    ],
+    blankAnswer: "Có",
+    explanation: "Đồ thị liên thông có chu trình Euler khi và chỉ khi mọi đỉnh đều có bậc chẵn. Ở đây cả 5 đỉnh đều có bậc $2$ (chẵn), nên đồ thị có chu trình Euler."
+  },
+  {
+    id: "mr12",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Một đồ thị có 4 đỉnh với bậc lần lượt là $3, 3, 2, 2$. Tính số cạnh của đồ thị.",
+    options: [
+      { letter: "A", text: "$5$", isCorrect: true },
+      { letter: "B", text: "$4$", isCorrect: false },
+      { letter: "C", text: "$10$", isCorrect: false },
+      { letter: "D", text: "$8$", isCorrect: false }
+    ],
+    blankAnswer: "5",
+    explanation: "Theo định lý bắt tay: $\\sum \\deg(v) = 2|E|$. Ta có $3+3+2+2=10=2|E| \\Rightarrow |E|=5$."
+  },
+  {
+    id: "mr13",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Phép vị tự tâm $O$ tỉ số $k=2$ biến điểm $A(1; 3)$ thành điểm $A'$ có tọa độ là:",
+    options: [
+      { letter: "A", text: "$A'(2; 6)$", isCorrect: true },
+      { letter: "B", text: "$A'(3; 5)$", isCorrect: false },
+      { letter: "C", text: "$A'(1; 3)$", isCorrect: false },
+      { letter: "D", text: "$A'(0{,}5; 1{,}5)$", isCorrect: false }
+    ],
+    blankAnswer: "(2; 6)",
+    explanation: "Phép vị tự tâm $O$ tỉ số $k$: $(x; y) \\to (kx; ky)$. Với $k=2$, $A(1;3) \\to A'(2\\cdot1; 2\\cdot3) = A'(2; 6)$."
+  },
+  {
+    id: "mr14",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Một công ty có hàm lợi nhuận $P(x) = -x^2 + 60x - 400$ (triệu đồng, $x$ là số sản phẩm). Mức sản xuất $x$ để lợi nhuận cực đại là:",
+    options: [
+      { letter: "A", text: "$x = 30$", isCorrect: true },
+      { letter: "B", text: "$x = 60$", isCorrect: false },
+      { letter: "C", text: "$x = 20$", isCorrect: false },
+      { letter: "D", text: "$x = 40$", isCorrect: false }
+    ],
+    blankAnswer: "30",
+    explanation: "$P'(x) = -2x + 60 = 0 \\Rightarrow x = 30$. Vì $P''(x) = -2 < 0$ nên $x=30$ là điểm cực đại của lợi nhuận."
+  },
+  {
+    id: "mr15",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Doanh thu $R(x) = 100x - x^2$ và chi phí $C(x) = 20x + 500$ (đơn vị: nghìn đồng). Lợi nhuận đạt cực đại khi doanh thu biên bằng chi phí biên. Tìm $x$.",
+    options: [
+      { letter: "A", text: "$x = 40$", isCorrect: true },
+      { letter: "B", text: "$x = 50$", isCorrect: false },
+      { letter: "C", text: "$x = 20$", isCorrect: false },
+      { letter: "D", text: "$x = 80$", isCorrect: false }
+    ],
+    blankAnswer: "40",
+    explanation: "Doanh thu biên $MR = R'(x) = 100 - 2x$. Chi phí biên $MC = C'(x) = 20$. Lợi nhuận cực đại khi $MR = MC$: $100 - 2x = 20 \\Rightarrow x = 40$."
   }
 ];
