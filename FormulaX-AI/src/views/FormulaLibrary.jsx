@@ -21,7 +21,7 @@ export default function FormulaLibrary({
 
   const searchContainerRef = useRef(null);
 
-  const topics = ["Tất cả", "Đã lưu", "Đại số", "Hình học", "Giải tích", "Lượng giác", "Xác suất & Thống kê", "Mở rộng"];
+  const topics = ["Tất cả", "Yêu thích", "Đại số", "Hình học", "Giải tích", "Lượng giác", "Xác suất & Thống kê", "Mở rộng"];
 
   const handleTopicClick = (topic) => {
     if (topic === "Tất cả") {
@@ -29,7 +29,7 @@ export default function FormulaLibrary({
       setSelectedTopics([]);
       return;
     }
-    if (topic === "Đã lưu") {
+    if (topic === "Yêu thích") {
       setTopicMode("saved");
       setSelectedTopics([]);
       return;
@@ -144,7 +144,7 @@ export default function FormulaLibrary({
         </h2>
         <p style={{ fontSize: "0.85rem", color: "#64748B", fontWeight: "500", marginTop: "4px" }}>
           {topicMode === "saved"
-            ? `${filteredFormulas.length} công thức đã lưu`
+            ? `${filteredFormulas.length} công thức yêu thích`
             : `Khám phá ${filteredFormulas.length} công thức Toán THPT`}
         </p>
       </div>
@@ -194,7 +194,7 @@ export default function FormulaLibrary({
           {topics.map((topic) => {
             const isActive = topic === "Tất cả"
               ? topicMode === "all"
-              : topic === "Đã lưu"
+              : topic === "Yêu thích"
                 ? topicMode === "saved"
                 : topicMode === "custom" && selectedTopics.includes(topic);
             return (
@@ -202,11 +202,11 @@ export default function FormulaLibrary({
                 key={topic}
                 className={`filter-pill ${isActive ? "active" : ""}`}
                 onClick={() => handleTopicClick(topic)}
-                style={topic === "Đã lưu" && !isActive ? {
+                style={topic === "Yêu thích" && !isActive ? {
                   borderColor: "#E74C3C", color: "#E74C3C"
                 } : {}}
               >
-                {topic === "Đã lưu" ? <><Heart size={11} fill={isActive ? "white" : "#E74C3C"} color={isActive ? "white" : "#E74C3C"} style={{ display: "inline", marginRight: "3px", verticalAlign: "middle" }} /> Đã lưu</> : topic}
+                {topic === "Yêu thích" ? <><Heart size={11} fill={isActive ? "white" : "#E74C3C"} color={isActive ? "white" : "#E74C3C"} style={{ display: "inline", marginRight: "3px", verticalAlign: "middle" }} /> Yêu thích</> : topic}
               </button>
             );
           })}
