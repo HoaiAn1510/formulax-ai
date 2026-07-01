@@ -607,6 +607,7 @@ export default function QuizView({
                   ✏️ Điền đáp án của bạn vào ô bên dưới:
                 </div>
                 <input
+                  key={currentQIdx}
                   type="text"
                   value={fillInputs[currentQIdx] || ""}
                   onChange={e => setFillInputs(prev => ({ ...prev, [currentQIdx]: e.target.value }))}

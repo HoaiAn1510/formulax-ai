@@ -212,15 +212,15 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
           </div>
         ) : !isPremium ? (
           <>
-            {/* Blurred placeholder bars for non-premium */}
-            {["Giải tích","Đại số","Hình học","Xác suất"].map(t => (
+            {/* Blurred placeholder bars for non-premium — fixed widths to avoid re-render flicker */}
+            {[["Giải tích","72%"],["Đại số","45%"],["Hình học","61%"],["Xác suất","38%"]].map(([t, w]) => (
               <div key={t} style={{ marginBottom: "14px", filter: "blur(4px)", pointerEvents: "none", userSelect: "none" }}>
                 <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
                   <span style={{ fontSize:"0.82rem", fontWeight:"700" }}>{t}</span>
                   <span style={{ fontSize:"0.78rem", fontWeight:"700" }}>??%</span>
                 </div>
                 <div style={{ background:"#F1F5F9", borderRadius:"6px", height:"8px" }}>
-                  <div style={{ height:"100%", width:`${40 + Math.random()*40}%`, background:"#94A3B8", borderRadius:"6px" }} />
+                  <div style={{ height:"100%", width: w, background:"#94A3B8", borderRadius:"6px" }} />
                 </div>
               </div>
             ))}
@@ -258,6 +258,12 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
         {loading ? (
           <div style={{ textAlign: "center", padding: "16px", color: "#94A3B8", fontSize: "0.82rem" }}>Đang tải...</div>
+        ) : !isPremium ? (
+          <EmptyState
+            message="Nâng cấp Premium để nhận gợi ý ôn tập cá nhân hóa theo điểm yếu của bạn."
+            ctaLabel="Nâng cấp Premium"
+            onCta={() => setActiveTab("premium")}
+          />
         ) : weakTopics.length === 0 && hasQuizData ? (
           <div style={{ textAlign: "center", padding: "12px" }}>
             <CheckCircle size={28} color="#10B981" style={{ margin: "0 auto 8px", display: "block" }} />

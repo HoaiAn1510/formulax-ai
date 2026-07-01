@@ -353,6 +353,10 @@ export default function FlashcardView({
       </div></body></html>`;
 
     const win = window.open("", "_blank");
+    if (!win) {
+      alert("Trình duyệt đã chặn popup. Vui lòng cho phép popup cho trang này và thử lại.");
+      return;
+    }
     win.document.write(html);
     win.document.close();
     win.focus();
