@@ -30,20 +30,25 @@ function buildDeckName(topics, grades) {
 
 // ─── Create Filtered Deck Modal ───────────────────────────────────────────────
 
-function CreateFilteredDeckModal({ formulas, onClose, onConfirm }) {
+function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }) {
   const [selTopics, setSelTopics] = useState([]);  // empty = Tất cả
   const [selGrades, setSelGrades] = useState([]);  // empty = Tất cả
+  const [dupError, setDupError] = useState("");
 
   const matched = getFilteredFormulas(formulas, selTopics, selGrades);
 
   const toggleTopic = (t) => {
-    if (t === "Tất cả") { setSelTopics([]); return; }
-    setSelTopics(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+    if (t === "Tất cả") { setSelTopics([]); } else {
+      setSelTopics(prev => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+    }
+    setDupError("");
   };
 
   const toggleGrade = (g) => {
-    if (g === "Tất cả") { setSelGrades([]); return; }
-    setSelGrades(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g]);
+    if (g === "Tất cả") { setSelGrades([]); } else {
+      setSelGrades(prev => prev.includes(g) ? prev.filter(x => x !== g) : [...prev, g]);
+    }
+    setDupError("");
   };
 
   const isTopicActive = (t) => t === "Tất cả" ? selTopics.length === 0 : selTopics.includes(t);
@@ -51,10 +56,16 @@ function CreateFilteredDeckModal({ formulas, onClose, onConfirm }) {
 
   const handleCreate = () => {
     const now = new Date().toISOString();
+    const name = buildDeckName(selTopics, selGrades);
+    const isDuplicate = existingDecks.some(d => d.name === name);
+    if (isDuplicate) {
+      setDupError(`Bộ thẻ "${name}" đã tồn tại. Vui lòng chọn chủ đề hoặc lớp khác.`);
+      return;
+    }
     const deck = {
       id: Date.now().toString(),
       type: "filtered",
-      name: buildDeckName(selTopics, selGrades),
+      name,
       topic: selTopics.length === 1 ? selTopics[0] : null,
       grade: selGrades.length === 1 ? parseInt(selGrades[0].replace("Lớp ", "")) : null,
       formulaIds: matched.map(f => f.id),
@@ -109,13 +120,24 @@ function CreateFilteredDeckModal({ formulas, onClose, onConfirm }) {
         </div>
 
         {/* Preview */}
-        <div style={{ background:"#F8FAFC", borderRadius:"10px", padding:"12px 16px", marginBottom:"20px", textAlign:"center" }}>
+        <div style={{ background:"#F8FAFC", borderRadius:"10px", padding:"12px 16px", marginBottom: dupError ? "10px" : "20px", textAlign:"center" }}>
           <span style={{ fontSize:"0.85rem", fontWeight:"600", color:"#64748B" }}>
             Bộ thẻ sẽ gồm{" "}
             <strong style={{ color:"#1E3A5F", fontSize:"1rem" }}>{matched.length}</strong>
             {" "}công thức
           </span>
         </div>
+
+        {/* Duplicate error */}
+        {dupError && (
+          <div style={{
+            background:"#FEF2F2", border:"1px solid #FECACA", borderRadius:"8px",
+            padding:"9px 12px", marginBottom:"14px",
+            fontSize:"0.78rem", color:"#DC2626", fontWeight:"600",
+          }}>
+            ⚠️ {dupError}
+          </div>
+        )}
 
         {/* Buttons */}
         <div style={{ display:"flex", gap:"10px" }}>
@@ -605,6 +627,7 @@ export default function FlashcardView({
         {showCreateFiltered && (
           <CreateFilteredDeckModal
             formulas={formulas}
+            existingDecks={decks.filter(d => d.type === "filtered")}
             onClose={() => setShowCreateFiltered(false)}
             onConfirm={handleCreateFilteredDeck}
           />
