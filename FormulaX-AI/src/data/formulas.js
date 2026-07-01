@@ -71,7 +71,8 @@ export const formulas = [
     example: "Cho khối chóp có chiều cao $h = 6\\text{ cm}$ và diện tích đáy $B = 10\\text{ cm}^2$. Tính thể tích $V$.\n\n**Lời giải:**\nÁp dụng công thức thể tích khối chóp:\n$$V = \\frac{1}{3} \\cdot 10 \\cdot 6 = 20\\text{ cm}^3$$",
     tags: ["Không gian", "Thể tích", "Khối đa diện"],
     difficulty: "Dễ",
-    mnemonic: "Chóp nhọn đầu nên chia 3: Thể tích bằng một phần ba diện tích đáy nhân chiều cao."
+    mnemonic: "Chóp nhọn đầu nên chia 3: Thể tích bằng một phần ba diện tích đáy nhân chiều cao.",
+    sgk_source: "Toán 11 KNTT, chương Quan hệ vuông góc trong không gian, Bài 27"
   },
   {
     id: "hh12-thetich-langtru",
@@ -83,7 +84,8 @@ export const formulas = [
     example: "Tính thể tích của khối lăng trụ có đáy là hình vuông cạnh $3\\text{ cm}$ và chiều cao $h = 5\\text{ cm}$.\n\n**Lời giải:**\n- Diện tích đáy $B = 3^2 = 9\\text{ cm}^2$.\n- Áp dụng công thức: $V = B \\cdot h = 9 \\cdot 5 = 45\\text{ cm}^3$.",
     tags: ["Không gian", "Thể tích", "Lăng trụ"],
     difficulty: "Dễ",
-    mnemonic: "Lăng trụ thẳng đuột đứng yên, thể tích đáy nhân cao liền không chia."
+    mnemonic: "Lăng trụ thẳng đuột đứng yên, thể tích đáy nhân cao liền không chia.",
+    sgk_source: "Toán 11 KNTT, chương Quan hệ vuông góc trong không gian, Bài 27"
   },
   {
     id: "hh12-matcau-dientich",
