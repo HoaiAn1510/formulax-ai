@@ -17,7 +17,7 @@ export default function FormulaLibrary({
   
   const searchContainerRef = useRef(null);
 
-  const topics = ["Tất cả", "Đã lưu", "Đại số", "Hình học", "Giải tích", "Xác suất & Tổ hợp"];
+  const topics = ["Tất cả", "Đã lưu", "Đại số", "Hình học", "Giải tích", "Lượng giác", "Xác suất & Thống kê", "Mở rộng"];
 
   // Click outside listener for suggestions
   useEffect(() => {

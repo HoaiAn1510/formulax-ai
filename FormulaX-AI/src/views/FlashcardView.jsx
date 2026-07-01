@@ -9,7 +9,7 @@ import { saveFlashcardActivity } from "../lib/supabase";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const TOPICS = ["Tất cả", "Đại số", "Hình học", "Giải tích", "Xác suất & Tổ hợp"];
+const TOPICS = ["Tất cả", "Đại số", "Hình học", "Giải tích", "Lượng giác", "Xác suất & Thống kê", "Mở rộng"];
 const GRADES = ["Tất cả", "Lớp 10", "Lớp 11", "Lớp 12"];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
