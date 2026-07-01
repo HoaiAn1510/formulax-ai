@@ -1006,6 +1006,30 @@ export const formulas = [
     mnemonic: "y²=2px: mở sang phải, tiêu điểm F(p/2; 0), đường chuẩn x=-p/2. x²=2py: mở lên trên. Điểm trên parabol cách tiêu điểm = cách đường chuẩn."
   },
   {
+    id: "mr-phepbienhinh",
+    name: "Phép biến hình phẳng (tịnh tiến, quay, đối xứng, vị tự)",
+    topic: "Mở rộng",
+    grade: 11,
+    latex: "T_{\\vec v}: \\begin{cases}x'=x+a\\\\y'=y+b\\end{cases}\\;\\; Q_{(O,\\alpha)}: \\begin{cases}x'=x\\cos\\alpha-y\\sin\\alpha\\\\y'=x\\sin\\alpha+y\\cos\\alpha\\end{cases}",
+    explanation: "**Phép tịnh tiến** theo $\\vec v = (a;b)$: biến điểm $M(x;y)$ thành $M'(x';y')$ với\n$$x' = x+a, \\quad y' = y+b$$\n\n**Phép quay** tâm $O$ góc $\\alpha$: biến $M(x;y)$ thành $M'(x';y')$ với\n$$x' = x\\cos\\alpha - y\\sin\\alpha, \\quad y' = x\\sin\\alpha + y\\cos\\alpha$$\n\n**Phép đối xứng trục $Ox$:** $(x;y) \\to (x;-y)$. **Đối xứng tâm $O$:** $(x;y) \\to (-x;-y)$.\n\n**Phép vị tự** tâm $O$ tỉ số $k$: $(x;y) \\to (kx;ky)$. Biến đoạn thẳng thành đoạn thẳng có độ dài gấp $|k|$ lần.\n\n**Tính chất chung:** Phép tịnh tiến, quay, đối xứng là **phép dời hình** — bảo toàn khoảng cách. Phép vị tự là **phép đồng dạng** — bảo toàn tỉ số khoảng cách.",
+    example: "Tìm ảnh của điểm $M(2;3)$ qua phép quay tâm $O$ góc $90°$.\n\n**Lời giải:**\n$\\cos 90° = 0$, $\\sin 90° = 1$:\n$$x' = 2\\cdot0 - 3\\cdot1 = -3, \\quad y' = 2\\cdot1 + 3\\cdot0 = 2$$\nVậy $M'(-3; 2)$.",
+    tags: ["Phép biến hình", "Tịnh tiến", "Phép quay", "Vị tự", "Mở rộng"],
+    difficulty: "Trung bình",
+    mnemonic: "Tịnh tiến: cộng tọa độ vector. Quay góc α: nhân ma trận (cosα -sinα; sinα cosα). Đối xứng: đổi dấu tọa độ. Vị tự tỉ số k: nhân tọa độ với k."
+  },
+  {
+    id: "mr-lythuyet-dothi",
+    name: "Lý thuyết đồ thị (Euler, Hamilton, đường đi ngắn nhất)",
+    topic: "Mở rộng",
+    grade: 11,
+    latex: "\\sum_{v\\in V} \\deg(v) = 2|E|",
+    explanation: "**Đồ thị** $G = (V, E)$ gồm tập đỉnh $V$ và tập cạnh $E$.\n\n**Bậc của đỉnh** $\\deg(v)$: số cạnh nối với đỉnh $v$.\n\n**Định lý bắt tay:** Tổng bậc tất cả các đỉnh bằng hai lần số cạnh:\n$$\\sum_{v\\in V} \\deg(v) = 2|E|$$\n\n**Chu trình Euler:** Đi qua **mỗi cạnh đúng một lần** rồi quay về đỉnh xuất phát. Đồ thị liên thông có chu trình Euler $\\Leftrightarrow$ mọi đỉnh đều có bậc **chẵn**.\n\n**Đường đi Euler** (không cần quay về): tồn tại khi đồ thị liên thông và có đúng $0$ hoặc $2$ đỉnh bậc lẻ.\n\n**Chu trình Hamilton:** Đi qua **mỗi đỉnh đúng một lần** rồi quay về đỉnh xuất phát (không có điều kiện tổng quát để nhận biết, phải kiểm tra trực tiếp).\n\n**Đường đi ngắn nhất** (thuật toán Dijkstra): Tìm đường đi có tổng trọng số nhỏ nhất giữa hai đỉnh trong đồ thị có trọng số không âm, bằng cách cập nhật dần khoảng cách ngắn nhất tạm thời từ đỉnh xuất phát.",
+    example: "Đồ thị có 4 đỉnh $A,B,C,D$ với bậc lần lượt $\\deg(A)=3, \\deg(B)=2, \\deg(C)=3, \\deg(D)=2$. Tính số cạnh và xét đồ thị có chu trình Euler không.\n\n**Lời giải:**\n- Số cạnh: $|E| = \\dfrac{3+2+3+2}{2} = 5$.\n- Có 2 đỉnh bậc lẻ ($A, C$) nên đồ thị **không** có chu trình Euler, nhưng **có** đường đi Euler (từ $A$ đến $C$ hoặc ngược lại).",
+    tags: ["Đồ thị", "Euler", "Hamilton", "Đường đi ngắn nhất", "Toán rời rạc", "Mở rộng"],
+    difficulty: "Khó",
+    mnemonic: "Bắt tay: tổng bậc = 2 lần số cạnh. Euler = đi hết CẠNH (cần mọi đỉnh bậc chẵn để có chu trình, ≤2 đỉnh bậc lẻ để có đường đi). Hamilton = đi hết ĐỈNH (không có điều kiện tổng quát)."
+  },
+  {
     id: "mr-bnn-roit-rac",
     name: "Biến ngẫu nhiên rời rạc (E, D, σ)",
     topic: "Mở rộng",
