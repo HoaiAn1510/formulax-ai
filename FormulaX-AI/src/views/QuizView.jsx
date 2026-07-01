@@ -409,11 +409,10 @@ export default function QuizView({
                         padding: "8px 16px", borderRadius: "20px",
                         border: `1.5px solid ${isActive ? "#3B82F6" : "#E2E8F0"}`,
                         backgroundColor: isActive ? "#3B82F6" : "#F8FAFC",
-                        color: isActive ? "white" : allMode ? "#CBD5E1" : "#475569",
+                        color: isActive ? "white" : "#475569",
                         fontSize: "0.8rem", fontWeight: "700",
-                        cursor: allMode ? "not-allowed" : "pointer",
+                        cursor: "pointer",
                         transition: "all 0.2s",
-                        opacity: allMode ? 0.5 : 1,
                       }}
                     >
                       {t}

@@ -13,6 +13,7 @@ import {
   saveQuizDaily,
   saveDisplayName,
   loadFlashcardDecks, upsertFlashcardDeck, deleteFlashcardDeck as deleteFlashcardDeckDB,
+  deleteUserAnalytics,
 } from "./lib/supabase";
 
 import Header from "./components/Header";
@@ -226,10 +227,12 @@ export default function App() {
   const handleResetStats = async () => {
     const zero = { formulasViewed: 0, flashcardsStudied: 0, quizzesCompleted: 0 };
     setStats(zero);
-    // Không reset remainingQuizzes — giới hạn quiz ngày là riêng biệt
     if (user?.googleId) {
       localStorage.setItem(`formulax_stats_${user.googleId}`, JSON.stringify(zero));
-      await resetStats(user.googleId).catch(console.error);
+      await Promise.all([
+        resetStats(user.googleId).catch(console.error),
+        deleteUserAnalytics(user.googleId).catch(console.error),
+      ]);
     }
   };
 

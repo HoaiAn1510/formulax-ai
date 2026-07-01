@@ -84,6 +84,83 @@ function FormulaChip({ formula, onViewDetail }) {
   );
 }
 
+function StreakChart({ activityDates, streak }) {
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const dateSet = new Set(activityDates);
+
+  // Build 4 calendar weeks (Mon–Sun), starting from the Monday 4 weeks ago
+  const today = new Date();
+  const dayOfWeek = (today.getDay() + 6) % 7; // Mon=0 … Sun=6
+  const startDate = new Date(today);
+  startDate.setDate(today.getDate() - dayOfWeek - 21);
+
+  const weeks = [];
+  for (let w = 0; w < 4; w++) {
+    const week = [];
+    for (let d = 0; d < 7; d++) {
+      const dt = new Date(startDate);
+      dt.setDate(startDate.getDate() + w * 7 + d);
+      week.push({ dateStr: dt.toISOString().slice(0, 10), day: dt.getDate() });
+    }
+    weeks.push(week);
+  }
+
+  return (
+    <div style={{ background: "white", borderRadius: "14px", padding: "14px", border: "1px solid #E2E8F0", boxShadow: "0 2px 8px rgba(30,58,95,0.05)", marginBottom: "20px" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <Flame size={16} color="#F97316" />
+          <span style={{ fontWeight: "800", color: "#1E3A5F", fontSize: "0.88rem" }}>Chuỗi học</span>
+        </div>
+        <span style={{ fontWeight: "800", color: "#F97316", fontSize: "1.1rem" }}>{streak} ngày</span>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "3px", marginBottom: "3px" }}>
+        {["T2","T3","T4","T5","T6","T7","CN"].map(d => (
+          <div key={d} style={{ textAlign: "center", fontSize: "0.58rem", color: "#94A3B8", fontWeight: "700" }}>{d}</div>
+        ))}
+      </div>
+
+      {weeks.map((week, wi) => (
+        <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "3px", marginBottom: "3px" }}>
+          {week.map(({ dateStr, day }) => {
+            const active = dateSet.has(dateStr);
+            const isToday = dateStr === todayStr;
+            const isFuture = dateStr > todayStr;
+            return (
+              <div
+                key={dateStr}
+                title={dateStr}
+                style={{
+                  aspectRatio: "1",
+                  borderRadius: "4px",
+                  backgroundColor: isFuture ? "transparent" : active ? "#3B82F6" : "#F1F5F9",
+                  border: isToday ? "2px solid #3B82F6" : "1.5px solid transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "0.5rem", color: active ? "white" : "#94A3B8", fontWeight: "700",
+                }}
+              >
+                {!isFuture ? day : ""}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+
+      <div style={{ display: "flex", gap: "12px", marginTop: "8px", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.62rem", color: "#94A3B8" }}>
+          <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "#F1F5F9", border: "1px solid #E2E8F0" }} />
+          Không học
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.62rem", color: "#94A3B8" }}>
+          <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "#3B82F6" }} />
+          Có học
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function EmptyState({ message, ctaLabel, onCta }) {
   return (
     <div style={{ textAlign: "center", padding: "28px 16px" }}>
@@ -121,16 +198,18 @@ function getFormulasForQuizTopic(quizTopic, formulas) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ProgressDashboard({ user, stats, formulas, setActiveTab, onViewDetail, isPremium }) {
-  const [topicPerf, setTopicPerf]   = useState([]);
-  const [streak, setStreak]         = useState(0);
-  const [loading, setLoading]       = useState(true);
+  const [topicPerf, setTopicPerf]         = useState([]);
+  const [streak, setStreak]               = useState(0);
+  const [activityDates, setActivityDates] = useState([]);
+  const [loading, setLoading]             = useState(true);
 
   useEffect(() => {
     if (!user?.googleId) { setLoading(false); return; }
     getAnalyticsSummary(user.googleId)
-      .then(({ topicPerformance, streak: s }) => {
+      .then(({ topicPerformance, streak: s, activityDates: dates }) => {
         setTopicPerf(topicPerformance);
         setStreak(s);
+        setActivityDates(dates || []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -196,13 +275,15 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
         </div>
       )}
 
-      {/* Stat cards: 2x2 grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "20px" }}>
-        <StatCard icon={<Flame size={20} />}         value={`${streak} ngày`}              label="Chuỗi học"       color="#F97316" />
-        <StatCard icon={<ClipboardList size={20} />}  value={stats.quizzesCompleted}         label="Quiz đã làm"     color="#3B82F6" />
-        <StatCard icon={<Layers size={20} />}         value={stats.flashcardsStudied}         label="Thẻ đã ôn"       color="#10B981" />
-        <StatCard icon={<TrendingUp size={20} />}     value={hasQuizData ? `${avgRate}%` : "—"} label="Tỷ lệ đúng TB" color="#8B5CF6" />
+      {/* Stat cards: 3-column row */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "12px" }}>
+        <StatCard icon={<ClipboardList size={20} />}  value={stats.quizzesCompleted}            label="Quiz đã làm"  color="#3B82F6" />
+        <StatCard icon={<Layers size={20} />}         value={stats.flashcardsStudied}            label="Thẻ đã ôn"   color="#10B981" />
+        <StatCard icon={<TrendingUp size={20} />}     value={hasQuizData ? `${avgRate}%` : "—"} label="Tỷ lệ đúng"  color="#8B5CF6" />
       </div>
+
+      {/* Streak activity chart */}
+      <StreakChart activityDates={activityDates} streak={streak} />
 
       {/* Topic performance */}
       <div style={{

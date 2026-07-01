@@ -252,7 +252,7 @@ export async function getTopicPerformance(googleId) {
     .sort((a, b) => a.rate - b.rate);
 }
 
-export async function getActivityStreak(googleId) {
+export async function getActivityData(googleId) {
   const [qRes, fRes] = await Promise.all([
     supabase.from("quiz_results").select("created_at").eq("google_id", googleId),
     supabase.from("flashcard_activity").select("created_at").eq("google_id", googleId),
@@ -264,26 +264,56 @@ export async function getActivityStreak(googleId) {
   });
 
   const sorted = [...dateSet].sort().reverse();
-  if (sorted.length === 0) return 0;
 
-  const today = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  if (sorted[0] !== today && sorted[0] !== yesterday) return 0;
-
-  let streak = 1;
-  for (let i = 1; i < sorted.length; i++) {
-    const prev = new Date(sorted[i - 1]);
-    prev.setDate(prev.getDate() - 1);
-    if (sorted[i] === prev.toISOString().slice(0, 10)) streak++;
-    else break;
+  let streak = 0;
+  if (sorted.length > 0) {
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    if (sorted[0] === today || sorted[0] === yesterday) {
+      streak = 1;
+      for (let i = 1; i < sorted.length; i++) {
+        const prev = new Date(sorted[i - 1]);
+        prev.setDate(prev.getDate() - 1);
+        if (sorted[i] === prev.toISOString().slice(0, 10)) streak++;
+        else break;
+      }
+    }
   }
-  return streak;
+
+  return { streak, activityDates: [...dateSet] };
+}
+
+export async function deleteUserAnalytics(googleId) {
+  if (!googleId) return;
+  const { streak } = await getActivityData(googleId);
+
+  await Promise.all([
+    supabase.from("quiz_results").delete().eq("google_id", googleId),
+    supabase.from("flashcard_activity").delete().eq("google_id", googleId),
+  ]);
+
+  if (streak > 0) {
+    const records = [];
+    for (let i = 0; i < streak; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      records.push({
+        google_id: googleId,
+        formula_id: "sys_streak",
+        result: "correct",
+        topic: null,
+        grade: null,
+        created_at: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0).toISOString(),
+      });
+    }
+    await supabase.from("flashcard_activity").insert(records);
+  }
 }
 
 export async function getAnalyticsSummary(googleId) {
-  const [topicPerformance, streak] = await Promise.all([
+  const [topicPerformance, { streak, activityDates }] = await Promise.all([
     getTopicPerformance(googleId),
-    getActivityStreak(googleId),
+    getActivityData(googleId),
   ]);
-  return { topicPerformance, streak };
+  return { topicPerformance, streak, activityDates };
 }
