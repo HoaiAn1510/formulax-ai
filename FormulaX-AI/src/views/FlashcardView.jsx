@@ -23,9 +23,15 @@ function getFilteredFormulas(formulas, topics, grades) {
 }
 
 function buildDeckName(topics, grades) {
-  const tLabel = topics.length === 0 ? "Tất cả" : topics.join(" & ");
-  const gLabel = grades.length === 0 ? null : grades.join(" & ");
+  const tLabel = topics.length === 0 ? "Tất cả" : [...topics].sort().join(" & ");
+  const gLabel = grades.length === 0 ? null : [...grades].sort().join(" & ");
   return gLabel ? `${tLabel} · ${gLabel}` : tLabel;
+}
+
+function isSameFormulaSet(idsA, idsB) {
+  if (idsA.length !== idsB.length) return false;
+  const setA = new Set(idsA);
+  return idsB.every(id => setA.has(id));
 }
 
 // ─── Create Filtered Deck Modal ───────────────────────────────────────────────
@@ -57,9 +63,10 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
   const handleCreate = () => {
     const now = new Date().toISOString();
     const name = buildDeckName(selTopics, selGrades);
-    const isDuplicate = existingDecks.some(d => d.name === name);
+    const newFormulaIds = matched.map(f => f.id);
+    const isDuplicate = existingDecks.some(d => isSameFormulaSet(d.formulaIds, newFormulaIds));
     if (isDuplicate) {
-      setDupError(`Bộ thẻ "${name}" đã tồn tại. Vui lòng chọn chủ đề hoặc lớp khác.`);
+      setDupError(`Bộ thẻ với nội dung này đã tồn tại. Vui lòng chọn chủ đề hoặc lớp khác.`);
       return;
     }
     const deck = {
