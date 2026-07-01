@@ -1009,12 +1009,24 @@ export const formulas = [
     id: "mr-bnn-roit-rac",
     name: "Biến ngẫu nhiên rời rạc (E, D, σ)",
     topic: "Mở rộng",
-    grade: 11,
+    grade: 12,
     latex: "E(X) = \\sum x_i p_i, \\quad D(X) = E(X^2) - [E(X)]^2",
     explanation: "**Biến ngẫu nhiên rời rạc** $X$ nhận các giá trị $x_1, x_2, \\ldots, x_n$ với xác suất tương ứng $p_1, p_2, \\ldots, p_n$.\n\n**Điều kiện:** $\\sum p_i = 1$, $p_i \\geq 0$.\n\n**Kỳ vọng** (giá trị trung bình):\n$$E(X) = \\sum_{i=1}^n x_i p_i$$\n\n**Phương sai:**\n$$D(X) = \\sum_{i=1}^n (x_i - E(X))^2 p_i = E(X^2) - [E(X)]^2$$\n\n**Độ lệch chuẩn:** $\\sigma(X) = \\sqrt{D(X)}$\n\n**Phân bố nhị thức** $X \\sim B(n, p)$:\n$$P(X=k) = C_n^k p^k (1-p)^{n-k}, \\quad E(X) = np, \\quad D(X) = np(1-p)$$",
     example: "Tung đồng xu 3 lần. $X$ = số lần ra mặt H. Tìm $E(X)$.\n\n**Lời giải:**\n$X \\sim B(3, 1/2)$. $E(X) = np = 3 \\times \\dfrac{1}{2} = \\dfrac{3}{2}$.\n\nKiểm tra: $P(X=0) = 1/8$, $P(X=1) = 3/8$, $P(X=2) = 3/8$, $P(X=3) = 1/8$.\n$E(X) = 0(1/8) + 1(3/8) + 2(3/8) + 3(1/8) = 12/8 = 3/2$ ✓",
     tags: ["Biến ngẫu nhiên", "Kỳ vọng", "Phương sai", "Nhị thức", "Mở rộng"],
     difficulty: "Khó",
     mnemonic: "E(X) = tổng (giá trị × xác suất). D(X) = E(X²) - [E(X)]². Nhị thức B(n,p): E=np, D=np(1-p). σ = căn D."
+  },
+  {
+    id: "mr-taichinh-daoham",
+    name: "Ứng dụng đạo hàm trong Kinh tế - Tài chính",
+    topic: "Mở rộng",
+    grade: 12,
+    latex: "MC(x) = C'(x), \\quad MR(x) = R'(x), \\quad P(x) = R(x) - C(x),\\; P'(x)=0 \\Rightarrow \\text{lợi nhuận cực đại}",
+    explanation: "Đạo hàm được dùng để mô hình hóa tốc độ thay đổi trong các bài toán kinh tế, tài chính.\n\n**Chi phí biên** $MC(x) = C'(x)$: Chi phí tăng thêm khi sản xuất thêm 1 đơn vị sản phẩm, với $C(x)$ là hàm tổng chi phí.\n\n**Doanh thu biên** $MR(x) = R'(x)$: Doanh thu tăng thêm khi bán thêm 1 đơn vị, với $R(x) = x \\cdot p(x)$ ($p(x)$ là hàm giá theo lượng cầu).\n\n**Lợi nhuận** $P(x) = R(x) - C(x)$.\n\n**Tối ưu lợi nhuận:** Lợi nhuận đạt cực đại tại $x_0$ thỏa $P'(x_0) = 0 \\Leftrightarrow MR(x_0) = MC(x_0)$ (doanh thu biên bằng chi phí biên), và $P''(x_0) < 0$.\n\n**Lãi kép:** Số tiền sau $n$ kỳ với vốn gốc $A$, lãi suất $r$/kỳ: $$T = A(1+r)^n$$",
+    example: "Một công ty có hàm lợi nhuận $P(x) = -x^2 + 100x - 500$ (đơn vị: triệu đồng, $x$: số sản phẩm). Tìm mức sản xuất $x$ để lợi nhuận cực đại.\n\n**Lời giải:**\n- $P'(x) = -2x + 100 = 0 \\Rightarrow x = 50$.\n- $P''(x) = -2 < 0 \\Rightarrow x = 50$ là điểm cực đại.\n- Lợi nhuận cực đại: $P(50) = -2500 + 5000 - 500 = 2000$ triệu đồng.",
+    tags: ["Đạo hàm", "Ứng dụng tài chính", "Kinh tế", "Tối ưu hóa", "Mở rộng"],
+    difficulty: "Khó",
+    mnemonic: "Lợi nhuận cực đại khi đạo hàm P'(x)=0, tức doanh thu biên = chi phí biên (MR=MC). Đây là ứng dụng thực tế của bài toán tìm cực trị bằng đạo hàm."
   }
 ];
