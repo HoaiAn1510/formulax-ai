@@ -383,7 +383,7 @@ export const questionsPool = [
   {
     id: "hh8",
     topic: "Hình học",
-    grade: 11,
+    grade: 12,
     text: "Tính diện tích xung quanh của hình nón có bán kính đáy $r = 3\\text{ cm}$ và đường sinh $l = 5\\text{ cm}$.",
     options: [
       { letter: "A", text: "$15\\pi\\text{ cm}^2$", isCorrect: true },
@@ -397,7 +397,7 @@ export const questionsPool = [
   {
     id: "hh9",
     topic: "Hình học",
-    grade: 11,
+    grade: 12,
     text: "Tính diện tích xung quanh của hình trụ có bán kính đáy $r = 4\\text{ cm}$ và chiều cao $h = 6\\text{ cm}$.",
     options: [
       { letter: "A", text: "$48\\pi\\text{ cm}^2$", isCorrect: true },
@@ -411,7 +411,7 @@ export const questionsPool = [
   {
     id: "hh10",
     topic: "Hình học",
-    grade: 11,
+    grade: 12,
     text: "Tính thể tích $V$ của khối trụ có bán kính đáy $r = 3\\text{ cm}$ và chiều cao $h = 4\\text{ cm}$.",
     options: [
       { letter: "A", text: "$V = 36\\pi\\text{ cm}^3$", isCorrect: true },
@@ -537,7 +537,7 @@ export const questionsPool = [
   {
     id: "hh19",
     topic: "Hình học",
-    grade: 11,
+    grade: 12,
     text: "Tính diện tích xung quanh của hình nón có bán kính đáy $r = 5\\text{ cm}$ và đường sinh $l = 10\\text{ cm}$.",
     options: [
       { letter: "A", text: "$50\\pi\\text{ cm}^2$", isCorrect: true },
