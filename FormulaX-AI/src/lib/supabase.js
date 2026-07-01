@@ -199,19 +199,17 @@ export async function deleteFlashcardDeck(googleId, deckId) {
 // ─── Quiz Results ─────────────────────────────────────────────────────────────
 
 export async function saveQuizResult(googleId, { topic, questionsTotal, questionsCorrect }) {
-  if (!googleId) { console.warn("[saveQuizResult] Skipped: googleId is empty"); return; }
+  if (!googleId) return;
   const scorePercent = questionsTotal > 0 ? Math.round((questionsCorrect / questionsTotal) * 100) : 0;
   const savedTopic = topic === "Tất cả chủ đề" ? "Tổng hợp" : topic;
-  console.log("[saveQuizResult] Saving:", { googleId, topic: savedTopic, scorePercent, questionsTotal, questionsCorrect });
-  const { data, error } = await supabase.from("quiz_results").insert({
+  const { error } = await supabase.from("quiz_results").insert({
     google_id: googleId,
     topic: savedTopic,
     score_percent: scorePercent,
     questions_total: questionsTotal,
     questions_correct: questionsCorrect,
-  }).select();
-  if (error) console.error("[saveQuizResult] ERROR:", error.message, error.details, error.hint);
-  else console.log("[saveQuizResult] OK — inserted row:", data?.[0]?.id);
+  });
+  if (error) console.error("[Supabase] saveQuizResult:", error);
 }
 
 // ─── Flashcard Activity ───────────────────────────────────────────────────────
@@ -231,13 +229,11 @@ export async function saveFlashcardActivity(googleId, { formulaId, result, topic
 // ─── Analytics ────────────────────────────────────────────────────────────────
 
 export async function getTopicPerformance(googleId) {
-  console.log("[getTopicPerformance] querying for googleId:", googleId);
   const { data, error } = await supabase
     .from("quiz_results")
     .select("topic, questions_total, questions_correct")
     .eq("google_id", googleId);
-  if (error) { console.error("[getTopicPerformance] ERROR:", error.message, error.hint); return []; }
-  console.log("[getTopicPerformance] rows found:", data?.length, data);
+  if (error) { console.error("[Supabase] getTopicPerformance:", error); return []; }
 
   const map = {};
   (data || []).forEach(({ topic, questions_total, questions_correct }) => {

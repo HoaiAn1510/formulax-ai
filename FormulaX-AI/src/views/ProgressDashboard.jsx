@@ -101,6 +101,23 @@ function EmptyState({ message, ctaLabel, onCta }) {
   );
 }
 
+// Maps quiz_results topic → formula topic(s). Returns null for "show all formulas".
+const QUIZ_TOPIC_MAP = {
+  "Đề thi THPT": null,
+  "Tổng hợp":    null,
+  "Xác suất":    "Xác suất & Tổ hợp",
+  "Tổ hợp":      "Xác suất & Tổ hợp",
+  "Lượng giác":  "Đại số",
+};
+
+function getFormulasForQuizTopic(quizTopic, formulas) {
+  if (Object.prototype.hasOwnProperty.call(QUIZ_TOPIC_MAP, quizTopic)) {
+    const mapped = QUIZ_TOPIC_MAP[quizTopic];
+    return mapped === null ? formulas : formulas.filter(f => f.topic === mapped);
+  }
+  return formulas.filter(f => f.topic === quizTopic);
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ProgressDashboard({ user, stats, formulas, setActiveTab, onViewDetail, isPremium }) {
@@ -127,11 +144,6 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
   const weakTopics   = topicPerf.filter(t => t.rate < 60);
   const strongTopics = topicPerf.filter(t => t.rate >= 80);
-
-  // Suggestions: 2 formulas per weak topic, max 6 total
-  const suggestions = weakTopics.flatMap(t =>
-    formulas.filter(f => f.topic === t.topic).slice(0, 2).map(f => ({ ...f, _weakRate: t.rate }))
-  ).slice(0, 6);
 
   return (
     <div className="view-container">
@@ -279,7 +291,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
           />
         ) : (
           weakTopics.map(t => {
-            const suggested = formulas.filter(f => f.topic === t.topic).slice(0, 2);
+            const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
             return (
               <div key={t.topic} style={{ marginBottom: "14px" }}>
                 <div style={{

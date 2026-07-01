@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, Search, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked } from "lucide-react";
+import { Send, ArrowLeft, History, Search, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB } from "../lib/supabase";
@@ -32,6 +32,23 @@ function saveSessionsToStorage(key, sessions) {
   localStorage.setItem(key, JSON.stringify(sessions));
 }
 
+const FREE_AI_LIMIT = 5;
+
+function getAiUsage(googleId) {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const raw = localStorage.getItem(`formulax_ai_${googleId}`);
+    if (!raw) return { count: 0, date: today };
+    const parsed = JSON.parse(raw);
+    return parsed.date === today ? parsed : { count: 0, date: today };
+  } catch { return { count: 0, date: today }; }
+}
+
+function saveAiUsage(googleId, count) {
+  const today = new Date().toISOString().slice(0, 10);
+  localStorage.setItem(`formulax_ai_${googleId}`, JSON.stringify({ count, date: today }));
+}
+
 export default function FormulaFinder({
   formulas,
   bookmarkedIds,
@@ -41,9 +58,16 @@ export default function FormulaFinder({
   setActiveTab,
   searchHistory = [],
   onAddSearchHistory,
+  isPremium = false,
 }) {
   const { user } = useAuth();
   const sessionsKey = `formulax_chat_sessions_${user?.googleId || "guest"}`;
+
+  const [aiQueriesLeft, setAiQueriesLeft] = useState(() => {
+    if (!user?.googleId) return FREE_AI_LIMIT;
+    const usage = getAiUsage(user.googleId);
+    return Math.max(0, FREE_AI_LIMIT - usage.count);
+  });
 
   const [messages, setMessages] = useState([]);
   const [query, setQuery] = useState("");
@@ -209,6 +233,21 @@ export default function FormulaFinder({
 
   const handleSend = async (textToSend) => {
     if (!textToSend.trim() || isAnalyzing) return;
+
+    // Check daily AI limit for free users
+    if (!isPremium) {
+      const usage = getAiUsage(user?.googleId || "guest");
+      if (usage.count >= FREE_AI_LIMIT) {
+        setMessages(prev => [...prev, {
+          id: Date.now() + 1,
+          sender: "bot",
+          text: `Bạn đã dùng hết ${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`,
+          isLimitHit: true,
+        }]);
+        return;
+      }
+    }
+
     setApiError(null);
     const userMsg = { id: Date.now(), sender: "user", text: textToSend };
     const updatedMessages = [...messages, userMsg];
@@ -227,6 +266,14 @@ export default function FormulaFinder({
         text: "Mình chỉ hỗ trợ các câu hỏi liên quan đến toán học THPT thôi nhé! Bạn thử hỏi về công thức, bài toán, hoặc giải phương trình xem."
       }]);
       return;
+    }
+
+    // Deduct from free quota
+    if (!isPremium && user?.googleId) {
+      const usage = getAiUsage(user.googleId);
+      const newCount = usage.count + 1;
+      saveAiUsage(user.googleId, newCount);
+      setAiQueriesLeft(Math.max(0, FREE_AI_LIMIT - newCount));
     }
 
     setIsAnalyzing(true);
@@ -552,9 +599,11 @@ export default function FormulaFinder({
                   style={
                     msg.isError
                       ? { backgroundColor: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#b91c1c" }
-                      : (msg.isImage || msg.isFile)
-                        ? { padding: "8px", backgroundColor: "white", border: "1px solid #E2E8F0", color: "#1E3A5F" }
-                        : {}
+                      : msg.isLimitHit
+                        ? { backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.3)", color: "#92400E" }
+                        : (msg.isImage || msg.isFile)
+                          ? { padding: "8px", backgroundColor: "white", border: "1px solid #E2E8F0", color: "#1E3A5F" }
+                          : {}
                   }
                 >
                   {msg.isError && (
@@ -592,12 +641,33 @@ export default function FormulaFinder({
                     </div>
                   )}
 
-                  {!msg.isImage && !msg.isFile && !msg.isError && (
+                  {!msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && (
                     <div style={{ lineHeight: "1.65", fontSize: "0.88rem" }}>
                       {msg.sender === "bot"
                         ? <RichTextRenderer text={msg.text || ""} />
                         : <span style={{ whiteSpace: "pre-wrap" }}>{msg.text}</span>
                       }
+                    </div>
+                  )}
+
+                  {msg.isLimitHit && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.88rem" }}>
+                        <Crown size={16} fill="#F59E0B" color="#F59E0B" />
+                        <span>{msg.text}</span>
+                      </div>
+                      <button
+                        onClick={() => setActiveTab("premium")}
+                        style={{
+                          display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+                          background: "#F59E0B", color: "#1E3A5F", border: "none",
+                          borderRadius: "8px", padding: "8px 16px",
+                          fontSize: "0.82rem", fontWeight: "800", cursor: "pointer",
+                        }}
+                      >
+                        <Crown size={13} fill="#1E3A5F" color="#1E3A5F" />
+                        Nâng cấp Premium — Hỏi không giới hạn
+                      </button>
                     </div>
                   )}
 
@@ -661,6 +731,36 @@ export default function FormulaFinder({
             )}
           </div>
 
+          {/* Free user AI query counter */}
+          {!isPremium && (
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "6px 12px", borderTop: "1px solid var(--border-slate)",
+              background: aiQueriesLeft === 0 ? "rgba(239,68,68,0.04)" : "rgba(245,158,11,0.04)",
+              fontSize: "0.72rem", fontWeight: "600",
+              color: aiQueriesLeft === 0 ? "#DC2626" : "#92400E",
+            }}>
+              <span>
+                {aiQueriesLeft === 0
+                  ? "Đã dùng hết lượt hỏi AI hôm nay"
+                  : `Còn ${aiQueriesLeft}/${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay`
+                }
+              </span>
+              <button
+                onClick={() => setActiveTab("premium")}
+                style={{
+                  display: "flex", alignItems: "center", gap: "4px",
+                  background: "#F59E0B", color: "#1E3A5F", border: "none",
+                  borderRadius: "6px", padding: "3px 8px", fontSize: "0.68rem",
+                  fontWeight: "800", cursor: "pointer",
+                }}
+              >
+                <Crown size={10} fill="#1E3A5F" color="#1E3A5F" />
+                Nâng cấp
+              </button>
+            </div>
+          )}
+
           {/* Chat input */}
           <div style={{ padding: "12px", borderTop: "1px solid var(--border-slate)", background: "white" }}>
             <div className="finder-input-container">
@@ -692,8 +792,8 @@ export default function FormulaFinder({
               />
               <button
                 type="button"
-                className={`finder-send-btn ${query.trim() ? "active" : ""}`}
-                disabled={isAnalyzing || !query.trim()}
+                className={`finder-send-btn ${query.trim() && (isPremium || aiQueriesLeft > 0) ? "active" : ""}`}
+                disabled={isAnalyzing || !query.trim() || (!isPremium && aiQueriesLeft === 0)}
                 onClick={() => handleSend(textareaRef.current?.value || "")}
                 title="Gửi câu hỏi"
               >
