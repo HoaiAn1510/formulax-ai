@@ -1412,7 +1412,7 @@ export const questionsPool = [
   // ==================== ĐỀ THI THPT QUỐC GIA (25 câu thật) ====================
   {
     id: "thpt1",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Cho hàm số $y = x^3 - 3x + 2$. Hàm số đạt cực đại tại điểm có hoành độ bằng bao nhiêu?",
@@ -1427,7 +1427,7 @@ export const questionsPool = [
   },
   {
     id: "thpt2",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Tính tích phân $I = \\int_{0}^{2} (2x + 1)\\,dx$.",
@@ -1442,7 +1442,7 @@ export const questionsPool = [
   },
   {
     id: "thpt3",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Hàm số $y = x^4 - 2x^2 + 3$ có bao nhiêu điểm cực tiểu?",
@@ -1457,7 +1457,7 @@ export const questionsPool = [
   },
   {
     id: "thpt4",
-    topic: "Đề thi THPT",
+    topic: "Đại số",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Giải phương trình $\\log_3(x - 1) = 2$.",
@@ -1472,7 +1472,7 @@ export const questionsPool = [
   },
   {
     id: "thpt5",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Cho hàm số $y = \\frac{x+1}{x-1}$. Tiệm cận ngang của đồ thị hàm số là đường thẳng nào?",
@@ -1487,7 +1487,7 @@ export const questionsPool = [
   },
   {
     id: "thpt6",
-    topic: "Đề thi THPT",
+    topic: "Xác suất & Tổ hợp",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Một hộp chứa 5 quả cầu đỏ và 3 quả cầu xanh. Lấy ngẫu nhiên 2 quả. Tính xác suất để lấy được 2 quả cùng màu.",
@@ -1502,7 +1502,7 @@ export const questionsPool = [
   },
   {
     id: "thpt7",
-    topic: "Đề thi THPT",
+    topic: "Hình học",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Cho hình chóp $S.ABC$ có đáy $ABC$ là tam giác vuông tại $B$, $AB=3$, $BC=4$, $SA\\perp(ABC)$, $SA=6$. Tính thể tích khối chóp $S.ABC$.",
@@ -1517,7 +1517,7 @@ export const questionsPool = [
   },
   {
     id: "thpt8",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Tính $\\int_{1}^{e} \\frac{1}{x}\\,dx$.",
@@ -1532,7 +1532,7 @@ export const questionsPool = [
   },
   {
     id: "thpt9",
-    topic: "Đề thi THPT",
+    topic: "Đại số",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Phương trình $4^x - 3\\cdot 2^x - 4 = 0$ có nghiệm là:",
@@ -1547,7 +1547,7 @@ export const questionsPool = [
   },
   {
     id: "thpt10",
-    topic: "Đề thi THPT",
+    topic: "Hình học",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Trong không gian $Oxyz$, cho mặt phẳng $(P): 2x - y + 2z - 3 = 0$ và điểm $A(1; 1; 1)$. Khoảng cách từ $A$ đến $(P)$ bằng:",
@@ -1562,7 +1562,7 @@ export const questionsPool = [
   },
   {
     id: "thpt11",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Cho hàm số $y = x^3 - 3x^2 - 9x + 5$. Giá trị cực đại của hàm số bằng bao nhiêu?",
@@ -1577,7 +1577,7 @@ export const questionsPool = [
   },
   {
     id: "thpt12",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Diện tích hình phẳng giới hạn bởi đường cong $y = x^2$ và đường thẳng $y = x$ bằng bao nhiêu?",
@@ -1592,7 +1592,7 @@ export const questionsPool = [
   },
   {
     id: "thpt13",
-    topic: "Đề thi THPT",
+    topic: "Đại số",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Số phức $z = 3 + 4i$ có mô-đun bằng:",
@@ -1607,7 +1607,7 @@ export const questionsPool = [
   },
   {
     id: "thpt14",
-    topic: "Đề thi THPT",
+    topic: "Đại số",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Cho $\\log_2 3 = a$. Tính $\\log_2 12$ theo $a$.",
@@ -1622,7 +1622,7 @@ export const questionsPool = [
   },
   {
     id: "thpt15",
-    topic: "Đề thi THPT",
+    topic: "Hình học",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Trong không gian $Oxyz$, cho đường thẳng $d: \\frac{x-1}{2}=\\frac{y+2}{-1}=\\frac{z}{3}$. Vectơ chỉ phương của $d$ là:",
@@ -1637,7 +1637,7 @@ export const questionsPool = [
   },
   {
     id: "thpt16",
-    topic: "Đề thi THPT",
+    topic: "Xác suất & Tổ hợp",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Trong khai triển $(x + 2)^5$, hệ số của $x^3$ bằng bao nhiêu?",
@@ -1652,7 +1652,7 @@ export const questionsPool = [
   },
   {
     id: "thpt17",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Hàm số $y = e^x - x - 1$ đồng biến trên khoảng nào?",
@@ -1667,7 +1667,7 @@ export const questionsPool = [
   },
   {
     id: "thpt18",
-    topic: "Đề thi THPT",
+    topic: "Hình học",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Cho hình lập phương $ABCD.A'B'C'D'$ cạnh $a$. Tính khoảng cách giữa hai đường thẳng $AB$ và $CD'$.",
@@ -1682,7 +1682,7 @@ export const questionsPool = [
   },
   {
     id: "thpt19",
-    topic: "Đề thi THPT",
+    topic: "Đại số",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Bất phương trình $2^{x-1} > 8$ có tập nghiệm là:",
@@ -1697,7 +1697,7 @@ export const questionsPool = [
   },
   {
     id: "thpt20",
-    topic: "Đề thi THPT",
+    topic: "Đại số",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Cho cấp số nhân $(u_n)$ có $u_1 = 2$ và công bội $q = 3$. Tính tổng $S_4$ của 4 số hạng đầu.",
@@ -1712,7 +1712,7 @@ export const questionsPool = [
   },
   {
     id: "thpt21",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Hàm số $y = \\frac{x^2 - 1}{x - 1}$ có đồ thị là đường nào sau đây?",
@@ -1727,7 +1727,7 @@ export const questionsPool = [
   },
   {
     id: "thpt22",
-    topic: "Đề thi THPT",
+    topic: "Hình học",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Thể tích khối cầu ngoại tiếp hình lập phương cạnh $a$ bằng:",
@@ -1742,7 +1742,7 @@ export const questionsPool = [
   },
   {
     id: "thpt23",
-    topic: "Đề thi THPT",
+    topic: "Giải tích",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Tính $\\lim_{x\\to 1}\\frac{x^3-1}{x-1}$.",
@@ -1757,7 +1757,7 @@ export const questionsPool = [
   },
   {
     id: "thpt24",
-    topic: "Đề thi THPT",
+    topic: "Đại số",
     source: "THPT Quốc gia 2023",
     grade: 12,
     text: "Cho $z = 1 + i$. Giá trị của $z^4$ bằng:",
@@ -1772,7 +1772,7 @@ export const questionsPool = [
   },
   {
     id: "thpt25",
-    topic: "Đề thi THPT",
+    topic: "Xác suất & Tổ hợp",
     source: "THPT Quốc gia 2022",
     grade: 12,
     text: "Lớp học có 30 học sinh gồm 18 nam và 12 nữ. Chọn ngẫu nhiên 3 học sinh để tham gia câu lạc bộ. Tính xác suất để có đúng 1 học sinh nữ.",

@@ -15,10 +15,12 @@ export default function QuizView({
 }) {
   const [quizState, setQuizState] = useState("setup"); // setup, active, result
   const [showQuotaModal, setShowQuotaModal] = useState(false);
-  const [topic, setTopic] = useState("Tất cả chủ đề");
-  const [questionCount, setQuestionCount] = useState(5);
+  // Topic: allMode=true → tất cả chủ đề (other buttons disabled); allMode=false → chọn nhiều chủ đề
+  const [allMode, setAllMode] = useState(true);
+  const [selectedTopics, setSelectedTopics] = useState([]);
+  const [questionCountInput, setQuestionCountInput] = useState("10");
   const [quizType, setQuizType] = useState("multiple-choice"); // multiple-choice, fill-in, hybrid
-  const [timeLimit, setTimeLimit] = useState("Không giới hạn"); // Không giới hạn, 5 phút, 10 phút, 15 phút, 20 phút
+  const [timeLimitInput, setTimeLimitInput] = useState("0"); // phút, 0 = không giới hạn
   
   const [questions, setQuestions] = useState([]);
   const [currentQIdx, setCurrentQIdx] = useState(0);
@@ -31,61 +33,25 @@ export default function QuizView({
   const [timeLeft, setTimeLeft] = useState(600);
   const [timerActive, setTimerActive] = useState(false);
 
-  // Helper to filter questions based on topic
-  const getFilteredQuestions = (selectedTopic) => {
-    let filtered = pool.filter(q => {
-      if (selectedTopic === "Tất cả chủ đề") return true;
-      if (selectedTopic === "Xác suất" || selectedTopic === "Tổ hợp") {
-        return q.topic.includes("Xác suất") || q.topic.includes("Tổ hợp");
-      }
-      return q.topic === selectedTopic;
-    });
-
-    if (filtered.length === 0) {
-      filtered = pool;
-    }
-    return filtered;
-  };
-
-  // Helper to generate selectable question count options
-  const getQuestionCountOptions = (maxCount) => {
-    const options = [];
-    if (maxCount >= 5) {
-      options.push(5);
-    }
-    if (maxCount >= 10) {
-      options.push(10);
-    }
-    if (maxCount >= 15) {
-      options.push(15);
-    }
-    if (maxCount >= 20) {
-      options.push(20);
-    }
-    if (!options.includes(maxCount) && maxCount > 0) {
-      options.push(maxCount);
-    }
-    return options.sort((a, b) => a - b);
-  };
-
-  // Adjust questionCount when topic changes
-  useEffect(() => {
-    const available = getFilteredQuestions(topic);
-    const maxCount = available.length;
-    const options = getQuestionCountOptions(maxCount);
-    
-    if (!options.includes(questionCount) || questionCount > maxCount) {
-      if (options.length > 0) {
-        if (options.includes(5)) {
-          setQuestionCount(5);
-        } else {
-          setQuestionCount(options[options.length - 1]);
+  // Filter questions based on allMode / selectedTopics
+  const getFilteredQuestions = () => {
+    if (allMode || selectedTopics.length === 0) return [...pool];
+    return pool.filter(q =>
+      selectedTopics.some(t => {
+        if (t === "Xác suất" || t === "Tổ hợp") {
+          return q.topic === "Xác suất & Tổ hợp";
         }
-      } else {
-        setQuestionCount(0);
-      }
-    }
-  }, [topic]);
+        return q.topic === t;
+      })
+    );
+  };
+
+  // Cap questionCountInput when available pool shrinks
+  useEffect(() => {
+    const max = getFilteredQuestions().length;
+    const cur = parseInt(questionCountInput) || 1;
+    if (cur > max) setQuestionCountInput(String(max));
+  }, [allMode, selectedTopics]);
 
   // Timer Effect
   useEffect(() => {
@@ -107,10 +73,10 @@ export default function QuizView({
       return;
     }
 
-    const filtered = getFilteredQuestions(topic);
-    const shuffled = [...filtered].sort(() => 0.5 - Math.random()).slice(0, questionCount);
+    const available = getFilteredQuestions();
+    const count = Math.max(1, Math.min(parseInt(questionCountInput) || 10, available.length));
+    const shuffled = [...available].sort(() => 0.5 - Math.random()).slice(0, count);
 
-    // Shuffle A/B/C/D options for every question so order varies each quiz
     const letters = ["A", "B", "C", "D"];
     const questionsWithShuffledOptions = shuffled.map(q => {
       const opts = [...q.options].sort(() => 0.5 - Math.random())
@@ -124,17 +90,16 @@ export default function QuizView({
     setFillInputs({});
     setScore(0);
     setFailedQuestions([]);
-    
-    // Timer setting
-    if (timeLimit === "Không giới hạn") {
+
+    const limitMins = parseInt(timeLimitInput) || 0;
+    if (limitMins <= 0) {
       setTimeLeft(9999);
       setTimerActive(false);
     } else {
-      const minutes = parseInt(timeLimit.replace(" phút", ""));
-      setTimeLeft(minutes * 60);
+      setTimeLeft(limitMins * 60);
       setTimerActive(true);
     }
-    
+
     setQuizState("active");
   };
 
@@ -222,8 +187,11 @@ export default function QuizView({
     }));
 
     if (user?.googleId) {
+      const topicName = (allMode || selectedTopics.length === 0 || selectedTopics.length > 1)
+        ? "Tổng hợp"
+        : selectedTopics[0];
       saveQuizResult(user.googleId, {
-        topic,
+        topic: topicName,
         questionsTotal: questions.length,
         questionsCorrect: finalScore,
       }).catch(console.error);
@@ -249,9 +217,30 @@ export default function QuizView({
   };
 
   const currentQ = questions[currentQIdx];
-  const topicsList = ["Tất cả chủ đề", "Đề thi THPT", "Đại số", "Hình học", "Giải tích", "Xác suất", "Tổ hợp", "Lượng giác"];
-  const filteredQuestions = getFilteredQuestions(topic);
-  const questionCountOptions = getQuestionCountOptions(filteredQuestions.length);
+  const specificTopics = ["Đại số", "Hình học", "Giải tích", "Xác suất", "Tổ hợp", "Lượng giác"];
+  const filteredQuestions = getFilteredQuestions();
+  const maxQuestions = filteredQuestions.length;
+
+  const handleTopicClick = (t) => {
+    if (t === "Tất cả chủ đề") {
+      setAllMode(true);
+      setSelectedTopics([]);
+      return;
+    }
+    if (allMode) {
+      // Switch from all-mode to specific: deselect Tất cả, select this topic
+      setAllMode(false);
+      setSelectedTopics([t]);
+      return;
+    }
+    const next = selectedTopics.includes(t)
+      ? selectedTopics.filter(x => x !== t)
+      : [...selectedTopics, t];
+    if (next.length === 0) {
+      setAllMode(true);
+    }
+    setSelectedTopics(next);
+  };
 
   return (
     <div className="view-container">
@@ -389,29 +378,54 @@ export default function QuizView({
               <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
                 <BookOpen size={15} style={{ color: "#3B82F6" }} />
                 <span>Chọn chủ đề</span>
+                {!allMode && selectedTopics.length > 0 && (
+                  <span style={{ fontSize: "0.7rem", fontWeight: "600", color: "#3B82F6", background: "rgba(59,130,246,0.08)", borderRadius: "10px", padding: "2px 8px" }}>
+                    {selectedTopics.length} đã chọn
+                  </span>
+                )}
               </div>
-              <div className="filter-row" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {topicsList.map((t) => (
-                  <button
-                    key={t}
-                    className={`filter-pill ${topic === t ? "active" : ""}`}
-                    onClick={() => setTopic(t)}
-                    style={{
-                      padding: "8px 16px",
-                      borderRadius: "20px",
-                      border: "1.5px solid #E2E8F0",
-                      backgroundColor: topic === t ? "#1E3A5F" : "#F8FAFC",
-                      color: topic === t ? "white" : "#475569",
-                      fontSize: "0.8rem",
-                      fontWeight: "700",
-                      cursor: "pointer",
-                      transition: "all 0.2s"
-                    }}
-                  >
-                    {t}
-                  </button>
-                ))}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {/* Tất cả chủ đề */}
+                <button
+                  onClick={() => handleTopicClick("Tất cả chủ đề")}
+                  style={{
+                    padding: "8px 16px", borderRadius: "20px",
+                    border: `1.5px solid ${allMode ? "#1E3A5F" : "#E2E8F0"}`,
+                    backgroundColor: allMode ? "#1E3A5F" : "#F8FAFC",
+                    color: allMode ? "white" : "#475569",
+                    fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.2s",
+                  }}
+                >
+                  Tất cả chủ đề
+                </button>
+                {/* Specific topics — disabled khi allMode */}
+                {specificTopics.map(t => {
+                  const isActive = !allMode && selectedTopics.includes(t);
+                  return (
+                    <button
+                      key={t}
+                      onClick={() => handleTopicClick(t)}
+                      style={{
+                        padding: "8px 16px", borderRadius: "20px",
+                        border: `1.5px solid ${isActive ? "#3B82F6" : "#E2E8F0"}`,
+                        backgroundColor: isActive ? "#3B82F6" : "#F8FAFC",
+                        color: isActive ? "white" : allMode ? "#CBD5E1" : "#475569",
+                        fontSize: "0.8rem", fontWeight: "700",
+                        cursor: allMode ? "not-allowed" : "pointer",
+                        transition: "all 0.2s",
+                        opacity: allMode ? 0.5 : 1,
+                      }}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
               </div>
+              {!allMode && selectedTopics.length === 0 && (
+                <p style={{ fontSize: "0.72rem", color: "#F59E0B", marginTop: "6px", fontWeight: "600" }}>
+                  Chưa chọn chủ đề nào — sẽ lấy tất cả câu hỏi
+                </p>
+              )}
             </div>
 
             {/* Section 2: Số câu hỏi */}
@@ -420,33 +434,29 @@ export default function QuizView({
                 <BarChart2 size={15} style={{ color: "#3B82F6" }} />
                 <span>Số câu hỏi</span>
               </div>
-              <div className="options-pill-grid" style={{ 
-                display: "grid", 
-                gridTemplateColumns: `repeat(${questionCountOptions.length}, 1fr)`, 
-                gap: "8px" 
-              }}>
-                {questionCountOptions.map((count) => {
-                  const isActive = questionCount === count;
-                  return (
-                    <button
-                      key={count}
-                      onClick={() => setQuestionCount(count)}
-                      style={{
-                        padding: "10px 0",
-                        borderRadius: "8px",
-                        border: "1.5px solid #E2E8F0",
-                        backgroundColor: isActive ? "#3B82F6" : "#F8FAFC",
-                        color: isActive ? "white" : "#475569",
-                        fontSize: "0.85rem",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      {count} câu
-                    </button>
-                  );
-                })}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <input
+                  type="number"
+                  min={1}
+                  max={maxQuestions}
+                  value={questionCountInput}
+                  onChange={e => setQuestionCountInput(e.target.value)}
+                  onBlur={e => {
+                    const n = parseInt(e.target.value);
+                    if (isNaN(n) || n < 1) setQuestionCountInput("1");
+                    else if (n > maxQuestions) setQuestionCountInput(String(maxQuestions));
+                    else setQuestionCountInput(String(n));
+                  }}
+                  style={{
+                    width: "90px", height: "42px", textAlign: "center",
+                    fontSize: "1.05rem", fontWeight: "800", color: "#1E3A5F",
+                    border: "1.5px solid #3B82F6", borderRadius: "10px",
+                    outline: "none", background: "#F8FAFF",
+                  }}
+                />
+                <span style={{ fontSize: "0.82rem", color: "#64748B", fontWeight: "600" }}>
+                  câu <span style={{ color: "#94A3B8" }}>(tối đa {maxQuestions} câu)</span>
+                </span>
               </div>
             </div>
 
@@ -512,37 +522,45 @@ export default function QuizView({
                 <Timer size={15} style={{ color: "#3B82F6" }} />
                 <span>Giới hạn thời gian</span>
               </div>
-              <div className="filter-row" style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {["Không giới hạn", "5 phút", "10 phút", "15 phút", "20 phút"].map((limit) => {
-                  const isActive = timeLimit === limit;
-                  return (
-                    <button
-                      key={limit}
-                      onClick={() => setTimeLimit(limit)}
-                      style={{
-                        padding: "8px 16px",
-                        borderRadius: "20px",
-                        border: "1.5px solid #E2E8F0",
-                        backgroundColor: isActive ? "#1E3A5F" : "#F8FAFC",
-                        color: isActive ? "white" : "#475569",
-                        fontSize: "0.8rem",
-                        fontWeight: "700",
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      {limit}
-                    </button>
-                  );
-                })}
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <input
+                  type="number"
+                  min={0}
+                  value={timeLimitInput}
+                  onChange={e => setTimeLimitInput(e.target.value)}
+                  onBlur={e => {
+                    const n = parseInt(e.target.value);
+                    if (isNaN(n) || n < 0) setTimeLimitInput("0");
+                    else setTimeLimitInput(String(n));
+                  }}
+                  style={{
+                    width: "90px", height: "42px", textAlign: "center",
+                    fontSize: "1.05rem", fontWeight: "800", color: "#1E3A5F",
+                    border: "1.5px solid #3B82F6", borderRadius: "10px",
+                    outline: "none", background: "#F8FAFF",
+                  }}
+                />
+                <span style={{ fontSize: "0.82rem", color: "#64748B", fontWeight: "600" }}>
+                  phút{" "}
+                  <span style={{ color: "#94A3B8" }}>
+                    {(parseInt(timeLimitInput) || 0) === 0 ? "(không giới hạn)" : ""}
+                  </span>
+                </span>
               </div>
             </div>
 
           </div>
 
           {/* Footer limits */}
-          <div style={{ textAlign: "left", fontSize: "0.8rem", color: "#64748B", marginBottom: "16px", fontWeight: "700", paddingLeft: "4px" }}>
-            Miễn phí — Còn {isPremium ? "Không giới hạn" : `${remainingQuizzes}/10`} lượt hôm nay
+          <div style={{ textAlign: "left", fontSize: "0.8rem", color: "#64748B", marginBottom: "16px", fontWeight: "600", paddingLeft: "4px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span>
+              {isPremium ? "Premium — Không giới hạn lượt" : `Miễn phí — Còn ${remainingQuizzes}/10 lượt hôm nay`}
+            </span>
+            <span style={{ color: "#94A3B8", fontSize: "0.72rem" }}>
+              {allMode || selectedTopics.length === 0
+                ? "Tất cả chủ đề"
+                : selectedTopics.join(" + ")}
+            </span>
           </div>
 
           {/* Figma CTA Start button */}
