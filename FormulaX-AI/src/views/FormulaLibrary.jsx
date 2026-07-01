@@ -220,19 +220,22 @@ export default function FormulaLibrary({
               const isActive = grade === "Tất cả"
                 ? gradeMode === "all"
                 : gradeMode === "custom" && selectedGrades.includes(grade);
+              const isAll = grade === "Tất cả";
               return (
                 <button
                   key={grade}
                   onClick={() => handleGradeClick(grade)}
                   style={{
-                    width: "36px",
+                    width: isAll ? "auto" : "36px",
                     height: "36px",
-                    borderRadius: "50%",
+                    padding: isAll ? "0 14px" : "0",
+                    borderRadius: isAll ? "18px" : "50%",
                     border: "1px solid #cbd5e1",
                     backgroundColor: isActive ? "#3B82F6" : "white",
                     color: isActive ? "white" : "#1E3A5F",
                     fontWeight: "800",
                     fontSize: "0.85rem",
+                    whiteSpace: "nowrap",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -241,7 +244,7 @@ export default function FormulaLibrary({
                     boxShadow: isActive ? "0 2px 6px rgba(59,130,246,0.3)" : "none"
                   }}
                 >
-                  {grade === "Tất cả" ? "Cả" : grade}
+                  {grade}
                 </button>
               );
             })}
