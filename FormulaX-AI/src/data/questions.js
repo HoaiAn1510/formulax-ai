@@ -4199,5 +4199,125 @@ export const questionsPool = [
     blankAnswer: "trung điểm của B'C'",
     explanation: "Vì $M$ là trung điểm $BC$ nên $B, M, C$ thẳng hàng theo thứ tự đó và $\\dfrac{BM}{MC}=1$. Phép chiếu song song giữ nguyên thứ tự ba điểm thẳng hàng và giữ nguyên tỉ số độ dài của hai đoạn thẳng cùng nằm trên một đường thẳng, nên $B', M', C'$ thẳng hàng theo thứ tự đó và $\\dfrac{B'M'}{M'C'}=1$, tức $M'$ là trung điểm của $B'C'$.",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 14, Ví dụ 3, trang 99"
+  },
+  {
+    id: "gt21",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính tổng $S=1-\\dfrac12+\\dfrac14-\\dfrac18+\\cdots+\\left(-\\dfrac12\\right)^{n-1}+\\cdots$.",
+    options: [
+      { letter: "A", text: "$S=\\dfrac{2}{3}$", isCorrect: true },
+      { letter: "B", text: "$S=\\dfrac{1}{3}$", isCorrect: false },
+      { letter: "C", text: "$S=\\dfrac{3}{2}$", isCorrect: false },
+      { letter: "D", text: "$S=1$", isCorrect: false }
+    ],
+    blankAnswer: "2/3",
+    explanation: "Đây là tổng của cấp số nhân lùi vô hạn với $u_1=1$, $q=-\\dfrac12$ ($|q|<1$). Áp dụng công thức $S=\\dfrac{u_1}{1-q}=\\dfrac{1}{1-\\left(-\\frac12\\right)}=\\dfrac{2}{3}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 15, Ví dụ 4, trang 107"
+  },
+  {
+    id: "gt22",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính tổng $S=2+\\dfrac27+\\dfrac{2}{49}+\\cdots+\\dfrac{2}{7^{n-1}}+\\cdots$.",
+    options: [
+      { letter: "A", text: "$S=\\dfrac{7}{3}$", isCorrect: true },
+      { letter: "B", text: "$S=2$", isCorrect: false },
+      { letter: "C", text: "$S=\\dfrac{12}{7}$", isCorrect: false },
+      { letter: "D", text: "$S=\\dfrac{7}{6}$", isCorrect: false }
+    ],
+    blankAnswer: "7/3",
+    explanation: "Đây là tổng của cấp số nhân lùi vô hạn với $u_1=2$, $q=\\dfrac17$. Áp dụng công thức $S=\\dfrac{u_1}{1-q}=\\dfrac{2}{1-\\frac17}=\\dfrac{2}{\\frac67}=\\dfrac{14}{6}=\\dfrac{7}{3}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 15, Luyện tập 4, trang 108"
+  },
+  {
+    id: "gt23",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Biểu diễn số thập phân vô hạn tuần hoàn $2{,}222\\ldots$ dưới dạng phân số.",
+    options: [
+      { letter: "A", text: "$\\dfrac{20}{9}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{22}{9}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{2}{9}$", isCorrect: false },
+      { letter: "D", text: "$2$", isCorrect: false }
+    ],
+    blankAnswer: "20/9",
+    explanation: "$2{,}222\\ldots=2+0{,}2+0{,}02+\\cdots$ là tổng của cấp số nhân lùi vô hạn với $u_1=2$, $q=10^{-1}$. Áp dụng công thức: $2{,}222\\ldots=\\dfrac{u_1}{1-q}=\\dfrac{2}{1-\\frac{1}{10}}=\\dfrac{20}{9}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 15, Ví dụ 5, trang 108"
+  },
+  {
+    id: "gt24",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính giới hạn $\\lim\\limits_{n\\to+\\infty}\\dfrac{n^2+n+1}{2n^2+1}$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{2}$", isCorrect: true },
+      { letter: "B", text: "$1$", isCorrect: false },
+      { letter: "C", text: "$0$", isCorrect: false },
+      { letter: "D", text: "$+\\infty$", isCorrect: false }
+    ],
+    blankAnswer: "1/2",
+    explanation: "Chia cả tử và mẫu cho $n^2$: $\\lim\\dfrac{1+\\frac1n+\\frac1{n^2}}{2+\\frac1{n^2}}=\\dfrac{1+0+0}{2+0}=\\dfrac12$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 15, Bài tập 5.1a, trang 109"
+  },
+  {
+    id: "gt25",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Cho hàm số $f(x)=\\dfrac{x-1}{x^2-1}$. Giá trị của $\\lim\\limits_{x\\to1}f(x)$ bằng:",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{2}$", isCorrect: true },
+      { letter: "B", text: "$0$", isCorrect: false },
+      { letter: "C", text: "$1$", isCorrect: false },
+      { letter: "D", text: "Không tồn tại", isCorrect: false }
+    ],
+    blankAnswer: "1/2",
+    explanation: "Với $x\\neq1$, $f(x)=\\dfrac{x-1}{x^2-1}=\\dfrac{x-1}{(x-1)(x+1)}=\\dfrac{1}{x+1}$. Do đó $\\lim_{x\\to1}f(x)=\\lim_{x\\to1}\\dfrac{1}{x+1}=\\dfrac12$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 16, Ví dụ 1, trang 111-112"
+  },
+  {
+    id: "gt26",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính giới hạn $\\lim\\limits_{x\\to0}\\dfrac{\\sqrt{x+9}-3}{x}$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{6}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{3}$", isCorrect: false },
+      { letter: "C", text: "$0$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{1}{9}$", isCorrect: false }
+    ],
+    blankAnswer: "1/6",
+    explanation: "Nhân liên hợp: $\\dfrac{\\sqrt{x+9}-3}{x}=\\dfrac{x}{x(\\sqrt{x+9}+3)}=\\dfrac{1}{\\sqrt{x+9}+3}$. Do đó $\\lim_{x\\to0}\\dfrac{\\sqrt{x+9}-3}{x}=\\dfrac{1}{\\sqrt{9}+3}=\\dfrac{1}{6}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 16, Ví dụ 3, trang 112-113"
+  },
+  {
+    id: "gt27",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Cho hàm số $f(x)=\\begin{cases}x^2 & \\text{nếu } 0<x<1\\\\ x+1 & \\text{nếu } 1\\le x<2\\end{cases}$. Khẳng định nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "$\\lim\\limits_{x\\to1}f(x)$ không tồn tại vì hai giới hạn một phía khác nhau", isCorrect: true },
+      { letter: "B", text: "$\\lim\\limits_{x\\to1}f(x)=1$", isCorrect: false },
+      { letter: "C", text: "$\\lim\\limits_{x\\to1}f(x)=2$", isCorrect: false },
+      { letter: "D", text: "$\\lim\\limits_{x\\to1}f(x)=1{,}5$", isCorrect: false }
+    ],
+    blankAnswer: "không tồn tại vì hai giới hạn một phía khác nhau",
+    explanation: "Với dãy $x_n\\to1$, $0<x_n<1$: $f(x_n)=x_n^2\\to1$, nên $\\lim_{x\\to1^-}f(x)=1$. Với dãy $x_n\\to1$, $1<x_n<2$: $f(x_n)=x_n+1\\to2$, nên $\\lim_{x\\to1^+}f(x)=2$. Vì hai giới hạn một phía khác nhau ($1\\neq2$) nên không tồn tại $\\lim_{x\\to1}f(x)$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 16, Ví dụ 4, trang 113"
+  },
+  {
+    id: "gt28",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Xét hàm số $f(x)=x^5+x^3-10$ trên đoạn $[0;2]$. Biết $f(0)=-10$ và $f(2)=30$. Khẳng định nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "Phương trình $f(x)=0$ có ít nhất một nghiệm thuộc khoảng $(0;2)$", isCorrect: true },
+      { letter: "B", text: "Phương trình $f(x)=0$ vô nghiệm trên $(0;2)$", isCorrect: false },
+      { letter: "C", text: "Không thể kết luận gì về nghiệm của phương trình trên $(0;2)$", isCorrect: false },
+      { letter: "D", text: "Phương trình $f(x)=0$ có nghiệm duy nhất $x=0$", isCorrect: false }
+    ],
+    blankAnswer: "Phương trình f(x)=0 có ít nhất một nghiệm thuộc khoảng (0;2)",
+    explanation: "$f(x)$ là hàm đa thức nên liên tục trên $\\mathbb{R}$, do đó liên tục trên $[0;2]$. Vì $f(0)\\cdot f(2)=(-10)\\cdot30<0$, theo định lí giá trị trung gian, phương trình $f(x)=0$ có ít nhất một nghiệm trong khoảng $(0;2)$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 17, Ví dụ 6, trang 122"
   }
 ];

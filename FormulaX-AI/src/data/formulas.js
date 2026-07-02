@@ -982,7 +982,8 @@ export const formulas = [
     example: "Tính $\\lim_{n\\to\\infty} \\dfrac{3n^2 + 2n - 1}{n^2 + 5}$.\n\n**Lời giải:**\nChia tử và mẫu cho $n^2$:\n$$\\lim = \\lim \\frac{3 + 2/n - 1/n^2}{1 + 5/n^2} = \\frac{3 + 0 - 0}{1 + 0} = 3$$",
     tags: ["Giới hạn", "Dãy số", "Vô cực"],
     difficulty: "Trung bình",
-    mnemonic: "Giới hạn dãy: 1/n → 0, q^n → 0 khi |q|<1. Phân thức bậc bằng nhau: hệ số đầu/hệ số đầu. Chia cho n bậc cao nhất của mẫu."
+    mnemonic: "Giới hạn dãy: 1/n → 0, q^n → 0 khi |q|<1. Phân thức bậc bằng nhau: hệ số đầu/hệ số đầu. Chia cho n bậc cao nhất của mẫu.",
+    needs_review: true
   },
   {
     id: "gt11-gioihan-ham",
@@ -994,7 +995,8 @@ export const formulas = [
     example: "Tính $\\lim_{x\\to 2} \\dfrac{x^2 - 4}{x - 2}$.\n\n**Lời giải:**\nDạng $0/0$. Phân tích tử: $x^2 - 4 = (x-2)(x+2)$.\n$$\\lim_{x\\to 2}\\frac{(x-2)(x+2)}{x-2} = \\lim_{x\\to 2}(x+2) = 4$$",
     tags: ["Giới hạn", "Hàm số", "Vô định", "0/0"],
     difficulty: "Trung bình",
-    mnemonic: "Dạng 0/0: phân tích nhân tử, triệt tiêu nhân tử 0. Dạng ∞/∞: chia cho bậc cao nhất. Căn: nhân liên hợp. Nhớ: lim(sinx/x)=1 khi x→0."
+    mnemonic: "Dạng 0/0: phân tích nhân tử, triệt tiêu nhân tử 0. Dạng ∞/∞: chia cho bậc cao nhất. Căn: nhân liên hợp. Nhớ: lim(sinx/x)=1 khi x→0.",
+    needs_review: true
   },
 
   // ===== MỞ RỘNG (Chuyên đề - Kết nối tri thức) =====
@@ -2028,5 +2030,83 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Phép chiếu song song: giữ thẳng hàng, giữ song song, giữ tỉ số đoạn thẳng cùng phương — không giữ góc. Hình biểu diễn: tam giác→tam giác, hbh→hbh, hình tròn→elip.",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 14, trang 95-99"
+  },
+  {
+    id: "gt11-tong-csn-luivohan",
+    name: "Tổng của cấp số nhân lùi vô hạn",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "S = u_1+u_2+\\cdots+u_n+\\cdots = \\dfrac{u_1}{1-q}\\quad (|q|<1)",
+    explanation: "Trong đó:\n- Cấp số nhân lùi vô hạn: cấp số nhân vô hạn $(u_n)$ có công bội $q$ thỏa $|q|<1$.\n- $u_1$: số hạng đầu của cấp số nhân.\n- $q$: công bội, thỏa $|q|<1$.\n- $S$: tổng của cấp số nhân lùi vô hạn, là giới hạn của tổng $n$ số hạng đầu $S_n=u_1+u_2+\\cdots+u_n$ khi $n\\to+\\infty$.\n\nCông thức được suy ra từ $S_n=\\dfrac{u_1(1-q^n)}{1-q}$ và $\\lim_{n\\to+\\infty} q^n=0$ (vì $|q|<1$).",
+    example: "Tính tổng $S=1-\\dfrac12+\\dfrac14-\\dfrac18+\\cdots+\\left(-\\dfrac12\\right)^{n-1}+\\cdots$.\n\n**Lời giải:**\nĐây là tổng của cấp số nhân lùi vô hạn với $u_1=1$, $q=-\\dfrac12$. Do đó $S=\\dfrac{u_1}{1-q}=\\dfrac{1}{1-\\left(-\\frac12\\right)}=\\dfrac{2}{3}$.",
+    tags: ["Giới hạn", "Cấp số nhân", "Chuỗi số"],
+    difficulty: "Trung bình",
+    mnemonic: "Tổng CSN lùi vô hạn = số hạng đầu / (1 - công bội), chỉ áp dụng khi |q|<1. Dùng để đổi số thập phân vô hạn tuần hoàn ra phân số.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 15, trang 107"
+  },
+  {
+    id: "gt11-gioihan-vocuc-day",
+    name: "Giới hạn vô cực của dãy số và quy tắc tính",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "\\lim u_n=+\\infty \\Leftrightarrow u_n \\text{ lớn hơn mọi số dương cho trước, kể từ một số hạng nào đó}",
+    explanation: "Trong đó:\n- $\\lim u_n=+\\infty$: $u_n$ có thể lớn hơn một số dương bất kì, kể từ một số hạng nào đó trở đi.\n- $\\lim u_n=-\\infty$ khi và chỉ khi $\\lim(-u_n)=+\\infty$.\n- $\\lim n^k=+\\infty$ với $k$ nguyên dương; $\\lim q^n=+\\infty$ với $q>1$.\n\nQuy tắc tính giới hạn vô cực:\n- Nếu $\\lim u_n=a$ và $\\lim v_n=+\\infty$ (hoặc $-\\infty$) thì $\\lim\\dfrac{u_n}{v_n}=0$.\n- Nếu $\\lim u_n=a>0$, $\\lim v_n=0$ và $v_n>0$ với mọi $n$ thì $\\lim\\dfrac{u_n}{v_n}=+\\infty$.\n- Nếu $\\lim u_n=+\\infty$ và $\\lim v_n=a>0$ thì $\\lim u_nv_n=+\\infty$.",
+    example: "Tính $\\lim_{n\\to+\\infty}(n^2-2n)$.\n\n**Lời giải:**\nTa có $n^2-2n=n^2\\left(1-\\dfrac2n\\right)$. Vì $\\lim n^2=+\\infty$ và $\\lim\\left(1-\\dfrac2n\\right)=1>0$, áp dụng quy tắc tích, $\\lim(n^2-2n)=+\\infty$.",
+    tags: ["Giới hạn", "Dãy số", "Vô cực"],
+    difficulty: "Khó",
+    mnemonic: "Hữu hạn chia vô cực → 0. Dương chia 0 dương → +∞. Vô cực nhân dương → vô cực.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 15, trang 108-109"
+  },
+  {
+    id: "gt11-gioihan-motphia-ham",
+    name: "Giới hạn một phía của hàm số",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "\\lim_{x\\to x_0} f(x)=L \\Leftrightarrow \\lim_{x\\to x_0^+} f(x)=\\lim_{x\\to x_0^-} f(x)=L",
+    explanation: "Trong đó:\n- $\\lim_{x\\to x_0^+} f(x)=L$ (giới hạn bên phải): với dãy $(x_n)$ bất kì thỏa $x_0<x_n<b$ và $x_n\\to x_0$, ta có $f(x_n)\\to L$.\n- $\\lim_{x\\to x_0^-} f(x)=L$ (giới hạn bên trái): với dãy $(x_n)$ bất kì thỏa $a<x_n<x_0$ và $x_n\\to x_0$, ta có $f(x_n)\\to L$.\n- Giới hạn (hai phía) $\\lim_{x\\to x_0} f(x)$ tồn tại và bằng $L$ khi và chỉ khi cả hai giới hạn một phía cùng tồn tại và cùng bằng $L$.\n\nNếu hai giới hạn một phía khác nhau (hoặc một trong hai không tồn tại) thì không tồn tại $\\lim_{x\\to x_0} f(x)$.",
+    example: "Cho hàm số $f(x)=\\begin{cases}x^2 & \\text{nếu } 0<x<1\\\\ x+1 & \\text{nếu } 1\\le x<2\\end{cases}$. Tính $\\lim_{x\\to 1^-}f(x)$ và $\\lim_{x\\to 1^+}f(x)$.\n\n**Lời giải:**\nVới $x_n\\to 1$, $0<x_n<1$: $f(x_n)=x_n^2\\to 1$, nên $\\lim_{x\\to1^-}f(x)=1$.\nVới $x_n\\to 1$, $1<x_n<2$: $f(x_n)=x_n+1\\to 2$, nên $\\lim_{x\\to1^+}f(x)=2$.\nHai giới hạn một phía khác nhau nên không tồn tại $\\lim_{x\\to1}f(x)$.",
+    tags: ["Giới hạn", "Hàm số", "Giới hạn một phía"],
+    difficulty: "Trung bình",
+    mnemonic: "Giới hạn tồn tại ⟺ giới hạn trái = giới hạn phải. Hàm cho bởi nhiều công thức luôn phải kiểm tra hai phía tại điểm nối.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 16, trang 113"
+  },
+  {
+    id: "gt11-quytac-gioihan-vocuc-ham",
+    name: "Quy tắc tính giới hạn vô cực của hàm số (tích, thương)",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "\\lim_{x\\to x_0} f(x)=L\\neq 0,\\ \\lim_{x\\to x_0} g(x)=\\pm\\infty \\;\\Rightarrow\\; \\lim_{x\\to x_0} [f(x)g(x)]=\\pm\\infty\\ \\text{(theo dấu)}",
+    explanation: "Trong đó, xét $\\lim_{x\\to x_0}f(x)=L$ và $\\lim_{x\\to x_0}g(x)=\\pm\\infty$ (hoặc $\\lim g(x)=0$):\n\n- Quy tắc tích $f(x)g(x)$: nếu $L>0$ thì $\\lim [f(x)g(x)]$ cùng dấu với $\\lim g(x)$; nếu $L<0$ thì $\\lim [f(x)g(x)]$ ngược dấu với $\\lim g(x)$.\n- Quy tắc thương $\\dfrac{f(x)}{g(x)}$: nếu $\\lim g(x)=\\pm\\infty$ thì $\\lim\\dfrac{f(x)}{g(x)}=0$; nếu $\\lim g(x)=0$ và $g(x)$ giữ nguyên dấu (dương hoặc âm) gần $x_0$ thì $\\lim\\dfrac{f(x)}{g(x)}=+\\infty$ khi $L,g(x)$ cùng dấu, hoặc $-\\infty$ khi trái dấu.\n\nCác quy tắc trên vẫn đúng cho giới hạn một phía $x\\to x_0^+$, $x\\to x_0^-$.",
+    example: "Tính $\\lim_{x\\to1^+}\\dfrac{1}{x(1-x)}$.\n\n**Lời giải:**\nViết $\\dfrac{1}{x(1-x)}=\\dfrac1x\\cdot\\dfrac{1}{1-x}$. Ta có $\\lim_{x\\to1^+}\\dfrac1x=1>0$. Vì $x>1$ nên $1-x<0$, do đó $\\lim_{x\\to1^+}\\dfrac{1}{1-x}=-\\infty$. Áp dụng quy tắc tích (thừa số hữu hạn dương nhân thừa số $-\\infty$), $\\lim_{x\\to1^+}\\dfrac{1}{x(1-x)}=-\\infty$.",
+    tags: ["Giới hạn", "Hàm số", "Vô cực", "Quy tắc tính"],
+    difficulty: "Khó",
+    mnemonic: "Tích: dấu của giới hạn hữu hạn quyết định giữ hay đảo dấu vô cực. Thương: hữu hạn/vô cực → 0; hữu hạn khác 0 chia 0 cùng dấu → +∞, trái dấu → -∞.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 16, trang 117"
+  },
+  {
+    id: "gt11-hamso-lientuc-diem",
+    name: "Hàm số liên tục tại một điểm, trên khoảng và trên đoạn",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "f(x) \\text{ liên tục tại } x_0 \\Leftrightarrow \\lim_{x\\to x_0} f(x)=f(x_0)",
+    explanation: "Trong đó:\n- $f(x)$ xác định trên khoảng $(a;b)$ chứa $x_0$; hàm số liên tục tại $x_0$ khi $\\lim_{x\\to x_0}f(x)=f(x_0)$ (giới hạn tồn tại, hữu hạn, và bằng đúng giá trị hàm tại điểm đó).\n- Hàm số không liên tục tại $x_0$ được gọi là gián đoạn tại điểm đó.\n- $f(x)$ liên tục trên khoảng $(a;b)$ nếu liên tục tại mọi điểm thuộc khoảng đó.\n- $f(x)$ liên tục trên đoạn $[a;b]$ nếu liên tục trên $(a;b)$ và $\\lim_{x\\to a^+}f(x)=f(a)$, $\\lim_{x\\to b^-}f(x)=f(b)$.\n\nHàm số đa thức và các hàm $y=\\sin x$, $y=\\cos x$ liên tục trên $\\mathbb{R}$. Các hàm $y=\\tan x$, $y=\\cot x$, $y=\\sqrt{x}$ và hàm phân thức hữu tỉ liên tục trên tập xác định của chúng.",
+    example: "Xét tính liên tục của hàm số $f(x)=\\dfrac{x+1}{x-1}$ tại điểm $x_0=2$.\n\n**Lời giải:**\nHàm số xác định trên $\\mathbb{R}\\setminus\\{1\\}$, do đó $x_0=2$ thuộc tập xác định. Ta có $\\lim_{x\\to2}f(x)=\\lim_{x\\to2}\\dfrac{x+1}{x-1}=3=f(2)$. Vậy hàm số $f(x)$ liên tục tại $x_0=2$.",
+    tags: ["Liên tục", "Hàm số", "Giới hạn"],
+    difficulty: "Trung bình",
+    mnemonic: "Liên tục tại điểm = giới hạn tại điểm đó bằng đúng giá trị hàm. Hàm sơ cấp (đa thức, sin, cos, căn, phân thức) luôn liên tục trên tập xác định của nó.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 17, trang 119-121"
+  },
+  {
+    id: "gt11-tinhchat-hamlientuc",
+    name: "Tính chất cơ bản của hàm số liên tục",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "f,g \\text{ liên tục tại } x_0 \\Rightarrow f\\pm g,\\ fg \\text{ liên tục tại } x_0;\\ \\dfrac{f}{g} \\text{ liên tục tại } x_0 \\text{ nếu } g(x_0)\\neq0",
+    explanation: "Trong đó:\n- Nếu $f(x)$ và $g(x)$ liên tục tại $x_0$ thì $f(x)+g(x)$, $f(x)-g(x)$, $f(x)g(x)$ liên tục tại $x_0$; hàm $\\dfrac{f(x)}{g(x)}$ liên tục tại $x_0$ nếu $g(x_0)\\neq0$.\n- Định lí giá trị trung gian: nếu $f(x)$ liên tục trên đoạn $[a;b]$ và $f(a)f(b)<0$ thì tồn tại ít nhất một điểm $c\\in(a;b)$ sao cho $f(c)=0$, tức phương trình $f(x)=0$ có ít nhất một nghiệm trong khoảng $(a;b)$.",
+    example: "Chứng minh phương trình $x^5+x^3-10=0$ có ít nhất một nghiệm.\n\n**Lời giải:**\nXét hàm số $f(x)=x^5+x^3-10$. Đây là hàm đa thức nên liên tục trên $\\mathbb{R}$, do đó liên tục trên $[0;2]$. Ta có $f(0)=-10<0$ và $f(2)=30>0$, suy ra $f(0)\\cdot f(2)<0$. Theo định lí giá trị trung gian, phương trình $f(x)=0$ có ít nhất một nghiệm trong khoảng $(0;2)$.",
+    tags: ["Liên tục", "Hàm số", "Định lí giá trị trung gian", "Nghiệm phương trình"],
+    difficulty: "Khó",
+    mnemonic: "Tổng, hiệu, tích của các hàm liên tục vẫn liên tục; thương liên tục khi mẫu khác 0. f liên tục trên [a,b], f(a).f(b)<0 → có nghiệm trong (a,b).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 17, trang 121-122"
   }
 ];
