@@ -4455,4 +4455,154 @@ export const questionsPool = [
     explanation: "Cần tìm $t$ sao cho $V(t)\\le 300 \\Leftrightarrow 780\\cdot(0,905)^t \\le 300 \\Leftrightarrow (0,905)^t \\le \\dfrac{5}{13} \\Leftrightarrow t \\ge \\log_{0,905}\\dfrac{5}{13} \\approx 9,6$. Vậy sau khoảng $10$ năm sử dụng, giá trị chiếc xe còn lại không quá $300$ triệu đồng.",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 6, trang 23"
   },
+  {
+    id: "hh60",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình hộp $ABCD.A'B'C'D'$ có các mặt là hình vuông. Tính góc $(AC, DC')$.",
+    options: [
+      { letter: "A", text: "$60°$", isCorrect: true },
+      { letter: "B", text: "$90°$", isCorrect: false },
+      { letter: "C", text: "$45°$", isCorrect: false },
+      { letter: "D", text: "$30°$", isCorrect: false }
+    ],
+    blankAnswer: "60 độ",
+    explanation: "Vì $DC' \\parallel AB'$ nên $(AC,DC')=(AC,AB')$. Tam giác $AB'C$ có ba cạnh bằng nhau (là các đường chéo của các hình vuông có cùng độ dài cạnh) nên là tam giác đều. Do đó $(AC,DC')=(AC,AB')=60°$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 22, Ví dụ 1, trang 28"
+  },
+  {
+    id: "hh61",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình hộp $ABCD.A'B'C'D'$. Hai đường thẳng $AC$ và $B'D'$ có vị trí tương đối là:",
+    options: [
+      { letter: "A", text: "Chéo nhau", isCorrect: true },
+      { letter: "B", text: "Cắt nhau", isCorrect: false },
+      { letter: "C", text: "Song song", isCorrect: false },
+      { letter: "D", text: "Trùng nhau", isCorrect: false }
+    ],
+    blankAnswer: "chéo nhau",
+    explanation: "Hai đường thẳng $AC$ và $B'D'$ lần lượt thuộc hai mặt phẳng song song $(ABCD)$ và $(A'B'C'D')$ nên chúng không có điểm chung, tức không thể trùng nhau hoặc cắt nhau. Mặt khác $B'D'\\parallel BD$, mà $BD$ không song song với $AC$ (vì $ABCD$ là hình bình hành nói chung không phải hình thoi), nên $B'D'$ không song song với $AC$. Vậy $AC$ và $B'D'$ chéo nhau.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 22, Ví dụ 2, trang 29"
+  },
+  {
+    id: "hh62",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp $S.ABC$ có $SA\\perp(ABC)$, $SA=a$, $CA=CB=a\\sqrt7$, $AB=2a$. Gọi $\\alpha$ là góc giữa $SB$ và $(ABC)$. Tính $\\tan\\alpha$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{2}$", isCorrect: true },
+      { letter: "B", text: "$1$", isCorrect: false },
+      { letter: "C", text: "$2$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{1}{7}$", isCorrect: false }
+    ],
+    blankAnswer: "1/2",
+    explanation: "Do $SA\\perp(ABC)$ nên $\\alpha=\\widehat{SBA}$. Tam giác $SAB$ vuông tại $A$ nên $\\tan\\alpha=\\tan\\widehat{SBA}=\\dfrac{SA}{AB}=\\dfrac{a}{2a}=\\dfrac{1}{2}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 24, Ví dụ 2, trang 41"
+  },
+  {
+    id: "hh63",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp $S.ABC$ có $SA\\perp(ABC)$, $SA=a$, $CA=CB=a\\sqrt7$, $AB=2a$. Tính góc giữa $SC$ và $(SAB)$.",
+    options: [
+      { letter: "A", text: "$60°$", isCorrect: true },
+      { letter: "B", text: "$45°$", isCorrect: false },
+      { letter: "C", text: "$30°$", isCorrect: false },
+      { letter: "D", text: "$90°$", isCorrect: false }
+    ],
+    blankAnswer: "60 độ",
+    explanation: "Gọi $M$ là trung điểm $AB$. Do tam giác $ABC$ cân tại $C$ nên $CM\\perp AB$; kết hợp $CM\\perp SA$ (vì $SA\\perp(ABC)$) suy ra $CM\\perp(SAB)$, nên góc giữa $SC$ và $(SAB)$ bằng $\\widehat{CSM}$. Tính được $SC=a\\sqrt8$, $SM=a\\sqrt2$, $\\cos\\widehat{CSM}=\\dfrac{SM}{SC}=\\dfrac{1}{2}$, suy ra $\\widehat{CSM}=60°$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 24, Ví dụ 2, trang 41"
+  },
+  {
+    id: "hh64",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp $S.ABCD$ có $SA\\perp(ABCD)$, đáy $ABCD$ là hình thoi cạnh $a$, $AC=a$, $SA=\\dfrac{1}{2}a$. Tính số đo góc nhị diện $[B,SA,D]$.",
+    options: [
+      { letter: "A", text: "$120°$", isCorrect: true },
+      { letter: "B", text: "$90°$", isCorrect: false },
+      { letter: "C", text: "$60°$", isCorrect: false },
+      { letter: "D", text: "$45°$", isCorrect: false }
+    ],
+    blankAnswer: "120 độ",
+    explanation: "Vì $SA\\perp(ABCD)$ nên $AB, AD$ đều vuông góc với $SA$, do đó $\\widehat{BAD}$ là góc phẳng của góc nhị diện $[B,SA,D]$. Hình thoi $ABCD$ cạnh $a$ và $AC=a$ nên tam giác $ABC$ đều, suy ra $\\widehat{BAD}=120°$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 25, Ví dụ 4, trang 48"
+  },
+  {
+    id: "hh65",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp $S.ABCD$ có $SA\\perp(ABCD)$, đáy $ABCD$ là hình thoi cạnh $a$, $AC=a$, $SA=\\dfrac{1}{2}a$. Gọi $O$ là giao điểm hai đường chéo. Tính số đo góc nhị diện $[S,BD,A]$.",
+    options: [
+      { letter: "A", text: "$45°$", isCorrect: true },
+      { letter: "B", text: "$30°$", isCorrect: false },
+      { letter: "C", text: "$60°$", isCorrect: false },
+      { letter: "D", text: "$90°$", isCorrect: false }
+    ],
+    blankAnswer: "45 độ",
+    explanation: "Vì $BD\\perp AC$ và $BD\\perp SA$ nên $BD\\perp(SAC)$, suy ra $\\widehat{AOS}$ là góc phẳng của góc nhị diện $[S,BD,A]$. Tam giác $SAO$ vuông tại $A$ có $SA=\\dfrac12 a=AO$ nên vuông cân, do đó $\\widehat{AOS}=45°$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 25, Ví dụ 4, trang 48"
+  },
+  {
+    id: "hh66",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp đều $S.ABC$, biết độ dài cạnh đáy, cạnh bên tương ứng bằng $a, b$ ($a<b\\sqrt3$). Chiều cao của hình chóp bằng:",
+    options: [
+      { letter: "A", text: "$\\sqrt{b^2-\\dfrac{a^2}{3}}$", isCorrect: true },
+      { letter: "B", text: "$\\sqrt{b^2-\\dfrac{a^2}{2}}$", isCorrect: false },
+      { letter: "C", text: "$\\sqrt{b^2-a^2}$", isCorrect: false },
+      { letter: "D", text: "$\\sqrt{a^2-\\dfrac{b^2}{3}}$", isCorrect: false }
+    ],
+    blankAnswer: "sqrt(b^2 - a^2/3)",
+    explanation: "Hình chiếu của $S$ trên $(ABC)$ là tâm $O$ của tam giác đều $ABC$, với $OA=\\dfrac{a}{\\sqrt3}$. Trong tam giác vuông $SOA$: $SO=\\sqrt{SA^2-OA^2}=\\sqrt{b^2-\\dfrac{a^2}{3}}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 26, Ví dụ 1, trang 55"
+  },
+  {
+    id: "hh67",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp $S.ABC$ có $SA\\perp(ABC)$, $AB=a$, $\\widehat{ABC}=60°$. Khoảng cách giữa hai đường thẳng $SA$ và $BC$ bằng:",
+    options: [
+      { letter: "A", text: "$\\dfrac{a\\sqrt3}{2}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{a}{2}$", isCorrect: false },
+      { letter: "C", text: "$a\\sqrt3$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{a\\sqrt2}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "a*sqrt(3)/2",
+    explanation: "Gọi $H$ là hình chiếu của $A$ trên $BC$. Tam giác $ABH$ vuông tại $H$ có $AB=a$, $\\widehat{ABH}=60°$ nên $AH=AB\\sin60°=\\dfrac{a\\sqrt3}{2}$. Do $SA\\perp(ABC)$ nên $AH$ là đường vuông góc chung của $SA$ và $BC$. Vậy $d(SA,BC)=AH=\\dfrac{a\\sqrt3}{2}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 26, Ví dụ 3, trang 58"
+  },
+  {
+    id: "hh68",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho khối tứ diện $OABC$ có các cạnh $OA, OB, OC$ đôi một vuông góc với nhau và $OA=a$, $OB=b$, $OC=c$. Thể tích khối tứ diện bằng:",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{6}abc$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{3}abc$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}abc$", isCorrect: false },
+      { letter: "D", text: "$abc$", isCorrect: false }
+    ],
+    blankAnswer: "abc/6",
+    explanation: "Tam giác vuông $OBC$ có diện tích $S_{OBC}=\\dfrac12 bc$. Vì $OA\\perp(OBC)$ nên tứ diện có chiều cao ứng với đỉnh $A$ bằng $OA$. Vậy $V_{OABC}=\\dfrac13 AO\\cdot S_{OBC}=\\dfrac16 abc$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 27, Ví dụ 1, trang 62"
+  },
+  {
+    id: "hh69",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho khối hộp $ABCD.A'B'C'D'$ có $AB=8\\text{ cm}$, $AD=5\\text{ cm}$, $AA'=6\\text{ cm}$, $\\widehat{BAD}=30°$, góc giữa $AA'$ và $(ABCD)$ bằng $45°$. Thể tích khối hộp bằng:",
+    options: [
+      { letter: "A", text: "$60\\sqrt2\\text{ cm}^3$", isCorrect: true },
+      { letter: "B", text: "$60\\text{ cm}^3$", isCorrect: false },
+      { letter: "C", text: "$120\\text{ cm}^3$", isCorrect: false },
+      { letter: "D", text: "$30\\sqrt2\\text{ cm}^3$", isCorrect: false }
+    ],
+    blankAnswer: "60*sqrt(2)",
+    explanation: "Diện tích hình bình hành đáy: $S_{ABCD}=2S_{ABD}=2\\left(\\dfrac12 AB\\cdot AD\\sin\\widehat{BAD}\\right)=20\\text{ cm}^2$. Gọi $H$ là hình chiếu của $A'$ trên $(ABCD)$; góc giữa $AA'$ và $(ABCD)$ là $\\widehat{A'AH}=45°$, nên $A'H=AA'\\sin45°=3\\sqrt2\\text{ cm}$ — đây chính là chiều cao khối hộp ứng với mặt $ABCD$. Vậy $V=A'H\\cdot S_{ABCD}=3\\sqrt2\\cdot20=60\\sqrt2\\text{ cm}^3$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 27, Ví dụ 3, trang 63"
+  },
 ];

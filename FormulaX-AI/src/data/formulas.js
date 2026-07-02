@@ -73,7 +73,7 @@ export const formulas = [
     tags: ["Không gian", "Thể tích", "Khối đa diện"],
     difficulty: "Dễ",
     mnemonic: "Chóp nhọn đầu nên chia 3: Thể tích bằng một phần ba diện tích đáy nhân chiều cao.",
-    sgk_source: "Toán 11 KNTT, chương Quan hệ vuông góc trong không gian, Bài 27"
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 27, trang 61"
   },
   {
     id: "hh12-thetich-langtru",
@@ -86,7 +86,7 @@ export const formulas = [
     tags: ["Không gian", "Thể tích", "Lăng trụ"],
     difficulty: "Dễ",
     mnemonic: "Lăng trụ thẳng đuột đứng yên, thể tích đáy nhân cao liền không chia.",
-    sgk_source: "Toán 11 KNTT, chương Quan hệ vuông góc trong không gian, Bài 27"
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 27, trang 61"
   },
   {
     id: "hh12-matcau-dientich",
@@ -969,11 +969,12 @@ export const formulas = [
     topic: "Hình học",
     grade: 11,
     latex: "d \\perp (\\alpha) \\Leftrightarrow d \\perp a,\\; d \\perp b \\;(a,b\\text{ cắt nhau},\\; a,b\\subset(\\alpha))",
-    explanation: "**Đường thẳng vuông góc mặt phẳng:**\n$d \\perp (\\alpha)$ khi $d$ vuông góc với mọi đường thẳng nằm trong $(\\alpha)$.\n\n**Điều kiện:** $d \\perp (\\alpha)$ khi và chỉ khi $d$ vuông góc với hai đường thẳng **cắt nhau** trong $(\\alpha)$.\n\n**Khoảng cách từ điểm đến mặt phẳng:**\n$d(M, (\\alpha)) = $ độ dài đoạn $MH$ với $H$ là chân đường vuông góc từ $M$ lên $(\\alpha)$.\n\n**Hai mặt phẳng vuông góc:** $(\\alpha) \\perp (\\beta)$ khi góc nhị diện giữa chúng là $90°$.\n\n**Khoảng cách:** $d(A, (\\alpha)) = \\dfrac{|Aa + Bb + Cc + D|}{\\sqrt{A^2+B^2+C^2}}$ (mp: $Ax+By+Cz+D=0$, điểm $M(a,b,c)$).",
+    explanation: "**Đường thẳng vuông góc mặt phẳng:**\n$d \\perp (\\alpha)$ khi $d$ vuông góc với mọi đường thẳng nằm trong $(\\alpha)$.\n\n**Điều kiện:** $d \\perp (\\alpha)$ khi và chỉ khi $d$ vuông góc với hai đường thẳng **cắt nhau** trong $(\\alpha)$.\n\n**Khoảng cách từ điểm đến mặt phẳng:**\n$d(M, (\\alpha)) = $ độ dài đoạn $MH$ với $H$ là chân đường vuông góc từ $M$ lên $(\\alpha)$.\n\n**Hai mặt phẳng vuông góc:** $(\\alpha) \\perp (\\beta)$ khi góc nhị diện giữa chúng là $90°$.",
     example: "Cho tứ diện $SABC$ vuông tại $S$ ($SA \\perp SB$, $SA \\perp SC$). Chứng minh $SA \\perp (SBC)$.\n\n**Lời giải:**\n$SA \\perp SB$ và $SA \\perp SC$, mà $SB$ và $SC$ cắt nhau tại $S$ và cùng nằm trong $(SBC)$.\nVậy $SA \\perp (SBC)$.",
     tags: ["Vuông góc", "Không gian", "Khoảng cách", "Mặt phẳng"],
     difficulty: "Trung bình",
-    mnemonic: "Đt vuông góc mp: vuông góc 2 đt cắt nhau trong mp là đủ. Khoảng cách điểm-mp: chiều dài đoạn thẳng từ điểm thả vuông góc xuống mp."
+    mnemonic: "Đt vuông góc mp: vuông góc 2 đt cắt nhau trong mp là đủ. Khoảng cách điểm-mp: chiều dài đoạn thẳng từ điểm thả vuông góc xuống mp.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 23, trang 31-32 và Bài 25, trang 44-46"
   },
 
   // ===== GIẢI TÍCH LỚP 11 - GIỚI HẠN =====
@@ -2230,5 +2231,174 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Lãi kép định kỳ: (1+r)^N (số nguyên kỳ). Lãi kép liên tục: e^(rt) (ghép lãi tức thời, dùng số e).",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 19 (mở đầu, trang 10) và Bài tập 6.23, trang 24"
+  },
+  {
+    id: "hh11-gocgiua-haiduongthang",
+    name: "Góc giữa hai đường thẳng trong không gian",
+    topic: "Hình học",
+    grade: 11,
+    latex: "(m,n) = (a,b) \\text{ với } a\\parallel m,\\, b\\parallel n \\text{ cùng qua một điểm}, \\qquad 0^\\circ \\le (m,n) \\le 90^\\circ",
+    explanation: "Trong đó:\n- $m, n$: Hai đường thẳng bất kỳ trong không gian (có thể chéo nhau).\n- $a, b$: Hai đường thẳng cùng đi qua một điểm, tương ứng song song với $m, n$.\n- Góc giữa $m$ và $n$, kí hiệu $(m,n)$, là góc giữa $a$ và $b$ — không phụ thuộc vào vị trí điểm được chọn.\n\nCách xác định thực hành: lấy một điểm $O$ thuộc $a$, kẻ đường thẳng $b'$ qua $O$ song song với $b$; khi đó $(a,b)=(a,b')$.",
+    example: "Cho hình hộp $ABCD.A'B'C'D'$ có các mặt là hình vuông. Tính $(AA', CD)$.\n\n**Lời giải:**\nVì $CD \\parallel AB$ nên $(AA', CD) = (AA', AB) = 90°$ (do $AA'\\perp AB$ trong mặt hình vuông $ABB'A'$).",
+    tags: ["Góc giữa hai đường thẳng", "Không gian", "Hình học"],
+    difficulty: "Trung bình",
+    mnemonic: "Đưa hai đường chéo nhau về cùng qua một điểm bằng cách kẻ song song, rồi đo góc như trong mặt phẳng — góc giữa 2 đường thẳng luôn trong khoảng 0°-90°.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 22, trang 28"
+  },
+  {
+    id: "hh11-haiduongthang-vuonggoc",
+    name: "Hai đường thẳng vuông góc",
+    topic: "Hình học",
+    grade: 11,
+    latex: "a \\perp b \\Leftrightarrow (a,b) = 90^\\circ",
+    explanation: "Trong đó:\n- $a, b$: Hai đường thẳng trong không gian (có thể cắt nhau hoặc chéo nhau).\n- $a \\perp b$: Kí hiệu hai đường thẳng vuông góc với nhau.\n- Hai đường thẳng vuông góc khi góc giữa chúng bằng $90°$; hai đường thẳng chéo nhau vẫn có thể vuông góc với nhau.",
+    example: "Cho hình hộp $ABCD.A'B'C'D'$. Chứng minh $AC$ và $B'D'$ vuông góc với nhau khi và chỉ khi $ABCD$ là hình thoi.\n\n**Lời giải:**\nDo $B'D' \\parallel BD$ nên $(AC,B'D')=(AC,BD)$. Vậy $AC\\perp B'D' \\Leftrightarrow AC\\perp BD \\Leftrightarrow ABCD$ là hình thoi (vì $ABCD$ là hình bình hành).",
+    tags: ["Vuông góc", "Đường thẳng", "Không gian", "Hình học"],
+    difficulty: "Dễ",
+    mnemonic: "Hai đường thẳng vuông góc trong không gian không nhất thiết phải cắt nhau — chúng có thể chéo nhau, chỉ cần góc giữa chúng bằng 90°.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 22, trang 29"
+  },
+  {
+    id: "hh11-duongthang-vuonggoc-matphang",
+    name: "Đường thẳng vuông góc với mặt phẳng",
+    topic: "Hình học",
+    grade: 11,
+    latex: "\\Delta \\perp (P) \\Leftrightarrow \\Delta \\perp a,\\ \\Delta \\perp b \\quad (a,b \\subset (P),\\ a \\cap b \\neq \\emptyset)",
+    explanation: "Trong đó:\n- $\\Delta$: Đường thẳng cần xét.\n- $(P)$: Mặt phẳng cần xét.\n- $\\Delta \\perp (P)$: $\\Delta$ vuông góc với mọi đường thẳng nằm trong $(P)$.\n- Định lí (điều kiện nhận biết): $\\Delta$ vuông góc với $(P)$ khi và chỉ khi $\\Delta$ vuông góc với hai đường thẳng $a, b$ cắt nhau cùng nằm trong $(P)$ — không cần kiểm tra với mọi đường thẳng trong $(P)$.\n\nTính chất: có duy nhất một mặt phẳng đi qua một điểm cho trước và vuông góc với một đường thẳng cho trước; có duy nhất một đường thẳng đi qua một điểm cho trước và vuông góc với một mặt phẳng cho trước.",
+    example: "Cho hình chóp $S.ABC$ có đáy $ABC$ vuông tại $B$ và cạnh $SA$ vuông góc với các cạnh $AB, AC$. Chứng minh $BC \\perp (SAB)$.\n\n**Lời giải:**\nVì $SA$ vuông góc với hai đường thẳng cắt nhau $AB, AC$ nên $SA \\perp (ABC)$, suy ra $SA \\perp BC$. Tam giác $ABC$ vuông tại $B$ nên $BC \\perp BA$. Vì $BC$ vuông góc với hai đường thẳng cắt nhau $SA$ và $BA$ nên $BC \\perp (SAB)$.",
+    tags: ["Vuông góc", "Đường thẳng", "Mặt phẳng", "Không gian"],
+    difficulty: "Trung bình",
+    mnemonic: "Chỉ cần vuông góc với 2 đường thẳng CẮT NHAU trong mặt phẳng là đủ để kết luận vuông góc với cả mặt phẳng — không cần kiểm tra mọi đường thẳng.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 23, trang 31-32"
+  },
+  {
+    id: "hh11-lienhe-songsong-vuonggoc",
+    name: "Liên hệ giữa quan hệ song song và quan hệ vuông góc của đường thẳng, mặt phẳng",
+    topic: "Hình học",
+    grade: 11,
+    latex: "\\begin{aligned} a\\perp(P),\\ b\\parallel a &\\Rightarrow b\\perp(P) \\\\ a\\perp(P),\\ b\\perp(P),\\ a\\neq b &\\Rightarrow a\\parallel b \\\\ a\\perp(P),\\ (P)\\parallel(Q) &\\Rightarrow a\\perp(Q) \\\\ a\\perp(P),\\ a\\perp(Q),\\ (P)\\neq(Q) &\\Rightarrow (P)\\parallel(Q) \\end{aligned}",
+    explanation: "Bốn tính chất liên hệ giữa song song và vuông góc trong không gian:\n- Nếu đường thẳng $a$ vuông góc với mặt phẳng $(P)$ thì mọi đường thẳng song song với $a$ cũng vuông góc với $(P)$.\n- Hai đường thẳng phân biệt cùng vuông góc với một mặt phẳng thì song song với nhau.\n- Nếu $a\\perp(P)$ thì $a$ cũng vuông góc với mọi mặt phẳng song song với $(P)$.\n- Hai mặt phẳng phân biệt cùng vuông góc với một đường thẳng thì song song với nhau.\n\nHệ quả thêm: nếu đường thẳng $a$ và mặt phẳng $(P)$ cùng vuông góc với một đường thẳng $\\Delta$ thì $a$ nằm trong $(P)$ hoặc song song với $(P)$.",
+    example: "Cho hai mặt phẳng phân biệt $(P)$ và $(Q)$ cùng vuông góc với đường thẳng $\\Delta$. Hỏi $(P)$ và $(Q)$ có vị trí tương đối như thế nào?\n\n**Lời giải:**\nTheo tính chất, hai mặt phẳng phân biệt cùng vuông góc với một đường thẳng thì song song với nhau. Vậy $(P) \\parallel (Q)$.",
+    tags: ["Song song", "Vuông góc", "Không gian", "Hình học"],
+    difficulty: "Khó",
+    mnemonic: "Cùng vuông góc với 1 thứ (đường hoặc mặt) thì song song với nhau; song song với thứ vuông góc thì vẫn vuông góc — 'chuyền' tính vuông góc qua quan hệ song song.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 23, trang 34-36"
+  },
+  {
+    id: "hh11-phepchieu-baduongvuonggoc",
+    name: "Phép chiếu vuông góc và định lí ba đường vuông góc",
+    topic: "Hình học",
+    grade: 11,
+    latex: "b \\subset (P),\\ b \\perp a \\Leftrightarrow b \\perp a' \\quad (a' \\text{ là hình chiếu vuông góc của } a \\text{ trên } (P))",
+    explanation: "Trong đó:\n- Phép chiếu song song lên mặt phẳng $(P)$ theo phương vuông góc với $(P)$ được gọi là **phép chiếu vuông góc** lên $(P)$; ảnh $a'$ của đường thẳng $a$ qua phép chiếu này gọi là **hình chiếu (vuông góc)** của $a$ trên $(P)$.\n- **Định lí ba đường vuông góc:** Cho đường thẳng $a$ và mặt phẳng $(P)$ không vuông góc với nhau. Một đường thẳng $b$ nằm trong $(P)$ vuông góc với $a$ khi và chỉ khi $b$ vuông góc với hình chiếu vuông góc $a'$ của $a$ trên $(P)$.\n\nĐịnh lí này cho phép chuyển việc kiểm tra vuông góc giữa hai đường thẳng $a, b$ (có thể chéo nhau) về kiểm tra vuông góc giữa $b$ và $a'$ (cùng thuộc mặt phẳng $(P)$).",
+    example: "Trên một sân phẳng nằm ngang, dựng các cột thẳng đứng $AM, BN, CP, DQ$ và nối các dây $MP, NQ$. Chứng minh nếu $BD \\perp AC$ thì $BD \\perp MP$.\n\n**Lời giải:**\nDo các cột có phương thẳng đứng và sân là mặt phẳng nằm ngang nên $AC$ là hình chiếu vuông góc của $MP$ trên sân. Vì $BD$ thuộc mặt sân và $BD \\perp AC$, theo định lí ba đường vuông góc ta có $BD \\perp MP$.",
+    tags: ["Phép chiếu vuông góc", "Định lí ba đường vuông góc", "Không gian"],
+    difficulty: "Khó",
+    mnemonic: "Định lí ba đường vuông góc: muốn xét b có vuông góc với a (chéo nhau) hay không, chỉ cần xét b có vuông góc với hình chiếu a' của a (cùng mặt phẳng với b) hay không.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 24, trang 38-39"
+  },
+  {
+    id: "hh11-gocgiua-duongthang-matphang",
+    name: "Góc giữa đường thẳng và mặt phẳng",
+    topic: "Hình học",
+    grade: 11,
+    latex: "(a,(P)) = 90^\\circ \\text{ nếu } a\\perp(P); \\qquad (a,(P)) = (a,a') \\text{ nếu } a \\not\\perp (P) \\quad (a' \\text{ là hình chiếu của } a)",
+    explanation: "Trong đó:\n- Nếu đường thẳng $a$ vuông góc với mặt phẳng $(P)$ thì góc giữa $a$ và $(P)$ bằng $90°$.\n- Nếu $a$ không vuông góc với $(P)$ thì góc giữa $a$ và $(P)$ là góc giữa $a$ và hình chiếu vuông góc $a'$ của $a$ trên $(P)$.\n- Với mọi đường thẳng $a$ và mặt phẳng $(P)$: $0° \\le (a,(P)) \\le 90°$.\n\n**Nhận xét:** Nếu điểm $A$ có hình chiếu $H$ trên $(P)$ và $O \\in (P)$, $O \\neq H$ thì góc giữa $AO$ và $(P)$ bằng $\\widehat{AOH}$.",
+    example: "Cho hình chóp $S.ABC$ có $SA\\perp(ABC)$, $SA=a$, $CA=CB=a\\sqrt7$, $AB=2a$. Tính $\\tan\\alpha$ với $\\alpha$ là góc giữa $SB$ và $(ABC)$.\n\n**Lời giải:**\nDo $SA\\perp(ABC)$ nên $\\alpha = \\widehat{SBA}$. Tam giác $SAB$ vuông tại $A$ nên $\\tan\\alpha = \\dfrac{SA}{AB} = \\dfrac{a}{2a} = \\dfrac{1}{2}$.",
+    tags: ["Góc giữa đường thẳng và mặt phẳng", "Hình chiếu", "Không gian"],
+    difficulty: "Trung bình",
+    mnemonic: "Góc giữa đường thẳng và mặt phẳng luôn là góc nhọn (hoặc 0°/90°) — lấy góc giữa đường thẳng và hình chiếu của nó, không bao giờ vượt quá 90°.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 24, trang 40-41"
+  },
+  {
+    id: "hh11-haimatphang-vuonggoc",
+    name: "Góc giữa hai mặt phẳng và hai mặt phẳng vuông góc",
+    topic: "Hình học",
+    grade: 11,
+    latex: "((P),(Q)) = (a,b) \\;(a\\perp(P), b\\perp(Q)); \\qquad (P)\\perp(Q) \\Leftrightarrow (P) \\text{ chứa một đường thẳng vuông góc với } (Q)",
+    explanation: "Trong đó:\n- Lấy các đường thẳng $a, b$ tương ứng vuông góc với $(P), (Q)$; góc giữa $a$ và $b$ không phụ thuộc vị trí của $a,b$ và được gọi là góc giữa hai mặt phẳng $(P), (Q)$, với $0°\\le((P),(Q))\\le 90°$.\n- Hai mặt phẳng $(P), (Q)$ vuông góc khi góc giữa chúng bằng $90°$.\n- **Điều kiện nhận biết:** $(P)\\perp(Q)$ khi và chỉ khi $(P)$ chứa một đường thẳng vuông góc với $(Q)$.\n- **Tính chất:** với hai mặt phẳng vuông góc, mọi đường thẳng nằm trong mặt phẳng này mà vuông góc với giao tuyến thì vuông góc với mặt phẳng kia. Nếu hai mặt phẳng cắt nhau và cùng vuông góc với mặt phẳng thứ ba thì giao tuyến của chúng vuông góc với mặt phẳng thứ ba đó.",
+    example: "Cho tứ diện $OABC$ có $OA$ vuông góc với $OB$ và $OC$. Chứng minh $(OAB) \\perp (OBC)$.\n\n**Lời giải:**\nDo $OA$ vuông góc với hai đường thẳng cắt nhau $OB, OC$ nên $OA \\perp (OBC)$. Mặt phẳng $(OAB)$ chứa $OA$ nên $(OAB) \\perp (OBC)$.",
+    tags: ["Hai mặt phẳng vuông góc", "Góc giữa hai mặt phẳng", "Không gian"],
+    difficulty: "Khó",
+    mnemonic: "Muốn chứng minh 2 mặt phẳng vuông góc: chỉ cần tìm 1 đường thẳng trong mặt này vuông góc với mặt kia — không cần lấy 2 đường vuông góc riêng để đo góc.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 25, trang 44-46"
+  },
+  {
+    id: "hh11-gocnhidien",
+    name: "Góc nhị diện và góc phẳng nhị diện",
+    topic: "Hình học",
+    grade: 11,
+    latex: "[P,a,Q]; \\qquad \\widehat{xOy} \\text{ với } O \\in a,\\ Ox\\subset(P),\\ Oy\\subset(Q),\\ Ox\\perp a,\\ Oy\\perp a",
+    explanation: "Trong đó:\n- Hình gồm hai nửa mặt phẳng $(P), (Q)$ có chung bờ $a$ được gọi là góc nhị diện, kí hiệu $[P,a,Q]$; $a$ là cạnh, $(P), (Q)$ là các mặt của góc nhị diện.\n- Từ một điểm $O$ bất kì thuộc cạnh $a$, vẽ các tia $Ox, Oy$ tương ứng thuộc $(P), (Q)$ và vuông góc với $a$. Góc $\\widehat{xOy}$ được gọi là góc phẳng của góc nhị diện $[P,a,Q]$; số đo của $\\widehat{xOy}$ không phụ thuộc vào vị trí của $O$ trên $a$.\n\nSố đo góc nhị diện nhận giá trị từ $0°$ đến $180°$; góc nhị diện là vuông, nhọn, tù nếu số đo tương ứng bằng, nhỏ hơn, lớn hơn $90°$.",
+    example: "Cho hình chóp $S.ABCD$ có $SA\\perp(ABCD)$, đáy $ABCD$ là hình thoi cạnh $a$, $AC=a$, $SA=\\dfrac12 a$. Tính số đo góc nhị diện $[B,SA,D]$.\n\n**Lời giải:**\nVì $SA\\perp(ABCD)$ nên $AB, AD$ đều vuông góc với $SA$, do đó $\\widehat{BAD}$ là góc phẳng của góc nhị diện $[B,SA,D]$. Hình thoi $ABCD$ có cạnh bằng $a$ và $AC=a$ nên tam giác $ABC$ đều, suy ra $\\widehat{BAD}=120°$. Vậy góc nhị diện $[B,SA,D]$ bằng $120°$.",
+    tags: ["Góc nhị diện", "Góc phẳng nhị diện", "Không gian"],
+    difficulty: "Khó",
+    mnemonic: "Muốn đo góc nhị diện: đứng tại 1 điểm trên cạnh, vẽ 2 tia vuông góc với cạnh (mỗi tia nằm trong 1 mặt) — góc giữa 2 tia đó chính là số đo góc nhị diện.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 25, trang 47-48"
+  },
+  {
+    id: "hh11-langtru-hop-dacbiet",
+    name: "Một số hình lăng trụ và hình hộp đặc biệt",
+    topic: "Hình học",
+    grade: 11,
+    latex: "\\text{Lăng trụ đứng: cạnh bên} \\perp \\text{đáy}; \\quad \\text{Lăng trụ đều: lăng trụ đứng có đáy là đa giác đều}",
+    explanation: "Trong đó:\n- **Hình lăng trụ đứng:** hình lăng trụ có các cạnh bên vuông góc với mặt đáy; các mặt bên là các hình chữ nhật vuông góc với đáy.\n- **Hình lăng trụ đều:** hình lăng trụ đứng có đáy là đa giác đều; các mặt bên là các hình chữ nhật bằng nhau.\n- **Hình hộp đứng:** hình lăng trụ đứng có đáy là hình bình hành; các mặt bên đều là hình chữ nhật.\n- **Hình hộp chữ nhật:** hình hộp đứng có đáy là hình chữ nhật; cả 6 mặt đều là hình chữ nhật; các đường chéo bằng nhau và cắt nhau tại trung điểm của mỗi đường.\n- **Hình lập phương:** hình hộp chữ nhật có tất cả các cạnh bằng nhau; các mặt đều là hình vuông.",
+    example: "Cho hình lập phương $ABCD.A'B'C'D'$ cạnh $a$. Chứng minh tam giác $A'BD$ là tam giác đều.\n\n**Lời giải:**\nVì các mặt của hình lập phương là hình vuông cạnh $a$ nên $A'D = BD = A'B = a\\sqrt2$ (đường chéo hình vuông cạnh $a$). Tam giác $A'BD$ có ba cạnh bằng nhau nên là tam giác đều.",
+    tags: ["Lăng trụ đứng", "Lăng trụ đều", "Hình hộp", "Hình lập phương", "Không gian"],
+    difficulty: "Trung bình",
+    mnemonic: "Thứ tự đặc biệt hoá: lăng trụ đứng (cạnh bên ⊥ đáy) → lăng trụ đều (đáy là đa giác đều) → hình hộp đứng (đáy hbh) → hình hộp chữ nhật (đáy hcn) → hình lập phương (mọi cạnh bằng nhau).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 25, trang 49-51"
+  },
+  {
+    id: "hh11-hinhchop-deu-cutdeu",
+    name: "Hình chóp đều và hình chóp cụt đều",
+    topic: "Hình học",
+    grade: 11,
+    latex: "S.A_1A_2\\ldots A_n \\text{ đều} \\Leftrightarrow \\text{đáy là đa giác đều và hình chiếu của } S \\text{ là tâm đáy}",
+    explanation: "Trong đó:\n- **Hình chóp đều** là hình chóp có đáy là đa giác đều và các cạnh bên bằng nhau.\n- Một hình chóp là đều khi và chỉ khi đáy của nó là một đa giác đều và hình chiếu của đỉnh trên mặt phẳng đáy là tâm của mặt đáy. Khi đó, các cạnh bên tạo với mặt phẳng đáy các góc bằng nhau.\n- **Hình chóp cụt đều** là hình tạo thành khi cắt hình chóp đều bởi một mặt phẳng song song với đáy (không đi qua đỉnh), gồm hai đáy là các đa giác đều, các mặt bên là các hình thang cân. Đoạn nối tâm hai đáy gọi là đường cao, độ dài của nó là chiều cao của hình chóp cụt đều.",
+    example: "Cho hình chóp cụt đều $ABC.A'B'C'$ có chiều cao $h$, hai đáy là tam giác đều $ABC$, $A'B'C'$ có cạnh tương ứng $a, a'$ ($a>a'$). Tính độ dài cạnh bên.\n\n**Lời giải:**\nGọi $H, H'$ là tâm hai tam giác đều. Trong tam giác đều cạnh $a$: $HA=\\dfrac{a}{\\sqrt3}$; trong tam giác đều cạnh $a'$: $H'A'=\\dfrac{a'}{\\sqrt3}$. Vì $HH'\\perp$ hai đáy nên $AA' = \\sqrt{HH'^2+(HA-H'A')^2} = \\sqrt{h^2+\\dfrac{(a-a')^2}{3}}$.",
+    tags: ["Hình chóp đều", "Hình chóp cụt đều", "Không gian"],
+    difficulty: "Khó",
+    mnemonic: "Chóp đều: đáy đa giác đều + hình chiếu đỉnh trùng tâm đáy. Chóp cụt đều = cắt bỏ phần đỉnh của chóp đều bằng mặt phẳng song song đáy.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 25, trang 51-52"
+  },
+  {
+    id: "hh11-khoangcach-diem-mp-songsong",
+    name: "Khoảng cách từ điểm đến đường thẳng, mặt phẳng và giữa các hình song song",
+    topic: "Hình học",
+    grade: 11,
+    latex: "d(M,a) = MH \\;(H \\text{ là hình chiếu của } M \\text{ trên } a); \\quad d(M,(P)) = MH' \\;(H' \\text{ là hình chiếu của } M \\text{ trên } (P))",
+    explanation: "Trong đó:\n- Khoảng cách từ điểm $M$ đến đường thẳng $a$, kí hiệu $d(M,a)$, là khoảng cách giữa $M$ và hình chiếu $H$ của $M$ trên $a$; đây là khoảng cách nhỏ nhất từ $M$ đến một điểm thuộc $a$.\n- Khoảng cách từ điểm $M$ đến mặt phẳng $(P)$, kí hiệu $d(M,(P))$, là khoảng cách giữa $M$ và hình chiếu $H$ của $M$ trên $(P)$.\n- Khoảng cách từ đỉnh đến mặt phẳng chứa đáy của một hình chóp được gọi là **chiều cao của hình chóp**; khoảng cách giữa hai đáy của hình lăng trụ là **chiều cao của hình lăng trụ**.\n- Khoảng cách giữa đường thẳng $a$ song song với $(P)$, kí hiệu $d(a,(P))$, là khoảng cách từ một điểm bất kì trên $a$ đến $(P)$.\n- Khoảng cách giữa hai mặt phẳng song song $(P), (Q)$, kí hiệu $d((P),(Q))$, là khoảng cách từ một điểm bất kì thuộc mặt phẳng này đến mặt phẳng kia.",
+    example: "Cho hình chóp đều $S.ABC$, biết độ dài cạnh đáy, cạnh bên tương ứng bằng $a, b$ ($a<b\\sqrt3$). Tính chiều cao của hình chóp.\n\n**Lời giải:**\nHình chiếu của $S$ trên $(ABC)$ là tâm $O$ của tam giác đều $ABC$, với $OA=\\dfrac{a}{\\sqrt3}$. Trong tam giác vuông $SOA$: $SO=\\sqrt{SA^2-OA^2}=\\sqrt{b^2-\\dfrac{a^2}{3}}$.",
+    tags: ["Khoảng cách", "Chiều cao", "Không gian"],
+    difficulty: "Trung bình",
+    mnemonic: "Khoảng cách điểm-đường/mặt luôn qua HÌNH CHIẾU vuông góc — là đoạn ngắn nhất. Khoảng cách giữa 2 hình song song = khoảng cách từ 1 điểm bất kỳ của hình này đến hình kia (không đổi).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 26, trang 54-56"
+  },
+  {
+    id: "hh11-khoangcach-cheonhau",
+    name: "Khoảng cách giữa hai đường thẳng chéo nhau",
+    topic: "Hình học",
+    grade: 11,
+    latex: "d(a,b) = MN \\quad (\\Delta \\text{ cắt } a,b \\text{ tại } M,N \\text{ và } \\Delta\\perp a,\\ \\Delta\\perp b)",
+    explanation: "Trong đó:\n- Đường thẳng $\\Delta$ cắt cả hai đường thẳng chéo nhau $a, b$ và vuông góc với cả hai được gọi là **đường vuông góc chung** của $a$ và $b$.\n- Nếu đường vuông góc chung $\\Delta$ cắt $a, b$ tương ứng tại $M, N$ thì độ dài đoạn $MN$ được gọi là **khoảng cách giữa hai đường thẳng chéo nhau** $a, b$, kí hiệu $d(a,b)$.\n\n**Cách tính:** $d(a,b)$ bằng khoảng cách giữa $a$ (hoặc $b$) và một mặt phẳng song song với nó, chứa đường thẳng còn lại; hoặc bằng khoảng cách giữa hai mặt phẳng song song, tương ứng chứa hai đường thẳng đó.",
+    example: "Cho hình chóp $S.ABC$ có $SA\\perp(ABC)$, $AB=a$, $\\widehat{ABC}=60°$. Xác định đường vuông góc chung và tính khoảng cách giữa $SA$ và $BC$.\n\n**Lời giải:**\nGọi $H$ là hình chiếu của $A$ trên $BC$. Tam giác $ABH$ vuông tại $H$ có $AB=a$, $\\widehat{ABH}=60°$ nên $AH=AB\\sin60°=\\dfrac{a\\sqrt3}{2}$. Do $SA\\perp(ABC)$ nên $AH$ là đường vuông góc chung của $SA$ và $BC$. Vậy $d(SA,BC)=AH=\\dfrac{a\\sqrt3}{2}$.",
+    tags: ["Khoảng cách", "Đường vuông góc chung", "Đường thẳng chéo nhau", "Không gian"],
+    difficulty: "Khó",
+    mnemonic: "Đường vuông góc chung: vừa cắt cả 2 đường chéo nhau, vừa vuông góc với cả 2 — độ dài đoạn nối 2 giao điểm chính là khoảng cách cần tìm.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 26, trang 57-58"
+  },
+  {
+    id: "hh11-thetich-chopcut",
+    name: "Thể tích khối chóp cụt đều",
+    topic: "Hình học",
+    grade: 11,
+    latex: "V = \\frac{1}{3} h \\left(S + S' + \\sqrt{S S'}\\right)",
+    explanation: "Trong đó:\n- $S$: Diện tích đáy lớn của khối chóp cụt đều.\n- $S'$: Diện tích đáy bé của khối chóp cụt đều.\n- $h$: Chiều cao của khối chóp cụt đều (khoảng cách giữa hai đáy).\n- $V$: Thể tích khối chóp cụt đều.\n\nCông thức này được suy ra bằng cách lấy thể tích khối chóp lớn (trước khi cắt) trừ đi thể tích khối chóp nhỏ (phần bị cắt bỏ).",
+    example: "Một chiếc sọt đựng đồ có dạng hình chóp cụt đều, đáy và miệng sọt là các hình vuông cạnh $60\\text{ cm}$ và $30\\text{ cm}$, chiều cao sọt là $40\\text{ cm}$. Tính thể tích của sọt.\n\n**Lời giải:**\n$S = 60^2 = 3600\\text{ cm}^2$, $S' = 30^2 = 900\\text{ cm}^2$, $h=40\\text{ cm}$.\n$V = \\frac{1}{3}\\cdot 40 \\cdot \\left(3600+900+\\sqrt{3600\\cdot900}\\right) = \\frac{40}{3}\\cdot 6300 = 84\\,000\\text{ cm}^3$",
+    tags: ["Thể tích", "Hình chóp cụt đều", "Không gian"],
+    difficulty: "Khó",
+    mnemonic: "Thể tích chóp cụt = 1/3 chiều cao nhân (đáy lớn + đáy bé + căn tích hai đáy) — không phải trung bình cộng hai đáy mà có thêm căn bậc hai.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 27, trang 61"
   },
 ];
