@@ -318,7 +318,8 @@ export const formulas = [
     example: "Viết phương trình tổng quát của đường thẳng đi qua điểm $A(1, 2)$ và nhận $\\vec{n} = (3, -4)$ làm vectơ pháp tuyến.\n\n**Lời giải:**\nÁp dụng công thức:\n$$3(x - 1) - 4(y - 2) = 0 \\iff 3x - 4y + 5 = 0$$",
     tags: ["Đường thẳng", "Pháp tuyến", "Hình học phẳng"],
     difficulty: "Dễ",
-    mnemonic: "Nhân tọa độ pháp tuyến với hiệu tọa độ điểm đi qua: a nhân x trừ x0 cộng b nhân y trừ y0 bằng không."
+    mnemonic: "Nhân tọa độ pháp tuyến với hiệu tọa độ điểm đi qua: a nhân x trừ x0 cộng b nhân y trừ y0 bằng không.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 19, trang 31"
   },
   {
     id: "hh10-dinhly-sin",
@@ -343,7 +344,8 @@ export const formulas = [
     example: "Tìm tâm và bán kính của đường tròn có phương trình: $(x - 2)^2 + (y + 3)^2 = 16$.\n\n**Lời giải:**\nĐối chiếu với phương trình chuẩn:\n- Tâm $I(a, b) = I(2, -3)$.\n- Bán kính $R = \\sqrt{16} = 4$.",
     tags: ["Đường tròn", "Hình học phẳng", "Oxy"],
     difficulty: "Dễ",
-    mnemonic: "Bình phương khoảng cách từ điểm bất kỳ đến tâm bằng bình phương bán kính."
+    mnemonic: "Bình phương khoảng cách từ điểm bất kỳ đến tâm bằng bình phương bán kính.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 21, trang 43"
   },
   {
     id: "gt11-tieptuyen-phuongtrinh",
@@ -986,7 +988,8 @@ export const formulas = [
     example: "Elip $(E): \\dfrac{x^2}{25} + \\dfrac{y^2}{9} = 1$. Tìm các yếu tố.\n\n**Lời giải:**\n- $a^2 = 25 \\Rightarrow a = 5$; $b^2 = 9 \\Rightarrow b = 3$.\n- $c = \\sqrt{25 - 9} = 4$.\n- Tiêu điểm: $F_1(-4;0)$, $F_2(4;0)$.\n- Tâm sai: $e = 4/5 = 0.8$.",
     tags: ["Elip", "Đường conic", "Mở rộng", "Chuyên đề"],
     difficulty: "Trung bình",
-    mnemonic: "Elip: x²/a² + y²/b² = 1 với a>b. Tổng khoảng cách đến 2 tiêu điểm = 2a. Tiêu điểm nằm trên trục lớn: F(±c, 0) với c²=a²-b²."
+    mnemonic: "Elip: x²/a² + y²/b² = 1 với a>b. Tổng khoảng cách đến 2 tiêu điểm = 2a. Tiêu điểm nằm trên trục lớn: F(±c, 0) với c²=a²-b².",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 22, trang 49"
   },
   {
     id: "mr-hypebol",
@@ -998,7 +1001,8 @@ export const formulas = [
     example: "Hypebol $(H): \\dfrac{x^2}{16} - \\dfrac{y^2}{9} = 1$. Tìm tiêu điểm và tiệm cận.\n\n**Lời giải:**\n- $a=4$, $b=3$, $c = \\sqrt{16+9} = 5$.\n- Tiêu điểm: $F_1(-5;0)$, $F_2(5;0)$.\n- Tiệm cận: $y = \\pm \\dfrac{3}{4}x$.",
     tags: ["Hypebol", "Đường conic", "Tiệm cận", "Mở rộng"],
     difficulty: "Trung bình",
-    mnemonic: "Hypebol: x²/a² - y²/b² = 1 (dấu trừ!). Hiệu khoảng cách đến tiêu điểm = 2a. c²=a²+b² (cộng, khác elip). Tiệm cận y=±(b/a)x."
+    mnemonic: "Hypebol: x²/a² - y²/b² = 1 (dấu trừ!). Hiệu khoảng cách đến tiêu điểm = 2a. c²=a²+b² (cộng, khác elip). Tiệm cận y=±(b/a)x.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 22, trang 51"
   },
   {
     id: "mr-parabol-conic",
@@ -1010,7 +1014,8 @@ export const formulas = [
     example: "Parabol $y^2 = 8x$. Tìm tiêu điểm và đường chuẩn.\n\n**Lời giải:**\n$2p = 8 \\Rightarrow p = 4$.\n- Tiêu điểm: $F(2; 0)$.\n- Đường chuẩn: $x = -2$.",
     tags: ["Parabol", "Đường conic", "Tiêu điểm", "Mở rộng"],
     difficulty: "Trung bình",
-    mnemonic: "y²=2px: mở sang phải, tiêu điểm F(p/2; 0), đường chuẩn x=-p/2. x²=2py: mở lên trên. Điểm trên parabol cách tiêu điểm = cách đường chuẩn."
+    mnemonic: "y²=2px: mở sang phải, tiêu điểm F(p/2; 0), đường chuẩn x=-p/2. x²=2py: mở lên trên. Điểm trên parabol cách tiêu điểm = cách đường chuẩn.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 22, trang 53"
   },
   {
     id: "mr-phepbienhinh",
@@ -1457,5 +1462,83 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Bình phương hai vế để mất căn, giải phương trình bậc hai, rồi PHẢI thử lại — nghiệm tìm được có thể là nghiệm ngoại lai.",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 18, trang 25-27"
+  },
+  {
+    id: "hh10-duongthang-thamso",
+    name: "Phương trình tham số của đường thẳng",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\begin{cases} x = x_0 + at \\\\ y = y_0 + bt \\end{cases}",
+    explanation: "Đường thẳng đi qua điểm $A(x_0; y_0)$ và nhận vectơ chỉ phương $\\vec{u} = (a; b)$ khác $\\vec{0}$, với $t$ là tham số.\nTrong đó:\n- $x_0, y_0$: Tọa độ điểm đi qua.\n- $a, b$: Tọa độ vectơ chỉ phương $\\vec{u}$.\n- $t$: Tham số, mỗi giá trị $t$ cho một điểm $M(x;y)$ thuộc đường thẳng.\n\nVectơ pháp tuyến $\\vec{n}(a;b)$ và vectơ chỉ phương $\\vec{u}(-b;a)$ của cùng một đường thẳng luôn vuông góc với nhau.",
+    example: "Lập phương trình tham số của đường thẳng $\\Delta$ đi qua điểm $A(2; -3)$ và có vectơ chỉ phương $\\vec{u}(4; -1)$.\n\n**Lời giải:**\nPhương trình tham số của $\\Delta$ là:\n$\\begin{cases} x = 2 + 4t \\\\ y = -3 - t \\end{cases}$",
+    tags: ["Đường thẳng", "Chỉ phương", "Tham số", "Hình học phẳng"],
+    difficulty: "Dễ",
+    mnemonic: "Điểm cộng tham số nhân tọa độ vectơ chỉ phương: x = x0 + at, y = y0 + bt.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 19, trang 33"
+  },
+  {
+    id: "hh10-duongthang-doanchan",
+    name: "Phương trình đoạn chắn của đường thẳng",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\frac{x}{a} + \\frac{y}{b} = 1 \\quad (ab \\neq 0)",
+    explanation: "Phương trình đường thẳng đi qua hai điểm $A(a; 0)$ và $B(0; b)$ nằm trên hai trục tọa độ, với $ab \\neq 0$.\nTrong đó:\n- $a$: Hoành độ giao điểm với trục $Ox$ (đường thẳng cắt $Ox$ tại $A(a;0)$).\n- $b$: Tung độ giao điểm với trục $Oy$ (đường thẳng cắt $Oy$ tại $B(0;b)$).\n\nDạng này gọi là phương trình đoạn chắn vì $a, b$ chính là độ dài đại số của hai đoạn chắn trên hai trục tọa độ.",
+    example: "SGK yêu cầu chứng minh: đường thẳng đi qua hai điểm $A(a;0)$, $B(0;b)$ với $ab \\neq 0$ có phương trình $\\dfrac{x}{a}+\\dfrac{y}{b}=1$.\n\n**Chứng minh:** Đường thẳng $AB$ nhận $\\overrightarrow{AB}=(-a;b)$ làm vectơ chỉ phương, nên nhận $\\vec n=(b;a)$ làm vectơ pháp tuyến. Phương trình tổng quát: $b(x-a)+a(y-0)=0 \\iff bx+ay-ab=0$. Chia hai vế cho $ab$ ($ab\\neq0$): $\\dfrac{x}{a}+\\dfrac{y}{b}=1$.",
+    tags: ["Đường thẳng", "Đoạn chắn", "Hình học phẳng"],
+    difficulty: "Dễ",
+    mnemonic: "x trên a cộng y trên b bằng 1: a là chỗ cắt trục hoành, b là chỗ cắt trục tung.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 19, Bài tập 7.5, trang 34"
+  },
+  {
+    id: "hh10-vitri-tuongdoi-duongthang",
+    name: "Vị trí tương đối giữa hai đường thẳng",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\begin{cases} a_1x+b_1y+c_1=0 \\\\ a_2x+b_2y+c_2=0 \\end{cases}",
+    explanation: "Xét hai đường thẳng $\\Delta_1: a_1x+b_1y+c_1=0$ và $\\Delta_2: a_2x+b_2y+c_2=0$. Tọa độ giao điểm (nếu có) là nghiệm của hệ phương trình trên, gọi là hệ $(*)$.\nTrong đó:\n- $\\Delta_1$ cắt $\\Delta_2$ tại $M(x_0;y_0)$ $\\iff$ hệ $(*)$ có nghiệm duy nhất $(x_0;y_0)$.\n- $\\Delta_1$ song song với $\\Delta_2$ $\\iff$ hệ $(*)$ vô nghiệm.\n- $\\Delta_1$ trùng $\\Delta_2$ $\\iff$ hệ $(*)$ có vô số nghiệm.\n\nCó thể xét nhanh qua vectơ pháp tuyến (hoặc chỉ phương): nếu $\\vec{n_1}, \\vec{n_2}$ không cùng phương thì $\\Delta_1$ cắt $\\Delta_2$; nếu $\\vec{n_1}, \\vec{n_2}$ cùng phương thì $\\Delta_1$ song song hoặc trùng $\\Delta_2$ (xét thêm một điểm chung để phân biệt).",
+    example: "Xét vị trí tương đối giữa $\\Delta: x-\\sqrt{2}y+4\\sqrt{3}=0$ và $\\Delta_2: \\sqrt{2}x-2y=0$.\n\n**Lời giải:**\nVectơ pháp tuyến của $\\Delta$ là $\\vec{n}(1;-\\sqrt2)$, của $\\Delta_2$ là $\\vec{n_2}(\\sqrt2;-2)$. Vì $\\vec{n_2}=\\sqrt2\\cdot\\vec{n}$ nên hai vectơ cùng phương, do đó $\\Delta$ và $\\Delta_2$ song song hoặc trùng nhau. Điểm $O(0;0)$ thuộc $\\Delta_2$ nhưng không thuộc $\\Delta$ nên $\\Delta$ và $\\Delta_2$ song song.",
+    tags: ["Đường thẳng", "Vị trí tương đối", "Hệ phương trình", "Hình học phẳng"],
+    difficulty: "Trung bình",
+    mnemonic: "Giải hệ hai phương trình đường thẳng: vô nghiệm là song song, một nghiệm là cắt, vô số nghiệm là trùng.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 20, trang 36"
+  },
+  {
+    id: "hh10-goc-hai-duongthang",
+    name: "Góc giữa hai đường thẳng",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\cos\\varphi = \\frac{|a_1a_2+b_1b_2|}{\\sqrt{a_1^2+b_1^2}\\cdot\\sqrt{a_2^2+b_2^2}}",
+    explanation: "Cho hai đường thẳng $\\Delta_1: a_1x+b_1y+c_1=0$ và $\\Delta_2: a_2x+b_2y+c_2=0$ với vectơ pháp tuyến tương ứng $\\vec{n_1}(a_1;b_1)$, $\\vec{n_2}(a_2;b_2)$.\nTrong đó:\n- $\\varphi$: Góc giữa hai đường thẳng ($0^\\circ \\le \\varphi \\le 90^\\circ$).\n- Lấy trị tuyệt đối ở tử số vì góc giữa hai đường thẳng luôn không tù, dù góc giữa hai vectơ pháp tuyến có thể tù.\n- $\\Delta_1 \\perp \\Delta_2 \\iff a_1a_2+b_1b_2=0$.\n- Góc giữa hai đường thẳng song song hoặc trùng nhau quy ước bằng $0^\\circ$.",
+    example: "Tính góc giữa hai đường thẳng $\\Delta_1: \\sqrt3x-y+2=0$ và $\\Delta_2: x-\\sqrt3y-2=0$.\n\n**Lời giải:**\nVectơ pháp tuyến $\\vec{n_1}=(\\sqrt3;-1)$, $\\vec{n_2}=(1;-\\sqrt3)$.\n$\\cos\\varphi=\\frac{|\\sqrt3\\cdot1+(-1)(-\\sqrt3)|}{\\sqrt{3+1}\\cdot\\sqrt{1+3}}=\\frac{2\\sqrt3}{4}=\\frac{\\sqrt3}{2}$\nVậy góc giữa $\\Delta_1$ và $\\Delta_2$ là $\\varphi=30^\\circ$.",
+    tags: ["Đường thẳng", "Góc", "Pháp tuyến", "Hình học phẳng"],
+    difficulty: "Trung bình",
+    mnemonic: "Cos góc giữa 2 đường thẳng = trị tuyệt đối tích vô hướng hai pháp tuyến, chia tích hai độ dài — luôn lấy trị tuyệt đối vì góc giữa 2 đường thẳng không tù.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 20, trang 38"
+  },
+  {
+    id: "hh10-khoangcach-diem-duongthang",
+    name: "Khoảng cách từ một điểm đến một đường thẳng",
+    topic: "Hình học",
+    grade: 10,
+    latex: "d(M, \\Delta) = \\frac{|ax_0+by_0+c|}{\\sqrt{a^2+b^2}}",
+    explanation: "Cho điểm $M(x_0;y_0)$ và đường thẳng $\\Delta: ax+by+c=0$.\nTrong đó:\n- $d(M,\\Delta)$: Khoảng cách từ điểm $M$ đến đường thẳng $\\Delta$.\n- $(x_0;y_0)$: Tọa độ điểm $M$.\n- $a, b, c$: Các hệ số trong phương trình tổng quát của $\\Delta$.\n\nNếu $M$ thuộc $\\Delta$ thì $d(M,\\Delta)=0$ (vì $ax_0+by_0+c=0$).",
+    example: "Tính khoảng cách từ điểm $M(2;4)$ đến đường thẳng $\\Delta: 3x+4y-12=0$.\n\n**Lời giải:**\nÁp dụng công thức:\n$d(M,\\Delta)=\\frac{|3\\cdot2+4\\cdot4-12|}{\\sqrt{3^2+4^2}}=\\frac{|6+16-12|}{5}=\\frac{10}{5}=2$",
+    tags: ["Đường thẳng", "Khoảng cách", "Hình học phẳng"],
+    difficulty: "Trung bình",
+    mnemonic: "Thế tọa độ điểm vào vế trái phương trình đường thẳng, lấy trị tuyệt đối, chia cho căn tổng bình phương hệ số a, b.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 20, trang 40"
+  },
+  {
+    id: "hh10-tieptuyen-duongtron",
+    name: "Phương trình tiếp tuyến của đường tròn",
+    topic: "Hình học",
+    grade: 10,
+    latex: "(a-x_0)(x-x_0)+(b-y_0)(y-y_0)=0",
+    explanation: "Cho điểm $M_0(x_0;y_0)$ thuộc đường tròn $(C): (x-a)^2+(y-b)^2=R^2$ (tâm $I(a;b)$, bán kính $R$).\nTrong đó:\n- $M_0(x_0;y_0)$: Tiếp điểm, thuộc đường tròn $(C)$.\n- Tiếp tuyến $\\Delta$ của $(C)$ tại $M_0$ nhận $\\overrightarrow{M_0I}=(a-x_0;b-y_0)$ làm vectơ pháp tuyến.\n- Tiếp tuyến tại một điểm luôn vuông góc với bán kính đi qua điểm đó.",
+    example: "Cho đường tròn $(C): (x+1)^2+(y-3)^2=5$. Điểm $M(0;1)$ có thuộc $(C)$ hay không? Nếu có, viết phương trình tiếp tuyến tại $M$ của $(C)$.\n\n**Lời giải:**\nDo $(0+1)^2+(1-3)^2=1+4=5$, nên $M$ thuộc $(C)$.\nĐường tròn $(C)$ có tâm $I(-1;3)$. Tiếp tuyến tại $M(0;1)$ có vectơ pháp tuyến $\\overrightarrow{MI}=(-1;2)$, nên có phương trình:\n$-1(x-0)+2(y-1)=0 \\iff x-2y+2=0$",
+    tags: ["Đường tròn", "Tiếp tuyến", "Pháp tuyến", "Hình học phẳng"],
+    difficulty: "Trung bình",
+    mnemonic: "Vectơ pháp tuyến của tiếp tuyến chính là vectơ nối tiếp điểm tới tâm: MI. Tiếp tuyến luôn vuông góc bán kính.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 21, trang 46"
   }
 ];

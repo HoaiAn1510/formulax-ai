@@ -2939,5 +2939,140 @@ export const questionsPool = [
     blankAnswer: "5",
     explanation: "Bình phương hai vế: $2x^2-5x-9=x^2-2x+1$, thu gọn được $x^2-3x-10=0$, suy ra $x=-2$ hoặc $x=5$. Thay lại vào phương trình ban đầu, chỉ có $x=5$ thỏa mãn (vì với $x=-2$, vế phải $x-1<0$ trong khi vế trái không âm).",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 18, trang 27"
+  },
+  {
+    id: "hh44",
+    topic: "Hình học",
+    grade: 10,
+    text: "Trong mặt phẳng toạ độ, lập phương trình tham số của đường thẳng $\\Delta$ đi qua điểm $A(2; -3)$ và có vectơ chỉ phương $\\vec{u}(4; -1)$.",
+    options: [
+      { letter: "A", text: "$\\begin{cases} x = 2+4t \\\\ y = -3-t \\end{cases}$", isCorrect: true },
+      { letter: "B", text: "$\\begin{cases} x = 2-4t \\\\ y = -3+t \\end{cases}$", isCorrect: false },
+      { letter: "C", text: "$\\begin{cases} x = 4+2t \\\\ y = -1-3t \\end{cases}$", isCorrect: false },
+      { letter: "D", text: "$\\begin{cases} x = 2+4t \\\\ y = -3+t \\end{cases}$", isCorrect: false }
+    ],
+    blankAnswer: "x = 2+4t, y = -3-t",
+    explanation: "Đường thẳng qua $A(x_0;y_0)$ với vectơ chỉ phương $\\vec u(a;b)$ có phương trình tham số $x=x_0+at, y=y_0+bt$. Thay $A(2;-3)$, $\\vec u(4;-1)$: $x=2+4t$, $y=-3-t$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 19, Ví dụ 5, trang 33"
+  },
+  {
+    id: "hh45",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tính góc giữa hai đường thẳng $\\Delta_1: \\sqrt{3}x-y+2=0$ và $\\Delta_2: x-\\sqrt{3}y-2=0$.",
+    options: [
+      { letter: "A", text: "$30^\\circ$", isCorrect: true },
+      { letter: "B", text: "$60^\\circ$", isCorrect: false },
+      { letter: "C", text: "$45^\\circ$", isCorrect: false },
+      { letter: "D", text: "$90^\\circ$", isCorrect: false }
+    ],
+    blankAnswer: "30 độ",
+    explanation: "$\\vec{n_1}=(\\sqrt3;-1)$, $\\vec{n_2}=(1;-\\sqrt3)$. $\\cos\\varphi=\\dfrac{|\\sqrt3\\cdot1+(-1)(-\\sqrt3)|}{\\sqrt4\\cdot\\sqrt4}=\\dfrac{2\\sqrt3}{4}=\\dfrac{\\sqrt3}{2} \\Rightarrow \\varphi=30^\\circ$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 20, Ví dụ 2, trang 38"
+  },
+  {
+    id: "hh46",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tính khoảng cách từ điểm $M(2; 4)$ đến đường thẳng $\\Delta: 3x+4y-12=0$.",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: true },
+      { letter: "B", text: "$10$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{10}{7}$", isCorrect: false },
+      { letter: "D", text: "$-2$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "$d(M,\\Delta)=\\dfrac{|3\\cdot2+4\\cdot4-12|}{\\sqrt{3^2+4^2}}=\\dfrac{10}{5}=2$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 20, Ví dụ 4, trang 40"
+  },
+  {
+    id: "hh47",
+    topic: "Hình học",
+    grade: 10,
+    text: "Xét vị trí tương đối giữa hai đường thẳng $m_1: x-2y+1=0$ và $m_2: 3x+y-2=0$.",
+    options: [
+      { letter: "A", text: "Cắt nhau", isCorrect: true },
+      { letter: "B", text: "Song song", isCorrect: false },
+      { letter: "C", text: "Trùng nhau", isCorrect: false },
+      { letter: "D", text: "Vuông góc", isCorrect: false }
+    ],
+    blankAnswer: "Cắt nhau",
+    explanation: "Vectơ pháp tuyến $\\vec{n_1}=(1;-2)$, $\\vec{n_2}=(3;1)$ không cùng phương (vì $\\dfrac{1}{3}\\neq\\dfrac{-2}{1}$) nên $m_1$ cắt $m_2$. Ngoài ra $\\vec{n_1}\\cdot\\vec{n_2}=3-2=1\\neq0$ nên hai đường thẳng không vuông góc.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 20, Bài tập 7.7c, trang 41"
+  },
+  {
+    id: "hh48",
+    topic: "Hình học",
+    grade: 10,
+    text: "Đường tròn $(C): (x-2)^2+(y+3)^2=16$ có tâm và bán kính lần lượt là:",
+    options: [
+      { letter: "A", text: "$I(2;-3)$, $R=4$", isCorrect: true },
+      { letter: "B", text: "$I(-2;3)$, $R=4$", isCorrect: false },
+      { letter: "C", text: "$I(2;-3)$, $R=16$", isCorrect: false },
+      { letter: "D", text: "$I(2;3)$, $R=4$", isCorrect: false }
+    ],
+    blankAnswer: "I(2; -3), R = 4",
+    explanation: "Đối chiếu $(x-a)^2+(y-b)^2=R^2$: $a=2$, $b=-3$ (vì $(y+3)^2=(y-(-3))^2$), $R^2=16\\Rightarrow R=4$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 21, Ví dụ 1, trang 43"
+  },
+  {
+    id: "hh49",
+    topic: "Hình học",
+    grade: 10,
+    text: "Viết phương trình đường tròn $(C)$ đi qua ba điểm $A(2;0)$, $B(0;4)$, $C(-7;3)$.",
+    options: [
+      { letter: "A", text: "$(x+3)^2+y^2=25$", isCorrect: true },
+      { letter: "B", text: "$(x-3)^2+y^2=25$", isCorrect: false },
+      { letter: "C", text: "$(x+3)^2+y^2=5$", isCorrect: false },
+      { letter: "D", text: "$(x+3)^2+(y-3)^2=25$", isCorrect: false }
+    ],
+    blankAnswer: "(x + 3)^2 + y^2 = 25",
+    explanation: "Tâm $I$ là giao điểm của hai đường trung trực của $AB$ và $AC$, giải hệ được $I(-3;0)$. Bán kính $R=IA=5$. Phương trình: $(x+3)^2+y^2=25$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 21, Ví dụ 3, trang 44-45"
+  },
+  {
+    id: "hh50",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho đường tròn $(C): (x+1)^2+(y-3)^2=5$ và điểm $M(0;1)$ thuộc $(C)$. Viết phương trình tiếp tuyến của $(C)$ tại $M$.",
+    options: [
+      { letter: "A", text: "$x-2y+2=0$", isCorrect: true },
+      { letter: "B", text: "$x+2y-2=0$", isCorrect: false },
+      { letter: "C", text: "$2x-y+1=0$", isCorrect: false },
+      { letter: "D", text: "$x-2y-2=0$", isCorrect: false }
+    ],
+    blankAnswer: "x - 2y + 2 = 0",
+    explanation: "Đường tròn có tâm $I(-1;3)$. Tiếp tuyến tại $M(0;1)$ nhận $\\overrightarrow{MI}=(-1;2)$ làm vectơ pháp tuyến: $-1(x-0)+2(y-1)=0 \\iff x-2y+2=0$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 21, Ví dụ 4, trang 46"
+  },
+  {
+    id: "hh51",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho hypebol có phương trình chính tắc $\\dfrac{x^2}{9}-\\dfrac{y^2}{16}=1$. Tính tiêu cự của hypebol.",
+    options: [
+      { letter: "A", text: "$2c=10$", isCorrect: true },
+      { letter: "B", text: "$2c=8$", isCorrect: false },
+      { letter: "C", text: "$2c=14$", isCorrect: false },
+      { letter: "D", text: "$2c=2\\sqrt7$", isCorrect: false }
+    ],
+    blankAnswer: "10",
+    explanation: "$a^2=9, b^2=16 \\Rightarrow c=\\sqrt{a^2+b^2}=\\sqrt{9+16}=5$. Tiêu cự $2c=10$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 22, Ví dụ 4, trang 52"
+  },
+  {
+    id: "hh52",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho parabol có phương trình $y^2=8x$. Tìm tiêu điểm và đường chuẩn của parabol.",
+    options: [
+      { letter: "A", text: "$F(2;0)$, đường chuẩn $x=-2$", isCorrect: true },
+      { letter: "B", text: "$F(4;0)$, đường chuẩn $x=-4$", isCorrect: false },
+      { letter: "C", text: "$F(2;0)$, đường chuẩn $x=2$", isCorrect: false },
+      { letter: "D", text: "$F(0;2)$, đường chuẩn $y=-2$", isCorrect: false }
+    ],
+    blankAnswer: "F(2; 0), đường chuẩn x = -2",
+    explanation: "$y^2=2px \\Rightarrow 2p=8 \\Rightarrow p=4$. Tiêu điểm $F\\left(\\dfrac{p}{2};0\\right)=F(2;0)$, đường chuẩn $x=-\\dfrac{p}{2}=-2$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 22, Bài tập 7.21, trang 56"
   }
 ];
