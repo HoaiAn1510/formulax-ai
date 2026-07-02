@@ -3974,5 +3974,125 @@ export const questionsPool = [
     blankAnswer: "3019",
     explanation: "Lương hằng năm lập thành cấp số nhân với $u_1=240$, công bội $q=1{,}05$. $S_{10}=\\dfrac{240[1-(1{,}05)^{10}]}{1-1{,}05}\\approx3\\,019$ (triệu đồng).",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 7, trang 54"
+  },
+  {
+    id: "xs35",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Theo báo cáo số liệu tổng điều tra dân số năm 2019, mẫu số liệu ghép nhóm về độ tuổi dân số Việt Nam gồm 3 nhóm: dưới 15 tuổi có 23 371 882 người, từ 15 đến dưới 65 tuổi có 65 420 451 người, từ 65 tuổi trở lên có 7 416 651 người. Dân số Việt Nam năm 2019 là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$96\\,208\\,984$ người", isCorrect: true },
+      { letter: "B", text: "$95\\,208\\,984$ người", isCorrect: false },
+      { letter: "C", text: "$96\\,308\\,984$ người", isCorrect: false },
+      { letter: "D", text: "$88\\,792\\,333$ người", isCorrect: false }
+    ],
+    blankAnswer: "96208984",
+    explanation: "Dân số = tổng tần số các nhóm: $23\\,371\\,882+65\\,420\\,451+7\\,416\\,651=96\\,208\\,984$ (người).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 8, trang 59-60"
+  },
+  {
+    id: "xs36",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Cân nặng của học sinh lớp 11D được cho bởi mẫu ghép nhóm: [40,5;45,5): 10; [45,5;50,5): 7; [50,5;55,5): 16; [55,5;60,5): 4; [60,5;65,5): 2; [65,5;70,5): 3. Tính cân nặng trung bình của học sinh lớp 11D.",
+    options: [
+      { letter: "A", text: "$\\approx51{,}81$ kg", isCorrect: true },
+      { letter: "B", text: "$\\approx50{,}00$ kg", isCorrect: false },
+      { letter: "C", text: "$\\approx53{,}00$ kg", isCorrect: false },
+      { letter: "D", text: "$\\approx48{,}50$ kg", isCorrect: false }
+    ],
+    blankAnswer: "51.81",
+    explanation: "Giá trị đại diện các nhóm: 43, 48, 53, 58, 63, 68; cỡ mẫu $n=42$. $\\bar{x}=\\dfrac{10\\cdot43+7\\cdot48+16\\cdot53+4\\cdot58+2\\cdot63+3\\cdot68}{42}\\approx51{,}81$ (kg).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 63-64"
+  },
+  {
+    id: "xs37",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Thời gian (phút) truy cập Internet mỗi buổi tối của học sinh: [9,5;12,5): 3; [12,5;15,5): 12; [15,5;18,5): 15; [18,5;21,5): 24; [21,5;24,5): 2. Tính trung vị của mẫu số liệu ghép nhóm này.",
+    options: [
+      { letter: "A", text: "$18{,}1$", isCorrect: true },
+      { letter: "B", text: "$15{,}5$", isCorrect: false },
+      { letter: "C", text: "$17{,}5$", isCorrect: false },
+      { letter: "D", text: "$19{,}0$", isCorrect: false }
+    ],
+    blankAnswer: "18.1",
+    explanation: "Cỡ mẫu $n=56$. Nhóm chứa trung vị là $[15,5;18,5)$: $M_e=15,5+\\dfrac{\\frac{56}{2}-15}{15}\\cdot3=18,1$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 64"
+  },
+  {
+    id: "xs38",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Với mẫu số liệu thời gian truy cập Internet ở trên ($n=56$), tứ phân vị thứ nhất $Q_1$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$15{,}25$", isCorrect: true },
+      { letter: "B", text: "$12{,}5$", isCorrect: false },
+      { letter: "C", text: "$14{,}0$", isCorrect: false },
+      { letter: "D", text: "$18{,}1$", isCorrect: false }
+    ],
+    blankAnswer: "15.25",
+    explanation: "$Q_1$ thuộc nhóm $[12,5;15,5)$ ($m_2=12$, $m_1=3$): $Q_1=12,5+\\dfrac{\\frac{56}{4}-3}{12}\\cdot3=15,25$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 65"
+  },
+  {
+    id: "xs39",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Với mẫu số liệu thời gian truy cập Internet ở trên ($n=56$), tứ phân vị thứ ba $Q_3$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$20$", isCorrect: true },
+      { letter: "B", text: "$21{,}5$", isCorrect: false },
+      { letter: "C", text: "$18{,}5$", isCorrect: false },
+      { letter: "D", text: "$19{,}5$", isCorrect: false }
+    ],
+    blankAnswer: "20",
+    explanation: "$Q_3$ thuộc nhóm $[18,5;21,5)$ ($m_4=24$, $m_1+m_2+m_3=30$): $Q_3=18,5+\\dfrac{\\frac{3\\cdot56}{4}-30}{24}\\cdot3=20$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 65"
+  },
+  {
+    id: "xs40",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Chiều cao (cm) của 50 học sinh lớp 11A: [145;150): 7; [150;155): 14; [155;160): 10; [160;165): 10; [165;170): 9. Tính mốt của mẫu số liệu ghép nhóm này.",
+    options: [
+      { letter: "A", text: "$\\approx153{,}18$", isCorrect: true },
+      { letter: "B", text: "$150$", isCorrect: false },
+      { letter: "C", text: "$\\approx151{,}50$", isCorrect: false },
+      { letter: "D", text: "$\\approx154{,}00$", isCorrect: false }
+    ],
+    blankAnswer: "153.18",
+    explanation: "Nhóm chứa mốt là $[150;155)$ ($m_2=14$, $m_1=7$, $m_3=10$, $h=5$): $M_o=150+\\dfrac{14-7}{(14-7)+(14-10)}\\cdot5\\approx153{,}18$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 66"
+  },
+  {
+    id: "xs41",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Trong mẫu số liệu ghép nhóm về cân nặng học sinh lớp 11D, giá trị đại diện của nhóm $[50,5;55,5)$ là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$53$", isCorrect: true },
+      { letter: "B", text: "$50{,}5$", isCorrect: false },
+      { letter: "C", text: "$55{,}5$", isCorrect: false },
+      { letter: "D", text: "$52$", isCorrect: false }
+    ],
+    blankAnswer: "53",
+    explanation: "Giá trị đại diện của nhóm $[a;b)$ là trung bình cộng hai đầu mút: $x=\\dfrac{50,5+55,5}{2}=53$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 63"
+  },
+  {
+    id: "xs42",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Bảng thống kê thời gian chạy (phút) của 30 vận động viên marathon được ghép thành 6 nhóm độ dài bằng nhau và bằng 3, gồm: [127,5;130,5): 3; [130,5;133,5): 1; [133,5;136,5): 4; [136,5;139,5): 3; [139,5;142,5): 7; [142,5;145,5): 12. Nhóm $[142,5;145,5)$ có bao nhiêu vận động viên?",
+    options: [
+      { letter: "A", text: "$12$", isCorrect: true },
+      { letter: "B", text: "$7$", isCorrect: false },
+      { letter: "C", text: "$3$", isCorrect: false },
+      { letter: "D", text: "$30$", isCorrect: false }
+    ],
+    blankAnswer: "12",
+    explanation: "Theo bảng thống kê mẫu số liệu ghép nhóm, tần số của nhóm $[142,5;145,5)$ là $12$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 8, trang 60"
   }
 ];

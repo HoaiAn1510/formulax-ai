@@ -1871,5 +1871,57 @@ export const formulas = [
     difficulty: "Dễ",
     mnemonic: "CSC: số sau = số trước CỘNG d (công sai). CSN: số sau = số trước NHÂN q (công bội). Đây là định nghĩa gốc, còn u_n=u1+(n-1)d hay u1.q^(n-1) là công thức suy ra.",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 48; Bài 7, trang 52"
+  },
+  {
+    id: "xs11-ghepnhom-trungbinh",
+    name: "Số trung bình của mẫu số liệu ghép nhóm",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "\\bar{x} = \\frac{m_1x_1 + m_2x_2 + \\cdots + m_kx_k}{n}, \\quad x_i = \\frac{a_i+a_{i+1}}{2}",
+    explanation: "Cho mẫu số liệu ghép nhóm gồm $k$ nhóm $[a_1;a_2), [a_2;a_3), \\ldots, [a_k;a_{k+1})$ với tần số tương ứng $m_1, m_2, \\ldots, m_k$.\nTrong đó:\n- $n = m_1+m_2+\\cdots+m_k$: cỡ mẫu.\n- $x_i = \\dfrac{a_i+a_{i+1}}{2}$: giá trị đại diện của nhóm $[a_i;a_{i+1})$ (với $i=1,\\ldots,k$), là trung bình cộng hai đầu mút của nhóm.\n- $\\bar{x}$: Số trung bình của mẫu số liệu ghép nhóm, xấp xỉ cho số trung bình của mẫu số liệu gốc, dùng để đại diện cho vị trí trung tâm của mẫu số liệu.",
+    example: "Tìm cân nặng trung bình của học sinh lớp 11D: [40,5;45,5): 10 hs; [45,5;50,5): 7 hs; [50,5;55,5): 16 hs; [55,5;60,5): 4 hs; [60,5;65,5): 2 hs; [65,5;70,5): 3 hs.\n\n**Lời giải:**\nGiá trị đại diện lần lượt là 43, 48, 53, 58, 63, 68. Cỡ mẫu $n=42$.\n$\\bar{x}=\\frac{10\\cdot43+7\\cdot48+16\\cdot53+4\\cdot58+2\\cdot63+3\\cdot68}{42}\\approx51{,}81\\ (kg)$",
+    tags: ["Thống kê", "Mẫu ghép nhóm", "Số trung bình"],
+    difficulty: "Trung bình",
+    mnemonic: "Giá trị đại diện mỗi nhóm = trung điểm khoảng [a;b). Trung bình ghép nhóm = tổng (tần số × giá trị đại diện) chia cỡ mẫu — giống trung bình có trọng số.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 62"
+  },
+  {
+    id: "xs11-ghepnhom-trungvi",
+    name: "Trung vị của mẫu số liệu ghép nhóm",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "M_e = a_p + \\frac{\\dfrac{n}{2}-(m_1+\\cdots+m_{p-1})}{m_p}\\cdot(a_{p+1}-a_p)",
+    explanation: "Trong đó:\n- Nhóm $p$: $[a_p;a_{p+1})$ là nhóm chứa trung vị (xác định bằng cách tìm nhóm mà tần số tích lũy đến nhóm đó vừa vượt quá $n/2$).\n- $n$: cỡ mẫu.\n- $m_p$: tần số của nhóm $p$.\n- $m_1+\\cdots+m_{p-1}$: tổng tần số các nhóm trước nhóm $p$ (quy ước bằng $0$ nếu $p=1$).\n\n**Ý nghĩa:** $M_e$ xấp xỉ cho trung vị của mẫu số liệu gốc, chia mẫu số liệu thành hai phần, mỗi phần chứa khoảng 50% giá trị.",
+    example: "Thời gian truy cập Internet (phút) của học sinh: [9,5;12,5): 3; [12,5;15,5): 12; [15,5;18,5): 15; [18,5;21,5): 24; [21,5;24,5): 2. Tính trung vị.\n\n**Lời giải:**\nCỡ mẫu $n=56$. Nhóm chứa trung vị là $[15,5;18,5)$ (vì $3+12=15<28<15+15=30$), với $p=3$, $a_3=15,5$, $m_3=15$, $m_1+m_2=15$, $a_4-a_3=3$.\n$M_e=15,5+\\frac{\\frac{56}{2}-15}{15}\\cdot3=18,1$",
+    tags: ["Thống kê", "Mẫu ghép nhóm", "Trung vị"],
+    difficulty: "Khó",
+    mnemonic: "Tìm nhóm mà tần số tích lũy vừa vượt n/2, rồi nội suy tuyến tính trong nhóm đó — giống cách tìm tứ phân vị Q2.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 64"
+  },
+  {
+    id: "xs11-ghepnhom-tuphanvi",
+    name: "Tứ phân vị của mẫu số liệu ghép nhóm",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "Q_1 = a_p + \\frac{\\dfrac{n}{4}-(m_1+\\cdots+m_{p-1})}{m_p}\\cdot(a_{p+1}-a_p), \\quad Q_3 = a_p + \\frac{\\dfrac{3n}{4}-(m_1+\\cdots+m_{p-1})}{m_p}\\cdot(a_{p+1}-a_p)",
+    explanation: "Trong đó:\n- $Q_1$ (tứ phân vị thứ nhất): xác định nhóm $p$ chứa $Q_1$ (nhóm mà tần số tích lũy vừa vượt quá $n/4$), rồi áp dụng công thức nội suy tương tự trung vị nhưng thay $n/2$ bằng $n/4$.\n- $Q_3$ (tứ phân vị thứ ba): xác định nhóm $p$ chứa $Q_3$ (nhóm mà tần số tích lũy vừa vượt quá $3n/4$), rồi áp dụng công thức với $3n/4$ thay cho $n/2$.\n- $Q_2$ (tứ phân vị thứ hai) chính là trung vị $M_e$.\n- $n$: cỡ mẫu; $m_p$: tần số nhóm $p$; $m_1+\\cdots+m_{p-1}$: tổng tần số các nhóm trước nhóm $p$.\n\n**Ý nghĩa:** Các tứ phân vị $Q_1, Q_2, Q_3$ chia mẫu số liệu ghép nhóm thành 4 phần, mỗi phần chứa khoảng 25% giá trị.",
+    example: "Với mẫu số liệu thời gian truy cập Internet ở Ví dụ trung vị ($n=56$): $Q_1$ thuộc nhóm $[12,5;15,5)$ ($p=2$, $a_2=12,5$, $m_2=12$, $m_1=3$):\n$Q_1=12,5+\\frac{\\frac{56}{4}-3}{12}\\cdot3=15,25$\n$Q_3$ thuộc nhóm $[18,5;21,5)$ ($p=4$, $a_4=18,5$, $m_4=24$, $m_1+m_2+m_3=30$):\n$Q_3=18,5+\\frac{\\frac{3\\cdot56}{4}-30}{24}\\cdot3=20$",
+    tags: ["Thống kê", "Mẫu ghép nhóm", "Tứ phân vị"],
+    difficulty: "Khó",
+    mnemonic: "Q1 dùng mốc n/4, Q3 dùng mốc 3n/4, cùng công thức nội suy như trung vị (dùng mốc n/2). Q2 = trung vị.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 65-66"
+  },
+  {
+    id: "xs11-ghepnhom-mot",
+    name: "Mốt của mẫu số liệu ghép nhóm",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "M_o = a_j + \\frac{m_j-m_{j-1}}{(m_j-m_{j-1})+(m_j-m_{j+1})}\\cdot h",
+    explanation: "Trong đó:\n- Nhóm $j$: $[a_j;a_{j+1})$ là nhóm có tần số lớn nhất (nhóm chứa mốt).\n- $m_j$: tần số của nhóm $j$; quy ước $m_0=m_{k+1}=0$.\n- $h$: độ dài của nhóm (các nhóm phải có độ dài bằng nhau).\n\n**Lưu ý:** Chỉ định nghĩa mốt cho mẫu ghép nhóm có các nhóm độ dài bằng nhau. Một mẫu có thể không có mốt hoặc có nhiều hơn một mốt (khi tần số các nhóm bằng nhau thì mẫu không có mốt).",
+    example: "Chiều cao (cm) của 50 học sinh lớp 11A: [145;150):7; [150;155):14; [155;160):10; [160;165):10; [165;170):9. Tính mốt.\n\n**Lời giải:**\nNhóm chứa mốt là $[150;155)$ ($j=2$, $a_2=150$, $m_2=14$, $m_1=7$, $m_3=10$, $h=5$):\n$M_o=150+\\frac{14-7}{(14-7)+(14-10)}\\cdot5\\approx153{,}18$",
+    tags: ["Thống kê", "Mẫu ghép nhóm", "Mốt"],
+    difficulty: "Trung bình",
+    mnemonic: "Mốt nằm trong nhóm có tần số lớn nhất. Công thức giống 'kéo' về phía nhóm có tần số hàng xóm lớn hơn: tỉ lệ (m_j - m_trước)/[(m_j-m_trước)+(m_j-m_sau)].",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 9, trang 66"
   }
 ];
