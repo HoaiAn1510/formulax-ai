@@ -38,7 +38,9 @@ export default function FormulaDetailModal({
 
     lines.forEach(line => {
       const trimmed = line.trim();
-      if (trimmed.startsWith('-') || trimmed.startsWith('*')) {
+      // Only "- " marks a real symbol-glossary bullet. A line starting with "**" is
+      // markdown bold (e.g. "**Mệnh đề:** ...") and must stay prose, not a table row.
+      if (trimmed.startsWith('-')) {
         const content = trimmed.substring(1).trim();
         const colonIndex = content.indexOf(':');
         if (colonIndex !== -1) {
