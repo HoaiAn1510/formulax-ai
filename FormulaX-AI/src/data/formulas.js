@@ -158,7 +158,8 @@ export const formulas = [
     example: "Cho cấp số cộng có số hạng đầu $u_1 = 3$, công sai $d = 2$. Tính tổng của 10 số hạng đầu tiên ($S_{10}$).\n\n**Lời giải:**\nÁp dụng công thức thứ hai với $n = 10, u_1 = 3, d = 2$:\n$$S_{10} = \\frac{10 \\cdot [2(3) + (10-1)2]}{2} = 5 \\cdot [6 + 18] = 5 \\cdot 24 = 120$$",
     tags: ["Cấp số cộng", "Dãy số"],
     difficulty: "Dễ",
-    mnemonic: "Tổng bằng trung bình cộng số hạng đầu và cuối nhân với số lượng số hạng."
+    mnemonic: "Tổng bằng trung bình cộng số hạng đầu và cuối nhân với số lượng số hạng.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 50"
   },
   {
     id: "ds11-csn-tong",
@@ -170,7 +171,8 @@ export const formulas = [
     example: "Cho cấp số nhân có $u_1 = 2$, công bội $q = 3$. Tính tổng của 4 số hạng đầu.\n\n**Lời giải:**\nÁp dụng công thức với $n = 4$:\n$$S_4 = 2 \\cdot \\frac{1 - 3^4}{1 - 3} = 2 \\cdot \\frac{1 - 81}{-2} = 2 \\cdot 40 = 80$$",
     tags: ["Cấp số nhân", "Dãy số"],
     difficulty: "Dễ",
-    mnemonic: "U một nhân tử số một trừ q mũ n, chia cho mẫu số một trừ q."
+    mnemonic: "U một nhân tử số một trừ q mũ n, chia cho mẫu số một trừ q.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 7, trang 54"
   },
   {
     id: "xs11-tohop",
@@ -693,7 +695,8 @@ export const formulas = [
     example: "Tìm số hạng thứ 10 của cấp số cộng $2, 5, 8, 11, \\ldots$\n\n**Lời giải:**\n- $u_1 = 2$, $d = 5 - 2 = 3$.\n$$u_{10} = 2 + (10-1) \\cdot 3 = 2 + 27 = 29$$",
     tags: ["Cấp số cộng", "Số hạng tổng quát", "Dãy số"],
     difficulty: "Dễ",
-    mnemonic: "Xuất phát từ u₁, mỗi bước tăng d: u_n = u₁ + (n-1)·d. Nhớ là (n-1) lần cộng d, không phải n lần."
+    mnemonic: "Xuất phát từ u₁, mỗi bước tăng d: u_n = u₁ + (n-1)·d. Nhớ là (n-1) lần cộng d, không phải n lần.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 49"
   },
   {
     id: "ds11-csn-sohangtq",
@@ -701,11 +704,12 @@ export const formulas = [
     topic: "Đại số",
     grade: 11,
     latex: "u_n = u_1 \\cdot q^{n-1}",
-    explanation: "Trong cấp số nhân với số hạng đầu $u_1$ và công bội $q$:\n$$u_n = u_1 \\cdot q^{n-1}$$\nTrong đó:\n- $u_n$: Số hạng thứ $n$.\n- $u_1$: Số hạng đầu tiên ($u_1 \\neq 0$).\n- $q$: Công bội ($q = u_{n+1}/u_n$ = hằng số, $q \\neq 0$).\n\n**Tổng $n$ số hạng đầu** (khi $q \\neq 1$):\n$$S_n = \\frac{u_1(1 - q^n)}{1 - q}$$\nKhi $|q| < 1$, tổng vô hạn: $S = \\dfrac{u_1}{1 - q}$.",
+    explanation: "Trong cấp số nhân với số hạng đầu $u_1$ và công bội $q$:\n$$u_n = u_1 \\cdot q^{n-1}$$\nTrong đó:\n- $u_n$: Số hạng thứ $n$.\n- $u_1$: Số hạng đầu tiên ($u_1 \\neq 0$).\n- $q$: Công bội ($q = u_{n+1}/u_n$ = hằng số, $q \\neq 0$).\n\n**Tổng $n$ số hạng đầu** (khi $q \\neq 1$):\n$$S_n = \\frac{u_1(1 - q^n)}{1 - q}$$",
     example: "Tìm số hạng thứ 6 của cấp số nhân $3, 6, 12, 24, \\ldots$\n\n**Lời giải:**\n- $u_1 = 3$, $q = 6/3 = 2$.\n$$u_6 = 3 \\cdot 2^{6-1} = 3 \\cdot 32 = 96$$",
     tags: ["Cấp số nhân", "Số hạng tổng quát", "Dãy số"],
     difficulty: "Dễ",
-    mnemonic: "Xuất phát từ u₁, mỗi bước nhân q: u_n = u₁·q^(n-1). Lũy thừa là (n-1) không phải n — vì bước đầu chưa nhân q."
+    mnemonic: "Xuất phát từ u₁, mỗi bước nhân q: u_n = u₁·q^(n-1). Lũy thừa là (n-1) không phải n — vì bước đầu chưa nhân q.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 7, trang 53"
   },
 
   // --- LỚP 12: BỔ SUNG ---
@@ -1815,5 +1819,57 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "Đặt u=a+b, v=a-b rồi lấy nửa tổng/nửa hiệu. Cos cộng cos: cos.cos. Cos trừ cos: -sin.sin (có dấu trừ). Sin cộng sin: sin.cos. Sin trừ sin: cos.sin (đảo thứ tự so với sin cộng).",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 20"
+  },
+  {
+    id: "ds11-dayso-dinhnghia",
+    name: "Định nghĩa và các cách cho một dãy số",
+    topic: "Đại số",
+    grade: 11,
+    latex: "u = u(n): \\mathbb{N}^* \\to \\mathbb{R} \\quad \\text{(dãy số vô hạn)}, \\qquad u: \\{1;2;\\ldots;m\\} \\to \\mathbb{R} \\quad \\text{(dãy số hữu hạn)}",
+    explanation: "Trong đó:\n- Mỗi hàm số $u$ xác định trên tập các số nguyên dương $\\mathbb{N}^*$ được gọi là một dãy số vô hạn (gọi tắt là dãy số), kí hiệu $u=u(n)$.\n- Thường viết $u_n$ thay cho $u(n)$ và kí hiệu dãy số bởi $(u_n)$: $u_1, u_2, u_3, \\ldots, u_n, \\ldots$\n- $u_1$: số hạng đầu; $u_n$: số hạng thứ $n$ (số hạng tổng quát).\n- Mỗi hàm số $u$ xác định trên tập $M=\\{1;2;\\ldots;m\\}$ ($m \\in \\mathbb{N}^*$) được gọi là một dãy số hữu hạn, có số hạng đầu $u_1$ và số hạng cuối $u_m$.\n\n**Bốn cách cho một dãy số:**\n1. Liệt kê các số hạng (chỉ dùng cho dãy hữu hạn và có ít số hạng).\n2. Công thức của số hạng tổng quát $u_n$.\n3. Phương pháp mô tả.\n4. Phương pháp truy hồi (biểu thị $u_n$ qua một hay vài số hạng đứng trước nó).",
+    example: "Xác định số hạng đầu và số hạng tổng quát của dãy số $(u_n)$ các số tự nhiên lẻ: $1, 3, 5, 7, \\ldots$\n\n**Lời giải:**\nDãy $(u_n)$ có số hạng đầu $u_1=1$ và số hạng tổng quát $u_n = 2n-1$.",
+    tags: ["Dãy số", "Số hạng tổng quát", "Truy hồi"],
+    difficulty: "Dễ",
+    mnemonic: "Dãy số = hàm số với biến là số nguyên dương. Vô hạn: miền xác định N*. Hữu hạn: miền xác định {1,...,m}. Bốn cách cho dãy: liệt kê - công thức - mô tả - truy hồi.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 5, trang 42-44"
+  },
+  {
+    id: "ds11-dayso-tang-giam-bichan",
+    name: "Dãy số tăng, dãy số giảm và dãy số bị chặn",
+    topic: "Đại số",
+    grade: 11,
+    latex: "(u_n) \\text{ tăng} \\Leftrightarrow u_{n+1} > u_n\\ \\forall n; \\quad (u_n) \\text{ giảm} \\Leftrightarrow u_{n+1} < u_n\\ \\forall n",
+    explanation: "Trong đó:\n- Dãy số $(u_n)$ được gọi là dãy số tăng nếu $u_{n+1} > u_n$ với mọi $n \\in \\mathbb{N}^*$.\n- Dãy số $(u_n)$ được gọi là dãy số giảm nếu $u_{n+1} < u_n$ với mọi $n \\in \\mathbb{N}^*$.\n- Dãy số $(u_n)$ được gọi là bị chặn trên nếu tồn tại số $M$ sao cho $u_n \\leq M$ với mọi $n \\in \\mathbb{N}^*$.\n- Dãy số $(u_n)$ được gọi là bị chặn dưới nếu tồn tại số $m$ sao cho $u_n \\geq m$ với mọi $n \\in \\mathbb{N}^*$.\n- Dãy số $(u_n)$ được gọi là bị chặn nếu nó vừa bị chặn trên vừa bị chặn dưới, tức tồn tại các số $m, M$ sao cho $m \\leq u_n \\leq M$ với mọi $n \\in \\mathbb{N}^*$.\n\n**Cách xét tăng/giảm:** Xét dấu hiệu $u_{n+1}-u_n$ (hoặc so sánh tỉ số $\\dfrac{u_{n+1}}{u_n}$ với 1 nếu $u_n>0$).",
+    example: "Xét tính tăng, giảm của dãy số $(u_n)$ với $u_n = -2n+5$.\n\n**Lời giải:**\n$u_{n+1}-u_n = [-2(n+1)+5]-(-2n+5) = -2 < 0$, tức $u_{n+1}<u_n$ với mọi $n \\in \\mathbb{N}^*$. Vậy $(u_n)$ là dãy số giảm.",
+    tags: ["Dãy số", "Dãy số tăng", "Dãy số giảm", "Dãy số bị chặn"],
+    difficulty: "Trung bình",
+    mnemonic: "Tăng: số sau > số trước. Giảm: số sau < số trước. Xét hiệu u(n+1) - u(n) rồi so với 0. Bị chặn = có cả chặn trên VÀ chặn dưới.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 5, trang 45"
+  },
+  {
+    id: "ds11-tongsigma",
+    name: "Kí hiệu tổng Σ (Sigma)",
+    topic: "Đại số",
+    grade: 11,
+    latex: "S_n = u_1 + u_2 + \\cdots + u_n = \\sum_{k=1}^{n} u_k",
+    explanation: "Trong đó:\n- $u_k$: Số hạng thứ $k$ của dãy số $(u_n)$.\n- $k$: Chỉ số chạy (biến chạy) từ $1$ đến $n$.\n- $\\Sigma$ (đọc là \"xích ma\"): kí hiệu tổng, viết gọn tổng $n$ số hạng đầu của dãy số.\n\n**Ứng dụng:** Có thể dùng máy tính cầm tay để tính $\\displaystyle\\sum_{k=1}^n u_k$ khi biết công thức số hạng tổng quát $u_k$.",
+    example: "Tính tổng 35 số hạng đầu của dãy số $(u_n)$ với $u_n = 3n+1$ bằng kí hiệu Σ.\n\n**Lời giải:**\n$S_{35} = \\sum_{k=1}^{35}(3k+1) = 1925$",
+    tags: ["Dãy số", "Kí hiệu Sigma", "Tổng"],
+    difficulty: "Dễ",
+    mnemonic: "Σ (xích ma) là viết tắt của phép cộng liên tiếp: tổng các u_k khi k chạy từ 1 đến n.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 51"
+  },
+  {
+    id: "ds11-csc-csn-hethuc-truyhoi",
+    name: "Hệ thức truy hồi của cấp số cộng và cấp số nhân",
+    topic: "Đại số",
+    grade: 11,
+    latex: "\\text{CSC: } u_n = u_{n-1} + d \\ (n \\geq 2); \\qquad \\text{CSN: } u_n = u_{n-1} \\cdot q \\ (n \\geq 2)",
+    explanation: "Trong đó:\n- Cấp số cộng (CSC): dãy số (hữu hạn hay vô hạn) mà kể từ số hạng thứ hai, mỗi số hạng đều bằng số hạng đứng ngay trước nó cộng với một số không đổi $d$ (gọi là công sai).\n- Cấp số nhân (CSN): dãy số (hữu hạn hay vô hạn) mà kể từ số hạng thứ hai, mỗi số hạng đều là tích của số hạng đứng ngay trước nó với một số không đổi $q$ (gọi là công bội).\n- Đây là định nghĩa gốc bằng hệ thức truy hồi, từ đó suy ra công thức số hạng tổng quát $u_n=u_1+(n-1)d$ (CSC) và $u_n=u_1\\cdot q^{n-1}$ (CSN).",
+    example: "Cho cấp số cộng $(u_n)$ có số hạng đầu $u_1=2$ và công sai $d=3$. Hãy viết năm số hạng đầu.\n\n**Lời giải:**\n$u_1=2,\\ u_2=u_1+d=5,\\ u_3=u_2+d=8,\\ u_4=11,\\ u_5=14$.",
+    tags: ["Cấp số cộng", "Cấp số nhân", "Truy hồi", "Định nghĩa"],
+    difficulty: "Dễ",
+    mnemonic: "CSC: số sau = số trước CỘNG d (công sai). CSN: số sau = số trước NHÂN q (công bội). Đây là định nghĩa gốc, còn u_n=u1+(n-1)d hay u1.q^(n-1) là công thức suy ra.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 48; Bài 7, trang 52"
   }
 ];

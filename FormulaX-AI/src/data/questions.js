@@ -3839,5 +3839,140 @@ export const questionsPool = [
     blankAnswer: "x=-pi/3+kpi",
     explanation: "$\\tan x=-\\sqrt3=\\tan\\left(-\\frac{\\pi}{3}\\right)\\Leftrightarrow x=-\\frac{\\pi}{3}+k\\pi\\ (k\\in\\mathbb{Z})$.",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 4, trang 36"
+  },
+  {
+    id: "ds91",
+    topic: "Đại số",
+    grade: 11,
+    text: "Cho dãy số $(u_n)$ với $u_n = 2n$. Tìm số hạng thứ 100 của dãy số.",
+    options: [
+      { letter: "A", text: "$u_{100}=200$", isCorrect: true },
+      { letter: "B", text: "$u_{100}=100$", isCorrect: false },
+      { letter: "C", text: "$u_{100}=202$", isCorrect: false },
+      { letter: "D", text: "$u_{100}=99$", isCorrect: false }
+    ],
+    blankAnswer: "200",
+    explanation: "$u_{100}=2\\cdot100=200$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 5, trang 44"
+  },
+  {
+    id: "ds92",
+    topic: "Đại số",
+    grade: 11,
+    text: "Cho dãy số xác định bởi hệ thức truy hồi $u_1=1,\\ u_n=3u_{n-1}+2$ với $n\\geq2$. Tính $u_3$.",
+    options: [
+      { letter: "A", text: "$u_3=17$", isCorrect: true },
+      { letter: "B", text: "$u_3=5$", isCorrect: false },
+      { letter: "C", text: "$u_3=11$", isCorrect: false },
+      { letter: "D", text: "$u_3=15$", isCorrect: false }
+    ],
+    blankAnswer: "17",
+    explanation: "$u_2=3u_1+2=3\\cdot1+2=5$; $u_3=3u_2+2=3\\cdot5+2=17$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 5, trang 44"
+  },
+  {
+    id: "ds93",
+    topic: "Đại số",
+    grade: 11,
+    text: "Dãy số $(u_n)$ với $u_n=\\dfrac{n-1}{n}$ bị chặn trên bởi giá trị nào sau đây?",
+    options: [
+      { letter: "A", text: "$1$", isCorrect: true },
+      { letter: "B", text: "$2$", isCorrect: false },
+      { letter: "C", text: "$0$", isCorrect: false },
+      { letter: "D", text: "$-1$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "$u_n=\\dfrac{n-1}{n}=1-\\dfrac{1}{n}<1$ với mọi $n\\in\\mathbb{N}^*$, nên dãy số bị chặn trên bởi $1$ (và bị chặn dưới bởi $0$ vì $u_n\\geq0$).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 5, trang 45"
+  },
+  {
+    id: "ds94",
+    topic: "Đại số",
+    grade: 11,
+    text: "Tìm số hạng thứ 100 của cấp số cộng $(u_n)$: $10, 5, \\ldots$",
+    options: [
+      { letter: "A", text: "$u_{100}=-485$", isCorrect: true },
+      { letter: "B", text: "$u_{100}=485$", isCorrect: false },
+      { letter: "C", text: "$u_{100}=-490$", isCorrect: false },
+      { letter: "D", text: "$u_{100}=-480$", isCorrect: false }
+    ],
+    blankAnswer: "-485",
+    explanation: "Cấp số cộng có $u_1=10$, công sai $d=-5$. $u_{100}=u_1+99d=10+99\\cdot(-5)=-485$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 49"
+  },
+  {
+    id: "ds95",
+    topic: "Đại số",
+    grade: 11,
+    text: "Một cấp số cộng $(u_n)$ có số hạng thứ 10 bằng 48 và số hạng thứ 18 bằng 88. Tìm số hạng thứ 100 của cấp số cộng đó.",
+    options: [
+      { letter: "A", text: "$u_{100}=498$", isCorrect: true },
+      { letter: "B", text: "$u_{100}=488$", isCorrect: false },
+      { letter: "C", text: "$u_{100}=503$", isCorrect: false },
+      { letter: "D", text: "$u_{100}=493$", isCorrect: false }
+    ],
+    blankAnswer: "498",
+    explanation: "Giải hệ $u_1+9d=48$, $u_1+17d=88$ được $u_1=3$, $d=5$. Vậy $u_{100}=u_1+99d=3+99\\cdot5=498$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 49"
+  },
+  {
+    id: "ds96",
+    topic: "Đại số",
+    grade: 11,
+    text: "Một nhà hát có 25 hàng ghế với 16 ghế ở hàng thứ nhất, và mỗi hàng sau nhiều hơn hàng liền trước 2 ghế. Tính tổng số ghế của nhà hát.",
+    options: [
+      { letter: "A", text: "$1000$ ghế", isCorrect: true },
+      { letter: "B", text: "$900$ ghế", isCorrect: false },
+      { letter: "C", text: "$1050$ ghế", isCorrect: false },
+      { letter: "D", text: "$960$ ghế", isCorrect: false }
+    ],
+    blankAnswer: "1000",
+    explanation: "Số ghế các hàng lập thành cấp số cộng với $u_1=16$, $d=2$, gồm 25 số hạng. $S_{25}=\\dfrac{25}{2}[2\\cdot16+24\\cdot2]=1000$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 6, trang 50"
+  },
+  {
+    id: "ds97",
+    topic: "Đại số",
+    grade: 11,
+    text: "Cấp số nhân $(u_n)$: $8, -4, \\ldots$ có công bội $q$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$q=-\\dfrac{1}{2}$", isCorrect: true },
+      { letter: "B", text: "$q=\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "C", text: "$q=-2$", isCorrect: false },
+      { letter: "D", text: "$q=2$", isCorrect: false }
+    ],
+    blankAnswer: "-1/2",
+    explanation: "$q=\\dfrac{u_2}{u_1}=\\dfrac{-4}{8}=-\\dfrac{1}{2}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 7, trang 53"
+  },
+  {
+    id: "ds98",
+    topic: "Đại số",
+    grade: 11,
+    text: "Cần lấy tổng của bao nhiêu số hạng đầu của cấp số nhân $2, 6, 18, \\ldots$ để được kết quả bằng 728?",
+    options: [
+      { letter: "A", text: "$n=6$", isCorrect: true },
+      { letter: "B", text: "$n=5$", isCorrect: false },
+      { letter: "C", text: "$n=7$", isCorrect: false },
+      { letter: "D", text: "$n=4$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "CSN có $u_1=2$, $q=3$. $728=S_n=\\dfrac{2(1-3^n)}{1-3}=3^n-1 \\Rightarrow 3^n=729=3^6 \\Rightarrow n=6$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 7, trang 54-55"
+  },
+  {
+    id: "ds99",
+    topic: "Đại số",
+    grade: 11,
+    text: "Một công ty tuyển chuyên gia công nghệ thông tin với mức lương năm đầu 240 triệu đồng, cam kết tăng 5% lương mỗi năm so với năm liền trước. Tổng số lương chuyên gia đó nhận được sau 10 năm làm việc (làm tròn đến triệu đồng) là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$3\\,019$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$2\\,400$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$3\\,910$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$2\\,904$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "3019",
+    explanation: "Lương hằng năm lập thành cấp số nhân với $u_1=240$, công bội $q=1{,}05$. $S_{10}=\\dfrac{240[1-(1{,}05)^{10}]}{1-1{,}05}\\approx3\\,019$ (triệu đồng).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 7, trang 54"
   }
 ];
