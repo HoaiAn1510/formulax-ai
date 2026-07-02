@@ -1054,5 +1054,72 @@ export const formulas = [
     tags: ["Đạo hàm", "Ứng dụng tài chính", "Kinh tế", "Tối ưu hóa", "Mở rộng"],
     difficulty: "Khó",
     mnemonic: "Lợi nhuận cực đại khi đạo hàm P'(x)=0, tức doanh thu biên = chi phí biên (MR=MC). Đây là ứng dụng thực tế của bài toán tìm cực trị bằng đạo hàm."
+  },
+
+  // ===== MỆNH ĐỀ VÀ TẬP HỢP (Chương I, Toán 10 KNTT Tập 1, Bài 1-2) =====
+  {
+    id: "ds10-menhde-coban",
+    name: "Mệnh đề, mệnh đề phủ định, kéo theo, đảo, tương đương",
+    topic: "Đại số",
+    grade: 10,
+    latex: "P \\Rightarrow Q \\text{ (kéo theo)}, \\quad Q \\Rightarrow P \\text{ (đảo)}, \\quad P \\Leftrightarrow Q \\text{ (tương đương)}",
+    explanation: "**Mệnh đề** là một câu khẳng định có tính đúng hoặc sai, một mệnh đề không thể vừa đúng vừa sai. Câu nghi vấn, câu cảm thán, câu cầu khiến không phải là mệnh đề.\n\n**Mệnh đề chứa biến** là câu chứa biến chưa xác định được đúng/sai; khi thay biến bằng một giá trị cụ thể thì trở thành một mệnh đề.\n\n**Mệnh đề phủ định** của mệnh đề $P$, kí hiệu $\\overline{P}$: $P$ và $\\overline{P}$ là hai phát biểu trái ngược nhau — nếu $P$ đúng thì $\\overline{P}$ sai, nếu $P$ sai thì $\\overline{P}$ đúng.\n\n**Mệnh đề kéo theo** \"Nếu $P$ thì $Q$\", kí hiệu $P \\Rightarrow Q$. Khi $P \\Rightarrow Q$ đúng: $P$ là giả thiết, $Q$ là kết luận; $P$ là điều kiện đủ để có $Q$; $Q$ là điều kiện cần để có $P$.\n\n**Mệnh đề đảo** của $P \\Rightarrow Q$ là $Q \\Rightarrow P$. Mệnh đề đảo của một mệnh đề đúng không nhất thiết là đúng.\n\n**Mệnh đề tương đương** \"$P$ nếu và chỉ nếu $Q$\", kí hiệu $P \\Leftrightarrow Q$. Nếu cả $P \\Rightarrow Q$ và $Q \\Rightarrow P$ đều đúng thì $P \\Leftrightarrow Q$ đúng, khi đó $P$ là điều kiện cần và đủ để có $Q$.",
+    example: "**Ví dụ (SGK):** Cho tứ giác $ABCD$, xét $P$: \"Tứ giác $ABCD$ có tổng số đo hai góc đối diện bằng $180°$\"; $Q$: \"$ABCD$ là tứ giác nội tiếp đường tròn\". Phát biểu $P \\Rightarrow Q$: \"Nếu tứ giác $ABCD$ có tổng số đo hai góc đối diện bằng $180°$ thì $ABCD$ là tứ giác nội tiếp đường tròn\". Đây là mệnh đề đúng.\n\n**Mệnh đề đảo (SGK):** Mệnh đề đảo của \"Nếu tam giác $ABC$ là tam giác đều thì tam giác $ABC$ là tam giác cân\" là \"Nếu tam giác $ABC$ là tam giác cân thì tam giác $ABC$ là tam giác đều\" — mệnh đề đảo này **sai**.",
+    tags: ["Mệnh đề", "Phủ định", "Kéo theo", "Đảo", "Tương đương", "Lôgic"],
+    difficulty: "Dễ",
+    mnemonic: "P⇒Q: P là điều kiện ĐỦ, Q là điều kiện CẦN. Đảo Q⇒P không chắc đúng dù P⇒Q đúng. Tương đương P⇔Q khi cả 2 chiều đều đúng — P là điều kiện CẦN VÀ ĐỦ.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 1, trang 5-9"
+  },
+  {
+    id: "ds10-menhde-luonghoa",
+    name: "Mệnh đề chứa kí hiệu ∀, ∃ và mệnh đề phủ định",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\overline{\\forall x \\in X, P(x)} = \\text{\"}\\exists x \\in X, \\overline{P(x)}\\text{\"}, \\quad \\overline{\\exists x \\in X, P(x)} = \\text{\"}\\forall x \\in X, \\overline{P(x)}\\text{\"}",
+    explanation: "Kí hiệu $\\forall$ đọc là \"với mọi\"; kí hiệu $\\exists$ đọc là \"tồn tại\".\n\nVí dụ: $P$: \"$\\forall x \\in \\mathbb{R}, x^2 \\geq 0$\" (mọi số thực đều có bình phương không âm); $Q$: \"$\\exists x \\in \\mathbb{Q}, x^2 = 2$\" (có một số hữu tỉ mà bình phương của nó bằng 2).\n\n**Phủ định của mệnh đề chứa $\\forall$, $\\exists$:**\n- Phủ định của \"$\\forall x \\in X, P(x)$\" là \"$\\exists x \\in X, \\overline{P(x)}$\".\n- Phủ định của \"$\\exists x \\in X, P(x)$\" là \"$\\forall x \\in X, \\overline{P(x)}$\".",
+    example: "**Ví dụ (SGK):** Viết mệnh đề phủ định của $P$: \"$\\exists x \\in \\mathbb{R}, x^2+1=0$\" và xác định tính đúng sai.\n\n**Lời giải:** Mệnh đề phủ định là $\\overline{P}$: \"$\\forall x \\in \\mathbb{R}, x^2+1 \\neq 0$\". Mệnh đề phủ định này **đúng** (vì không tồn tại số thực nào có bình phương cộng 1 bằng 0).",
+    tags: ["Mệnh đề", "Với mọi", "Tồn tại", "Phủ định", "Lôgic"],
+    difficulty: "Trung bình",
+    mnemonic: "Phủ định đổi ∀ thành ∃ (và ngược lại), đồng thời phủ định luôn mệnh đề P(x) bên trong.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 1, trang 10"
+  },
+  {
+    id: "ds10-taphop-tapcon",
+    name: "Tập hợp con và hai tập hợp bằng nhau",
+    topic: "Đại số",
+    grade: 10,
+    latex: "T \\subset S \\Leftrightarrow (\\forall x, x \\in T \\Rightarrow x \\in S); \\quad S = T \\Leftrightarrow (S \\subset T \\text{ và } T \\subset S)",
+    explanation: "Một tập hợp có thể mô tả bằng 2 cách: (1) liệt kê các phần tử; (2) chỉ ra tính chất đặc trưng cho các phần tử. Số phần tử của tập hợp $S$ kí hiệu $n(S)$. Tập hợp không chứa phần tử nào gọi là **tập rỗng**, kí hiệu $\\varnothing$.\n\n**Tập hợp con:** Nếu mọi phần tử của $T$ đều là phần tử của $S$ thì $T$ là tập con của $S$, viết $T \\subset S$ (hay $S \\supset T$). Quy ước: tập rỗng là tập con của mọi tập hợp.\n\n**Hai tập hợp bằng nhau:** $S$ và $T$ bằng nhau nếu mỗi phần tử của $T$ cũng là phần tử của $S$ và ngược lại, kí hiệu $S = T$.\n\nNgười ta thường minh họa tập hợp bằng **biểu đồ Ven** — một hình phẳng được bao quanh bởi một đường kín.",
+    example: "**Ví dụ (SGK):** Cho $S = \\{2;3;5\\}$. Trong các tập $S_1=\\{3\\}$, $S_2=\\{0;2\\}$, $S_3=\\{3;5\\}$, những tập nào là tập con của $S$?\n\n**Lời giải:** $S_1$ và $S_3$ là tập con của $S$ (mọi phần tử đều thuộc $S$). $S_2$ **không phải** tập con của $S$ vì $0 \\notin S$.",
+    tags: ["Tập hợp", "Tập con", "Biểu đồ Ven", "Tập rỗng"],
+    difficulty: "Dễ",
+    mnemonic: "T là tập con của S: mọi phần tử của T phải nằm trong S — chỉ cần 1 phần tử của T không thuộc S là T không phải tập con.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, trang 12-14"
+  },
+  {
+    id: "ds10-taphop-so",
+    name: "Các tập hợp số và các tập con thường dùng của ℝ",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}",
+    explanation: "**Quan hệ giữa các tập hợp số:** $\\mathbb{N} \\subset \\mathbb{Z} \\subset \\mathbb{Q} \\subset \\mathbb{R}$, trong đó $\\mathbb{N}$ là số tự nhiên, $\\mathbb{Z}$ là số nguyên (gồm số tự nhiên và số nguyên âm), $\\mathbb{Q}$ là số hữu tỉ (viết được dưới dạng $\\frac{a}{b}$, $a,b \\in \\mathbb{Z}$, $b \\neq 0$), $\\mathbb{R}$ là số thực (gồm số hữu tỉ và số vô tỉ).\n\n**Các tập con thường dùng của $\\mathbb{R}$:**\n- Khoảng: $(a;b)=\\{x \\mid a<x<b\\}$; $(a;+\\infty)=\\{x \\mid x>a\\}$; $(-\\infty;b)=\\{x \\mid x<b\\}$; $(-\\infty;+\\infty)=\\mathbb{R}$.\n- Đoạn: $[a;b]=\\{x \\mid a \\leq x \\leq b\\}$.\n- Nửa khoảng: $[a;b)=\\{x \\mid a \\leq x < b\\}$; $(a;b]=\\{x \\mid a<x \\leq b\\}$; $[a;+\\infty)=\\{x \\mid x \\geq a\\}$; $(-\\infty;b]=\\{x \\mid x \\leq b\\}$.",
+    example: "**Ví dụ (SGK):** Viết các tập hợp sau dưới dạng khoảng, đoạn, nửa khoảng trong $\\mathbb{R}$: $C=\\{x \\in \\mathbb{R} \\mid 2 \\leq x \\leq 7\\}$; $D=\\{x \\in \\mathbb{R} \\mid x<2\\}$.\n\n**Lời giải:** $C=[2;7]$ (đoạn); $D=(-\\infty;2)$ (khoảng).",
+    tags: ["Tập hợp số", "Khoảng", "Đoạn", "Nửa khoảng", "Số thực"],
+    difficulty: "Dễ",
+    mnemonic: "Ngoặc vuông [ ] = lấy cả điểm đầu mút (≤, ≥). Ngoặc tròn ( ) = không lấy điểm đầu mút (<, >). N⊂Z⊂Q⊂R theo thứ tự mở rộng dần.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, trang 15-16"
+  },
+  {
+    id: "ds10-taphop-pheptoan",
+    name: "Các phép toán trên tập hợp (giao, hợp, hiệu, phần bù)",
+    topic: "Đại số",
+    grade: 10,
+    latex: "S \\cap T = \\{x \\mid x \\in S \\text{ và } x \\in T\\}, \\quad S \\cup T = \\{x \\mid x \\in S \\text{ hoặc } x \\in T\\}, \\quad S \\setminus T = \\{x \\mid x \\in S \\text{ và } x \\notin T\\}",
+    explanation: "**Giao của hai tập hợp** $S \\cap T$: gồm các phần tử thuộc cả hai tập $S$ và $T$.\n\n**Hợp của hai tập hợp** $S \\cup T$: gồm các phần tử thuộc $S$ hoặc thuộc $T$.\n\n**Hiệu của hai tập hợp** $S \\setminus T$: gồm các phần tử thuộc $S$ nhưng không thuộc $T$.\n\n**Phần bù:** Nếu $T \\subset S$ thì $S \\setminus T$ gọi là phần bù của $T$ trong $S$, kí hiệu $C_S T$. Chú ý $C_S S = \\varnothing$.\n\n**Công thức đếm số phần tử của hợp:**\n$$n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$$",
+    example: "**Ví dụ (SGK):** Cho $C=\\{4;7;27\\}$ và $D=\\{2;4;9;27;36\\}$. Xác định $C \\cap D$.\n\n**Lời giải:** $C \\cap D = \\{4;27\\}$.\n\n**Vận dụng (SGK):** Lớp 10A có 24 bạn tham gia thi đấu bóng đá và cầu lông (các trận không tổ chức đồng thời), trong đó có 16 bạn thi đấu bóng đá và 11 bạn thi đấu cầu lông. Hỏi có bao nhiêu bạn tham gia thi đấu cả bóng đá và cầu lông?\n\n**Lời giải:** Gọi $x$ là số bạn thi đấu cả hai môn. Áp dụng $n(A \\cup B) = n(A) + n(B) - n(A \\cap B)$: $24 = 16 + 11 - x \\Rightarrow x = 3$.",
+    tags: ["Tập hợp", "Giao", "Hợp", "Hiệu", "Phần bù", "Đếm phần tử"],
+    difficulty: "Trung bình",
+    mnemonic: "Giao ∩ = VÀ (chung cả hai). Hợp ∪ = HOẶC (gộp lại). Hiệu \\ = thuộc S nhưng KHÔNG thuộc T. n(A∪B)=n(A)+n(B)-n(A∩B) vì phần giao bị đếm 2 lần nên phải trừ đi.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, trang 17-19"
   }
 ];

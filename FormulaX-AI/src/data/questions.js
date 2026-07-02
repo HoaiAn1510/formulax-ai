@@ -2106,5 +2106,157 @@ export const questionsPool = [
     ],
     blankAnswer: "40",
     explanation: "Doanh thu biên $MR = R'(x) = 100 - 2x$. Chi phí biên $MC = C'(x) = 20$. Lợi nhuận cực đại khi $MR = MC$: $100 - 2x = 20 \\Rightarrow x = 40$."
+  },
+
+  // ==================== MỆNH ĐỀ VÀ TẬP HỢP (Chương I, Toán 10 Tập 1) ====================
+  {
+    id: "ds21",
+    topic: "Đại số",
+    grade: 10,
+    text: "Trong các câu sau, câu nào là mệnh đề đúng? a) Phương trình $3x^2-5x+2=0$ có nghiệm nguyên; b) $5 < 7-3$; c) Có bao nhiêu dấu hiệu nhận biết hai tam giác đồng dạng?; d) Đấy là cách xử lí khôn ngoan!",
+    options: [
+      { letter: "A", text: "Câu a", isCorrect: true },
+      { letter: "B", text: "Câu b", isCorrect: false },
+      { letter: "C", text: "Câu c", isCorrect: false },
+      { letter: "D", text: "Câu d", isCorrect: false }
+    ],
+    blankAnswer: "Câu a",
+    explanation: "Phương trình $3x^2-5x+2=0$ có nghiệm nguyên $x=1$ nên câu a là mệnh đề đúng. Câu b sai vì $7-3=4$ và $5<4$ là sai. Câu c là câu hỏi, câu d là câu cảm thán — cả hai đều không phải là mệnh đề (không xác định được tính đúng sai).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 1, Ví dụ 1, trang 6"
+  },
+  {
+    id: "ds22",
+    topic: "Đại số",
+    grade: 10,
+    text: "Mệnh đề phủ định của mệnh đề $Q$: \"Hình hộp không phải là hình lăng trụ\" là:",
+    options: [
+      { letter: "A", text: "Hình hộp là hình lăng trụ", isCorrect: true },
+      { letter: "B", text: "Hình hộp không phải là hình lăng trụ", isCorrect: false },
+      { letter: "C", text: "Hình lăng trụ là hình hộp", isCorrect: false },
+      { letter: "D", text: "Hình hộp không phải là hình hộp", isCorrect: false }
+    ],
+    blankAnswer: "Hình hộp là hình lăng trụ",
+    explanation: "Để phủ định một mệnh đề $P$, ta thêm (hoặc bớt) từ \"không\" hoặc \"không phải\" vào trước vị ngữ của mệnh đề. Phủ định của \"Hình hộp không phải là hình lăng trụ\" là \"Hình hộp là hình lăng trụ\".",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 1, Ví dụ 2, trang 7"
+  },
+  {
+    id: "ds23",
+    topic: "Đại số",
+    grade: 10,
+    text: "Mệnh đề đảo của mệnh đề: \"Nếu tam giác $ABC$ là tam giác đều thì tam giác $ABC$ là tam giác cân\" là mệnh đề nào và có tính đúng sai gì?",
+    options: [
+      { letter: "A", text: "\"Nếu tam giác ABC là tam giác cân thì tam giác ABC là tam giác đều\" — đây là mệnh đề sai", isCorrect: true },
+      { letter: "B", text: "\"Nếu tam giác ABC là tam giác cân thì tam giác ABC là tam giác đều\" — đây là mệnh đề đúng", isCorrect: false },
+      { letter: "C", text: "\"Nếu tam giác ABC là tam giác đều thì tam giác ABC là tam giác cân\" — đây là mệnh đề đúng", isCorrect: false },
+      { letter: "D", text: "Không thể xác định được mệnh đề đảo", isCorrect: false }
+    ],
+    blankAnswer: "Nếu tam giác ABC là tam giác cân thì tam giác ABC là tam giác đều — mệnh đề sai",
+    explanation: "Mệnh đề đảo của $P \\Rightarrow Q$ là $Q \\Rightarrow P$. Ở đây mệnh đề đảo là \"Nếu tam giác $ABC$ là tam giác cân thì tam giác $ABC$ là tam giác đều\", và mệnh đề đảo này là mệnh đề sai (tam giác cân chưa chắc đã đều).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 1, Ví dụ 4, trang 9"
+  },
+  {
+    id: "ds24",
+    topic: "Đại số",
+    grade: 10,
+    text: "Mệnh đề phủ định của mệnh đề $P$: \"$\\exists x \\in \\mathbb{R}, x^2+1=0$\" là:",
+    options: [
+      { letter: "A", text: "$\\forall x \\in \\mathbb{R}, x^2+1 \\neq 0$", isCorrect: true },
+      { letter: "B", text: "$\\forall x \\in \\mathbb{R}, x^2+1 = 0$", isCorrect: false },
+      { letter: "C", text: "$\\exists x \\in \\mathbb{R}, x^2+1 \\neq 0$", isCorrect: false },
+      { letter: "D", text: "$\\exists x \\in \\mathbb{R}, x^2+1 = 0$", isCorrect: false }
+    ],
+    blankAnswer: "∀x ∈ R, x²+1 ≠ 0",
+    explanation: "Phủ định của mệnh đề \"$\\exists x \\in X, P(x)$\" là \"$\\forall x \\in X, \\overline{P(x)}$\". Ở đây phủ định của $P$ là $\\overline{P}$: \"$\\forall x \\in \\mathbb{R}, x^2+1 \\neq 0$\", và mệnh đề phủ định này đúng.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 1, Ví dụ 6, trang 10"
+  },
+  {
+    id: "ds25",
+    topic: "Đại số",
+    grade: 10,
+    text: "Xác định loại của câu: \"13 là số nguyên tố.\"",
+    options: [
+      { letter: "A", text: "Mệnh đề đúng", isCorrect: true },
+      { letter: "B", text: "Mệnh đề sai", isCorrect: false },
+      { letter: "C", text: "Không phải là mệnh đề", isCorrect: false },
+      { letter: "D", text: "Mệnh đề chứa biến", isCorrect: false }
+    ],
+    blankAnswer: "Mệnh đề đúng",
+    explanation: "13 chỉ chia hết cho 1 và chính nó nên 13 là số nguyên tố — đây là một khẳng định có tính đúng/sai xác định, tức là một mệnh đề, và nội dung của nó đúng.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 1, Luyện tập 1, trang 6"
+  },
+  {
+    id: "ds26",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho $D = \\{n \\in \\mathbb{N} \\mid n$ là số nguyên tố, $5 < n < 20\\}$. Tập hợp $D$ có bao nhiêu phần tử?",
+    options: [
+      { letter: "A", text: "5", isCorrect: true },
+      { letter: "B", text: "4", isCorrect: false },
+      { letter: "C", text: "6", isCorrect: false },
+      { letter: "D", text: "3", isCorrect: false }
+    ],
+    blankAnswer: "5",
+    explanation: "Các số nguyên tố $n$ thỏa $5<n<20$ là $D=\\{7;11;13;17;19\\}$. Tập hợp $D$ có 5 phần tử.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, Ví dụ 1, trang 13"
+  },
+  {
+    id: "ds27",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho $S=\\{2;3;5\\}$. Trong các tập hợp $S_1=\\{3\\}$, $S_2=\\{0;2\\}$, $S_3=\\{3;5\\}$, tập nào KHÔNG phải là tập con của $S$?",
+    options: [
+      { letter: "A", text: "$S_2 = \\{0;2\\}$", isCorrect: true },
+      { letter: "B", text: "$S_1 = \\{3\\}$", isCorrect: false },
+      { letter: "C", text: "$S_3 = \\{3;5\\}$", isCorrect: false },
+      { letter: "D", text: "Cả ba tập đều là tập con của $S$", isCorrect: false }
+    ],
+    blankAnswer: "S2 = {0;2}",
+    explanation: "$S_1=\\{3\\}$ và $S_3=\\{3;5\\}$ có mọi phần tử đều thuộc $S$ nên là tập con của $S$. Riêng $S_2=\\{0;2\\}$ không phải tập con của $S$ vì $0 \\notin S$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, Ví dụ 2, trang 13"
+  },
+  {
+    id: "ds28",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho $C=\\{4;7;27\\}$ và $D=\\{2;4;9;27;36\\}$. Xác định $C \\cap D$.",
+    options: [
+      { letter: "A", text: "$\\{4;27\\}$", isCorrect: true },
+      { letter: "B", text: "$\\{4;7;27\\}$", isCorrect: false },
+      { letter: "C", text: "$\\{2;4;7;9;27;36\\}$", isCorrect: false },
+      { letter: "D", text: "$\\varnothing$", isCorrect: false }
+    ],
+    blankAnswer: "{4;27}",
+    explanation: "Giao của hai tập hợp $C \\cap D$ gồm các phần tử chung của cả $C$ và $D$: đó là $4$ và $27$. Vậy $C \\cap D = \\{4;27\\}$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, Ví dụ 6, trang 17"
+  },
+  {
+    id: "ds29",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho $D=\\{-2;3;5;6\\}$ và $E=\\{x \\mid x$ là số nguyên tố nhỏ hơn $10\\}$. Xác định $D \\setminus E$.",
+    options: [
+      { letter: "A", text: "$\\{-2;6\\}$", isCorrect: true },
+      { letter: "B", text: "$\\{2;7\\}$", isCorrect: false },
+      { letter: "C", text: "$\\{3;5\\}$", isCorrect: false },
+      { letter: "D", text: "$\\{-2;3;5;6\\}$", isCorrect: false }
+    ],
+    blankAnswer: "{-2;6}",
+    explanation: "$E=\\{2;3;5;7\\}$ (các số nguyên tố nhỏ hơn 10). $D \\setminus E$ gồm các phần tử thuộc $D$ nhưng không thuộc $E$: đó là $-2$ và $6$ (vì $3;5 \\in E$). Vậy $D \\setminus E=\\{-2;6\\}$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, Ví dụ 9, trang 18"
+  },
+  {
+    id: "ds30",
+    topic: "Đại số",
+    grade: 10,
+    text: "Lớp 10A có 24 bạn tham gia thi đấu bóng đá và cầu lông (các trận không tổ chức đồng thời), trong đó có 16 bạn thi đấu bóng đá và 11 bạn thi đấu cầu lông. Hỏi có bao nhiêu bạn lớp 10A tham gia thi đấu cả bóng đá và cầu lông?",
+    options: [
+      { letter: "A", text: "3", isCorrect: true },
+      { letter: "B", text: "5", isCorrect: false },
+      { letter: "C", text: "7", isCorrect: false },
+      { letter: "D", text: "27", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "Gọi $x$ là số bạn thi đấu cả hai môn. Áp dụng công thức $n(A \\cup B)=n(A)+n(B)-n(A \\cap B)$: $24 = 16+11-x \\Rightarrow x = 27-24 = 3$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 2, Vận dụng, trang 18"
   }
 ];
