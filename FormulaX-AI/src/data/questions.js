@@ -5085,4 +5085,124 @@ export const questionsPool = [
     explanation: "Vì đồ thị chỉ có hai đỉnh bậc lẻ ($A$ và $D$), ta tìm một đường đi Euler từ $A$ đến $D$ (độ dài $36$), sau đó cộng thêm đường đi ngắn nhất để quay về $A$ (độ dài $5$). Tổng trọng số của chu trình cần tìm là $36+5=41$.",
     sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 10, trang 48 (Ví dụ 3)"
   },
+  {
+    id: "mr24",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Trong các khẳng định sau, khẳng định nào là đúng?",
+    options: [
+      { letter: "A", text: "Hình chiếu đứng của một hình $\\mathcal{H}$ là hình chiếu song song của hình $\\mathcal{H}$ lên một mặt phẳng nào đó", isCorrect: false },
+      { letter: "B", text: "Hình chiếu đứng và hình chiếu bằng nằm trong hai mặt phẳng vuông góc với nhau", isCorrect: true },
+      { letter: "C", text: "Hình chiếu cạnh của một đường thẳng luôn là một đường thẳng", isCorrect: false },
+      { letter: "D", text: "Hình chiếu bằng của hai điểm phân biệt luôn là hai điểm phân biệt", isCorrect: false }
+    ],
+    blankAnswer: "Hình chiếu đứng và hình chiếu bằng nằm trong hai mặt phẳng vuông góc với nhau",
+    explanation: "Mặt phẳng hình chiếu đứng $(P_1)$ và mặt phẳng hình chiếu bằng $(P_2)$ là hai trong ba mặt phẳng đôi một vuông góc với nhau, nên khẳng định B đúng. Khẳng định A sai vì hình chiếu đứng cụ thể là hình chiếu **vuông góc** lên đúng mặt phẳng hình chiếu đứng $(P_1)$ đã xác định, không phải hình chiếu song song lên một mặt phẳng bất kì (hình chiếu song song lên mặt phẳng bất kì có thể là hình chiếu trục đo). Khẳng định C sai vì nếu đường thẳng vuông góc với mặt phẳng hình chiếu cạnh thì hình chiếu cạnh của nó chỉ là một điểm. Khẳng định D sai vì hai điểm phân biệt cùng nằm trên một đường thẳng vuông góc với mặt phẳng hình chiếu bằng sẽ có chung một hình chiếu bằng.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 11, trang 64 (Bài 3.1)"
+  },
+  {
+    id: "mr25",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Cho một hình lập phương có độ dài mỗi cạnh là $6$ cm. Hình chiếu trục đo của hình lập phương có $O'A' = 3$ cm, $O'B' = 3$ cm, $O'C' = 2$ cm (với $A, B, C$ là các đỉnh tương ứng trên $Ox, Oy, Oz$). Hệ số biến dạng $r$ theo trục đo $O'z'$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$r = \\dfrac{1}{3} \\approx 0{,}33$", isCorrect: true },
+      { letter: "B", text: "$r = 0{,}5$", isCorrect: false },
+      { letter: "C", text: "$r = 2$", isCorrect: false },
+      { letter: "D", text: "$r = 3$", isCorrect: false }
+    ],
+    blankAnswer: "r = \\dfrac{1}{3} \\approx 0{,}33",
+    explanation: "Vì $OC = 6$ cm (cạnh hình lập phương) và $O'C' = 2$ cm nên hệ số biến dạng theo trục đo $O'z'$ là $r = \\dfrac{O'C'}{OC} = \\dfrac{2}{6} = \\dfrac{1}{3} \\approx 0{,}33$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 11, trang 62 (Ví dụ 7)"
+  },
+  {
+    id: "mr26",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Trong hình chiếu trục đo vuông góc đều, các góc trục đo và các hệ số biến dạng quy ước lần lượt bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "Góc trục đo $120°$, hệ số biến dạng quy ước bằng $1$", isCorrect: true },
+      { letter: "B", text: "Góc trục đo $90°$, hệ số biến dạng quy ước bằng $1$", isCorrect: false },
+      { letter: "C", text: "Góc trục đo $120°$, hệ số biến dạng quy ước bằng $\\dfrac{\\sqrt6}{3}$", isCorrect: false },
+      { letter: "D", text: "Góc trục đo $90°$, hệ số biến dạng quy ước bằng $0{,}5$", isCorrect: false }
+    ],
+    blankAnswer: "Góc trục đo 120°, hệ số biến dạng quy ước bằng 1",
+    explanation: "Trong hình chiếu trục đo vuông góc đều, mặt phẳng chiếu $(P)$ vuông góc với phương chiếu $l$ và ba góc trục đo đều bằng $120°$. Hệ số biến dạng thực theo ba trục bằng nhau và bằng $\\dfrac{\\sqrt6}{3} \\approx 0{,}82$, nhưng để thuận tiện cho việc tính toán và vẽ hình, người ta quy ước các hệ số biến dạng đều bằng $1$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 11, trang 63"
+  },
+  {
+    id: "mr27",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Một bản vẽ kĩ thuật được vẽ trên khổ giấy $A3$ (kích thước $420\\times297$ mm). Biết khung bản vẽ cách cạnh trái của khổ giấy $20$ mm và cách ba cạnh còn lại $10$ mm. Kích thước khung bản vẽ là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$390\\times277$ mm", isCorrect: true },
+      { letter: "B", text: "$400\\times287$ mm", isCorrect: false },
+      { letter: "C", text: "$410\\times277$ mm", isCorrect: false },
+      { letter: "D", text: "$390\\times287$ mm", isCorrect: false }
+    ],
+    blankAnswer: "390\\times277 mm",
+    explanation: "Khổ giấy $A3$ có chiều dài $420$ mm và chiều rộng $297$ mm. Khung bản vẽ cách cạnh trái $20$ mm và cách ba cạnh còn lại (phải, trên, dưới) $10$ mm mỗi cạnh. Do đó chiều dài khung bản vẽ là $420-20-10=390$ mm và chiều rộng là $297-10-10=277$ mm.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 12, trang 69 (Ví dụ 1)"
+  },
+  {
+    id: "mr28",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Một bản vẽ kĩ thuật có kích thước khung bản vẽ là $564\\times400$ mm (khung bản vẽ cách cạnh trái của khổ giấy $20$ mm và cách ba cạnh còn lại $10$ mm). Bản vẽ đó được vẽ trên khổ giấy nào?",
+    options: [
+      { letter: "A", text: "Khổ giấy $A2$ ($594\\times420$ mm)", isCorrect: true },
+      { letter: "B", text: "Khổ giấy $A1$ ($841\\times594$ mm)", isCorrect: false },
+      { letter: "C", text: "Khổ giấy $A3$ ($420\\times297$ mm)", isCorrect: false },
+      { letter: "D", text: "Khổ giấy $A0$ ($1189\\times841$ mm)", isCorrect: false }
+    ],
+    blankAnswer: "Khổ giấy A2 (594\\times420 mm)",
+    explanation: "Gọi kích thước khổ giấy là $a \\times b$. Ta có $a - 20 - 10 = 564 \\Rightarrow a = 594$ và $b - 10 - 10 = 400 \\Rightarrow b = 420$. Vậy khổ giấy có kích thước $594\\times420$ mm, chính là khổ giấy $A2$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 12, trang 70 (Luyện tập 1)"
+  },
+  {
+    id: "mr29",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Một hình hộp chữ nhật có đáy là hình vuông và một hình trụ có cùng chiều cao $60$ mm. Hình chiếu đứng và hình chiếu cạnh của cả hai vật thể này đều là cùng một hình chữ nhật giống hệt nhau. Nếu bản vẽ kĩ thuật của một trong hai vật thể chỉ thể hiện hình chiếu đứng và hình chiếu cạnh (không có hình chiếu bằng) thì bản vẽ đó có đáp ứng nguyên tắc phản chuyển không?",
+    options: [
+      { letter: "A", text: "Không, vì bản vẽ không xác định duy nhất vật thể (có thể là hình hộp hoặc hình trụ)", isCorrect: true },
+      { letter: "B", text: "Có, vì hai hình chiếu đã đủ mô tả chiều cao và bề rộng của vật thể", isCorrect: false },
+      { letter: "C", text: "Có, vì hình chiếu đứng và hình chiếu cạnh luôn xác định duy nhất một vật thể", isCorrect: false },
+      { letter: "D", text: "Không, vì bản vẽ kĩ thuật luôn phải có đủ ba hình chiếu vuông góc", isCorrect: false }
+    ],
+    blankAnswer: "Không, vì bản vẽ không xác định duy nhất vật thể (có thể là hình hộp hoặc hình trụ)",
+    explanation: "Nguyên tắc phản chuyển yêu cầu các hình biểu diễn trên bản vẽ kĩ thuật phải xác định duy nhất hình dạng và cấu tạo của vật thể được biểu diễn. Vì hình hộp chữ nhật đáy vuông và hình trụ cùng chiều cao cho cùng hình chiếu đứng và hình chiếu cạnh, nên bản vẽ chỉ gồm hai hình chiếu này có thể ứng với hai vật thể khác nhau — không xác định duy nhất vật thể, do đó không đáp ứng nguyên tắc phản chuyển. Cần bổ sung hình chiếu bằng (hình vuông cho hình hộp, hình tròn cho hình trụ) để phân biệt. Lưu ý đáp án D sai vì bản vẽ kĩ thuật không nhất thiết phải có đủ ba hình chiếu vuông góc — vấn đề ở đây là hai hình chiếu đã chọn không đủ phân biệt hai vật thể này, chứ không phải cứ thiếu hình chiếu nào cũng vi phạm nguyên tắc.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 12, trang 73 (Ví dụ 5)"
+  },
+  {
+    id: "mr30",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Trong bản vẽ kĩ thuật, loại nét vẽ nào được dùng để thể hiện đường tâm và đường trục đối xứng?",
+    options: [
+      { letter: "A", text: "Nét gạch dài chấm mảnh", isCorrect: true },
+      { letter: "B", text: "Nét liền đậm", isCorrect: false },
+      { letter: "C", text: "Nét đứt mảnh", isCorrect: false },
+      { letter: "D", text: "Nét lượn sóng", isCorrect: false }
+    ],
+    blankAnswer: "Nét gạch dài chấm mảnh",
+    explanation: "Theo bảng các loại nét vẽ thường dùng: nét liền đậm thể hiện đường bao thấy, cạnh thấy; nét liền mảnh thể hiện đường kích thước, đường dóng; nét đứt mảnh thể hiện đường bao khuất, cạnh khuất; nét lượn sóng thể hiện đường giới hạn hình cắt; nét gạch dài chấm mảnh thể hiện đường tâm, đường trục đối xứng.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 12, trang 70"
+  },
+  {
+    id: "mr31",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Một phép chiếu song song biến hình lập phương $\\mathcal{H}$ thành hình chiếu $\\mathcal{H}'$, trong đó $\\mathcal{H}'$ chỉ cho thấy được hai mặt của hình lập phương (phương chiếu song song với một mặt của hình lập phương). Hình $\\mathcal{H}'$ có phải là hình chiếu trục đo của $\\mathcal{H}$ hay không?",
+    options: [
+      { letter: "A", text: "Không, vì hình chiếu trục đo yêu cầu phương chiếu không song song với bất kì mặt nào của hình", isCorrect: true },
+      { letter: "B", text: "Có, vì đây là phép chiếu song song nên luôn là hình chiếu trục đo", isCorrect: false },
+      { letter: "C", text: "Có, vì hình lập phương có tính đối xứng nên hai mặt là đủ để làm hình chiếu trục đo", isCorrect: false },
+      { letter: "D", text: "Không, vì hình lập phương không có hình chiếu trục đo", isCorrect: false }
+    ],
+    blankAnswer: "Không, vì hình chiếu trục đo yêu cầu phương chiếu không song song với bất kì mặt nào của hình",
+    explanation: "Hình chiếu trục đo của hình $\\mathcal{H}$ là hình chiếu song song của $\\mathcal{H}$ theo phương $l$ không song song với bất kì mặt nào của $\\mathcal{H}$. Nếu phương chiếu song song với một mặt của hình lập phương thì hình chiếu chỉ cho thấy được hai mặt, nên đó không phải là hình chiếu trục đo. Chỉ khi phương chiếu không song song với mặt nào (cho thấy được cả ba mặt) thì hình chiếu mới là hình chiếu trục đo của hình lập phương.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 11, trang 60 (Ví dụ 6)"
+  },
 ];
