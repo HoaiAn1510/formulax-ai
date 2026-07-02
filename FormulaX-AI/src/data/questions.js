@@ -4094,5 +4094,110 @@ export const questionsPool = [
     blankAnswer: "12",
     explanation: "Theo bảng thống kê mẫu số liệu ghép nhóm, tần số của nhóm $[142,5;145,5)$ là $12$.",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 8, trang 60"
+  },
+  {
+    id: "hh53",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp $S.ABCD$ (Hình 4.11). Hình chóp đó có bao nhiêu đỉnh, bao nhiêu cạnh?",
+    options: [
+      { letter: "A", text: "$5$ đỉnh, $8$ cạnh", isCorrect: true },
+      { letter: "B", text: "$4$ đỉnh, $6$ cạnh", isCorrect: false },
+      { letter: "C", text: "$5$ đỉnh, $5$ cạnh", isCorrect: false },
+      { letter: "D", text: "$8$ đỉnh, $5$ cạnh", isCorrect: false }
+    ],
+    blankAnswer: "5 đỉnh, 8 cạnh",
+    explanation: "Hình chóp $S.ABCD$ có 5 đỉnh là $S, A, B, C, D$ và có 8 cạnh là $SA, SB, SC, SD, AB, BC, CD, DA$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 10, Ví dụ 5, trang 76"
+  },
+  {
+    id: "hh54",
+    topic: "Hình học",
+    grade: 11,
+    text: "Trong không gian, cho hai đường thẳng phân biệt $a, b$ và mặt phẳng $(P)$. Mệnh đề nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "Nếu $a$ và $(P)$ có điểm chung thì $a$ không song song với $(P)$", isCorrect: true },
+      { letter: "B", text: "Nếu $a$ và $(P)$ có điểm chung thì $a$ và $(P)$ cắt nhau", isCorrect: false },
+      { letter: "C", text: "Nếu $a$ song song với $b$ và $b$ nằm trong $(P)$ thì $a$ song song với $(P)$", isCorrect: false },
+      { letter: "D", text: "Nếu $a$ và $b$ song song với $(P)$ thì $a$ song song với $b$", isCorrect: false }
+    ],
+    blankAnswer: "Nếu a và (P) có điểm chung thì a không song song với (P)",
+    explanation: "Theo định nghĩa, $a\\parallel(P)$ khi và chỉ khi $a$ và $(P)$ không có điểm chung, nên có điểm chung thì chắc chắn không song song — mệnh đề A đúng. Mệnh đề B sai vì có thể có nhiều hơn một điểm chung ($a\\subset(P)$), khi đó $a$ và $(P)$ không phải cắt nhau. Mệnh đề C sai vì cần thêm điều kiện $a$ không nằm trong $(P)$ (nếu $a\\subset(P)$ thì $a$ không song song với $(P)$). Mệnh đề D sai vì hai đường thẳng cùng song song với một mặt phẳng có thể cắt nhau hoặc chéo nhau.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 12, Bài tập 4.16, trang 87"
+  },
+  {
+    id: "hh55",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình bình hành. Giao tuyến của hai mặt phẳng $(SAD)$ và $(SBC)$ là:",
+    options: [
+      { letter: "A", text: "đường thẳng đi qua $S$ và song song với $AD, BC$", isCorrect: true },
+      { letter: "B", text: "đường thẳng $AC$", isCorrect: false },
+      { letter: "C", text: "đường thẳng $BD$", isCorrect: false },
+      { letter: "D", text: "đường thẳng $SB$", isCorrect: false }
+    ],
+    blankAnswer: "đường thẳng đi qua S và song song với AD, BC",
+    explanation: "$ABCD$ là hình bình hành nên $AD\\parallel BC$. Hai mặt phẳng $(SAD)$ và $(SBC)$ có điểm chung $S$ và lần lượt chứa hai đường thẳng song song $AD, BC$, nên giao tuyến của chúng là đường thẳng qua $S$ và song song với $AD, BC$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 12, Luyện tập 4, trang 86"
+  },
+  {
+    id: "hh56",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho ba mặt phẳng đôi một song song $(P), (Q), (R)$. Hai cát tuyến phân biệt lần lượt cắt ba mặt phẳng đó tại $A, B, C$ và $A', B', C'$. Biết $AB = 2\\text{ cm}$, $BC = 4\\text{ cm}$, $A'B' = 3\\text{ cm}$. Độ dài đoạn thẳng $B'C'$ là:",
+    options: [
+      { letter: "A", text: "$6\\text{ cm}$", isCorrect: true },
+      { letter: "B", text: "$8\\text{ cm}$", isCorrect: false },
+      { letter: "C", text: "$3\\text{ cm}$", isCorrect: false },
+      { letter: "D", text: "$1{,}5\\text{ cm}$", isCorrect: false }
+    ],
+    blankAnswer: "6 cm",
+    explanation: "Theo định lí Thalès trong không gian: $\\dfrac{AB}{A'B'}=\\dfrac{BC}{B'C'}$, tức $\\dfrac{2}{3}=\\dfrac{4}{B'C'}$, suy ra $B'C'=6\\text{ cm}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 13, Luyện tập 4, trang 91"
+  },
+  {
+    id: "hh57",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình tứ diện $SABC$. Trên cạnh $SA$ lấy các điểm $A_1, A_2$ sao cho $A_2A_1 = 2A_1A$. Gọi $(P)$ và $(Q)$ là hai mặt phẳng song song với $(ABC)$, lần lượt đi qua $A_1, A_2$ và cắt cạnh $SB$ lần lượt tại $B_1, B_2$. Tỉ số $\\dfrac{B_2B_1}{B_1B}$ bằng:",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "C", text: "$3$", isCorrect: false },
+      { letter: "D", text: "$1$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "Áp dụng định lí Thalès cho ba mặt phẳng song song $(P), (Q), (ABC)$ và hai cát tuyến $SA, SB$: $\\dfrac{A_2A_1}{A_1A}=\\dfrac{B_2B_1}{B_1B}$. Vì $A_2A_1=2A_1A$ nên $\\dfrac{B_2B_1}{B_1B}=2$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 13, Ví dụ 4, trang 91"
+  },
+  {
+    id: "hh58",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình tứ diện $ABCD$. Gọi $M, N, P, Q$ lần lượt là trung điểm của các đoạn thẳng $AB, CD, AD, BC$. Tứ giác $MPNQ$ là hình gì?",
+    options: [
+      { letter: "A", text: "Hình bình hành", isCorrect: true },
+      { letter: "B", text: "Hình thang (không phải hình bình hành)", isCorrect: false },
+      { letter: "C", text: "Hình chữ nhật", isCorrect: false },
+      { letter: "D", text: "Tứ giác không có cặp cạnh nào song song", isCorrect: false }
+    ],
+    blankAnswer: "Hình bình hành",
+    explanation: "Trong tam giác $ABC$, $MQ$ là đường trung bình nên $MQ\\parallel AC$ và $MQ=\\dfrac12 AC$. Trong tam giác $ACD$, $PN$ là đường trung bình nên $PN\\parallel AC$ và $PN=\\dfrac12 AC$. Do đó $MQ\\parallel PN$ và $MQ=PN$, suy ra tứ giác $MPNQ$ là hình bình hành.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 11, Ví dụ 3, trang 81"
+  },
+  {
+    id: "hh59",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho tam giác $ABC$ có $M$ là trung điểm của $BC$. Một phép chiếu song song biến tam giác $ABC$ thành tam giác $A'B'C'$, biến điểm $M$ thành điểm $M'$. Khi đó $M'$ là:",
+    options: [
+      { letter: "A", text: "trung điểm của $B'C'$", isCorrect: true },
+      { letter: "B", text: "trọng tâm của tam giác $A'B'C'$", isCorrect: false },
+      { letter: "C", text: "một điểm bất kì trên đoạn $B'C'$", isCorrect: false },
+      { letter: "D", text: "trung điểm của $A'B'$", isCorrect: false }
+    ],
+    blankAnswer: "trung điểm của B'C'",
+    explanation: "Vì $M$ là trung điểm $BC$ nên $B, M, C$ thẳng hàng theo thứ tự đó và $\\dfrac{BM}{MC}=1$. Phép chiếu song song giữ nguyên thứ tự ba điểm thẳng hàng và giữ nguyên tỉ số độ dài của hai đoạn thẳng cùng nằm trên một đường thẳng, nên $B', M', C'$ thẳng hàng theo thứ tự đó và $\\dfrac{B'M'}{M'C'}=1$, tức $M'$ là trung điểm của $B'C'$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 14, Ví dụ 3, trang 99"
   }
 ];
