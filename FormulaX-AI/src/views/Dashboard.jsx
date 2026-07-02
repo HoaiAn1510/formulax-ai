@@ -1,7 +1,6 @@
 import React from "react";
 import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, BarChart2 } from "lucide-react";
 import { MathElement } from "../utils/katexHelper";
-import { gradients, glow, glassCard, glassCardSm, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 export default function Dashboard({
   user,
@@ -16,203 +15,167 @@ export default function Dashboard({
 }) {
   const firstName = displayName || user?.name?.split(" ").slice(-1)[0] || "bạn";
   // Recommend 3 math formulas based on ID
-  const recommendedFormulas = formulas.filter(f => 
-    f.id === "gt12-daoham-mu" || 
-    f.id === "xs11-xacsuat" || 
+  const recommendedFormulas = formulas.filter(f =>
+    f.id === "gt12-daoham-mu" ||
+    f.id === "xs11-xacsuat" ||
     f.id === "ds10-phuongtrinh-bac2"
   );
 
   return (
     <div className="view-container">
-      <div style={pageWrapper}>
-        {orbs.map((orb, idx) => (
-          <div key={idx} style={orbStyle(orb)} />
-        ))}
-        <div style={contentLayer}>
-      {/* Greeting Header */}
-      <div className="dashboard-greeting" style={{ marginBottom: "24px" }}>
-        <h1 style={{ 
-          display: "flex", 
-          alignItems: "baseline", 
-          gap: "8px", 
-          flexWrap: "wrap", 
-          fontSize: "1.45rem", 
-          fontWeight: "800", 
-          color: "#1E3A5F", 
-          letterSpacing: "-0.5px", 
-          margin: 0 
-        }}>
-          <span>Xin chào {firstName}!</span>
-          <span style={{ color: "#64748B", fontWeight: "500", fontSize: "0.95rem" }}>Hôm nay ôn gì?</span>
-        </h1>
-      </div>
-
-      {/* 2x2 Grid of Circular Icon Cards */}
-      <div className="dashboard-grid-figma">
-        {/* Card 1: Thư viện */}
-        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("library")}>
-          <div className="grid-circle-icon" style={{ backgroundColor: "rgba(59, 130, 246, 0.08)", color: "#3B82F6" }}>
-            <BookOpen size={22} />
+      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+        <div className="relative z-[1]">
+          {/* Greeting Header */}
+          <div className="mb-6">
+            <h1 className="flex items-baseline gap-2 flex-wrap text-[1.45rem] font-extrabold text-primary tracking-[-0.5px] m-0">
+              <span>Xin chào {firstName}!</span>
+              <span className="text-text-muted font-medium text-[0.95rem]">Hôm nay ôn gì?</span>
+            </h1>
           </div>
-          <span className="grid-card-label">Thư viện</span>
-        </div>
 
-        {/* Card 2: Tìm kiếm AI */}
-        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("finder")}>
-          <div className="grid-circle-icon" style={{ backgroundColor: "rgba(16, 185, 129, 0.08)", color: "#10B981" }}>
-            <Search size={22} />
-          </div>
-          <span className="grid-card-label">Tìm kiếm AI</span>
-        </div>
+          {/* 2x2 Grid of Circular Icon Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 md:mb-8">
+            {/* Card 1: Thư viện */}
+            <div
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              onClick={() => setActiveTab("library")}
+            >
+              <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-secondary/8 text-secondary">
+                <BookOpen size={22} />
+              </div>
+              <span className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0]">Thư viện</span>
+            </div>
 
-        {/* Card 3: Flashcard */}
-        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("flashcard")}>
-          <div className="grid-circle-icon" style={{ backgroundColor: "rgba(245, 158, 11, 0.08)", color: "#F59E0B" }}>
-            <Zap size={22} />
-          </div>
-          <span className="grid-card-label">Flashcard</span>
-        </div>
+            {/* Card 2: Tìm kiếm AI */}
+            <div
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              onClick={() => setActiveTab("finder")}
+            >
+              <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-success/8 text-success">
+                <Search size={22} />
+              </div>
+              <span className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0]">Tìm kiếm AI</span>
+            </div>
 
-        {/* Card 4: Kiểm tra */}
-        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("quiz")}>
-          <div className="grid-circle-icon" style={{ backgroundColor: "rgba(239, 68, 68, 0.08)", color: "#EF4444" }}>
-            <ClipboardList size={22} />
-          </div>
-          <span className="grid-card-label">Kiểm tra</span>
-        </div>
-      </div>
+            {/* Card 3: Flashcard */}
+            <div
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              onClick={() => setActiveTab("flashcard")}
+            >
+              <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-premium/8 text-premium">
+                <Zap size={22} />
+              </div>
+              <span className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0]">Flashcard</span>
+            </div>
 
-      {/* Analytics CTA Banner */}
-      <div
-        onClick={() => setActiveTab("progress")}
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          background: gradients.purpleBanner,
-          borderRadius: "18px", padding: "13px 16px", cursor: "pointer",
-          color: "white", marginBottom: "16px",
-          boxShadow: glow.purple,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <div style={{
-            width: "36px", height: "36px", borderRadius: "10px",
-            background: "rgba(255,255,255,0.15)", display: "flex",
-            alignItems: "center", justifyContent: "center", flexShrink: 0,
-          }}>
-            <BarChart2 size={18} />
-          </div>
-          <div>
-            <div style={{ fontSize: "0.88rem", fontWeight: "700" }}>Xem tiến độ học tập</div>
-            <div style={{ fontSize: "0.7rem", opacity: 0.75, marginTop: "1px" }}>
-              Phân tích điểm mạnh · yếu · gợi ý ôn tập
+            {/* Card 4: Kiểm tra */}
+            <div
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              onClick={() => setActiveTab("quiz")}
+            >
+              <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-error/8 text-error">
+                <ClipboardList size={22} />
+              </div>
+              <span className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0]">Kiểm tra</span>
             </div>
           </div>
-        </div>
-        <ChevronRight size={18} style={{ opacity: 0.7, flexShrink: 0 }} />
-      </div>
 
-      {/* Stats Section: Tiến độ học tập */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <h2 className="section-title" style={{ fontSize: "1rem", color: "#1E3A5F", fontWeight: "800", margin: 0 }}>Hôm nay</h2>
-      </div>
-      <div className="stats-card-container" style={glassCard}>
-        <div className="stat-column">
-          <div className="stat-column-val" style={{ color: "#3B82F6" }}>{todayStats?.formulasViewed ?? 0}</div>
-          <div className="stat-column-lbl">Công thức xem</div>
-        </div>
-        <div className="stat-column">
-          <div className="stat-column-val" style={{ color: "#10B981" }}>{todayStats?.flashcardsStudied ?? 0}</div>
-          <div className="stat-column-lbl">Flashcard đã ôn</div>
-        </div>
-        <div className="stat-column">
-          <div className="stat-column-val" style={{ color: "#F59E0B" }}>{todayStats?.quizzesCompleted ?? 0}</div>
-          <div className="stat-column-lbl">Quiz hôm nay</div>
-        </div>
-      </div>
-
-      {/* Gợi ý hôm nay Section */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: "12px" }}>
-        <h2 className="section-title" style={{ fontSize: "1rem", color: "#1E3A5F", marginBottom: 0, fontWeight: "800" }}>Gợi ý hôm nay</h2>
-        <span style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: "600" }}>Dựa trên lịch sử học</span>
-      </div>
-
-      <div className="rec-stack-list">
-        {recommendedFormulas.map((formula) => (
+          {/* Analytics CTA Banner */}
           <div
-            key={formula.id}
-            className="rec-list-item"
-            style={glassCardSm}
-            onClick={() => onViewDetail(formula)}
+            onClick={() => setActiveTab("progress")}
+            className="flex items-center justify-between bg-banner-purple rounded-[18px] px-4 py-[13px] cursor-pointer text-white mb-4 shadow-glow-purple"
           >
-            <div className="rec-item-left">
-              <div 
-                className="rec-square-avatar" 
-                style={{ 
-                  width: "38px", 
-                  height: "38px", 
-                  borderRadius: "8px", 
-                  display: "flex", 
-                  alignItems: "center", 
-                  justifyContent: "center", 
-                  backgroundColor: "rgba(59, 130, 246, 0.08)", 
-                  color: "#3B82F6" 
-                }}
-              >
-                <LayoutGrid size={18} />
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-[10px] bg-white/15 flex items-center justify-center shrink-0">
+                <BarChart2 size={18} />
               </div>
               <div>
-                <span className="rec-item-title">{formula.name}</span>
-                <div className="rec-item-topic">{formula.topic}</div>
+                <div className="text-[0.88rem] font-bold">Xem tiến độ học tập</div>
+                <div className="text-[0.7rem] opacity-75 mt-[1px]">
+                  Phân tích điểm mạnh · yếu · gợi ý ôn tập
+                </div>
               </div>
             </div>
-            <ChevronRight size={18} style={{ color: "#cbd5e1" }} />
+            <ChevronRight size={18} className="opacity-70 shrink-0" />
           </div>
-        ))}
-      </div>
 
-      {/* Limit quota progress indicator card */}
-      <div className="quota-progress-card" style={{ ...glassCard, marginTop: "24px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div className="quota-header-text">
-            <Crown size={14} style={{ color: "#F59E0B" }} />
-            <span>Còn {isPremium ? "Không giới hạn" : `${remainingQuizzes}/10`} quiz miễn phí hôm nay</span>
+          {/* Stats Section: Tiến độ học tập */}
+          <div className="flex justify-between items-center mb-[10px]">
+            <h2 className="text-base font-extrabold text-primary m-0 flex items-center gap-2">Hôm nay</h2>
           </div>
-        </div>
+          <div className="glass-card grid grid-cols-3 py-4 mb-6 md:mb-8 dark:bg-[#1E293B] dark:border-[#334155]">
+            <div className="text-center py-2 border-r border-[#f1f5f9]">
+              <div className="text-[1.7rem] font-extrabold text-secondary">{todayStats?.formulasViewed ?? 0}</div>
+              <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Công thức xem</div>
+            </div>
+            <div className="text-center py-2 border-r border-[#f1f5f9]">
+              <div className="text-[1.7rem] font-extrabold text-success">{todayStats?.flashcardsStudied ?? 0}</div>
+              <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Flashcard đã ôn</div>
+            </div>
+            <div className="text-center py-2">
+              <div className="text-[1.7rem] font-extrabold text-premium">{todayStats?.quizzesCompleted ?? 0}</div>
+              <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Quiz hôm nay</div>
+            </div>
+          </div>
 
-        <div className="quota-progress-track">
-          <div className="quota-progress-bar" style={{ width: isPremium ? "100%" : `${(remainingQuizzes / 10) * 100}%`, background: gradients.premiumProgressBar }} />
-        </div>
+          {/* Gợi ý hôm nay Section */}
+          <div className="flex justify-between items-baseline mb-3">
+            <h2 className="text-base font-extrabold text-primary m-0 flex items-center gap-2">Gợi ý hôm nay</h2>
+            <span className="text-xs text-text-muted font-semibold">Dựa trên lịch sử học</span>
+          </div>
 
-        {/* Inner gold banner */}
-        <div 
-          className="quota-gold-banner"
-          onClick={() => setActiveTab("premium")}
-          style={{
-            background: gradients.orangeBanner,
-            border: "none",
-            padding: "12px 16px",
-            borderRadius: "14px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            cursor: "pointer",
-            fontSize: "0.85rem",
-            fontWeight: "700",
-            color: "white",
-            boxShadow: glow.orange,
-            transition: "all 0.2s"
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Gem size={14} style={{ color: "white" }} />
-            <span style={{ color: "white", fontWeight: "700" }}>Mở khóa không giới hạn với Premium</span>
+          <div className="flex flex-col gap-2 mb-6 md:mb-8">
+            {recommendedFormulas.map((formula) => (
+              <div
+                key={formula.id}
+                className="glass-card-sm px-4 py-3 flex items-center justify-between cursor-pointer transition-transform duration-200 hover:translate-x-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+                onClick={() => onViewDetail(formula)}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-[38px] h-[38px] rounded-lg flex items-center justify-center bg-secondary/8 text-secondary">
+                    <LayoutGrid size={18} />
+                  </div>
+                  <div>
+                    <span className="font-extrabold text-[0.9rem] text-primary dark:text-[#E2E8F0]">{formula.name}</span>
+                    <div className="text-xs text-text-muted mt-0.5 dark:text-[#94A3B8]">{formula.topic}</div>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="text-[#cbd5e1]" />
+              </div>
+            ))}
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "white", fontWeight: "800" }}>
-            <span>49.000 đ/tháng</span>
-            <ChevronRight size={14} />
+
+          {/* Limit quota progress indicator card */}
+          <div className="glass-card p-4 mt-6 flex flex-col gap-3 dark:bg-[#1E293B] dark:border-[#334155]">
+            <div className="flex justify-between items-center">
+              <div className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5">
+                <Crown size={14} className="text-premium" />
+                <span>Còn {isPremium ? "Không giới hạn" : `${remainingQuizzes}/10`} quiz miễn phí hôm nay</span>
+              </div>
+            </div>
+
+            <div className="w-full h-2 bg-[#e2e8f0] rounded-full overflow-hidden">
+              <div className="h-full rounded-full bg-progress-premium" style={{ width: isPremium ? "100%" : `${(remainingQuizzes / 10) * 100}%` }} />
+            </div>
+
+            {/* Inner gold banner */}
+            <div
+              onClick={() => setActiveTab("premium")}
+              className="bg-banner-orange border-none px-4 py-3 rounded-[14px] flex justify-between items-center cursor-pointer text-[0.85rem] font-bold text-white shadow-glow-orange transition duration-200"
+            >
+              <div className="flex items-center gap-2">
+                <Gem size={14} className="text-white" />
+                <span className="text-white font-bold">Mở khóa không giới hạn với Premium</span>
+              </div>
+              <div className="flex items-center gap-1 text-white font-extrabold">
+                <span>49.000 đ/tháng</span>
+                <ChevronRight size={14} />
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
         </div>
       </div>
     </div>

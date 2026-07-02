@@ -87,7 +87,6 @@ Quy tắc riêng cho `questions.js`:
 | Đạo hàm — định nghĩa, quy tắc tính, đạo hàm cấp hai | 11 |
 | Ứng dụng đạo hàm — khảo sát, cực trị, GTLN-GTNN, tiệm cận | 12 |
 | Thể tích khối chóp / lăng trụ (chương Quan hệ vuông góc) | 11 |
-| Mặt Nón - Trụ - Cầu (khối tròn xoay) | 12 |
 | Lượng giác (giá trị, công thức, hàm số, phương trình) | 11 |
 | Giới hạn, Hàm số liên tục | 11 |
 
@@ -109,20 +108,36 @@ backend/
   server.js        # Express API, proxy gọi Groq
 ```
 
-## Quy ước code hiện có — giữ nhất quán, không tự đổi pattern
+## Giao diện — Glassmorphism Light (đã áp dụng toàn app)
 
-- Style dùng inline `style={{...}}` object, không dùng CSS Modules hay Tailwind — đây là pattern nhất quán trong toàn bộ code hiện tại, không tự chuyển sang thư viện khác nếu không được yêu cầu.
+Style hệ thống dùng chung nằm ở `src/styles/theme.js` — import từ đây thay vì tự viết lại gradient/hiệu ứng kính khi tạo màn hình hoặc component mới (còn chưa migrate sang Tailwind).
+
+Đặc điểm phong cách:
+- **Nền trang:** gradient nhạt tím → hồng → xanh dương, kèm vài khối "orb" ánh sáng mờ (blurred radial gradient) phía sau nội dung tạo chiều sâu.
+- **Card "frosted glass":** nền trắng bán trong suốt (rgba trắng ~70-80%), `backdrop-filter: blur(...)`, viền trắng mỏng 1px, bo góc lớn (16-20px), shadow mềm.
+- **Banner nhấn mạnh:** dùng gradient đậm màu (tím-purple cho tiến độ học tập, cam-đỏ cho Premium), chữ trắng, có glow shadow (box-shadow màu cùng tông, lan mờ ra ngoài).
+- **Progress bar:** màu cam, bo tròn.
+- **Dark mode:** toggle qua class `.dark-mode` trên `<html>` (state ở `App.jsx`, lưu `localStorage.formulax_dark`) — là tính năng thật đang hoạt động, không phải CSS thừa. Card kính chuyển sang nền slate đặc (`#1E293B`/`#334155`) thay vì hiệu ứng kính khi ở dark mode. Bất kỳ view nào migrate sang Tailwind đều phải giữ đúng hành vi dark mode này bằng `dark:` variant, không được bỏ sót.
+
+Quy ước kỹ thuật: dự án đang **chuyển dần từ inline style sang Tailwind CSS v4** (cài qua `@tailwindcss/vite`, cấu hình theo kiểu CSS-first của v4 — token khai báo trong `@theme`/`@utility` ở `src/index.css`, không dùng `tailwind.config.js` kiểu cũ). Khi tạo/sửa view hoặc component:
+- Ưu tiên dùng class Tailwind (`className="..."`) thay vì `style={{...}}` cho code mới.
+- Các giá trị màu/gradient/blur/shadow của phong cách Glassmorphism (xem mô tả bên trên) khai báo dùng chung trong `@theme`/`@utility` ở `src/index.css`, không lặp lại giá trị hex/rgba rải rác trong từng file.
+- File/view nào **chưa migrate** vẫn giữ inline style cũ qua `theme.js` — không bắt buộc sửa toàn bộ cùng lúc, chuyển dần từng view khi có nhu cầu chỉnh sửa view đó.
+- KHÔNG dùng CSS Modules song song với Tailwind — chỉ một cách tiếp cận để tránh lẫn lộn quy ước giữa các thành viên.
+
+## Quy ước code khác
+
 - Props destructuring rõ ràng ở đầu function component.
 - Ghi dữ liệu người dùng (bookmark, note, quiz result, flashcard activity, chat session) luôn qua hàm có sẵn trong `lib/supabase.js` (`saveNote`, `saveQuizResult`, `saveFlashcardActivity`, `upsertChatSession`...), không viết insert/update Supabase trực tiếp trong view/component.
 
 ## Giới hạn tài khoản Free đang áp dụng — kiểm tra code trước khi đổi số
 
-- Formula Finder (AI): 5 lượt hỏi/ngày
+- Formula Finder (AI): 10 lượt hỏi/ngày
 - Quiz: chỉ dạng trắc nghiệm cơ bản; điền đáp án + dạng kết hợp yêu cầu Premium
 - ProgressDashboard: một phần nội dung bị làm mờ cho tài khoản free
 
 ## Việc không nên làm
 
-- Không tự thêm thư viện UI/component mới nếu không được yêu cầu — dự án đang tối giản có chủ đích.
+- Không tự thêm thư viện UI/component ngoài Tailwind (đã duyệt, xem mục Giao diện) nếu không được yêu cầu — dự án đang tối giản có chủ đích.
 - Không đổi AI provider (Groq ↔ Gemini) mà không xác nhận với người dùng trước — cả hai SDK đều đang cài sẵn trong `backend/package.json`, rất dễ nhầm provider nào thật sự chạy.
 - Không sửa hàng loạt `formulas.js`/`questions.js` mà không có bước xác nhận riêng — đây là dữ liệu lõi cho USP "chống hallucination" của sản phẩm, sai ở đây ảnh hưởng trực tiếp uy tín dự án.
