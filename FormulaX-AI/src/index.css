@@ -54,23 +54,28 @@
   box-shadow: var(--shadow-glass-card);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Đưa vào @layer base để Tailwind utilities (mb-*, p-*, px-*, py-*...) vẫn override
+   được như bình thường — rule nằm ngoài mọi @layer sẽ luôn thắng rule có layer,
+   bất kể thứ tự hay độ đặc hiệu, nên để reset trần ở đây sẽ đè chết toàn bộ margin/padding utility. */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
-  background-color: #F2F4F7;
-  color: #1E3A5F;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    font-family: 'Be Vietnam Pro', 'Inter', sans-serif;
+    background-color: #F2F4F7;
+    color: #1E3A5F;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
 
-button, input, select, textarea {
-  font-family: inherit;
-  outline: none;
+  button, input, select, textarea {
+    font-family: inherit;
+    outline: none;
+  }
 }
