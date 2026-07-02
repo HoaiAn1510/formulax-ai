@@ -34,7 +34,8 @@ export const formulas = [
     example: "Tính giá trị của biểu thức $P = \\log_2 4 + \\log_2 8$.\n\n**Lời giải:**\nÁp dụng công thức biến đổi ngược lại:\n$$P = \\log_2(4 \\cdot 8) = \\log_2 32 = \\log_2(2^5) = 5$$",
     tags: ["Logarit", "Biến đổi"],
     difficulty: "Dễ",
-    mnemonic: "Log của tích bằng tổng các log: Phép nhân ở trong biến thành phép cộng ở ngoài."
+    mnemonic: "Log của tích bằng tổng các log: Phép nhân ở trong biến thành phép cộng ở ngoài.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 19, trang 11"
   },
   {
     id: "gt12-nguyenham-basic",
@@ -723,7 +724,8 @@ export const formulas = [
     example: "Giải phương trình $2^{x^2 - 3} = 2^{2x}$.\n\n**Lời giải:**\nCùng cơ số $a = 2 > 0, a \\neq 1$:\n$$x^2 - 3 = 2x \\Rightarrow x^2 - 2x - 3 = 0 \\Rightarrow (x-3)(x+1) = 0 \\Rightarrow x = 3 \\text{ hoặc } x = -1$$",
     tags: ["Mũ", "Logarit", "Phương trình"],
     difficulty: "Trung bình",
-    mnemonic: "Cùng cơ số: so sánh thẳng số mũ. Khác cơ số: đổi về cùng cơ số hoặc lấy log hai vế. Log: mọi thứ cùng cơ số thì cân bằng đối số."
+    mnemonic: "Cùng cơ số: so sánh thẳng số mũ. Khác cơ số: đổi về cùng cơ số hoặc lấy log hai vế. Log: mọi thứ cùng cơ số thì cân bằng đối số.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, trang 20-21"
   },
   {
     id: "gt12-logarit-doicooso",
@@ -735,7 +737,8 @@ export const formulas = [
     example: "Tính $\\log_4 8$ không dùng máy tính.\n\n**Lời giải:**\nĐổi về cơ số $2$:\n$$\\log_4 8 = \\frac{\\log_2 8}{\\log_2 4} = \\frac{3}{2}$$\n*Hoặc:* $\\log_4 8 = \\log_{2^2} 2^3 = \\dfrac{3}{2} \\log_2 2 = \\dfrac{3}{2}$",
     tags: ["Logarit", "Đổi cơ số", "Biến đổi"],
     difficulty: "Trung bình",
-    mnemonic: "Log_a(b) = log(b)/log(a) — tử là đối số, mẫu là cơ số, cùng log tự nhiên hoặc log thập phân. 'Cơ số xuống mẫu, đối số lên tử'."
+    mnemonic: "Log_a(b) = log(b)/log(a) — tử là đối số, mẫu là cơ số, cùng log tự nhiên hoặc log thập phân. 'Cơ số xuống mẫu, đối số lên tử'.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 19, trang 12"
   },
   {
     id: "gt12-cuctrituoc",
@@ -879,7 +882,8 @@ export const formulas = [
     example: "So sánh $2^{3.7}$ và $2^{3.5}$.\n\n**Lời giải:**\nHàm $y = 2^x$ với cơ số $a = 2 > 1$ nên **đơn điệu tăng**.\nVì $3.7 > 3.5 \\Rightarrow 2^{3.7} > 2^{3.5}$.",
     tags: ["Hàm số mũ", "Đơn điệu", "Tính chất"],
     difficulty: "Dễ",
-    mnemonic: "a>1: mũ lớn → kết quả lớn (đồ thị tăng). 0<a<1: mũ lớn → kết quả nhỏ (đồ thị giảm). Đồ thị qua (0;1), không chạm trục Ox."
+    mnemonic: "a>1: mũ lớn → kết quả lớn (đồ thị tăng). 0<a<1: mũ lớn → kết quả nhỏ (đồ thị giảm). Đồ thị qua (0;1), không chạm trục Ox.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 20, trang 16"
   },
   {
     id: "ds11-hamso-log",
@@ -891,7 +895,8 @@ export const formulas = [
     example: "Tính $P = \\log_2 3 + \\log_2 \\dfrac{8}{3}$.\n\n**Lời giải:**\n$$P = \\log_2\\left(3 \\cdot \\frac{8}{3}\\right) = \\log_2 8 = \\log_2 2^3 = 3$$",
     tags: ["Hàm số logarit", "Đơn điệu", "Tính chất", "TXĐ"],
     difficulty: "Dễ",
-    mnemonic: "Log là ngược của mũ: mũ qua (0;1), log qua (1;0). Cùng chiều đơn điệu với hàm mũ: a>1 → tăng, 0<a<1 → giảm."
+    mnemonic: "Log là ngược của mũ: mũ qua (0;1), log qua (1;0). Cùng chiều đơn điệu với hàm mũ: a>1 → tăng, 0<a<1 → giảm.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 20, trang 18"
   },
 
   // ===== XÁC SUẤT & THỐNG KÊ MỚI =====
@@ -2108,5 +2113,122 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "Tổng, hiệu, tích của các hàm liên tục vẫn liên tục; thương liên tục khi mẫu khác 0. f liên tục trên [a,b], f(a).f(b)<0 → có nghiệm trong (a,b).",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 17, trang 121-122"
-  }
+  },
+  {
+    id: "gt11-luythua-somunguyen",
+    name: "Lũy thừa với số mũ nguyên",
+    topic: "Đại số",
+    grade: 11,
+    latex: "a^n = \\underbrace{a \\cdot a \\cdots a}_{n} \\;(n \\in \\mathbb{N}^*), \\quad a^0 = 1, \\quad a^{-n} = \\frac{1}{a^n} \\;(a \\neq 0)",
+    explanation: "Trong đó:\n- $a$: Cơ số ($a \\neq 0$ khi số mũ $\\le 0$).\n- $n$: Số mũ nguyên.\n- $a^0 = 1$: Quy ước với mọi $a \\neq 0$.\n- $a^{-n} = \\dfrac{1}{a^n}$: Lũy thừa với số mũ nguyên âm ($a \\neq 0$).\n\nTính chất với $a, b \\neq 0$ và $m, n \\in \\mathbb{Z}$:\n$a^m \\cdot a^n = a^{m+n}, \\quad \\frac{a^m}{a^n} = a^{m-n}, \\quad (a^m)^n = a^{mn}, \\quad (ab)^m = a^m b^m, \\quad \\left(\\frac{a}{b}\\right)^m = \\frac{a^m}{b^m}$\n\nChú ý: Nếu $a>1$ thì $a^m > a^n \\Leftrightarrow m>n$; nếu $0<a<1$ thì $a^m>a^n \\Leftrightarrow m<n$.",
+    example: "Tính $A = \\left(\\dfrac{1}{2}\\right)^{-8} \\cdot 8^{-2} + (0,2)^{-4} \\cdot 25^{-2}$.\n\n**Lời giải:**\n$\\left(\\frac{1}{2}\\right)^{-8} = 2^8 = 256, \\quad 8^{-2} = \\frac{1}{64} \\Rightarrow 256 \\cdot \\frac{1}{64} = 4$\n$(0,2)^{-4} = 5^4 = 625, \\quad 25^{-2} = \\frac{1}{625} \\Rightarrow 625 \\cdot \\frac{1}{625} = 1$\n$A = 4 + 1 = 5$",
+    tags: ["Lũy thừa", "Số mũ nguyên", "Đại số"],
+    difficulty: "Dễ",
+    mnemonic: "Số mũ âm là nghịch đảo, số mũ 0 luôn bằng 1 (trừ cơ số 0): nhân cùng cơ số cộng số mũ, chia cùng cơ số trừ số mũ.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 18, trang 5"
+  },
+  {
+    id: "gt11-canbacn",
+    name: "Căn bậc n và tính chất",
+    topic: "Đại số",
+    grade: 11,
+    latex: "\\sqrt[n]{a} \\cdot \\sqrt[n]{b} = \\sqrt[n]{ab}, \\quad \\frac{\\sqrt[n]{a}}{\\sqrt[n]{b}} = \\sqrt[n]{\\frac{a}{b}}, \\quad (\\sqrt[n]{a})^m = \\sqrt[n]{a^m}, \\quad \\sqrt[n]{\\sqrt[k]{a}} = \\sqrt[nk]{a}",
+    explanation: "Trong đó:\n- Căn bậc $n$ của số thực $a$ ($n \\in \\mathbb{N}, n \\ge 2$) là số $b$ sao cho $b^n = a$.\n- Với $n$ lẻ: mọi số $a$ có đúng một căn bậc $n$, kí hiệu $\\sqrt[n]{a}$.\n- Với $n$ chẵn: số dương $a$ có hai căn bậc $n$ đối nhau $\\pm\\sqrt[n]{a}$; số âm không có căn bậc $n$; số $0$ có căn bậc $n$ là $0$.\n- $\\sqrt[n]{a^n} = a$ nếu $n$ lẻ; $\\sqrt[n]{a^n} = |a|$ nếu $n$ chẵn.\n\nCác tính chất trên áp dụng khi các căn thức đều có nghĩa.",
+    example: "Tính $\\sqrt[3]{-8} \\cdot \\sqrt[3]{27}$.\n\n**Lời giải:**\n$\\sqrt[3]{-8} \\cdot \\sqrt[3]{27} = \\sqrt[3]{(-8)\\cdot 27} = \\sqrt[3]{-216} = -6$",
+    tags: ["Căn bậc n", "Lũy thừa", "Đại số"],
+    difficulty: "Trung bình",
+    mnemonic: "Căn bậc n lẻ: mỗi số một căn duy nhất, kể cả số âm. Căn bậc n chẵn: số dương có 2 căn đối nhau, số âm vô nghiệm.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 18, trang 6-7"
+  },
+  {
+    id: "gt11-luythua-somuhuutythuc",
+    name: "Lũy thừa với số mũ hữu tỉ và số mũ thực",
+    topic: "Đại số",
+    grade: 11,
+    latex: "a^{\\frac{m}{n}} = \\sqrt[n]{a^m} \\quad (a>0,\\, m \\in \\mathbb{Z},\\, n \\in \\mathbb{N}^*), \\qquad a^{\\alpha} = \\lim_{n \\to +\\infty} a^{r_n} \\;(\\alpha \\notin \\mathbb{Q},\\; r_n \\to \\alpha,\\; r_n \\in \\mathbb{Q})",
+    explanation: "Trong đó:\n- $a^{m/n} = \\sqrt[n]{a^m}$: Định nghĩa lũy thừa với số mũ hữu tỉ $r = \\dfrac{m}{n}$, yêu cầu $a>0$.\n- $a^{\\alpha}$ với $\\alpha$ vô tỉ: Được định nghĩa là giới hạn của dãy $a^{r_n}$, với $(r_n)$ là dãy số hữu tỉ dần tới $\\alpha$, yêu cầu $a>0$.\n\nLũy thừa với số mũ thực có đầy đủ các tính chất như lũy thừa với số mũ nguyên (với điều kiện cơ số dương):\n$a^{\\alpha} \\cdot a^{\\beta} = a^{\\alpha+\\beta}, \\quad \\frac{a^\\alpha}{a^\\beta} = a^{\\alpha-\\beta}, \\quad (a^\\alpha)^\\beta = a^{\\alpha\\beta}, \\quad (ab)^\\alpha = a^\\alpha b^\\alpha$",
+    example: "Tính $16^{3/2}$ và $8^{-2/3}$.\n\n**Lời giải:**\n$16^{3/2} = \\sqrt{16^3} = \\sqrt{4096} = 64$\n$8^{-2/3} = \\frac{1}{8^{2/3}} = \\frac{1}{\\sqrt[3]{8^2}} = \\frac{1}{\\sqrt[3]{64}} = \\frac{1}{4}$",
+    tags: ["Lũy thừa", "Số mũ hữu tỉ", "Số mũ thực", "Đại số"],
+    difficulty: "Trung bình",
+    mnemonic: "Số mũ phân số m/n: đưa vào trong căn bậc n rồi lũy thừa m (hoặc ngược lại). Cơ số luôn phải dương khi số mũ không nguyên.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 18, trang 7-8"
+  },
+  {
+    id: "gt11-logarit-dinhnghia",
+    name: "Định nghĩa và tính chất cơ bản của lôgarit",
+    topic: "Đại số",
+    grade: 11,
+    latex: "\\alpha = \\log_a M \\Leftrightarrow a^{\\alpha} = M \\quad (0 < a \\neq 1,\\, M > 0)",
+    explanation: "Trong đó:\n- $a$: Cơ số của lôgarit ($0 < a \\neq 1$).\n- $M$: Biểu thức lấy lôgarit, bắt buộc $M > 0$ (không tồn tại lôgarit của số âm hoặc số $0$).\n- $\\alpha = \\log_a M$: Số mũ mà $a$ phải nâng lên để được $M$.\n\nTính chất cơ bản:\n$\\log_a 1 = 0, \\quad \\log_a a = 1, \\quad a^{\\log_a M} = M, \\quad \\log_a(a^{\\alpha}) = \\alpha$",
+    example: "Tính $\\log_2 32$.\n\n**Lời giải:**\nVì $2^5 = 32$ nên theo định nghĩa $\\log_2 32 = 5$.",
+    tags: ["Logarit", "Định nghĩa", "Đại số"],
+    difficulty: "Dễ",
+    mnemonic: "Log_a M là số mũ để a thành M: a mũ (log_a M) luôn bằng M. Không có log của số âm hay số 0.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 19, trang 10"
+  },
+  {
+    id: "gt11-logarit-quytac-thuong-luythua",
+    name: "Quy tắc tính lôgarit của thương và lũy thừa",
+    topic: "Đại số",
+    grade: 11,
+    latex: "\\log_a \\frac{M}{N} = \\log_a M - \\log_a N, \\qquad \\log_a M^{\\alpha} = \\alpha \\log_a M \\quad (0<a\\neq 1,\\; M,N>0)",
+    explanation: "Trong đó:\n- $a$: Cơ số logarit ($a>0$, $a\\neq 1$).\n- $M, N$: Các số dương lấy lôgarit.\n- $\\alpha$: Số mũ thực bất kỳ.\n- Lôgarit của một thương bằng hiệu hai lôgarit; lôgarit của một lũy thừa bằng số mũ nhân với lôgarit của cơ số lũy thừa đó.\n\nHai quy tắc này dùng cùng với quy tắc lôgarit của một tích ($\\log_a(MN) = \\log_a M + \\log_a N$) để biến đổi biểu thức chứa lôgarit.",
+    example: "Rút gọn biểu thức $B = \\log_3 \\dfrac{27}{5} + \\log_3 5$.\n\n**Lời giải:**\n$B = \\log_3\\frac{27}{5} + \\log_3 5 = \\log_3\\left(\\frac{27}{5}\\cdot 5\\right) = \\log_3 27 = 3$",
+    tags: ["Logarit", "Quy tắc tính", "Biến đổi", "Đại số"],
+    difficulty: "Trung bình",
+    mnemonic: "Log của thương = hiệu hai log (trừ, không phải chia). Log của lũy thừa = số mũ nhân ra trước dấu log.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 19, trang 11"
+  },
+  {
+    id: "gt11-logarit-thapphan-tunhien",
+    name: "Lôgarit thập phân, lôgarit tự nhiên và số e",
+    topic: "Đại số",
+    grade: 11,
+    latex: "\\log M = \\lg M \\;(\\text{cơ số } 10), \\qquad \\ln M \\;(\\text{cơ số } e), \\qquad e = \\lim_{x \\to +\\infty}\\left(1+\\frac{1}{x}\\right)^x \\approx 2,7183",
+    explanation: "Trong đó:\n- $\\log M$ hay $\\lg M$: Lôgarit thập phân của $M$ (cơ số $10$), thường viết không ghi cơ số.\n- $\\ln M$: Lôgarit tự nhiên của $M$ (cơ số $e$).\n- $e \\approx 2,7183$: Hằng số toán học đặc biệt, là giới hạn của $\\left(1+\\dfrac{1}{x}\\right)^x$ khi $x \\to +\\infty$, xuất phát từ bài toán lãi kép liên tục.\n\nỨng dụng: công thức lãi kép liên tục $A = Pe^{rt}$ ($P$: vốn gốc, $r$: lãi suất/năm, $t$: thời gian theo năm).",
+    example: "Một khoản tiền gửi theo thể thức lãi kép liên tục với lãi suất $6\\%$/năm. Hỏi sau bao lâu số tiền tăng gấp đôi?\n\n**Lời giải:**\nCần tìm $t$ sao cho $Pe^{rt} = 2P \\Leftrightarrow e^{0,06t} = 2 \\Leftrightarrow 0,06t = \\ln 2 \\Leftrightarrow t = \\dfrac{\\ln 2}{0,06} \\approx 11,6$ năm.",
+    tags: ["Logarit", "Số e", "Lôgarit tự nhiên", "Lãi kép liên tục", "Đại số"],
+    difficulty: "Trung bình",
+    mnemonic: "Log không ghi cơ số = cơ số 10 (lg). Ln = cơ số e. Số e xuất hiện từ lãi kép liên tục (n → vô cực).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 19, trang 12-14"
+  },
+  {
+    id: "gt11-batptmu-coban",
+    name: "Bất phương trình mũ cơ bản",
+    topic: "Đại số",
+    grade: 11,
+    latex: "a^x > b \\;(a>0, a\\neq 1): \\begin{cases} x \\in \\mathbb{R} & \\text{nếu } b \\le 0 \\\\ x > \\log_a b \\;(a>1) \\text{ hoặc } x < \\log_a b \\;(0<a<1) & \\text{nếu } b>0 \\end{cases}",
+    explanation: "Trong đó:\n- $a$: Cơ số ($a>0$, $a \\neq 1$).\n- $b$: Vế phải của bất phương trình.\n- Nếu $b \\le 0$: Bất phương trình $a^x > b$ nghiệm đúng với mọi $x \\in \\mathbb{R}$ (vì $a^x>0$ luôn đúng).\n- Nếu $b>0$: Đưa về so sánh số mũ, $a^x > a^{\\log_a b}$.\n  - Với $a>1$ (hàm đồng biến): nghiệm là $x > \\log_a b$.\n  - Với $0<a<1$ (hàm nghịch biến): nghiệm là $x < \\log_a b$.\n\nCác bất phương trình dạng $a^x \\ge b, a^x<b, a^x\\le b$ giải tương tự.",
+    example: "Giải bất phương trình $16^x > \\dfrac{1}{8}$.\n\n**Lời giải:**\n$16^x > \\frac{1}{8} \\Leftrightarrow 2^{4x} > 2^{-3} \\Leftrightarrow 4x > -3 \\Leftrightarrow x > -\\frac{3}{4}$",
+    tags: ["Bất phương trình mũ", "Mũ", "Đại số"],
+    difficulty: "Trung bình",
+    mnemonic: "b≤0: nghiệm đúng mọi x. b>0: a>1 giữ chiều bất đẳng thức, 0<a<1 đổi chiều khi so sánh số mũ.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, trang 22"
+  },
+  {
+    id: "gt11-batptlog-coban",
+    name: "Bất phương trình lôgarit cơ bản",
+    topic: "Đại số",
+    grade: 11,
+    latex: "\\log_a x > b \\;(a>0, a\\neq 1): \\; x > a^b \\;(a>1) \\quad \\text{hoặc} \\quad 0<x<a^b \\;(0<a<1)",
+    explanation: "Trong đó:\n- $a$: Cơ số ($a>0$, $a\\neq 1$).\n- $b$: Vế phải của bất phương trình.\n- Với $a>1$ (hàm đồng biến): nghiệm của $\\log_a x > b$ là $x > a^b$.\n- Với $0<a<1$ (hàm nghịch biến): nghiệm của $\\log_a x > b$ là $0 < x < a^b$.\n\nCác bất phương trình dạng $\\log_a x \\ge b, \\log_a x<b, \\log_a x\\le b$ giải tương tự. Lưu ý điều kiện $x>0$ luôn phải thỏa mãn.",
+    example: "Giải bất phương trình $\\log_2 x > 2$.\n\n**Lời giải:**\nCơ số $a=2>1$ nên bất phương trình tương đương $x > 2^2 = 4$.",
+    tags: ["Bất phương trình lôgarit", "Logarit", "Đại số"],
+    difficulty: "Trung bình",
+    mnemonic: "a>1: giữ chiều (x > a^b). 0<a<1: đổi chiều và luôn có thêm điều kiện x>0 (0 < x < a^b).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, trang 23"
+  },
+  {
+    id: "gt11-laikep",
+    name: "Công thức lãi kép (định kỳ và liên tục)",
+    topic: "Đại số",
+    grade: 11,
+    latex: "A = P(1+r)^N \\quad \\text{(lãi kép định kỳ)}, \\qquad A = Pe^{rt} \\quad \\text{(lãi kép liên tục)}",
+    explanation: "Trong đó:\n- $P$: Vốn gốc ban đầu.\n- $r$: Lãi suất mỗi kỳ hạn (hoặc mỗi năm với lãi kép liên tục).\n- $N$: Số kỳ hạn đã gửi.\n- $t$: Thời gian gửi (theo năm, dùng cho lãi kép liên tục).\n- $A$: Tổng số tiền (vốn + lãi) nhận được sau $N$ kỳ hạn hoặc $t$ năm.\n- $e \\approx 2,7183$: Cơ số của lôgarit tự nhiên, xuất hiện khi số lần ghép lãi trong năm tiến ra vô cực.\n\nKhi lãi suất năm $r$ được chia đều cho $n$ kỳ ghép lãi mỗi năm và gửi trong $N$ năm: $A = P\\left(1+\\dfrac{r}{n}\\right)^{nN}$.",
+    example: "Bác Minh gửi tiết kiệm $500$ triệu đồng, lãi suất $7,5\\%$/năm, kì hạn $12$ tháng, tính theo lãi kép: $A = 500(1+0,075)^n$ (triệu đồng). Hỏi tối thiểu bao nhiêu năm để bác Minh thu được ít nhất $800$ triệu đồng?\n\n**Lời giải:**\n$500(1,075)^n \\ge 800 \\Leftrightarrow (1,075)^n \\ge 1,6 \\Leftrightarrow n \\ge \\log_{1,075}1,6 \\approx 6,5$\nVậy cần gửi tối thiểu $7$ năm.",
+    tags: ["Lãi kép", "Ứng dụng thực tế", "Hàm số mũ", "Đại số"],
+    difficulty: "Trung bình",
+    mnemonic: "Lãi kép định kỳ: (1+r)^N (số nguyên kỳ). Lãi kép liên tục: e^(rt) (ghép lãi tức thời, dùng số e).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 19 (mở đầu, trang 10) và Bài tập 6.23, trang 24"
+  },
 ];

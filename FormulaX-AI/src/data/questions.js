@@ -4319,5 +4319,140 @@ export const questionsPool = [
     blankAnswer: "Phương trình f(x)=0 có ít nhất một nghiệm thuộc khoảng (0;2)",
     explanation: "$f(x)$ là hàm đa thức nên liên tục trên $\\mathbb{R}$, do đó liên tục trên $[0;2]$. Vì $f(0)\\cdot f(2)=(-10)\\cdot30<0$, theo định lí giá trị trung gian, phương trình $f(x)=0$ có ít nhất một nghiệm trong khoảng $(0;2)$.",
     sgk_source: "Toán 11 KNTT Tập 1, Bài 17, Ví dụ 6, trang 122"
-  }
+  },
+  {
+    id: "gt29",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính $A = \\left(\\dfrac{1}{2}\\right)^{-8} \\cdot 8^{-2} + (0,2)^{-4} \\cdot 25^{-2}$.",
+    options: [
+      { letter: "A", text: "$A = 5$", isCorrect: true },
+      { letter: "B", text: "$A = 4$", isCorrect: false },
+      { letter: "C", text: "$A = 6$", isCorrect: false },
+      { letter: "D", text: "$A = 1$", isCorrect: false }
+    ],
+    blankAnswer: "5",
+    explanation: "$\\left(\\dfrac{1}{2}\\right)^{-8} = 2^8 = 256$, $8^{-2}=\\dfrac{1}{64}$ nên $256\\cdot\\dfrac{1}{64}=4$. $(0,2)^{-4}=5^4=625$, $25^{-2}=\\dfrac{1}{625}$ nên $625\\cdot\\dfrac{1}{625}=1$. Vậy $A=4+1=5$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 18, Ví dụ 1, trang 5"
+  },
+  {
+    id: "gt30",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính giá trị của $16^{3/2}$.",
+    options: [
+      { letter: "A", text: "$64$", isCorrect: true },
+      { letter: "B", text: "$8$", isCorrect: false },
+      { letter: "C", text: "$32$", isCorrect: false },
+      { letter: "D", text: "$4096$", isCorrect: false }
+    ],
+    blankAnswer: "64",
+    explanation: "$16^{3/2} = \\sqrt{16^3} = \\left(\\sqrt{16}\\right)^3 = 4^3 = 64$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 18, Ví dụ 4, trang 7"
+  },
+  {
+    id: "gt31",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Giải phương trình $3^{x+1} = \\dfrac{1}{3^{1-2x}}$.",
+    options: [
+      { letter: "A", text: "$x=2$", isCorrect: true },
+      { letter: "B", text: "$x=0$", isCorrect: false },
+      { letter: "C", text: "$x=-2$", isCorrect: false },
+      { letter: "D", text: "$x=1$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "Đưa vế phải về cơ số 3: $\\dfrac{1}{3^{1-2x}}=3^{2x-1}$. Phương trình trở thành $3^{x+1}=3^{2x-1} \\Leftrightarrow x+1=2x-1 \\Leftrightarrow x=2$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 1, trang 21"
+  },
+  {
+    id: "gt32",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Giải phương trình $10^{x-1} = 2\\,022$.",
+    options: [
+      { letter: "A", text: "$x = 1 + \\log 2\\,022$", isCorrect: true },
+      { letter: "B", text: "$x = \\log 2\\,022$", isCorrect: false },
+      { letter: "C", text: "$x = 1 - \\log 2\\,022$", isCorrect: false },
+      { letter: "D", text: "$x = \\log 2\\,023$", isCorrect: false }
+    ],
+    blankAnswer: "1 + log 2022",
+    explanation: "Lấy lôgarit thập phân hai vế: $x - 1 = \\log 2\\,022$, suy ra $x = 1 + \\log 2\\,022$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 2, trang 21"
+  },
+  {
+    id: "gt33",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Giải phương trình $4 + 3\\log(2x) = 16$.",
+    options: [
+      { letter: "A", text: "$x = 5\\,000$", isCorrect: true },
+      { letter: "B", text: "$x = 500$", isCorrect: false },
+      { letter: "C", text: "$x = 50\\,000$", isCorrect: false },
+      { letter: "D", text: "$x = 10\\,000$", isCorrect: false }
+    ],
+    blankAnswer: "5000",
+    explanation: "Điều kiện $x>0$. Phương trình trở thành $\\log(2x)=4$, suy ra $2x=10^4$, hay $x=5\\,000$ (thỏa mãn điều kiện).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 3, trang 22"
+  },
+  {
+    id: "gt34",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Giải phương trình $\\log_3(x+1) = \\log_3(x^2-1)$.",
+    options: [
+      { letter: "A", text: "$x=2$", isCorrect: true },
+      { letter: "B", text: "$x=-1$", isCorrect: false },
+      { letter: "C", text: "$x=2$ hoặc $x=-1$", isCorrect: false },
+      { letter: "D", text: "Vô nghiệm", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "Điều kiện: $x+1>0$ và $x^2-1>0$, tức $x>1$. Phương trình trở thành $x+1=x^2-1 \\Leftrightarrow x^2-x-2=0$, cho $x=-1$ hoặc $x=2$; chỉ $x=2$ thỏa điều kiện.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 4, trang 22"
+  },
+  {
+    id: "gt35",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Giải bất phương trình $16^x > \\dfrac{1}{8}$.",
+    options: [
+      { letter: "A", text: "$x > -\\dfrac{3}{4}$", isCorrect: true },
+      { letter: "B", text: "$x < -\\dfrac{3}{4}$", isCorrect: false },
+      { letter: "C", text: "$x > \\dfrac{3}{4}$", isCorrect: false },
+      { letter: "D", text: "$x > -\\dfrac{4}{3}$", isCorrect: false }
+    ],
+    blankAnswer: "x > -3/4",
+    explanation: "$16^x > \\dfrac{1}{8} \\Leftrightarrow 2^{4x} > 2^{-3} \\Leftrightarrow 4x > -3 \\Leftrightarrow x > -\\dfrac{3}{4}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 5, trang 23"
+  },
+  {
+    id: "gt36",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Giải bất phương trình $\\log_{0,3}(x+1) \\le \\log_{0,3}(2x-1)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{2} < x \\le 2$", isCorrect: true },
+      { letter: "B", text: "$x \\le 2$", isCorrect: false },
+      { letter: "C", text: "$x > \\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$x \\ge 2$", isCorrect: false }
+    ],
+    blankAnswer: "1/2 < x <= 2",
+    explanation: "Điều kiện: $x > \\dfrac{1}{2}$. Vì cơ số $0,3<1$ nên bất phương trình trở thành $x+1 \\ge 2x-1$, suy ra $x \\le 2$. Kết hợp điều kiện: $\\dfrac{1}{2} < x \\le 2$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 7, trang 23"
+  },
+  {
+    id: "gt37",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Giá trị của một chiếc xe ô tô sau $t$ năm sử dụng được ước tính theo công thức $V(t) = 780\\cdot(0,905)^t$ (triệu đồng). Hỏi sau khoảng bao nhiêu năm sử dụng thì giá trị chiếc xe còn lại không quá 300 triệu đồng?",
+    options: [
+      { letter: "A", text: "Khoảng $10$ năm", isCorrect: true },
+      { letter: "B", text: "Khoảng $9$ năm", isCorrect: false },
+      { letter: "C", text: "Khoảng $8$ năm", isCorrect: false },
+      { letter: "D", text: "Khoảng $12$ năm", isCorrect: false }
+    ],
+    blankAnswer: "khoảng 10 năm",
+    explanation: "Cần tìm $t$ sao cho $V(t)\\le 300 \\Leftrightarrow 780\\cdot(0,905)^t \\le 300 \\Leftrightarrow (0,905)^t \\le \\dfrac{5}{13} \\Leftrightarrow t \\ge \\log_{0,905}\\dfrac{5}{13} \\approx 9,6$. Vậy sau khoảng $10$ năm sử dụng, giá trị chiếc xe còn lại không quá $300$ triệu đồng.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 21, Ví dụ 6, trang 23"
+  },
 ];
