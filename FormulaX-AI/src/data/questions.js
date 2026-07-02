@@ -2502,5 +2502,157 @@ export const questionsPool = [
     blankAnswer: "84",
     explanation: "Nửa chu vi $p=\\dfrac{13+14+15}{2}=21$. Áp dụng công thức Heron: $S=\\sqrt{p(p-a)(p-b)(p-c)}=\\sqrt{21\\cdot8\\cdot7\\cdot6}=\\sqrt{7056}=84$.",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 6, Ví dụ 6, trang 42"
+  },
+
+  // ==================== VECTƠ (Chương IV, Toán 10 Tập 1) ====================
+  {
+    id: "hh34",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho hình vuông $ABCD$ với cạnh có độ dài bằng $1$. Tính độ dài của vectơ $\\vec{AC}$.",
+    options: [
+      { letter: "A", text: "$\\sqrt2$", isCorrect: true },
+      { letter: "B", text: "$1$", isCorrect: false },
+      { letter: "C", text: "$2$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{\\sqrt2}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "√2",
+    explanation: "Vectơ $\\vec{AC}$ là đường chéo của hình vuông cạnh $1$, có độ dài $AC=\\sqrt{1^2+1^2}=\\sqrt2$. Vậy $|\\vec{AC}|=\\sqrt2$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 7, Ví dụ 1, trang 47"
+  },
+  {
+    id: "hh35",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho hình chữ nhật $ABCD$. Trong các cặp vectơ $\\vec{AD}$ và $\\vec{BC}$, $\\vec{AB}$ và $\\vec{CD}$, $\\vec{AC}$ và $\\vec{BD}$, cặp vectơ nào bằng nhau?",
+    options: [
+      { letter: "A", text: "$\\vec{AD}=\\vec{BC}$", isCorrect: true },
+      { letter: "B", text: "$\\vec{AB}=\\vec{CD}$", isCorrect: false },
+      { letter: "C", text: "$\\vec{AC}=\\vec{BD}$", isCorrect: false },
+      { letter: "D", text: "Không có cặp nào bằng nhau", isCorrect: false }
+    ],
+    blankAnswer: "AD = BC",
+    explanation: "$\\vec{AD}$ và $\\vec{BC}$ có cùng độ dài và cùng hướng nên bằng nhau. $\\vec{AB}$ và $\\vec{CD}$ cùng độ dài nhưng ngược hướng. $\\vec{AC}$ và $\\vec{BD}$ cùng độ dài nhưng không cùng phương (là hai đường chéo cắt nhau).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 7, Ví dụ 2, trang 48"
+  },
+  {
+    id: "hh36",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho hình vuông $ABCD$ với cạnh có độ dài bằng $1$. Tính độ dài của vectơ $\\vec{AB}+\\vec{CB}$.",
+    options: [
+      { letter: "A", text: "$\\sqrt2$", isCorrect: true },
+      { letter: "B", text: "$2$", isCorrect: false },
+      { letter: "C", text: "$1$", isCorrect: false },
+      { letter: "D", text: "$0$", isCorrect: false }
+    ],
+    blankAnswer: "√2",
+    explanation: "Do $\\vec{AB}=\\vec{DC}$ nên $\\vec{AB}+\\vec{CB}=\\vec{DC}+\\vec{CB}=\\vec{DB}$. Vậy $|\\vec{AB}+\\vec{CB}|=|\\vec{DB}|=DB=\\sqrt2$ (đường chéo hình vuông cạnh 1).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 8, Ví dụ 1, trang 52"
+  },
+  {
+    id: "hh37",
+    topic: "Hình học",
+    grade: 10,
+    text: "Nếu $I$ là trung điểm của đoạn thẳng $AB$ thì đẳng thức vectơ nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "$\\vec{IA}+\\vec{IB}=\\vec{0}$", isCorrect: true },
+      { letter: "B", text: "$\\vec{IA}-\\vec{IB}=\\vec{0}$", isCorrect: false },
+      { letter: "C", text: "$\\vec{IA}+\\vec{IB}=\\vec{AB}$", isCorrect: false },
+      { letter: "D", text: "$\\vec{IA}=\\vec{IB}$", isCorrect: false }
+    ],
+    blankAnswer: "IA + IB = 0",
+    explanation: "Khi $I$ là trung điểm của $AB$, hai vectơ $\\vec{IA}$ và $\\vec{IB}$ có cùng độ dài và ngược hướng nên chúng đối nhau, suy ra $\\vec{IA}+\\vec{IB}=\\vec{0}$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 8, Ví dụ 3a, trang 53"
+  },
+  {
+    id: "hh38",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho đoạn thẳng $AB$ có trung điểm $I$ và một điểm $O$ tùy ý. Đẳng thức nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "$\\vec{OA}+\\vec{OB}=2\\vec{OI}$", isCorrect: true },
+      { letter: "B", text: "$\\vec{OA}+\\vec{OB}=\\vec{OI}$", isCorrect: false },
+      { letter: "C", text: "$\\vec{OA}+\\vec{OB}=3\\vec{OI}$", isCorrect: false },
+      { letter: "D", text: "$\\vec{OA}-\\vec{OB}=2\\vec{OI}$", isCorrect: false }
+    ],
+    blankAnswer: "OA + OB = 2OI",
+    explanation: "Vì $I$ là trung điểm $AB$ nên $\\vec{IA}+\\vec{IB}=\\vec{0}$. Do đó $\\vec{OA}+\\vec{OB}=(\\vec{OI}+\\vec{IA})+(\\vec{OI}+\\vec{IB})=2\\vec{OI}+(\\vec{IA}+\\vec{IB})=2\\vec{OI}$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 9, Ví dụ 2, trang 57"
+  },
+  {
+    id: "hh39",
+    topic: "Hình học",
+    grade: 10,
+    text: "Trong mặt phẳng tọa độ $Oxy$, cho ba điểm $A(1;-2)$, $B(3;2)$, $C(7;4)$. Tìm tọa độ của vectơ $\\vec{AB}$.",
+    options: [
+      { letter: "A", text: "$(2;4)$", isCorrect: true },
+      { letter: "B", text: "$(4;0)$", isCorrect: false },
+      { letter: "C", text: "$(-2;-4)$", isCorrect: false },
+      { letter: "D", text: "$(3;2)$", isCorrect: false }
+    ],
+    blankAnswer: "(2;4)",
+    explanation: "$\\vec{AB}=(x_B-x_A;y_B-y_A)=(3-1;2-(-2))=(2;4)$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 10, Ví dụ 3, trang 63"
+  },
+  {
+    id: "hh40",
+    topic: "Hình học",
+    grade: 10,
+    text: "Trong mặt phẳng tọa độ $Oxy$, cho ba điểm không thẳng hàng $A(1;3)$, $B(-2;6)$, $C(5;1)$. Tìm tọa độ trung điểm $I$ của đoạn thẳng $AB$.",
+    options: [
+      { letter: "A", text: "$I\\left(-\\dfrac{1}{2};\\dfrac{9}{2}\\right)$", isCorrect: true },
+      { letter: "B", text: "$I\\left(\\dfrac{1}{2};\\dfrac{9}{2}\\right)$", isCorrect: false },
+      { letter: "C", text: "$I(-3;3)$", isCorrect: false },
+      { letter: "D", text: "$I\\left(-\\dfrac{1}{2};\\dfrac{3}{2}\\right)$", isCorrect: false }
+    ],
+    blankAnswer: "(-1/2; 9/2)",
+    explanation: "Tọa độ trung điểm: $I=\\left(\\dfrac{x_A+x_B}{2};\\dfrac{y_A+y_B}{2}\\right)=\\left(\\dfrac{1+(-2)}{2};\\dfrac{3+6}{2}\\right)=\\left(-\\dfrac{1}{2};\\dfrac{9}{2}\\right)$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 10, Ví dụ 4, trang 64"
+  },
+  {
+    id: "hh41",
+    topic: "Hình học",
+    grade: 10,
+    text: "Trong mặt phẳng tọa độ $Oxy$, cho ba điểm không thẳng hàng $A(1;3)$, $B(-2;6)$, $C(5;1)$. Tìm tọa độ trọng tâm $G$ của tam giác $ABC$.",
+    options: [
+      { letter: "A", text: "$G\\left(\\dfrac{4}{3};\\dfrac{10}{3}\\right)$", isCorrect: true },
+      { letter: "B", text: "$G(4;10)$", isCorrect: false },
+      { letter: "C", text: "$G\\left(\\dfrac{4}{3};\\dfrac{10}{9}\\right)$", isCorrect: false },
+      { letter: "D", text: "$G(2;3)$", isCorrect: false }
+    ],
+    blankAnswer: "(4/3; 10/3)",
+    explanation: "Tọa độ trọng tâm: $G=\\left(\\dfrac{x_A+x_B+x_C}{3};\\dfrac{y_A+y_B+y_C}{3}\\right)=\\left(\\dfrac{1+(-2)+5}{3};\\dfrac{3+6+1}{3}\\right)=\\left(\\dfrac{4}{3};\\dfrac{10}{3}\\right)$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 10, Ví dụ 4, trang 64"
+  },
+  {
+    id: "hh42",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho hình vuông $ABCD$ có cạnh bằng $a$. Tính tích vô hướng $\\vec{AB}\\cdot\\vec{AD}$.",
+    options: [
+      { letter: "A", text: "$0$", isCorrect: true },
+      { letter: "B", text: "$a^2$", isCorrect: false },
+      { letter: "C", text: "$-a^2$", isCorrect: false },
+      { letter: "D", text: "$a^2\\sqrt2$", isCorrect: false }
+    ],
+    blankAnswer: "0",
+    explanation: "Vì $\\vec{AB}$ và $\\vec{AD}$ là hai cạnh kề của hình vuông nên vuông góc với nhau, $(\\vec{AB},\\vec{AD})=90°$, do đó $\\vec{AB}\\cdot\\vec{AD}=AB\\cdot AD\\cdot\\cos90°=0$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 11, Ví dụ 2, trang 67"
+  },
+  {
+    id: "hh43",
+    topic: "Hình học",
+    grade: 10,
+    text: "Trong mặt phẳng tọa độ $Oxy$, tính tích vô hướng của hai vectơ $\\vec u=(2;-3)$ và $\\vec v=(5;3)$.",
+    options: [
+      { letter: "A", text: "$1$", isCorrect: true },
+      { letter: "B", text: "$19$", isCorrect: false },
+      { letter: "C", text: "$-19$", isCorrect: false },
+      { letter: "D", text: "$-1$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "Áp dụng công thức $\\vec u\\cdot\\vec v=xx'+yy'$: $\\vec u\\cdot\\vec v=2\\cdot5+(-3)\\cdot3=10-9=1$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 11, Ví dụ 3, trang 68"
   }
 ];

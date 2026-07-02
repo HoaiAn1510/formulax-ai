@@ -305,7 +305,8 @@ export const formulas = [
     example: "Cho hai vectơ $\\vec{u} = (2, 3)$ và $\\vec{v} = (4, -1)$. Tính tích vô hướng $\\vec{u} \\cdot \\vec{v}$.\n\n**Lời giải:**\nÁp dụng công thức tích vô hướng:\n$$\\vec{u} \\cdot \\vec{v} = 2 \\cdot 4 + 3 \\cdot (-1) = 8 - 3 = 5$$",
     tags: ["Vectơ", "Tích vô hướng", "Oxy"],
     difficulty: "Dễ",
-    mnemonic: "Hoành nhân hoành cộng tung nhân tung: Nhân tương ứng tọa độ rồi cộng lại ra một số."
+    mnemonic: "Hoành nhân hoành cộng tung nhân tung: Nhân tương ứng tọa độ rồi cộng lại ra một số.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 11, trang 68"
   },
   {
     id: "hh10-duongthang-tongquat",
@@ -1207,5 +1208,137 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "sin²+cos²=1 (từ điểm M trên đường tròn đơn vị, x0²+y0²=1). Chia cho cos² → 1+tan²=1/cos². Chia cho sin² → 1+cot²=1/sin².",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 5, Bài tập 3.3, trang 37"
+  },
+
+  // ===== VECTƠ (Chương IV, Toán 10 KNTT Tập 1, Bài 7-11) =====
+  {
+    id: "hh10-vecto-khainiem",
+    name: "Khái niệm vectơ, độ dài vectơ, vectơ-không",
+    topic: "Hình học",
+    grade: 10,
+    latex: "|\\vec{AB}| = AB",
+    explanation: "Trong đó:\n- $\\vec{AB}$: Vectơ có điểm đầu $A$, điểm cuối $B$ — là đoạn thẳng $AB$ đã xác định hướng đi từ $A$ đến $B$.\n- $|\\vec{AB}|$: Độ dài của vectơ $\\vec{AB}$, bằng khoảng cách $AB$ giữa điểm đầu và điểm cuối.\n- Vectơ còn được kí hiệu là $\\vec{a}, \\vec{b}, \\vec{x}, \\vec{y}, \\ldots$ khi không cần chỉ rõ điểm đầu, điểm cuối.\n- $\\vec{0}$: Vectơ-không — vectơ có điểm đầu và điểm cuối trùng nhau (như $\\vec{AA}$, $\\vec{MM}$), có độ dài bằng $0$ và được quy ước cùng hướng (cùng phương) với mọi vectơ.",
+    example: "**Ví dụ (SGK):** Cho hình vuông $ABCD$ với cạnh có độ dài bằng $1$. Tính độ dài các vectơ $\\vec{AC}$, $\\vec{CA}$, $\\vec{BD}$.\n\n**Lời giải:** Vì cạnh hình vuông $ABCD$ có độ dài bằng $1$ nên các đường chéo có độ dài bằng $\\sqrt2$. Vậy $|\\vec{AC}|=AC=\\sqrt2$, $|\\vec{CA}|=CA=\\sqrt2$, $|\\vec{BD}|=BD=\\sqrt2$.",
+    tags: ["Vectơ", "Độ dài vectơ", "Vectơ-không"],
+    difficulty: "Dễ",
+    mnemonic: "Vectơ = đoạn thẳng có hướng (điểm đầu → điểm cuối). Độ dài vectơ = khoảng cách 2 điểm mút. Vectơ-không: điểm đầu trùng điểm cuối, độ dài 0.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 7, trang 47"
+  },
+  {
+    id: "hh10-vecto-cungphuong-bangnhau",
+    name: "Hai vectơ cùng phương, cùng hướng, bằng nhau",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\vec{a} = \\vec{b} \\Leftrightarrow (|\\vec{a}| = |\\vec{b}| \\text{ và } \\vec{a}, \\vec{b} \\text{ cùng hướng})",
+    explanation: "Trong đó:\n- Giá của vectơ: Đường thẳng đi qua điểm đầu và điểm cuối của vectơ đó.\n- Hai vectơ cùng phương: Khi giá của chúng song song hoặc trùng nhau.\n- Hai vectơ cùng phương thì hoặc cùng hướng hoặc ngược hướng.\n- Hai vectơ bằng nhau ($\\vec{a}=\\vec{b}$): Khi chúng cùng độ dài và cùng hướng.\n\n**Nhận xét quan trọng:** Ba điểm $A$, $B$, $C$ thẳng hàng khi và chỉ khi hai vectơ $\\vec{AB}$, $\\vec{AC}$ cùng phương.",
+    example: "**Ví dụ (SGK):** Cho hình chữ nhật $ABCD$. Hãy chỉ ra mối quan hệ về độ dài, phương, hướng giữa các cặp vectơ: $\\vec{AD}$ và $\\vec{BC}$, $\\vec{AB}$ và $\\vec{CD}$, $\\vec{AC}$ và $\\vec{BD}$. Những cặp vectơ nào bằng nhau?\n\n**Lời giải:** $\\vec{AD}$ và $\\vec{BC}$ có cùng độ dài và cùng hướng nên $\\vec{AD}=\\vec{BC}$. $\\vec{AB}$ và $\\vec{CD}$ có cùng độ dài nhưng ngược hướng nên không bằng nhau. $\\vec{AC}$ và $\\vec{BD}$ có cùng độ dài nhưng không cùng phương nên không bằng nhau. Vậy chỉ có $\\vec{AD}=\\vec{BC}$.",
+    tags: ["Vectơ", "Cùng phương", "Cùng hướng", "Vectơ bằng nhau", "Ba điểm thẳng hàng"],
+    difficulty: "Trung bình",
+    mnemonic: "Cùng phương = giá song song hoặc trùng (chỉ xét đường thẳng chứa vectơ). Bằng nhau = cùng độ dài VÀ cùng hướng (chặt hơn cùng phương). Ba điểm thẳng hàng ⟺ hai vectơ tạo bởi chúng cùng phương.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 7, trang 48-49"
+  },
+  {
+    id: "hh10-tong-hieu-vecto",
+    name: "Tổng và hiệu của hai vectơ — quy tắc ba điểm, hình bình hành, hiệu",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\vec{AB} + \\vec{BC} = \\vec{AC}, \\quad \\vec{MN} = \\vec{ON} - \\vec{OM}",
+    explanation: "Trong đó:\n- $\\vec{AB}+\\vec{BC}=\\vec{AC}$: Quy tắc ba điểm (quy tắc tam giác) — với ba điểm bất kì $A,B,C$.\n- Quy tắc hình bình hành: Nếu $ABCD$ là một hình bình hành thì $\\vec{AB}+\\vec{AD}=\\vec{AC}$.\n- $-\\vec{a}$: Vectơ đối của $\\vec{a}$ — có cùng độ dài và ngược hướng với $\\vec{a}$. Vectơ $\\vec{0}$ là vectơ đối của chính nó.\n- $\\vec{a}-\\vec{b}=\\vec{a}+(-\\vec{b})$: Hiệu của hai vectơ.\n- $\\vec{MN}=\\vec{ON}-\\vec{OM}$: Quy tắc hiệu — với ba điểm $O,M,N$ bất kì.\n\n**Tính chất** (với $\\vec a,\\vec b,\\vec c$ tuỳ ý): giao hoán $\\vec a+\\vec b=\\vec b+\\vec a$; kết hợp $(\\vec a+\\vec b)+\\vec c=\\vec a+(\\vec b+\\vec c)$; $\\vec a+\\vec 0=\\vec 0+\\vec a=\\vec a$.",
+    example: "**Ví dụ (SGK):** Cho hình vuông $ABCD$ với cạnh có độ dài bằng $1$. Tính độ dài của các vectơ $\\vec{AB}+\\vec{CB}$, $\\vec{AB}+\\vec{DC}+\\vec{BD}$.\n\n**Lời giải:** Do $\\vec{AB}=\\vec{DC}$ nên $\\vec{AB}+\\vec{CB}=\\vec{DC}+\\vec{CB}=\\vec{DB}$. Vậy $|\\vec{AB}+\\vec{CB}|=|\\vec{DB}|=DB=\\sqrt2$.\n\nTa có $\\vec{AB}+\\vec{DC}+\\vec{BD}=(\\vec{AB}+\\vec{BD})+\\vec{DC}=\\vec{AD}+\\vec{DC}=\\vec{AC}$. Do đó $|\\vec{AB}+\\vec{DC}+\\vec{BD}|=AC=\\sqrt2$.",
+    tags: ["Vectơ", "Tổng vectơ", "Hiệu vectơ", "Quy tắc ba điểm", "Quy tắc hình bình hành", "Vectơ đối"],
+    difficulty: "Trung bình",
+    mnemonic: "Quy tắc 3 điểm: AB+BC=AC (điểm cuối vectơ trước = điểm đầu vectơ sau thì \"nối\" lại được). Quy tắc hình bình hành: 2 cạnh kề cộng lại = đường chéo. Quy tắc hiệu: MN = ON-OM (cùng gốc O thì hiệu = ngọn trừ gốc).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 8, trang 51-54"
+  },
+  {
+    id: "hh10-trungdiem-trongtam-vecto",
+    name: "Điều kiện vectơ của trung điểm và trọng tâm",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\vec{IA}+\\vec{IB}=\\vec{0} \\; (I \\text{ trung điểm } AB), \\qquad \\vec{GA}+\\vec{GB}+\\vec{GC}=\\vec{0} \\; (G \\text{ trọng tâm } \\triangle ABC)",
+    explanation: "Trong đó:\n- $I$: Trung điểm của đoạn thẳng $AB$.\n- $G$: Trọng tâm của tam giác $ABC$.\n- $\\vec{IA}+\\vec{IB}=\\vec{0}$: Điều kiện cần và đủ để $I$ là trung điểm $AB$.\n- $\\vec{GA}+\\vec{GB}+\\vec{GC}=\\vec{0}$: Điều kiện cần và đủ để $G$ là trọng tâm tam giác $ABC$.\n- Với điểm $O$ tuỳ ý: $\\vec{OA}+\\vec{OB}=2\\vec{OI}$ (nếu $I$ là trung điểm $AB$).\n- Với điểm $O$ tuỳ ý: $\\vec{OA}+\\vec{OB}+\\vec{OC}=3\\vec{OG}$ (nếu $G$ là trọng tâm $\\triangle ABC$).",
+    example: "**Ví dụ (SGK):** Cho đoạn thẳng $AB$ có trung điểm $I$. Chứng minh rằng với điểm $O$ tuỳ ý, ta có $\\vec{OA}+\\vec{OB}=2\\vec{OI}$.\n\n**Lời giải:** Vì $I$ là trung điểm $AB$ nên $\\vec{IA}+\\vec{IB}=\\vec{0}$. Do đó $\\vec{OA}+\\vec{OB}=(\\vec{OI}+\\vec{IA})+(\\vec{OI}+\\vec{IB})=2\\vec{OI}+(\\vec{IA}+\\vec{IB})=2\\vec{OI}$.",
+    tags: ["Vectơ", "Trung điểm", "Trọng tâm", "Tam giác"],
+    difficulty: "Trung bình",
+    mnemonic: "Trung điểm: IA+IB=0 (2 vectơ đối nhau). Trọng tâm: GA+GB+GC=0 (3 vectơ triệt tiêu). Với điểm gốc O bất kỳ: nhân thêm hệ số 2 (trung điểm) hoặc 3 (trọng tâm) vào vectơ tới điểm đặc biệt.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 8 trang 53 và Bài 9 trang 57"
+  },
+  {
+    id: "hh10-tich-vecto-voiso",
+    name: "Tích của một vectơ với một số",
+    topic: "Hình học",
+    grade: 10,
+    latex: "|\\vec{ka}| = |k||\\vec{a}|",
+    explanation: "Trong đó:\n- $k$: Số thực bất kỳ; $\\vec{a}$: Vectơ khác $\\vec{0}$.\n- $k\\vec{a}$: Vectơ cùng hướng với $\\vec{a}$ nếu $k \\geq 0$; ngược hướng với $\\vec{a}$ nếu $k<0$. Có độ dài bằng $|k||\\vec{a}|$.\n- Quy ước $k\\vec{a}=\\vec{0}$ nếu $\\vec{a}=\\vec{0}$ hoặc $k=0$.\n\n**Tính chất** (với $\\vec a,\\vec b$ và số thực $k,t$): $k(t\\vec a)=(kt)\\vec a$; $k(\\vec a+\\vec b)=k\\vec a+k\\vec b$; $k(\\vec a-\\vec b)=k\\vec a-k\\vec b$; $(k+t)\\vec a=k\\vec a+t\\vec a$; $1\\vec a=\\vec a$; $(-1)\\vec a=-\\vec a$.\n\n**Điều kiện cùng phương:** Hai vectơ $\\vec a$ và $\\vec b$ ($\\vec b \\neq \\vec 0$) cùng phương khi và chỉ khi tồn tại số $k$ để $\\vec a = k\\vec b$.",
+    example: "**Ví dụ (SGK):** Chứng minh rằng hai vectơ $\\vec a$ và $\\vec b$ ($\\vec b \\neq \\vec 0$) cùng phương khi và chỉ khi tồn tại số $k$ để $\\vec a = k\\vec b$.\n\n**Lời giải:** Nếu $\\vec a=k\\vec b$ thì $\\vec a$ và $\\vec b$ cùng phương (theo định nghĩa tích vectơ với số). Ngược lại, giả sử $\\vec a$ và $\\vec b$ cùng phương. Ta lấy $k=\\dfrac{|\\vec a|}{|\\vec b|}$ nếu $\\vec a,\\vec b$ cùng hướng, và $k=-\\dfrac{|\\vec a|}{|\\vec b|}$ nếu $\\vec a,\\vec b$ ngược hướng. Khi đó $\\vec a=k\\vec b$.",
+    tags: ["Vectơ", "Tích vectơ với số", "Cùng phương"],
+    difficulty: "Trung bình",
+    mnemonic: "k>0: ka cùng hướng a. k<0: ka ngược hướng a. Độ dài luôn |k| lần độ dài a (trị tuyệt đối). a,b cùng phương ⟺ có số k để a=kb.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 9, trang 55-57"
+  },
+  {
+    id: "hh10-toado-vecto-pheptoan",
+    name: "Tọa độ vectơ và biểu thức tọa độ của các phép toán",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\vec{u}+\\vec{v}=(x+x'; y+y'), \\quad \\vec{u}-\\vec{v}=(x-x'; y-y'), \\quad k\\vec{u}=(kx; ky)",
+    explanation: "Trong đó:\n- $\\vec{u}=(x;y)$: Vectơ có hoành độ $x$, tung độ $y$ trong hệ trục tọa độ $Oxy$ — nghĩa là $\\vec u = x\\vec i + y\\vec j$ với $\\vec i,\\vec j$ là hai vectơ đơn vị trên $Ox$, $Oy$.\n- $\\vec{v}=(x';y')$: Vectơ thứ hai.\n- $k$: Số thực bất kỳ.\n- $\\vec u = \\vec v \\Leftrightarrow x=x'$ và $y=y'$: Hai vectơ bằng nhau khi và chỉ khi cùng tọa độ.\n\n**Điều kiện cùng phương theo tọa độ:** Vectơ $\\vec v(x';y')$ cùng phương với $\\vec u(x;y) \\neq \\vec 0$ khi và chỉ khi tồn tại số $k$ sao cho $x'=kx$, $y'=ky$ (hay $\\dfrac{x'}{x}=\\dfrac{y'}{y}$ nếu $xy \\neq 0$).",
+    example: "**Ví dụ (SGK):** Cho $\\vec a=(1;2)$, $\\vec b=\\left(\\dfrac{3}{2};3\\right)$.\n\na) Tìm tọa độ của $\\vec a+\\vec b$, $\\vec a-2\\vec b$.\n\nb) Hỏi $\\vec a$ và $\\vec b$ có cùng phương hay không?\n\n**Lời giải:** a) $\\vec a+\\vec b=\\left(\\dfrac{5}{2};5\\right)$. Ta có $2\\vec b=(3;6)$ nên $\\vec a-2\\vec b=(-2;-4)$.\n\nb) Do $\\dfrac{3}{2}\\vec a=\\left(\\dfrac{3}{2};3\\right)=\\vec b$ nên hai vectơ $\\vec a$ và $\\vec b$ cùng phương.",
+    tags: ["Vectơ", "Tọa độ", "Oxy", "Cùng phương"],
+    difficulty: "Dễ",
+    mnemonic: "Cộng/trừ vectơ: cộng/trừ từng tọa độ tương ứng. Nhân số k: nhân k vào cả hai tọa độ. Cùng phương ⟺ tỉ lệ tọa độ bằng nhau (x'/x = y'/y).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 10, trang 60-62"
+  },
+  {
+    id: "hh10-dodai-vecto-khoangcach",
+    name: "Độ dài vectơ và khoảng cách hai điểm theo tọa độ",
+    topic: "Hình học",
+    grade: 10,
+    latex: "|\\vec{u}| = \\sqrt{x^2+y^2}, \\qquad MN = |\\vec{MN}| = \\sqrt{(x'-x)^2+(y'-y)^2}",
+    explanation: "Trong đó:\n- $\\vec{u}=(x;y)$: Một vectơ bất kỳ trong mặt phẳng tọa độ.\n- $|\\vec u|$: Độ dài vectơ $\\vec u$, bằng $\\sqrt{x^2+y^2}$.\n- $M(x;y)$, $N(x';y')$: Hai điểm bất kỳ trong mặt phẳng tọa độ.\n- $\\vec{MN}=(x'-x; y'-y)$: Tọa độ vectơ $\\vec{MN}$ — lấy tọa độ điểm cuối trừ tọa độ điểm đầu.\n- $MN$: Khoảng cách giữa hai điểm $M,N$, bằng độ dài vectơ $\\vec{MN}$.",
+    example: "**Ví dụ (SGK):** Trong mặt phẳng tọa độ $Oxy$, cho ba điểm $A(1;-2)$, $B(3;2)$, $C(7;4)$. Tìm tọa độ của các vectơ $\\vec{AB}$, $\\vec{BC}$. So sánh các khoảng cách từ $B$ tới $A$ và $C$.\n\n**Lời giải:** $\\vec{AB}=(3-1;2-(-2))=(2;4)$, $\\vec{BC}=(7-3;4-2)=(4;2)$. Các khoảng cách: $AB=|\\vec{AB}|=\\sqrt{2^2+4^2}=2\\sqrt5$; $BC=|\\vec{BC}|=\\sqrt{4^2+2^2}=2\\sqrt5$. Do đó các khoảng cách này bằng nhau.",
+    tags: ["Vectơ", "Độ dài", "Khoảng cách", "Tọa độ", "Oxy"],
+    difficulty: "Trung bình",
+    mnemonic: "Độ dài vectơ = căn(hoành²+tung²), giống định lý Pythagore. Vectơ MN = tọa độ N trừ tọa độ M (ngọn trừ gốc). Khoảng cách 2 điểm = độ dài vectơ nối chúng.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 10, trang 62-63"
+  },
+  {
+    id: "hh10-toado-trungdiem-trongtam",
+    name: "Tọa độ trung điểm và tọa độ trọng tâm tam giác",
+    topic: "Hình học",
+    grade: 10,
+    latex: "M\\left(\\frac{x_A+x_B}{2}; \\frac{y_A+y_B}{2}\\right), \\qquad G\\left(\\frac{x_A+x_B+x_C}{3}; \\frac{y_A+y_B+y_C}{3}\\right)",
+    explanation: "Trong đó:\n- $A(x_A;y_A)$, $B(x_B;y_B)$: Tọa độ hai đầu mút đoạn thẳng $AB$.\n- $M$: Trung điểm của đoạn thẳng $AB$, có tọa độ $\\left(\\dfrac{x_A+x_B}{2}; \\dfrac{y_A+y_B}{2}\\right)$.\n- $A(x_A;y_A)$, $B(x_B;y_B)$, $C(x_C;y_C)$: Tọa độ ba đỉnh tam giác $ABC$.\n- $G$: Trọng tâm tam giác $ABC$, có tọa độ $\\left(\\dfrac{x_A+x_B+x_C}{3}; \\dfrac{y_A+y_B+y_C}{3}\\right)$.",
+    example: "**Ví dụ (SGK):** Trong mặt phẳng tọa độ $Oxy$, cho ba điểm không thẳng hàng $A(1;3)$, $B(-2;6)$, $C(5;1)$.\n\na) Tìm tọa độ trung điểm $I$ của đoạn thẳng $AB$.\n\nb) Tìm tọa độ trọng tâm $G$ của tam giác $ABC$.\n\n**Lời giải:** a) $I=\\left(\\dfrac{1+(-2)}{2};\\dfrac{3+6}{2}\\right)=\\left(-\\dfrac{1}{2};\\dfrac{9}{2}\\right)$.\n\nb) $G=\\left(\\dfrac{1+(-2)+5}{3};\\dfrac{3+6+1}{3}\\right)=\\left(\\dfrac{4}{3};\\dfrac{10}{3}\\right)$.",
+    tags: ["Tọa độ", "Trung điểm", "Trọng tâm", "Tam giác", "Oxy"],
+    difficulty: "Dễ",
+    mnemonic: "Trung điểm = trung bình cộng tọa độ 2 đầu mút. Trọng tâm = trung bình cộng tọa độ 3 đỉnh (chia 3 thay vì chia 2).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 10, trang 64"
+  },
+  {
+    id: "hh10-goc-tichvohuong-dinhnghia",
+    name: "Góc giữa hai vectơ và định nghĩa tích vô hướng",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\vec{u} \\cdot \\vec{v} = |\\vec{u}| \\cdot |\\vec{v}| \\cdot \\cos(\\vec{u}, \\vec{v})",
+    explanation: "Trong đó:\n- $(\\vec u, \\vec v)$: Góc giữa hai vectơ $\\vec u, \\vec v$ khác $\\vec 0$ — bằng số đo góc $BAC$ khi vẽ $\\vec{AB}=\\vec u$, $\\vec{AC}=\\vec v$ từ một điểm $A$ tùy ý.\n- $\\vec u \\perp \\vec v$: Kí hiệu hai vectơ vuông góc, khi $(\\vec u,\\vec v)=90°$. Vectơ $\\vec 0$ được coi là vuông góc với mọi vectơ.\n- $\\vec u \\cdot \\vec v$: Tích vô hướng của hai vectơ — là một số (không phải vectơ).\n- $\\vec u \\perp \\vec v \\Leftrightarrow \\vec u \\cdot \\vec v = 0$.\n- $\\vec u \\cdot \\vec u = \\vec u^2 = |\\vec u|^2$: Bình phương vô hướng của vectơ $\\vec u$.",
+    example: "**Ví dụ (SGK):** Cho hình vuông $ABCD$ có cạnh bằng $a$. Tính các tích vô hướng $\\vec{AB}\\cdot\\vec{AD}$, $\\vec{AB}\\cdot\\vec{AC}$, $\\vec{AB}\\cdot\\vec{BD}$.\n\n**Lời giải:** Vì $(\\vec{AB},\\vec{AD})=90°$ nên $\\vec{AB}\\cdot\\vec{AD}=0$. Đường chéo hình vuông bằng $a\\sqrt2$. Vì $(\\vec{AB},\\vec{AC})=45°$, $(\\vec{AB},\\vec{BD})=135°$, ta có $\\vec{AB}\\cdot\\vec{AC}=AB\\cdot AC\\cdot\\cos45°=a\\cdot a\\sqrt2\\cdot\\dfrac{\\sqrt2}{2}=a^2$; $\\vec{AB}\\cdot\\vec{BD}=AB\\cdot BD\\cdot\\cos135°=a\\cdot a\\sqrt2\\cdot\\left(-\\dfrac{\\sqrt2}{2}\\right)=-a^2$.",
+    tags: ["Vectơ", "Góc giữa hai vectơ", "Tích vô hướng", "Vuông góc"],
+    difficulty: "Trung bình",
+    mnemonic: "u·v = |u||v|cos(góc giữa u,v) — là MỘT SỐ, không phải vectơ. Vuông góc ⟺ tích vô hướng bằng 0. u·u = |u|² (bình phương độ dài).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 11, trang 66-67"
+  },
+  {
+    id: "hh10-tichvohuong-tinhchat",
+    name: "Tính chất của tích vô hướng và các hệ quả",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\vec{u}\\cdot\\vec{v}=\\vec{v}\\cdot\\vec{u}, \\quad \\vec{u}\\cdot(\\vec{v}+\\vec{w})=\\vec{u}\\cdot\\vec{v}+\\vec{u}\\cdot\\vec{w}",
+    explanation: "Trong đó:\n- $\\vec u,\\vec v,\\vec w$: Ba vectơ bất kỳ; $k$: Số thực bất kỳ.\n- $\\vec u \\cdot \\vec v = \\vec v \\cdot \\vec u$: Tính chất giao hoán.\n- $\\vec u \\cdot (\\vec v + \\vec w) = \\vec u \\cdot \\vec v + \\vec u \\cdot \\vec w$: Tính chất phân phối đối với phép cộng (tương tự với phép trừ).\n- $(k\\vec u)\\cdot \\vec v = k(\\vec u \\cdot \\vec v) = \\vec u \\cdot (k\\vec v)$.\n\n**Các hệ quả suy ra từ tính chất trên:**\n$$(\\vec u+\\vec v)^2=\\vec u^2+2\\vec u\\cdot\\vec v+\\vec v^2, \\quad (\\vec u-\\vec v)^2=\\vec u^2-2\\vec u\\cdot\\vec v+\\vec v^2$$\n$$(\\vec u+\\vec v)\\cdot(\\vec u-\\vec v)=\\vec u^2-\\vec v^2$$",
+    example: "**Ví dụ (SGK):** Trong mặt phẳng tọa độ $Oxy$, tính tích vô hướng của các cặp vectơ: $\\vec u=(2;-3)$ và $\\vec v=(5;3)$.\n\n**Lời giải:** Áp dụng công thức tọa độ $\\vec u \\cdot \\vec v = xx'+yy'$: $\\vec u \\cdot \\vec v = 2 \\cdot 5 + (-3) \\cdot 3 = 10 - 9 = 1$.",
+    tags: ["Vectơ", "Tích vô hướng", "Tính chất", "Hằng đẳng thức vectơ"],
+    difficulty: "Trung bình",
+    mnemonic: "Tích vô hướng có đủ 3 tính chất giống phép nhân số thực: giao hoán, phân phối, kết hợp với số k. Nhờ đó áp dụng được các hằng đẳng thức quen thuộc: (u+v)²=u²+2u·v+v²; (u+v)(u-v)=u²-v².",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 11, trang 69"
   }
 ];
