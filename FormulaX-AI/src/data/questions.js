@@ -3569,5 +3569,140 @@ export const questionsPool = [
     blankAnswer: "20",
     explanation: "Hàng 6 của tam giác Pascal là $1,6,15,20,15,6,1$, ứng với các hệ số của $a^6, a^5b, a^4b^2, a^3b^3, a^2b^4, ab^5, b^6$. Vậy hệ số của $a^3b^3$ là $20$ (cũng chính là $C_6^3$).",
     sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 33 (Ví dụ 1)"
+  },
+  {
+    id: "ds82",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Cho elip $\\dfrac{x^2}{100}+\\dfrac{y^2}{25}=1$. Diện tích của tứ giác có bốn đỉnh là bốn đỉnh của elip bằng:",
+    options: [
+      { letter: "A", text: "$100$", isCorrect: true },
+      { letter: "B", text: "$200$", isCorrect: false },
+      { letter: "C", text: "$50$", isCorrect: false },
+      { letter: "D", text: "$150$", isCorrect: false }
+    ],
+    blankAnswer: "100",
+    explanation: "Trục lớn, trục nhỏ có độ dài $2a=2\\sqrt{100}=20$ và $2b=2\\sqrt{25}=10$. Tứ giác có bốn đỉnh của elip có hai đường chéo vuông góc bằng $A_1A_2=20$ và $B_1B_2=10$, diện tích $S=\\dfrac{1}{2}\\cdot20\\cdot10=100$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 5, trang 40 (Ví dụ 1)"
+  },
+  {
+    id: "ds83",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Cho elip $\\dfrac{x^2}{64}+\\dfrac{y^2}{39}=1$. Tâm sai của elip bằng:",
+    options: [
+      { letter: "A", text: "$0{,}625$", isCorrect: true },
+      { letter: "B", text: "$0{,}8$", isCorrect: false },
+      { letter: "C", text: "$1{,}6$", isCorrect: false },
+      { letter: "D", text: "$0{,}488$", isCorrect: false }
+    ],
+    blankAnswer: "0,625",
+    explanation: "$a=8$, $b=\\sqrt{39}$, $c=\\sqrt{a^2-b^2}=\\sqrt{64-39}=5$. Tâm sai $e=\\dfrac{c}{a}=\\dfrac{5}{8}=0{,}625$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 5, trang 44 (Ví dụ 4)"
+  },
+  {
+    id: "ds84",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Hypebol $\\dfrac{x^2}{9}-\\dfrac{y^2}{16}=1$ có hai đường tiệm cận là:",
+    options: [
+      { letter: "A", text: "$y=\\pm\\dfrac{4}{3}x$", isCorrect: true },
+      { letter: "B", text: "$y=\\pm\\dfrac{3}{4}x$", isCorrect: false },
+      { letter: "C", text: "$y=\\pm\\dfrac{9}{16}x$", isCorrect: false },
+      { letter: "D", text: "$y=\\pm\\dfrac{16}{9}x$", isCorrect: false }
+    ],
+    blankAnswer: "y=±(4/3)x",
+    explanation: "Từ phương trình hypebol, $a^2=9,b^2=16$, nghĩa là $a=3,b=4$. Hai đường tiệm cận của hypebol là $y=\\pm\\dfrac{b}{a}x=\\pm\\dfrac{4}{3}x$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 6, trang 48 (Ví dụ 1)"
+  },
+  {
+    id: "ds85",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Cho hypebol $\\dfrac{x^2}{4}-\\dfrac{y^2}{21}=1$. Độ dài hai bán kính qua tiêu của điểm $M$ thuộc hypebol và có hoành độ bằng $-10$ là:",
+    options: [
+      { letter: "A", text: "$MF_1=23$, $MF_2=27$", isCorrect: true },
+      { letter: "B", text: "$MF_1=27$, $MF_2=23$", isCorrect: false },
+      { letter: "C", text: "$MF_1=25$, $MF_2=25$", isCorrect: false },
+      { letter: "D", text: "$MF_1=23$, $MF_2=23$", isCorrect: false }
+    ],
+    blankAnswer: "MF1=23, MF2=27",
+    explanation: "$a=2,b=\\sqrt{21}$, $c=\\sqrt{a^2+b^2}=5$. Với $x_0=-10$: $MF_1=\\left|2+\\dfrac{5}{2}\\cdot(-10)\\right|=23$ và $MF_2=\\left|2-\\dfrac{5}{2}\\cdot(-10)\\right|=27$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 6, trang 49 (Ví dụ 2)"
+  },
+  {
+    id: "ds86",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Trong mặt phẳng toạ độ $Oxy$, hypebol $(H)$ có phương trình chính tắc, đi qua điểm $A(4;0)$ và có tâm sai $e=3$. Phương trình chính tắc của $(H)$ là:",
+    options: [
+      { letter: "A", text: "$\\dfrac{x^2}{16}-\\dfrac{y^2}{128}=1$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{x^2}{16}-\\dfrac{y^2}{144}=1$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{x^2}{4}-\\dfrac{y^2}{128}=1$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{x^2}{16}+\\dfrac{y^2}{128}=1$", isCorrect: false }
+    ],
+    blankAnswer: "x^2/16-y^2/128=1",
+    explanation: "Vì $(H)$ đi qua $A(4;0)$ nên $a=4$. Từ $e=\\dfrac{c}{a}=3$ suy ra $c=3a=12$. Do đó $b^2=c^2-a^2=144-16=128$. Vậy $(H): \\dfrac{x^2}{16}-\\dfrac{y^2}{128}=1$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 6, trang 51-52 (Ví dụ 5)"
+  },
+  {
+    id: "ds87",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Lập phương trình chính tắc của parabol có khoảng cách từ đỉnh tới tiêu điểm bằng $3$.",
+    options: [
+      { letter: "A", text: "$y^2=12x$", isCorrect: true },
+      { letter: "B", text: "$y^2=6x$", isCorrect: false },
+      { letter: "C", text: "$y^2=3x$", isCorrect: false },
+      { letter: "D", text: "$y^2=24x$", isCorrect: false }
+    ],
+    blankAnswer: "y^2=12x",
+    explanation: "Phương trình chính tắc của parabol có dạng $y^2=2px$, $p>0$. Khoảng cách giữa tiêu điểm $F(p/2;0)$ và đỉnh $O(0;0)$ là $3$ nên $\\dfrac{p}{2}=3\\Rightarrow p=6$. Vậy parabol có phương trình $y^2=12x$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 7, trang 55 (Ví dụ 1)"
+  },
+  {
+    id: "ds88",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Cho parabol có phương trình $y^2=4x$. Bán kính qua tiêu của điểm $M$ thuộc parabol và có hoành độ bằng $3$ là:",
+    options: [
+      { letter: "A", text: "$4$", isCorrect: true },
+      { letter: "B", text: "$3$", isCorrect: false },
+      { letter: "C", text: "$2$", isCorrect: false },
+      { letter: "D", text: "$5$", isCorrect: false }
+    ],
+    blankAnswer: "4",
+    explanation: "Từ $2p=4$ suy ra $p=2$, tiêu điểm $F(1;0)$. Theo công thức bán kính qua tiêu $MF=x+\\dfrac{p}{2}=3+1=4$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 7, trang 55 (Ví dụ 2)"
+  },
+  {
+    id: "ds89",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Lập phương trình đường conic, biết tâm sai bằng $2$, một tiêu điểm $F(4;0)$ và đường chuẩn tương ứng $\\Delta: x-1=0$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{x^2}{4}-\\dfrac{y^2}{12}=1$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{x^2}{4}+\\dfrac{y^2}{12}=1$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{x^2}{12}-\\dfrac{y^2}{4}=1$", isCorrect: false },
+      { letter: "D", text: "$y^2=12x$", isCorrect: false }
+    ],
+    blankAnswer: "x^2/4-y^2/12=1",
+    explanation: "Điểm $M(x;y)$ thuộc conic khi $\\dfrac{MF}{d(M,\\Delta)}=2 \\Leftrightarrow \\sqrt{(x-4)^2+y^2}=2|x-1| \\Leftrightarrow (x-4)^2+y^2=4(x-1)^2 \\Leftrightarrow 3x^2-y^2=12 \\Leftrightarrow \\dfrac{x^2}{4}-\\dfrac{y^2}{12}=1$. Vì $e=2>1$ nên đây là một hypebol.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 8, trang 59 (Ví dụ 1)"
+  },
+  {
+    id: "ds90",
+    topic: "Mở rộng",
+    grade: 10,
+    text: "Vật thể liên sao Oumuamua có tâm sai quỹ đạo $e=1{,}201$ (theo nssdc.gsfc.nasa.gov). Quỹ đạo của Oumuamua thuộc loại đường conic nào?",
+    options: [
+      { letter: "A", text: "Hypebol", isCorrect: true },
+      { letter: "B", text: "Elip", isCorrect: false },
+      { letter: "C", text: "Parabol", isCorrect: false },
+      { letter: "D", text: "Đường tròn", isCorrect: false }
+    ],
+    blankAnswer: "Hypebol",
+    explanation: "Theo định nghĩa thống nhất ba đường conic theo tâm sai: nếu $e>1$ thì conic là đường hypebol. Vì $e=1{,}201>1$ nên quỹ đạo của Oumuamua là một nhánh hypebol (giải thích vì sao nó chỉ đi qua hệ Mặt Trời một lần rồi không quay lại).",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 8, trang 59 (Vận dụng 2)"
   }
 ];
