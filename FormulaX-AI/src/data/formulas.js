@@ -5,12 +5,13 @@ export const formulas = [
     name: "Đạo hàm các hàm số cơ bản",
     topic: "Giải tích",
     grade: 11,
-    latex: "(x^n)' = n \\cdot x^{n-1} \\quad (n \\in \\mathbb{R})",
-    explanation: "Trong đó:\n- $n$: Số mũ của biến số.\n- Với $n$ nguyên dương: áp dụng với mọi $x$.\n- Với $n$ không nguyên (như $n = \\frac{1}{2}$): cần $x > 0$.\n- $'$: Kí hiệu đạo hàm bậc nhất.",
+    latex: "(x^n)' = n \\cdot x^{n-1} \\quad (n \\in \\mathbb{N}^*)",
+    explanation: "Trong đó:\n- $n$: Số mũ nguyên dương ($n \\in \\mathbb{N}^*$).\n- Công thức áp dụng với mọi $x \\in \\mathbb{R}$.\n- $'$: Kí hiệu đạo hàm bậc nhất.",
     example: "Tính đạo hàm của hàm số $y = x^3$.\n\n**Lời giải:**\nÁp dụng công thức với $n = 3$, ta được:\n$$y' = (x^3)' = 3 \\cdot x^{3-1} = 3x^2$$",
     tags: ["Đạo hàm", "Cơ bản", "Khảo sát hàm số"],
     difficulty: "Dễ",
-    mnemonic: "Hạ số mũ xuống làm hệ số, rồi giảm số mũ đi 1 đơn vị: mũ đưa ra trước, đầu bớt đi một."
+    mnemonic: "Hạ số mũ xuống làm hệ số, rồi giảm số mũ đi 1 đơn vị: mũ đưa ra trước, đầu bớt đi một.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 88"
   },
   {
     id: "gt12-daoham-mu",
@@ -22,7 +23,8 @@ export const formulas = [
     example: "Tính đạo hàm của hàm số $y = 3^x$.\n\n**Lời giải:**\nÁp dụng công thức với cơ số $a = 3$, ta có:\n$$y' = (3^x)' = 3^x \\cdot \\ln 3$$",
     tags: ["Mũ", "Logarit", "Đạo hàm"],
     difficulty: "Trung bình",
-    mnemonic: "Đạo hàm hàm mũ bằng chính nó nhân với logarit tự nhiên của cơ số: Đạo hàm a mũ x là chính nó nhân ln a."
+    mnemonic: "Đạo hàm hàm mũ bằng chính nó nhân với logarit tự nhiên của cơ số: Đạo hàm a mũ x là chính nó nhân ln a.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 93"
   },
   {
     id: "gt12-logarit",
@@ -249,7 +251,8 @@ export const formulas = [
     example: "Tính đạo hàm của hàm số $y = \\sin(2x + 1)$.\n\n**Lời giải:**\nÁp dụng công thức hàm hợp với $u = 2x + 1$:\n$$y' = (2x + 1)' \\cdot \\cos(2x + 1) = 2\\cos(2x + 1)$$",
     tags: ["Đạo hàm", "Lượng giác", "Hàm số"],
     difficulty: "Dễ",
-    mnemonic: "Đạo hàm của sin ra cos, đạo hàm của cos ra trừ sin (đạo hàm đi xuôi, nguyên hàm đi ngược)."
+    mnemonic: "Đạo hàm của sin ra cos, đạo hàm của cos ra trừ sin (đạo hàm đi xuôi, nguyên hàm đi ngược).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 91"
   },
   // --- LỚP 10 ---
   {
@@ -364,7 +367,8 @@ export const formulas = [
     example: "Viết phương trình tiếp tuyến của đồ thị hàm số $y = x^2$ tại điểm có hoành độ $x_0 = 2$.\n\n**Lời giải:**\n- Tìm tung độ tiếp điểm: $y_0 = f(2) = 2^2 = 4$.\n- Tính đạo hàm: $y' = 2x$, suy ra hệ số góc $k = y'(2) = 2 \\cdot 2 = 4$.\n- Phương trình tiếp tuyến là:\n  $$y = 4(x - 2) + 4 \\iff y = 4x - 4$$",
     tags: ["Đạo hàm", "Tiếp tuyến", "Khảo sát hàm số"],
     difficulty: "Trung bình",
-    mnemonic: "Hệ số góc nhân hiệu hoành độ cộng tung độ tiếp điểm: y bằng f phẩy x0 nhân x trừ x0 cộng y0."
+    mnemonic: "Hệ số góc nhân hiệu hoành độ cộng tung độ tiếp điểm: y bằng f phẩy x0 nhân x trừ x0 cộng y0.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 31, trang 85"
   },
   {
     id: "gt11-daoham-tichthuong",
@@ -376,7 +380,8 @@ export const formulas = [
     example: "Tính đạo hàm của hàm số $y = \\frac{x}{x+1}$.\n\n**Lời giải:**\nÁp dụng công thức đạo hàm của thương với $u = x$ and $v = x + 1$:\n$$y' = \\frac{(x)'(x+1) - x(x+1)'}{(x+1)^2} = \\frac{1(x+1) - x(1)}{(x+1)^2} = \\frac{1}{(x+1)^2}$$",
     tags: ["Đạo hàm", "Quy tắc", "Cơ bản"],
     difficulty: "Trung bình",
-    mnemonic: "Đạo hàm tích: u phẩy v cộng v phẩy u. Đạo hàm thương: u phẩy v trừ v phẩy u chia v bình."
+    mnemonic: "Đạo hàm tích: u phẩy v cộng v phẩy u. Đạo hàm thương: u phẩy v trừ v phẩy u chia v bình.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 89"
   },
   {
     id: "hh12-oxyz-matcau",
@@ -402,7 +407,8 @@ export const formulas = [
     example: "Tính đạo hàm của hàm số $y = \\tan x - 2\\cos x + 3x$.\n\n**Lời giải:**\nÁp dụng tính tuyến tính của đạo hàm và bảng đạo hàm:\n$$y' = (\\tan x)' - 2(\\cos x)' + 3(x)' = \\frac{1}{\\cos^2 x} - 2(-\\sin x) + 3 = \\frac{1}{\\cos^2 x} + 2\\sin x + 3$$",
     tags: ["Đạo hàm", "Lượng giác", "Cos", "Tan", "Cot"],
     difficulty: "Trung bình",
-    mnemonic: "Cos kéo theo dấu trừ: cos' = -sin. Tan' = 1/cos². Cot' = -1/sin². (Đạo hàm tan cot đều 'chia bình phương hàm đồng hành')."
+    mnemonic: "Cos kéo theo dấu trừ: cos' = -sin. Tan' = 1/cos². Cot' = -1/sin². (Đạo hàm tan cot đều 'chia bình phương hàm đồng hành').",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 91-92"
   },
   {
     id: "gt12-daoham-log",
@@ -414,7 +420,8 @@ export const formulas = [
     example: "Tính đạo hàm của hàm số $y = \\log_3 x + 4\\ln x$.\n\n**Lời giải:**\n$$y' = \\frac{1}{x \\ln 3} + \\frac{4}{x} = \\frac{1}{x}\\left(\\frac{1}{\\ln 3} + 4\\right)$$",
     tags: ["Đạo hàm", "Logarit", "Ln"],
     difficulty: "Trung bình",
-    mnemonic: "Đạo hàm ln x là 1/x — đơn giản nhất. Log_a x thêm hệ số 1/ln(a): ln' = 1/x, log_a' = 1/(x·ln a)."
+    mnemonic: "Đạo hàm ln x là 1/x — đơn giản nhất. Log_a x thêm hệ số 1/ln(a): ln' = 1/x, log_a' = 1/(x·ln a).",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 93"
   },
   {
     id: "gt12-daoham-hopham",
@@ -426,7 +433,8 @@ export const formulas = [
     example: "**Ví dụ 1:** Tính $y'$ của $y = (2x^2 - 3)^5$.\n\n**Lời giải:**\n- Hàm trong: $u = 2x^2 - 3$, $u' = 4x$.\n- Hàm ngoài: $f(u) = u^5$, $f'(u) = 5u^4$.\n$$y' = 5(2x^2-3)^4 \\cdot 4x = 20x(2x^2-3)^4$$\n\n**Ví dụ 2:** Tính $y'$ của $y = e^{\\sin x}$.\n\n**Lời giải:**\n- Hàm trong: $u = \\sin x$, $u' = \\cos x$.\n- Hàm ngoài: $f(u) = e^u$, $f'(u) = e^u$.\n$$y' = e^{\\sin x} \\cdot \\cos x$$",
     tags: ["Đạo hàm", "Hàm hợp", "Chain Rule", "Quy tắc"],
     difficulty: "Trung bình",
-    mnemonic: "Đạo hàm từ ngoài vào trong: đạo hàm hàm ngoài (giữ nguyên hàm trong), rồi NHÂN đạo hàm hàm trong. Ví dụ: [sin(3x)]' = cos(3x) × 3. Không bao giờ quên nhân u' ở cuối!"
+    mnemonic: "Đạo hàm từ ngoài vào trong: đạo hàm hàm ngoài (giữ nguyên hàm trong), rồi NHÂN đạo hàm hàm trong. Ví dụ: [sin(3x)]' = cos(3x) × 3. Không bao giờ quên nhân u' ở cuối!",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 90"
   },
   {
     id: "gt12-tiemcan",
@@ -2441,5 +2449,57 @@ export const formulas = [
     difficulty: "Dễ",
     mnemonic: "Xung khắc = không giao nhau (A∩B=∅) = không thể cùng xảy ra một lúc. Khác với biến cố đối: xung khắc chỉ cần không giao, không bắt buộc phủ kín cả Ω.",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 29, trang 72"
+  },
+  {
+    id: "gt11-daoham-dinhnghia",
+    name: "Định nghĩa đạo hàm tại một điểm",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "f'(x_0) = \\lim_{x \\to x_0} \\frac{f(x) - f(x_0)}{x - x_0}",
+    explanation: "Trong đó:\n- $f(x)$: Hàm số xác định trên khoảng $(a;b)$, $x_0 \\in (a;b)$.\n- $f'(x_0)$ (hoặc $y'(x_0)$): Đạo hàm của hàm số tại điểm $x_0$, chỉ tồn tại khi giới hạn trên là hữu hạn.\n- Dạng khác thường dùng, đặt $h = x - x_0$: $f'(x_0) = \\lim_{h \\to 0} \\dfrac{f(x_0+h) - f(x_0)}{h}$.\nCác bước tính đạo hàm bằng định nghĩa: 1) Tính $f(x) - f(x_0)$; 2) Lập và rút gọn tỉ số $\\dfrac{f(x)-f(x_0)}{x-x_0}$ với $x \\neq x_0$; 3) Tìm giới hạn của tỉ số khi $x \\to x_0$.",
+    example: "Tính đạo hàm của hàm số $y = f(x) = x^2 + 2x$ tại $x_0 = 1$.\n\n**Lời giải:**\nVới $x \\neq 1$: $f(x) - f(1) = x^2 + 2x - 3 = (x-1)(x+3)$, suy ra $\\dfrac{f(x)-f(1)}{x-1} = x + 3$.\n$f'(1) = \\lim_{x \\to 1}(x+3) = 4$",
+    tags: ["Đạo hàm", "Định nghĩa", "Giới hạn"],
+    difficulty: "Trung bình",
+    mnemonic: "Đạo hàm tại một điểm là giới hạn của tỉ số 'hiệu hàm số trên hiệu biến số' khi biến chạy tới điểm đó.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 31, trang 82-83"
+  },
+  {
+    id: "gt11-daoham-can",
+    name: "Đạo hàm của hàm số căn thức",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "(\\sqrt{x})' = \\frac{1}{2\\sqrt{x}} \\quad (x > 0)",
+    explanation: "Trong đó:\n- Công thức xác định trên khoảng $(0; +\\infty)$.\n- Đối với hàm hợp $u = u(x)$ (với $u(x) > 0$), ta có: $(\\sqrt{u})' = \\dfrac{u'}{2\\sqrt{u}}$.",
+    example: "Tính đạo hàm của hàm số $y = \\sqrt{x^2+1}$.\n\n**Lời giải:**\nÁp dụng công thức hàm hợp với $u = x^2+1$, $u' = 2x$:\n$y' = \\frac{u'}{2\\sqrt{u}} = \\frac{2x}{2\\sqrt{x^2+1}} = \\frac{x}{\\sqrt{x^2+1}}$",
+    tags: ["Đạo hàm", "Căn thức", "Cơ bản"],
+    difficulty: "Dễ",
+    mnemonic: "Đạo hàm căn x bằng 1 trên 2 lần căn x — luôn cần x dương.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 88"
+  },
+  {
+    id: "gt11-daoham-tonghieu",
+    name: "Đạo hàm của tổng, hiệu hai hàm số",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "(u+v)' = u' + v', \\quad (u-v)' = u' - v'",
+    explanation: "Giả sử các hàm số $u = u(x)$, $v = v(x)$ có đạo hàm trên khoảng $(a;b)$.\nTrong đó:\n- Quy tắc đạo hàm của tổng, hiệu áp dụng được cho tổng, hiệu của hai hay nhiều hàm số.\n- Với $k$ là hằng số: $(ku)' = ku'$.\n- Đạo hàm của hàm số nghịch đảo: $\\left(\\dfrac{1}{v}\\right)' = -\\dfrac{v'}{v^2}$ (với $v(x) \\neq 0$).",
+    example: "Tính đạo hàm của hàm số $y = \\dfrac{1}{3}x^3 - x^2 + 2x + 1$.\n\n**Lời giải:**\n$y' = \\frac{1}{3}(x^3)' - (x^2)' + 2(x)' + 1' = \\frac{1}{3} \\cdot 3x^2 - 2x + 2 = x^2 - 2x + 2$",
+    tags: ["Đạo hàm", "Tổng", "Hiệu", "Quy tắc"],
+    difficulty: "Dễ",
+    mnemonic: "Đạo hàm của tổng (hiệu) bằng tổng (hiệu) các đạo hàm — cứ tách từng hạng tử ra mà đạo hàm riêng.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 89"
+  },
+  {
+    id: "gt11-daoham-caphai",
+    name: "Đạo hàm cấp hai",
+    topic: "Giải tích",
+    grade: 11,
+    latex: "y'' = f''(x) = \\left(f'(x)\\right)'",
+    explanation: "Giả sử hàm số $y = f(x)$ có đạo hàm tại mỗi điểm $x \\in (a;b)$.\nTrong đó:\n- Nếu hàm số $y' = f'(x)$ lại có đạo hàm tại $x$ thì đạo hàm của $y'$ được gọi là đạo hàm cấp hai của hàm số $y=f(x)$ tại $x$, kí hiệu là $y''$ hoặc $f''(x)$.\n- **Ý nghĩa cơ học:** Nếu một chuyển động có phương trình $s = f(t)$ thì đạo hàm cấp hai (nếu có) của hàm số $f(t)$ là gia tốc tức thời của chuyển động: $a(t) = f''(t)$.",
+    example: "Tính đạo hàm cấp hai của hàm số $y = x^2 + e^{2x-1}$. Từ đó tính $y''(0)$.\n\n**Lời giải:**\n$y' = 2x + 2e^{2x-1}; \\quad y'' = 2 + 4e^{2x-1}$\nVậy $y''(0) = 2 + 4e^{-1}$.",
+    tags: ["Đạo hàm cấp hai", "Gia tốc", "Cơ học"],
+    difficulty: "Trung bình",
+    mnemonic: "Đạo hàm của đạo hàm — lấy đạo hàm hai lần liên tiếp; trong Vật lí, đạo hàm cấp hai của quãng đường theo thời gian chính là gia tốc.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 33, trang 95"
   },
 ];

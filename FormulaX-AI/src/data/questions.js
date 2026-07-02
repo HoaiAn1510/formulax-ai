@@ -4725,4 +4725,124 @@ export const questionsPool = [
     explanation: "Gọi $A$: An đạt huy chương ($P(A)=0,8$), $B$: Bình đạt huy chương ($P(B)=0,9$, nên $P(\\overline{B})=0,1$). Vì $A,B$ độc lập nên $A,\\overline{B}$ cũng độc lập: $P(A\\overline{B})=P(A)\\cdot P(\\overline{B})=0,8\\cdot0,1=0,08$.",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 30, Ví dụ 1, trang 78"
   },
+  {
+    id: "gt38",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Dùng định nghĩa, tính đạo hàm của hàm số $y = x^2 - x$ tại $x_0 = 1$.",
+    options: [
+      { letter: "A", text: "$1$", isCorrect: true },
+      { letter: "B", text: "$3$", isCorrect: false },
+      { letter: "C", text: "$-1$", isCorrect: false },
+      { letter: "D", text: "$0$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "Với $x \\neq 1$: $f(x) - f(1) = x^2 - x - 0 = x(x-1) - (1-1)$. Cách khác: $y' = 2x - 1$ nên $f'(1) = 2(1) - 1 = 1$. Bằng định nghĩa: $\\dfrac{f(x)-f(1)}{x-1} = \\dfrac{x^2-x}{x-1} = x$, suy ra $f'(1) = \\lim_{x\\to 1} x = 1$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 31, trang 86 (Bài 9.1a)"
+  },
+  {
+    id: "gt39",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Một vật được phóng theo phương thẳng đứng lên trên từ mặt đất với vận tốc ban đầu là $19,6$ m/s thì độ cao $h$ của nó (tính bằng mét) sau $t$ giây được cho bởi công thức $h = 19,6t - 4,9t^2$. Tìm vận tốc của vật khi nó chạm đất.",
+    options: [
+      { letter: "A", text: "$-19,6$ m/s", isCorrect: true },
+      { letter: "B", text: "$19,6$ m/s", isCorrect: false },
+      { letter: "C", text: "$-9,8$ m/s", isCorrect: false },
+      { letter: "D", text: "$0$ m/s", isCorrect: false }
+    ],
+    blankAnswer: "-19,6 m/s",
+    explanation: "Vật chạm đất khi $h(t) = 0 \\iff 19,6t - 4,9t^2 = 0 \\iff t = 0$ (loại) hoặc $t = 4$ (giây). Vận tốc $v(t) = h'(t) = 19,6 - 9,8t$, nên $v(4) = 19,6 - 9,8 \\cdot 4 = -19,6$ m/s.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 31, trang 86 (Bài 9.4)"
+  },
+  {
+    id: "gt40",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Viết phương trình tiếp tuyến của parabol $y = -x^2 + 4x$, biết tiếp điểm có hoành độ $x_0 = 1$.",
+    options: [
+      { letter: "A", text: "$y = 2x + 1$", isCorrect: true },
+      { letter: "B", text: "$y = -2x + 3$", isCorrect: false },
+      { letter: "C", text: "$y = 2x - 1$", isCorrect: false },
+      { letter: "D", text: "$y = 4x - 1$", isCorrect: false }
+    ],
+    blankAnswer: "y = 2x + 1",
+    explanation: "Ta có $y_0 = f(1) = -1 + 4 = 3$. Đạo hàm $y' = -2x + 4$ nên hệ số góc $k = f'(1) = -2 + 4 = 2$. Phương trình tiếp tuyến: $y = 2(x-1) + 3 = 2x + 1$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 31, trang 86 (Bài 9.3a)"
+  },
+  {
+    id: "gt41",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính đạo hàm của hàm số $y = x^2 - 4\\sqrt{x} + 3$.",
+    options: [
+      { letter: "A", text: "$2x - \\dfrac{2}{\\sqrt{x}}$", isCorrect: true },
+      { letter: "B", text: "$2x - \\dfrac{4}{\\sqrt{x}}$", isCorrect: false },
+      { letter: "C", text: "$2x - \\dfrac{1}{\\sqrt{x}}$", isCorrect: false },
+      { letter: "D", text: "$x - \\dfrac{2}{\\sqrt{x}}$", isCorrect: false }
+    ],
+    blankAnswer: "2x - \\dfrac{2}{\\sqrt{x}}",
+    explanation: "$y' = 2x - 4 \\cdot \\dfrac{1}{2\\sqrt{x}} + 0 = 2x - \\dfrac{2}{\\sqrt{x}}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 94 (Bài 9.6b)"
+  },
+  {
+    id: "gt42",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính đạo hàm của hàm số $y = \\dfrac{2x - 1}{x + 2}$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{5}{(x+2)^2}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{-5}{(x+2)^2}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{3}{(x+2)^2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{5}{x+2}$", isCorrect: false }
+    ],
+    blankAnswer: "\\dfrac{5}{(x+2)^2}",
+    explanation: "$y' = \\dfrac{(2x-1)'(x+2) - (2x-1)(x+2)'}{(x+2)^2} = \\dfrac{2(x+2) - (2x-1)}{(x+2)^2} = \\dfrac{5}{(x+2)^2}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 94 (Bài 9.7a)"
+  },
+  {
+    id: "gt43",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Tính đạo hàm của hàm số $y = \\log_3(4x + 1)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{4}{(4x+1)\\ln 3}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{(4x+1)\\ln 3}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{4}{4x+1}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{4\\ln 3}{4x+1}$", isCorrect: false }
+    ],
+    blankAnswer: "\\dfrac{4}{(4x+1)\\ln 3}",
+    explanation: "Áp dụng công thức đạo hàm hàm hợp $(\\log_a u)' = \\dfrac{u'}{u \\ln a}$ với $u = 4x+1$, $u' = 4$: $y' = \\dfrac{4}{(4x+1)\\ln 3}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 32, trang 94 (Bài 9.9b)"
+  },
+  {
+    id: "gt44",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Cho hàm số $f(x) = x^2 e^x$. Tính $f''(0)$.",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: true },
+      { letter: "B", text: "$0$", isCorrect: false },
+      { letter: "C", text: "$1$", isCorrect: false },
+      { letter: "D", text: "$4$", isCorrect: false }
+    ],
+    blankAnswer: "2",
+    explanation: "$f'(x) = 2xe^x + x^2e^x = e^x(x^2+2x)$. $f''(x) = e^x(x^2+2x) + e^x(2x+2) = e^x(x^2+4x+2)$. Vậy $f''(0) = 1 \\cdot 2 = 2$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 33, trang 96 (Bài 9.13)"
+  },
+  {
+    id: "gt45",
+    topic: "Giải tích",
+    grade: 11,
+    text: "Cho hàm số $P(x) = ax^2 + bx + 3$ ($a, b$ là hằng số). Tìm $a, b$ biết $P'(1) = 0$ và $P''(1) = -2$.",
+    options: [
+      { letter: "A", text: "$a = -1,\\ b = 2$", isCorrect: true },
+      { letter: "B", text: "$a = 1,\\ b = -2$", isCorrect: false },
+      { letter: "C", text: "$a = -1,\\ b = -2$", isCorrect: false },
+      { letter: "D", text: "$a = 1,\\ b = 2$", isCorrect: false }
+    ],
+    blankAnswer: "a = -1, b = 2",
+    explanation: "$P'(x) = 2ax + b$, $P''(x) = 2a$. Từ $P''(1) = 2a = -2 \\Rightarrow a = -1$. Thay vào $P'(1) = 2a + b = 0 \\Rightarrow -2 + b = 0 \\Rightarrow b = 2$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 33, trang 96 (Bài 9.15)"
+  },
 ];
