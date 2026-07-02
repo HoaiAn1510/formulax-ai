@@ -1340,5 +1340,70 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Tích vô hướng có đủ 3 tính chất giống phép nhân số thực: giao hoán, phân phối, kết hợp với số k. Nhờ đó áp dụng được các hằng đẳng thức quen thuộc: (u+v)²=u²+2u·v+v²; (u+v)(u-v)=u²-v².",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 11, trang 69"
+  },
+  {
+    id: "xs10-sai-so-tuyet-doi-tuong-doi",
+    name: "Sai số tuyệt đối và sai số tương đối",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "\\Delta_a = |a - \\bar{a}|, \\qquad \\delta_a = \\dfrac{\\Delta_a}{|a|}",
+    explanation: "Trong đó:\n- $\\bar a$: số đúng (giá trị chính xác, nhiều khi không biết được)\n- $a$: số gần đúng của $\\bar a$\n- $\\Delta_a = |a-\\bar a|$: sai số tuyệt đối của số gần đúng $a$, phản ánh mức độ sai lệch giữa $a$ và $\\bar a$\n- $\\delta_a = \\dfrac{\\Delta_a}{|a|}$: sai số tương đối của $a$, thường viết dưới dạng phần trăm\n\nNếu $\\Delta_a \\le d$ ($d$ là một số dương) thì viết $\\bar a = a \\pm d$ và hiểu là số đúng $\\bar a$ nằm trong đoạn $[a-d; a+d]$; $d$ được gọi là độ chính xác của số gần đúng. Khi đó $\\delta_a \\le \\dfrac{d}{|a|}$; tỉ số này càng nhỏ thì chất lượng phép đo hay tính toán càng cao.",
+    example: "Một công ty đóng gói gạo với khối lượng mong muốn 5 kg, trên bao bì ghi $5 \\pm 0,2$ kg. Gọi $\\bar a$ là khối lượng thực của một bao gạo. Xác định số gần đúng, độ chính xác và đoạn chứa $\\bar a$.\n\n**Lời giải:** Số gần đúng $a=5$ (kg), độ chính xác $d=0,2$ (kg). Vậy $\\bar a$ nằm trong đoạn $[5-0,2;\\ 5+0,2] = [4,8;\\ 5,2]$.",
+    tags: ["Sai số", "Số gần đúng", "Độ chính xác", "Sai số tương đối"],
+    difficulty: "Trung bình",
+    mnemonic: "Sai số tuyệt đối = |số gần đúng − số đúng|; sai số tương đối = sai số tuyệt đối chia |số gần đúng| (thường đổi ra %).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 12"
+  },
+  {
+    id: "xs10-quy-tac-lam-tron",
+    name: "Quy tắc làm tròn số gần đúng",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "\\begin{cases} \\text{Giữ nguyên} & \\text{nếu chữ số liền sau} < 5 \\\\ \\text{Tăng 1 đơn vị} & \\text{nếu chữ số liền sau} \\ge 5 \\end{cases}",
+    explanation: "Trong đó:\n- Chữ số hàng làm tròn: giữ nguyên nếu chữ số ngay bên phải nó nhỏ hơn 5; tăng thêm 1 đơn vị nếu chữ số ngay bên phải nó lớn hơn hoặc bằng 5\n- Các chữ số sau hàng làm tròn: bỏ đi nếu ở phần thập phân; thay bởi chữ số 0 nếu ở phần số nguyên\n\nSố thu được sau khi làm tròn gọi là số quy tròn — đây cũng là một số gần đúng của số ban đầu. Khi thay số đúng bởi số quy tròn đến một hàng nào đó thì sai số tuyệt đối của số quy tròn không vượt quá nửa đơn vị của hàng làm tròn. Cho số gần đúng $a$ với độ chính xác $d$: khi được yêu cầu làm tròn $a$ mà không nói rõ hàng nào, ta làm tròn $a$ đến hàng thấp nhất mà $d$ nhỏ hơn 1 đơn vị của hàng đó.",
+    example: "Cho số gần đúng $a = 581268$ với độ chính xác $d = 200$. Hãy viết số quy tròn của $a$.\n\n**Lời giải:** Vì độ chính xác đến hàng trăm ($d=200$) nên ta làm tròn $a$ đến hàng nghìn (hàng thấp nhất mà $d=200$ nhỏ hơn 1 đơn vị của hàng đó, tức nhỏ hơn 1000). Số quy tròn của $a$ là $581\\,000$.",
+    tags: ["Quy tròn", "Số gần đúng", "Làm tròn số"],
+    difficulty: "Dễ",
+    mnemonic: "Từ 5 trở lên thì làm tròn lên (tăng 1); dưới 5 thì bỏ (giữ nguyên) — sau hàng làm tròn: phần thập phân bỏ, phần nguyên thay bằng 0.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 12"
+  },
+  {
+    id: "xs10-tu-phan-vi",
+    name: "Tứ phân vị",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "Q_1, \\quad Q_2 = M_e, \\quad Q_3",
+    explanation: "Trong đó:\n- $Q_2$: trung vị của mẫu số liệu đã sắp xếp theo thứ tự không giảm\n- $Q_1$: trung vị của nửa số liệu bên trái $Q_2$ (không bao gồm $Q_2$ nếu $n$ lẻ) — còn gọi là tứ phân vị thứ nhất hay tứ phân vị dưới\n- $Q_3$: trung vị của nửa số liệu bên phải $Q_2$ (không bao gồm $Q_2$ nếu $n$ lẻ) — còn gọi là tứ phân vị thứ ba hay tứ phân vị trên\n\nCác điểm $Q_1, Q_2, Q_3$ chia mẫu số liệu đã sắp xếp thành bốn phần, mỗi phần chứa khoảng 25% giá trị.",
+    example: "Hàm lượng Natri (mg) trong 100 g của 20 loại ngũ cốc đã sắp xếp: 0, 50, 70, 100, 130, 140, 140, 150, 160, 180, 180, 180, 190, 200, 200, 210, 210, 220, 290, 340. Tìm các tứ phân vị.\n\n**Lời giải:** $n=20$ (chẵn) nên $Q_2 = (180+180):2 = 180$. Nửa trái (10 giá trị đầu) có hai giá trị chính giữa là 130, 140 nên $Q_1 = (130+140):2 = 135$. Nửa phải (10 giá trị cuối) có hai giá trị chính giữa là 200, 210 nên $Q_3 = (200+210):2 = 205$.",
+    tags: ["Tứ phân vị", "Thống kê", "Trung vị"],
+    difficulty: "Trung bình",
+    mnemonic: "Tứ phân vị = 3 mốc chia dãy số (đã sắp xếp) thành 4 phần bằng nhau: Q1 (25%), Q2 = trung vị (50%), Q3 (75%).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 13"
+  },
+  {
+    id: "xs10-khoang-bien-thien-tu-phan-vi",
+    name: "Khoảng biến thiên và khoảng tứ phân vị",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "R = x_{max} - x_{min}, \\qquad \\Delta_Q = Q_3 - Q_1",
+    explanation: "Trong đó:\n- $R$: khoảng biến thiên, là hiệu số giữa giá trị lớn nhất và giá trị nhỏ nhất trong mẫu số liệu\n- $\\Delta_Q$: khoảng tứ phân vị, là hiệu số giữa tứ phân vị thứ ba $Q_3$ và tứ phân vị thứ nhất $Q_1$\n\n$R$ chỉ sử dụng thông tin của giá trị lớn nhất và nhỏ nhất nên dễ bị ảnh hưởng bởi giá trị bất thường. $\\Delta_Q$ ổn định hơn vì chỉ sử dụng 50% số liệu chính giữa của mẫu đã sắp xếp (về bản chất là khoảng biến thiên của nửa dữ liệu chính giữa). Cả hai đều dùng để đo độ phân tán của mẫu số liệu: giá trị càng lớn thì mẫu số liệu càng phân tán.",
+    example: "Điểm kiểm tra Toán của Tổ 1: 7, 8, 8, 9, 8, 8, 8. Tổ 2: 10, 6, 8, 9, 9, 7, 8, 8. So sánh khoảng biến thiên của hai tổ.\n\n**Lời giải:** Tổ 1 có giá trị nhỏ nhất, lớn nhất là 7 và 9 nên $R_1 = 9-7=2$. Tổ 2 có giá trị nhỏ nhất, lớn nhất là 6 và 10 nên $R_2=10-6=4$. Do $R_2>R_1$ nên các bạn Tổ 1 học đều hơn Tổ 2.",
+    tags: ["Khoảng biến thiên", "Khoảng tứ phân vị", "Độ phân tán", "Thống kê"],
+    difficulty: "Trung bình",
+    mnemonic: "Khoảng biến thiên = Max − Min (dễ bị lệch bởi giá trị bất thường). Khoảng tứ phân vị = Q3 − Q1 (ổn định hơn, chỉ dùng 50% dữ liệu giữa).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 14"
+  },
+  {
+    id: "xs10-gia-tri-bat-thuong",
+    name: "Phát hiện giá trị bất thường bằng biểu đồ hộp",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "x < Q_1 - 1{,}5\\Delta_Q \\quad \\text{hoặc} \\quad x > Q_3 + 1{,}5\\Delta_Q",
+    explanation: "Trong đó:\n- $Q_1, Q_3$: tứ phân vị thứ nhất và thứ ba của mẫu số liệu\n- $\\Delta_Q = Q_3-Q_1$: khoảng tứ phân vị\n- $x$: một giá trị bất kì trong mẫu số liệu\n\nMột giá trị $x$ của mẫu số liệu được xem là giá trị bất thường nếu $x$ nhỏ hơn $Q_1 - 1,5\\Delta_Q$ hoặc lớn hơn $Q_3 + 1,5\\Delta_Q$. Biểu đồ hộp trực quan hóa các mốc $Q_1, Q_2, Q_3$ cùng hai ngưỡng này để phát hiện các giá trị bất thường hoặc không chính xác trong mẫu số liệu.",
+    example: "Hàm lượng Natri có $Q_1=135$, $Q_3=205$ nên $\\Delta_Q=205-135=70$. Tìm giá trị bất thường trong mẫu, biết mẫu có hai giá trị 340 và 0.\n\n**Lời giải:** $Q_1-1,5\\Delta_Q = 135-105=30$ và $Q_3+1,5\\Delta_Q=205+105=310$. Vì $340>310$ và $0<30$ nên cả hai giá trị 340 và 0 đều được xem là giá trị bất thường.",
+    tags: ["Biểu đồ hộp", "Giá trị bất thường", "Tứ phân vị", "Thống kê"],
+    difficulty: "Khó",
+    mnemonic: "Ngoài khoảng [Q1 − 1,5·ΔQ ; Q3 + 1,5·ΔQ] thì coi là giá trị bất thường (outlier).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 14"
   }
 ];

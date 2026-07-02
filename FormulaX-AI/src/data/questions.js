@@ -2654,5 +2654,140 @@ export const questionsPool = [
     blankAnswer: "1",
     explanation: "Áp dụng công thức $\\vec u\\cdot\\vec v=xx'+yy'$: $\\vec u\\cdot\\vec v=2\\cdot5+(-3)\\cdot3=10-9=1$.",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 11, Ví dụ 3, trang 68"
+  },
+  {
+    id: "xs26",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Một công ty đóng gói gạo với khối lượng mong muốn 5 kg. Trên bao bì ghi thông tin khối lượng là $5 \\pm 0,2$ kg. Gọi $\\bar a$ là khối lượng thực của một bao gạo. Giá trị của $\\bar a$ nằm trong đoạn nào?",
+    options: [
+      { letter: "A", text: "$[4,8;\\ 5,2]$", isCorrect: true },
+      { letter: "B", text: "$[4,7;\\ 5,3]$", isCorrect: false },
+      { letter: "C", text: "$[5;\\ 5,2]$", isCorrect: false },
+      { letter: "D", text: "$[4,8;\\ 5]$", isCorrect: false }
+    ],
+    blankAnswer: "[4,8; 5,2]",
+    explanation: "Số gần đúng $a=5$, độ chính xác $d=0,2$. Số đúng $\\bar a$ nằm trong đoạn $[a-d;\\ a+d] = [5-0,2;\\ 5+0,2] = [4,8;\\ 5,2]$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 12"
+  },
+  {
+    id: "xs27",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Trong một cuộc điều tra dân số, người ta viết dân số của một tỉnh là $3\\,574\\,625$ người $\\pm\\ 50\\,000$ người. Sai số tương đối của số gần đúng này xấp xỉ bao nhiêu?",
+    options: [
+      { letter: "A", text: "$1,4\\%$", isCorrect: true },
+      { letter: "B", text: "$14\\%$", isCorrect: false },
+      { letter: "C", text: "$0,14\\%$", isCorrect: false },
+      { letter: "D", text: "$50\\,000\\%$", isCorrect: false }
+    ],
+    blankAnswer: "1,4%",
+    explanation: "$\\delta_a \\le \\dfrac{d}{|a|} = \\dfrac{50\\,000}{3\\,574\\,625} \\approx 1,4\\%$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 12"
+  },
+  {
+    id: "xs28",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Cho số gần đúng $a = 581268$ với độ chính xác $d = 200$. Số quy tròn của $a$ là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$581\\,000$", isCorrect: true },
+      { letter: "B", text: "$581\\,300$", isCorrect: false },
+      { letter: "C", text: "$580\\,000$", isCorrect: false },
+      { letter: "D", text: "$581\\,268$", isCorrect: false }
+    ],
+    blankAnswer: "581000",
+    explanation: "Vì độ chính xác đến hàng trăm ($d=200$) nên ta làm tròn $a$ đến hàng nghìn (hàng thấp nhất mà $d$ nhỏ hơn 1 đơn vị của hàng đó). Số quy tròn của $a$ là $581\\,000$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 12"
+  },
+  {
+    id: "xs29",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Một công ty nhỏ gồm 1 giám đốc và 5 nhân viên. Thu nhập mỗi tháng của giám đốc là 20 triệu đồng, của mỗi nhân viên là 4 triệu đồng. Trung vị của mẫu số liệu thu nhập này là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$4$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$6,67$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$20$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$12$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "4 triệu đồng",
+    explanation: "Sắp xếp: 4, 4, 4, 4, 4, 20. Hai giá trị chính giữa đều bằng 4 nên trung vị $M_e = 4$ (triệu đồng). Lương giám đốc là giá trị bất thường không ảnh hưởng đến trung vị.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 13"
+  },
+  {
+    id: "xs30",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Mẫu số liệu hàm lượng Natri (mg) trong 100 g ngũ cốc đã sắp xếp: 0, 50, 70, 100, 130, 140, 140, 150, 160, 180, 180, 180, 190, 200, 200, 210, 210, 220, 290, 340. Tứ phân vị thứ nhất $Q_1$ của mẫu số liệu bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$135$", isCorrect: true },
+      { letter: "B", text: "$140$", isCorrect: false },
+      { letter: "C", text: "$130$", isCorrect: false },
+      { letter: "D", text: "$180$", isCorrect: false }
+    ],
+    blankAnswer: "135",
+    explanation: "$n=20$ nên $Q_2=180$. Nửa trái gồm 10 giá trị đầu: 0, 50, 70, 100, 130, 140, 140, 150, 160, 180 — hai giá trị chính giữa là 130 và 140, nên $Q_1=(130+140):2=135$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 13"
+  },
+  {
+    id: "xs31",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Cho mẫu số liệu: 8, 7, 10, 9, 7, 5, 7, 8, 8. Mốt của mẫu số liệu này là:",
+    options: [
+      { letter: "A", text: "$7$ và $8$", isCorrect: true },
+      { letter: "B", text: "Chỉ có $8$", isCorrect: false },
+      { letter: "C", text: "Chỉ có $7$", isCorrect: false },
+      { letter: "D", text: "$9$", isCorrect: false }
+    ],
+    blankAnswer: "7 và 8",
+    explanation: "Giá trị 7 xuất hiện 3 lần, giá trị 8 xuất hiện 3 lần — đây là số lần lớn nhất. Vậy mẫu số liệu này có hai mốt là 7 và 8.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 13"
+  },
+  {
+    id: "xs32",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Điểm kiểm tra học kì môn Toán của Tổ 1: 7, 8, 8, 9, 8, 8, 8. Của Tổ 2: 10, 6, 8, 9, 9, 7, 8, 8. Khoảng biến thiên của mẫu số liệu Tổ 1 và Tổ 2 lần lượt là:",
+    options: [
+      { letter: "A", text: "$R_1=2,\\ R_2=4$", isCorrect: true },
+      { letter: "B", text: "$R_1=9,\\ R_2=10$", isCorrect: false },
+      { letter: "C", text: "$R_1=7,\\ R_2=6$", isCorrect: false },
+      { letter: "D", text: "$R_1=4,\\ R_2=2$", isCorrect: false }
+    ],
+    blankAnswer: "R1=2, R2=4",
+    explanation: "Tổ 1: điểm thấp nhất, cao nhất là 7; 9, nên $R_1=9-7=2$. Tổ 2: điểm thấp nhất, cao nhất là 6; 10, nên $R_2=10-6=4$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 14"
+  },
+  {
+    id: "xs33",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Mẫu số liệu số ghế trống tại một rạp chiếu phim trong 9 ngày: 7, 8, 22, 20, 15, 18, 19, 13, 11. Khoảng tứ phân vị $\\Delta_Q$ của mẫu số liệu này bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$10$", isCorrect: true },
+      { letter: "B", text: "$15$", isCorrect: false },
+      { letter: "C", text: "$9,5$", isCorrect: false },
+      { letter: "D", text: "$19,5$", isCorrect: false }
+    ],
+    blankAnswer: "10",
+    explanation: "Sắp xếp: 7, 8, 11, 13, 15, 18, 19, 20, 22. $Q_2=15$; nửa trái 7,8,11,13 có $Q_1=(8+11):2=9,5$; nửa phải 18,19,20,22 có $Q_3=(19+20):2=19,5$. Vậy $\\Delta_Q=19,5-9,5=10$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 14"
+  },
+  {
+    id: "xs34",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Mẫu số liệu hàm lượng Natri có $Q_1=135$, $Q_3=205$ (khoảng tứ phân vị $\\Delta_Q=70$). Trong hai giá trị $340$ và $0$ của mẫu số liệu, giá trị nào được xem là giá trị bất thường?",
+    options: [
+      { letter: "A", text: "Cả hai giá trị $340$ và $0$", isCorrect: true },
+      { letter: "B", text: "Chỉ giá trị $340$", isCorrect: false },
+      { letter: "C", text: "Chỉ giá trị $0$", isCorrect: false },
+      { letter: "D", text: "Không có giá trị nào bất thường", isCorrect: false }
+    ],
+    blankAnswer: "Cả hai giá trị 340 và 0",
+    explanation: "$Q_3+1,5\\Delta_Q = 205+105=310 < 340$ và $Q_1-1,5\\Delta_Q=135-105=30 > 0$, nên cả hai giá trị 340 và 0 đều là giá trị bất thường.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 14"
   }
 ];
