@@ -182,7 +182,8 @@ export const formulas = [
     example: "Có bao nhiêu cách chọn ra 3 học sinh từ một nhóm 10 học sinh để đi làm vệ sinh?\n\n**Lời giải:**\nDo không phân biệt thứ tự chọn nên đây là tổ hợp chập 3 của 10:\n$$C_{10}^3 = \\frac{10!}{3! \\cdot 7!} = \\frac{10 \\cdot 9 \\cdot 8}{3 \\cdot 2 \\cdot 1} = 120 \\text{ cách}$$",
     tags: ["Tổ hợp", "Chỉnh hợp", "Đếm"],
     difficulty: "Trung bình",
-    mnemonic: "Tổ hợp là chọn không xếp: Chọn xong để nguyên một nhóm, không quan tâm thứ tự."
+    mnemonic: "Tổ hợp là chọn không xếp: Chọn xong để nguyên một nhóm, không quan tâm thứ tự.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 24, trang 68"
   },
   {
     id: "xs11-chinhhop",
@@ -194,7 +195,8 @@ export const formulas = [
     example: "Có bao nhiêu cách xếp 3 học sinh vào 3 vị trí chức vụ Lớp trưởng, Lớp phó và Thủ quỹ từ một nhóm 10 học sinh?\n\n**Lời giải:**\nVì vị trí của mỗi học sinh được chọn có phân biệt thứ tự chức vụ, số cách là:\n$$A_{10}^3 = \\frac{10!}{7!} = 10 \\cdot 9 \\cdot 8 = 720 \\text{ cách}$$",
     tags: ["Tổ hợp", "Chỉnh hợp", "Đếm"],
     difficulty: "Trung bình",
-    mnemonic: "Chỉnh hợp là chọn xong chỉnh: Chọn ra rồi xếp thứ tự (nhiều cách xếp hơn tổ hợp k! lần)."
+    mnemonic: "Chỉnh hợp là chọn xong chỉnh: Chọn ra rồi xếp thứ tự (nhiều cách xếp hơn tổ hợp k! lần).",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 24, trang 67"
   },
   {
     id: "xs11-xacsuat",
@@ -622,7 +624,8 @@ export const formulas = [
     example: "Từ 5 bạn nam và 4 bạn nữ, chọn 1 bạn làm lớp trưởng và 1 bạn làm lớp phó (khác giới tính). Hỏi có bao nhiêu cách?\n\n**Lời giải:**\n- Nếu lớp trưởng nam (5 cách), lớp phó nữ (4 cách): $5 \\times 4 = 20$ cách.\n- Nếu lớp trưởng nữ (4 cách), lớp phó nam (5 cách): $4 \\times 5 = 20$ cách.\n- Tổng: $20 + 20 = 40$ cách.",
     tags: ["Quy tắc đếm", "Tổ hợp", "Cơ bản"],
     difficulty: "Dễ",
-    mnemonic: "HOẶC → Cộng. VÀ → Nhân. Chọn một trong nhiều loại thì cộng; làm từng bước độc lập thì nhân."
+    mnemonic: "HOẶC → Cộng. VÀ → Nhân. Chọn một trong nhiều loại thì cộng; làm từng bước độc lập thì nhân.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 23, trang 61, 63"
   },
 
   // --- LỚP 11: BỔ SUNG ---
@@ -848,7 +851,8 @@ export const formulas = [
     example: "Có bao nhiêu cách xếp 5 học sinh vào một hàng ngang?\n\n**Lời giải:**\nĐây là hoán vị của 5 phần tử:\n$$P_5 = 5! = 1 \\times 2 \\times 3 \\times 4 \\times 5 = 120 \\text{ cách}$$",
     tags: ["Hoán vị", "Giai thừa", "Đếm", "Tổ hợp"],
     difficulty: "Dễ",
-    mnemonic: "n! = n nhân xuống dần đến 1. Cách nhớ: 5! = 5×4×3×2×1 = 120. Hoán vị = tất cả đều tham gia và thứ tự quan trọng."
+    mnemonic: "n! = n nhân xuống dần đến 1. Cách nhớ: 5! = 5×4×3×2×1 = 120. Hoán vị = tất cả đều tham gia và thứ tự quan trọng.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 24, trang 67"
   },
   {
     id: "ds11-hamso-mu",
@@ -1540,5 +1544,18 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Vectơ pháp tuyến của tiếp tuyến chính là vectơ nối tiếp điểm tới tâm: MI. Tiếp tuyến luôn vuông góc bán kính.",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 21, trang 46"
+  },
+  {
+    id: "ds10-nhithuc-newton-n4-n5",
+    name: "Khai triển nhị thức Newton (a+b)^4 và (a+b)^5",
+    topic: "Đại số",
+    grade: 10,
+    latex: "(a+b)^4 = a^4+4a^3b+6a^2b^2+4ab^3+b^4; \\quad (a+b)^5 = a^5+5a^4b+10a^3b^2+10a^2b^3+5ab^4+b^5",
+    explanation: "Khai triển nhị thức Newton với số mũ thấp ($n=4$ hoặc $n=5$), xây dựng bằng sơ đồ hình cây và tổ hợp: hệ số của số hạng chứa $a^{n-k}b^k$ chính là $C_n^k$.\nTrong đó:\n- $(a+b)^4 = C_4^0a^4+C_4^1a^3b+C_4^2a^2b^2+C_4^3ab^3+C_4^4b^4$, với hệ số $1,4,6,4,1$.\n- $(a+b)^5 = C_5^0a^5+C_5^1a^4b+C_5^2a^3b^2+C_5^3a^2b^3+C_5^4ab^4+C_5^5b^5$, với hệ số $1,5,10,10,5,1$.\n- Số hạng tổng quát của mỗi khai triển có dạng $C_n^k a^{n-k}b^k$.",
+    example: "Khai triển $(2x+1)^4$.\n\n**Lời giải:**\nThay $a=2x, b=1$:\n$(2x+1)^4=(2x)^4+4(2x)^3\\cdot1+6(2x)^2\\cdot1^2+4(2x)\\cdot1^3+1^4=16x^4+32x^3+24x^2+8x+1$",
+    tags: ["Nhị thức Newton", "Tổ hợp", "Khai triển", "Đa thức"],
+    difficulty: "Trung bình",
+    mnemonic: "Hệ số (a+b)^4 là 1,4,6,4,1 và (a+b)^5 là 1,5,10,10,5,1 — đúng hàng tương ứng của tam giác Pascal. Số mũ a giảm dần, số mũ b tăng dần, tổng luôn bằng n.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 25, trang 73, 75"
   }
 ];

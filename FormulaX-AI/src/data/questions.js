@@ -3074,5 +3074,140 @@ export const questionsPool = [
     blankAnswer: "F(2; 0), đường chuẩn x = -2",
     explanation: "$y^2=2px \\Rightarrow 2p=8 \\Rightarrow p=4$. Tiêu điểm $F\\left(\\dfrac{p}{2};0\\right)=F(2;0)$, đường chuẩn $x=-\\dfrac{p}{2}=-2$.",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 22, Bài tập 7.21, trang 56"
+  },
+  {
+    id: "ds49",
+    topic: "Đại số",
+    grade: 10,
+    text: "Một quán phục vụ ăn sáng có bán phở và bún. Phở có 2 loại là phở bò và phở gà. Bún có 3 loại là bún bò, bún riêu cua và bún cá. Một khách hàng muốn chọn một món để ăn sáng. Hỏi khách hàng đó có bao nhiêu cách lựa chọn?",
+    options: [
+      { letter: "A", text: "$5$ cách", isCorrect: true },
+      { letter: "B", text: "$6$ cách", isCorrect: false },
+      { letter: "C", text: "$2$ cách", isCorrect: false },
+      { letter: "D", text: "$3$ cách", isCorrect: false }
+    ],
+    blankAnswer: "5",
+    explanation: "Khách hàng chọn 1 trong 2 loại phở HOẶC 1 trong 3 loại bún — hai phương án rời nhau. Áp dụng quy tắc cộng: $2+3=5$ cách.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 23, Ví dụ 1, trang 61"
+  },
+  {
+    id: "ds50",
+    topic: "Đại số",
+    grade: 10,
+    text: "Một bộ cờ vua có 32 quân cờ. Bạn Nam lấy ra tất cả các quân cờ trắng (16 quân) và tất cả các quân tốt (16 quân, trong đó có 8 quân tốt trắng). Hỏi Nam lấy ra bao nhiêu quân cờ?",
+    options: [
+      { letter: "A", text: "$24$ quân", isCorrect: true },
+      { letter: "B", text: "$32$ quân", isCorrect: false },
+      { letter: "C", text: "$16$ quân", isCorrect: false },
+      { letter: "D", text: "$8$ quân", isCorrect: false }
+    ],
+    blankAnswer: "24",
+    explanation: "Gọi $A$ là tập quân trắng (16 quân), $B$ là tập quân tốt (16 quân). Vì $A \\cap B$ gồm 8 quân tốt trắng (khác rỗng) nên không thể áp dụng trực tiếp $n(A)+n(B)$. Số quân Nam lấy ra là $16+16-8=24$ quân.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 23, Ví dụ 2, trang 62"
+  },
+  {
+    id: "ds51",
+    topic: "Đại số",
+    grade: 10,
+    text: "Để tổ chức bữa tiệc, người ta chọn thực đơn gồm một món khai vị, một món chính và một món tráng miệng. Nhà hàng đưa ra danh sách: khai vị có 2 loại súp và 3 loại sa lát; món chính có 4 loại thịt, 3 loại cá và 3 loại tôm; tráng miệng có 5 loại kem và 3 loại bánh. Hỏi có thể thiết kế bao nhiêu thực đơn khác nhau?",
+    options: [
+      { letter: "A", text: "$400$ thực đơn", isCorrect: true },
+      { letter: "B", text: "$23$ thực đơn", isCorrect: false },
+      { letter: "C", text: "$40$ thực đơn", isCorrect: false },
+      { letter: "D", text: "$4000$ thực đơn", isCorrect: false }
+    ],
+    blankAnswer: "400",
+    explanation: "Số cách chọn khai vị: $2+3=5$. Số cách chọn món chính: $4+3+3=10$. Số cách chọn tráng miệng: $5+3=8$. Theo quy tắc nhân: $5\\times10\\times8=400$ thực đơn.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 23, Ví dụ 4, trang 64"
+  },
+  {
+    id: "ds52",
+    topic: "Đại số",
+    grade: 10,
+    text: "Mỗi mật khẩu của một trang web là một dãy có từ 2 tới 3 kí tự, trong đó kí tự đầu tiên là một trong 26 chữ cái in thường trong bảng chữ cái tiếng Anh (từ a đến z), mỗi kí tự còn lại là một chữ số từ 0 đến 9. Hỏi có thể tạo được bao nhiêu mật khẩu khác nhau?",
+    options: [
+      { letter: "A", text: "$2\\,860$", isCorrect: true },
+      { letter: "B", text: "$2\\,600$", isCorrect: false },
+      { letter: "C", text: "$260$", isCorrect: false },
+      { letter: "D", text: "$6\\,760$", isCorrect: false }
+    ],
+    blankAnswer: "2860",
+    explanation: "Trường hợp mật khẩu 2 kí tự: $26\\times10=260$. Trường hợp mật khẩu 3 kí tự: $26\\times10\\times10=2600$. Vì hai trường hợp rời nhau, theo quy tắc cộng: $260+2600=2860$ mật khẩu.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 23, Ví dụ 5, trang 64"
+  },
+  {
+    id: "ds53",
+    topic: "Đại số",
+    grade: 10,
+    text: "Từ các chữ số 6, 7, 8 và 9 có thể lập được bao nhiêu số có bốn chữ số khác nhau?",
+    options: [
+      { letter: "A", text: "$24$", isCorrect: true },
+      { letter: "B", text: "$256$", isCorrect: false },
+      { letter: "C", text: "$12$", isCorrect: false },
+      { letter: "D", text: "$4$", isCorrect: false }
+    ],
+    blankAnswer: "24",
+    explanation: "Mỗi cách sắp xếp 4 chữ số đã cho để lập thành số có 4 chữ số khác nhau là một hoán vị của 4 chữ số đó. Số các số lập được là $P_4=4!=24$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 24, Ví dụ 1, trang 67"
+  },
+  {
+    id: "ds54",
+    topic: "Đại số",
+    grade: 10,
+    text: "Một lớp có 30 học sinh, giáo viên cần chọn lần lượt 4 học sinh trồng bốn cây khác nhau để tham gia lễ phát động Tết trồng cây của trường. Hỏi giáo viên có bao nhiêu cách chọn?",
+    options: [
+      { letter: "A", text: "$657\\,720$ cách", isCorrect: true },
+      { letter: "B", text: "$27\\,405$ cách", isCorrect: false },
+      { letter: "C", text: "$810\\,000$ cách", isCorrect: false },
+      { letter: "D", text: "$24$ cách", isCorrect: false }
+    ],
+    blankAnswer: "657720",
+    explanation: "Mỗi cách chọn lần lượt 4 trong 30 học sinh (có phân biệt vì mỗi bạn trồng một cây khác nhau) là một chỉnh hợp chập 4 của 30: $A_{30}^4=30\\times29\\times28\\times27=657\\,720$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 24, Ví dụ 2, trang 67-68"
+  },
+  {
+    id: "ds55",
+    topic: "Đại số",
+    grade: 10,
+    text: "Có 7 bạn học sinh muốn chơi cờ cá ngựa, nhưng mỗi ván chỉ có 4 người chơi. Hỏi có bao nhiêu cách chọn 4 bạn chơi cờ cá ngựa?",
+    options: [
+      { letter: "A", text: "$35$ cách", isCorrect: true },
+      { letter: "B", text: "$840$ cách", isCorrect: false },
+      { letter: "C", text: "$28$ cách", isCorrect: false },
+      { letter: "D", text: "$7$ cách", isCorrect: false }
+    ],
+    blankAnswer: "35",
+    explanation: "Mỗi cách chọn 4 bạn trong 7 bạn học sinh (không phân biệt thứ tự) là một tổ hợp chập 4 của 7: $C_7^4=\\dfrac{7!}{4!3!}=35$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 24, Ví dụ 3, trang 68-69"
+  },
+  {
+    id: "ds56",
+    topic: "Đại số",
+    grade: 10,
+    text: "Khai triển $(2x+1)^4$.",
+    options: [
+      { letter: "A", text: "$16x^4+32x^3+24x^2+8x+1$", isCorrect: true },
+      { letter: "B", text: "$16x^4+8x^3+24x^2+32x+1$", isCorrect: false },
+      { letter: "C", text: "$2x^4+8x^3+12x^2+8x+1$", isCorrect: false },
+      { letter: "D", text: "$16x^4+32x^3+24x^2+8x$", isCorrect: false }
+    ],
+    blankAnswer: "16x^4 + 32x^3 + 24x^2 + 8x + 1",
+    explanation: "Thay $a=2x, b=1$ vào $(a+b)^4=a^4+4a^3b+6a^2b^2+4ab^3+b^4$: $(2x)^4+4(2x)^3\\cdot1+6(2x)^2\\cdot1^2+4(2x)\\cdot1^3+1^4=16x^4+32x^3+24x^2+8x+1$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 25, Ví dụ 1, trang 73"
+  },
+  {
+    id: "ds57",
+    topic: "Đại số",
+    grade: 10,
+    text: "Khai triển $(x+3)^5$.",
+    options: [
+      { letter: "A", text: "$x^5+15x^4+90x^3+270x^2+405x+243$", isCorrect: true },
+      { letter: "B", text: "$x^5+5x^4+10x^3+10x^2+5x+3$", isCorrect: false },
+      { letter: "C", text: "$x^5+15x^4+90x^3+270x^2+405x+3$", isCorrect: false },
+      { letter: "D", text: "$x^5+15x^4+45x^3+135x^2+405x+243$", isCorrect: false }
+    ],
+    blankAnswer: "x^5 + 15x^4 + 90x^3 + 270x^2 + 405x + 243",
+    explanation: "Thay $a=x, b=3$ vào $(a+b)^5=a^5+5a^4b+10a^3b^2+10a^2b^3+5ab^4+b^5$: $x^5+5x^4\\cdot3+10x^3\\cdot9+10x^2\\cdot27+5x\\cdot81+243=x^5+15x^4+90x^3+270x^2+405x+243$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 25, Ví dụ 2, trang 75"
   }
 ];
