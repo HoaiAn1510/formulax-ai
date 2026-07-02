@@ -1074,11 +1074,12 @@ export const formulas = [
     topic: "Mở rộng",
     grade: 11,
     latex: "\\sum_{v\\in V} \\deg(v) = 2|E|",
-    explanation: "**Đồ thị** $G = (V, E)$ gồm tập đỉnh $V$ và tập cạnh $E$.\n\n**Bậc của đỉnh** $\\deg(v)$: số cạnh nối với đỉnh $v$.\n\n**Định lý bắt tay:** Tổng bậc tất cả các đỉnh bằng hai lần số cạnh:\n$$\\sum_{v\\in V} \\deg(v) = 2|E|$$\n\n**Chu trình Euler:** Đi qua **mỗi cạnh đúng một lần** rồi quay về đỉnh xuất phát. Đồ thị liên thông có chu trình Euler $\\Leftrightarrow$ mọi đỉnh đều có bậc **chẵn**.\n\n**Đường đi Euler** (không cần quay về): tồn tại khi đồ thị liên thông và có đúng $0$ hoặc $2$ đỉnh bậc lẻ.\n\n**Chu trình Hamilton:** Đi qua **mỗi đỉnh đúng một lần** rồi quay về đỉnh xuất phát (không có điều kiện tổng quát để nhận biết, phải kiểm tra trực tiếp).\n\n**Đường đi ngắn nhất** (thuật toán Dijkstra): Tìm đường đi có tổng trọng số nhỏ nhất giữa hai đỉnh trong đồ thị có trọng số không âm, bằng cách cập nhật dần khoảng cách ngắn nhất tạm thời từ đỉnh xuất phát.",
+    explanation: "**Đồ thị** $G = (V, E)$ gồm tập đỉnh $V$ và tập cạnh $E$.\n\n**Bậc của đỉnh** $\\deg(v)$: số cạnh nối với đỉnh $v$.\n\n**Định lý bắt tay:** Tổng bậc tất cả các đỉnh bằng hai lần số cạnh:\n$$\\sum_{v\\in V} \\deg(v) = 2|E|$$\n\n**Chu trình Euler:** Đi qua **mỗi cạnh đúng một lần** rồi quay về đỉnh xuất phát. Đồ thị liên thông có chu trình Euler $\\Leftrightarrow$ mọi đỉnh đều có bậc **chẵn**.\n\n**Đường đi Euler** (không cần quay về): tồn tại khi đồ thị liên thông và có đúng $0$ hoặc $2$ đỉnh bậc lẻ.\n\n**Chu trình Hamilton:** Đi qua **mỗi đỉnh đúng một lần** rồi quay về đỉnh xuất phát. Định lí Ore (điều kiện đủ): nếu đơn đồ thị $G$ có $n$ đỉnh ($n \\geq 3$) và mọi cặp đỉnh không kề nhau đều có tổng bậc không nhỏ hơn $n$ thì $G$ có chu trình Hamilton. Hệ quả (Định lí Dirac): nếu mọi đỉnh có bậc không nhỏ hơn $n/2$ thì $G$ có chu trình Hamilton. Đây chỉ là điều kiện đủ (không phải cần và đủ), nên khi không thỏa mãn vẫn cần kiểm tra trực tiếp.\n\n**Đường đi ngắn nhất** (thuật toán Dijkstra): Tìm đường đi có tổng trọng số nhỏ nhất giữa hai đỉnh trong đồ thị có trọng số không âm, bằng cách cập nhật dần khoảng cách ngắn nhất tạm thời từ đỉnh xuất phát.",
     example: "Đồ thị có 4 đỉnh $A,B,C,D$ với bậc lần lượt $\\deg(A)=3, \\deg(B)=2, \\deg(C)=3, \\deg(D)=2$. Tính số cạnh và xét đồ thị có chu trình Euler không.\n\n**Lời giải:**\n- Số cạnh: $|E| = \\dfrac{3+2+3+2}{2} = 5$.\n- Có 2 đỉnh bậc lẻ ($A, C$) nên đồ thị **không** có chu trình Euler, nhưng **có** đường đi Euler (từ $A$ đến $C$ hoặc ngược lại).",
     tags: ["Đồ thị", "Euler", "Hamilton", "Đường đi ngắn nhất", "Toán rời rạc", "Mở rộng"],
     difficulty: "Khó",
-    mnemonic: "Bắt tay: tổng bậc = 2 lần số cạnh. Euler = đi hết CẠNH (cần mọi đỉnh bậc chẵn để có chu trình, ≤2 đỉnh bậc lẻ để có đường đi). Hamilton = đi hết ĐỈNH (không có điều kiện tổng quát)."
+    mnemonic: "Bắt tay: tổng bậc = 2 lần số cạnh. Euler = đi hết CẠNH (cần mọi đỉnh bậc chẵn để có chu trình, ≤2 đỉnh bậc lẻ để có đường đi). Hamilton = đi hết ĐỈNH (Ore/Dirac là điều kiện đủ, không phải cần và đủ).",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 8/9/10"
   },
   {
     id: "mr-bnn-roit-rac",
@@ -2580,5 +2581,44 @@ export const formulas = [
     difficulty: "Dễ",
     mnemonic: "Tịnh tiến theo vectơ u: mọi điểm 'trượt' đúng theo vectơ u — MM' = u với mọi điểm M.",
     sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 2, trang 9"
+  },
+  {
+    id: "mr-dothi-daydu",
+    name: "Đơn đồ thị, đa đồ thị và đồ thị đầy đủ K_n",
+    topic: "Mở rộng",
+    grade: 11,
+    latex: "|E(K_n)| = \\dfrac{n(n-1)}{2}",
+    explanation: "Trong đó:\n- Một đồ thị không có khuyên, trong đó hai đỉnh được nối bằng nhiều nhất một cạnh (không có hai cạnh nào cùng nối một cặp đỉnh), gọi là một đơn đồ thị.\n- Một đồ thị không có khuyên, trong đó hai đỉnh có thể nối bằng nhiều cạnh, gọi là một đa đồ thị.\n- Một đồ thị là đầy đủ khi và chỉ khi mỗi cặp đỉnh của nó đều được nối bằng một cạnh; đồ thị đầy đủ có $n$ đỉnh được kí hiệu là $K_n$, hoàn toàn được xác định bởi số đỉnh của nó.\n- Số cạnh của đồ thị đầy đủ $K_n$ là $\\dfrac{n(n-1)}{2}$.",
+    example: "Tính số cạnh của đồ thị đầy đủ $K_6$.\n\n**Lời giải:**\nÁp dụng công thức với $n=6$:\n$|E(K_6)| = \\frac{6\\cdot5}{2} = 15$",
+    tags: ["Đồ thị", "Đơn đồ thị", "Đa đồ thị", "Đồ thị đầy đủ", "Toán rời rạc", "Mở rộng"],
+    difficulty: "Trung bình",
+    mnemonic: "Đồ thị đầy đủ Kₙ: mọi cặp đỉnh đều có cạnh nối — số cạnh bằng số cách chọn 2 đỉnh trong n đỉnh, tức Cₙ² = n(n-1)/2.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 8, trang 36-37"
+  },
+  {
+    id: "mr-dothi-duongdi-lienthong",
+    name: "Đường đi, chu trình và tính liên thông của đồ thị",
+    topic: "Mở rộng",
+    grade: 11,
+    latex: "\\text{Đồ thị } G \\text{ liên thông} \\iff \\forall A, B \\in V(G), \\exists \\text{ đường đi nối } A \\text{ với } B",
+    explanation: "Trong đó:\n- Một dãy cạnh nối tiếp $AB, BC, CD, \\ldots, MN, NP$ (hai cạnh nối tiếp có chung một đầu mút) gọi là một đường đi nối $A$ với $P$.\n- Một đường đi khép kín (đầu đường trùng với cuối đường) gọi là một chu trình.\n- Một đường đi (chu trình) là sơ cấp nếu không đi qua đỉnh nào hai lần trở lên; là đơn giản nếu không đi qua cạnh nào hai lần trở lên.\n- Hai đỉnh $A, B$ gọi là liên thông nếu có một đường đi nối $A$ và $B$. Đồ thị $G$ liên thông nếu mọi cặp đỉnh của $G$ đều liên thông.\n- Một cạnh $CD$ gọi là một cầu nếu khi bỏ cạnh $CD$ thì $C$ và $D$ không còn liên thông.\n- Một đồ thị $2n$ đỉnh, mỗi đỉnh có bậc ít nhất bằng $n$, là đồ thị liên thông.",
+    example: "Giả sử một lớp có 40 học sinh, mỗi em có số điện thoại của ít nhất 20 bạn trong lớp và nếu bạn $A$ có số điện thoại của bạn $B$ thì $B$ cũng có số điện thoại của $A$. Chứng minh bất cứ hai em nào trong lớp cũng có số điện thoại của nhau.\n\n**Lời giải:**\nXét đồ thị 40 đỉnh (mỗi đỉnh ứng với một học sinh), hai đỉnh liên thông nếu hai em có số điện thoại của nhau. Mỗi đỉnh có bậc ít nhất 20 $= \\dfrac{40}{2}$ nên đồ thị này liên thông. Vậy bất cứ hai em nào cũng có số điện thoại của nhau.",
+    tags: ["Đồ thị", "Đường đi", "Chu trình", "Liên thông", "Toán rời rạc", "Mở rộng"],
+    difficulty: "Trung bình",
+    mnemonic: "Sơ cấp = không lặp ĐỈNH, đơn giản = không lặp CẠNH. Đồ thị liên thông: đi được từ đỉnh bất kì tới đỉnh bất kì khác.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 8, trang 38-39"
+  },
+  {
+    id: "mr-baitoan-nguoiduathu",
+    name: "Bài toán người đưa thư (đường đi tối ưu qua mọi cạnh)",
+    topic: "Mở rộng",
+    grade: 11,
+    latex: "\\min \\sum_{\\text{cạnh đi qua}} w(e) \\;\\; \\text{với mỗi cạnh được đi qua ít nhất một lần, xuất phát và quay lại cùng một đỉnh}",
+    explanation: "Bài toán người đưa thư: một người xuất phát từ một đỉnh, phải đi qua mỗi cạnh của đồ thị có trọng số ít nhất một lần rồi quay lại điểm xuất phát, sao cho tổng quãng đường đi là nhỏ nhất. Đây tương đương với bài toán tìm chu trình có tổng trọng số nhỏ nhất và chứa mỗi cạnh ít nhất một lần.\nTrong đó, xét hai trường hợp đơn giản:\n- Nếu tất cả các đỉnh của đồ thị đều có bậc chẵn: đồ thị có chu trình Euler, và chu trình Euler đó chính là lời giải; tổng quãng đường bằng tổng trọng số tất cả các cạnh.\n- Nếu chỉ có đúng hai đỉnh có bậc lẻ: tìm một đường đi Euler nối hai đỉnh bậc lẻ đó (đi qua mỗi cạnh đúng một lần), sau đó tìm đường đi ngắn nhất để quay trở lại đỉnh xuất phát; tổng quãng đường bằng độ dài đường đi Euler cộng với độ dài đường đi ngắn nhất đó.",
+    example: "Đồ thị có trọng số với 5 đỉnh $A, B, C, D, E$, chỉ có hai đỉnh bậc lẻ là $A$ và $D$. Một đường đi Euler từ $A$ đến $D$ là $AEABEDBCD$ với tổng độ dài $36$. Đường đi ngắn nhất từ $D$ về $A$ là $DBA$ với độ dài $5$.\n\n**Lời giải:**\nChu trình cần tìm là $AEABEDBCDBA$ với tổng độ dài $36 + 5 = 41$.",
+    tags: ["Đồ thị", "Bài toán người đưa thư", "Chu trình Euler", "Đường đi ngắn nhất", "Toán rời rạc", "Mở rộng"],
+    difficulty: "Khó",
+    mnemonic: "Mọi đỉnh bậc chẵn → dùng luôn chu trình Euler. Đúng 2 đỉnh bậc lẻ → đường đi Euler nối 2 đỉnh đó, rồi cộng thêm đường ngắn nhất quay về.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 10, trang 47-48"
   },
 ];

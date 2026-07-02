@@ -4965,4 +4965,124 @@ export const questionsPool = [
     explanation: "Vì $O$ là giao điểm hai cạnh bên của hình thang $ABCD$ ($AB \\parallel CD$, $CD=2AB$), ta có $\\overrightarrow{OD} = 2\\overrightarrow{OA}$ và $\\overrightarrow{OC} = 2\\overrightarrow{OB}$. Do đó phép vị tự $V_{(O,2)}$ biến $A$ thành $D$, biến $B$ thành $C$, tức là biến đoạn thẳng $AB$ thành đoạn thẳng $DC$ (chính là $CD$).",
     sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 6, trang 29 (Bài 1.20)"
   },
+  {
+    id: "mr16",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Cho đồ thị $G$ với 14 đỉnh và 25 cạnh. Biết rằng mỗi đỉnh của đồ thị $G$ đều có bậc 3 hoặc bậc 5. Hỏi $G$ có bao nhiêu đỉnh bậc 3?",
+    options: [
+      { letter: "A", text: "$10$", isCorrect: true },
+      { letter: "B", text: "$4$", isCorrect: false },
+      { letter: "C", text: "$7$", isCorrect: false },
+      { letter: "D", text: "$14$", isCorrect: false }
+    ],
+    blankAnswer: "10",
+    explanation: "Gọi $x$ là số đỉnh bậc 3 của $G$, khi đó số đỉnh bậc 5 là $14-x$. Theo định lí bắt tay: $3x+5(14-x)=2\\cdot25=50 \\iff 70-2x=50 \\iff x=10$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 8, trang 38 (Ví dụ 5)"
+  },
+  {
+    id: "mr17",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Đồ thị đầy đủ $K_8$ có bao nhiêu cạnh?",
+    options: [
+      { letter: "A", text: "$28$", isCorrect: true },
+      { letter: "B", text: "$56$", isCorrect: false },
+      { letter: "C", text: "$64$", isCorrect: false },
+      { letter: "D", text: "$16$", isCorrect: false }
+    ],
+    blankAnswer: "28",
+    explanation: "Số cạnh của đồ thị đầy đủ $K_n$ là $\\dfrac{n(n-1)}{2}$. Với $n=8$: $\\dfrac{8\\cdot7}{2}=28$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 8, trang 40 (Bài 2.4)"
+  },
+  {
+    id: "mr18",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Có tồn tại một đơn đồ thị mà các đỉnh có bậc lần lượt là $2, 3, 3, 4, 4, 5$ hay không?",
+    options: [
+      { letter: "A", text: "Không, vì tổng các bậc bằng $21$ là số lẻ", isCorrect: true },
+      { letter: "B", text: "Có, đồ thị này luôn vẽ được", isCorrect: false },
+      { letter: "C", text: "Không, vì có đỉnh bậc chẵn", isCorrect: false },
+      { letter: "D", text: "Có, miễn đồ thị liên thông", isCorrect: false }
+    ],
+    blankAnswer: "Không, vì tổng các bậc bằng 21 là số lẻ",
+    explanation: "Theo định lí bắt tay, tổng bậc của mọi đỉnh trong một đồ thị luôn là một số chẵn (bằng hai lần số cạnh). Ở đây $2+3+3+4+4+5=21$ là số lẻ, nên không tồn tại đồ thị nào có dãy bậc như vậy.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 8, trang 40 (Bài 2.5)"
+  },
+  {
+    id: "mr19",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Có tồn tại đơn đồ thị với 12 đỉnh và 28 cạnh mà các đỉnh đều có bậc 3 hoặc bậc 4 hay không?",
+    options: [
+      { letter: "A", text: "Không tồn tại", isCorrect: true },
+      { letter: "B", text: "Có, với 8 đỉnh bậc 3 và 4 đỉnh bậc 4", isCorrect: false },
+      { letter: "C", text: "Có, với 4 đỉnh bậc 3 và 8 đỉnh bậc 4", isCorrect: false },
+      { letter: "D", text: "Có, với 6 đỉnh bậc 3 và 6 đỉnh bậc 4", isCorrect: false }
+    ],
+    blankAnswer: "Không tồn tại",
+    explanation: "Gọi $x$ là số đỉnh bậc 3, khi đó có $12-x$ đỉnh bậc 4. Theo định lí bắt tay: $3x+4(12-x)=2\\cdot28=56 \\iff 48-x=56 \\iff x=-8$, vô lí (số đỉnh không thể âm). Vậy không tồn tại đơn đồ thị như vậy.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 8, trang 38 (Luyện tập 4)"
+  },
+  {
+    id: "mr20",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Cho đơn đồ thị $G$ liên thông, có đúng hai đỉnh bậc lẻ là $A$ và $B$, các đỉnh còn lại đều có bậc chẵn. Khẳng định nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "$G$ có một đường đi Euler từ $A$ đến $B$", isCorrect: true },
+      { letter: "B", text: "$G$ có một chu trình Euler", isCorrect: false },
+      { letter: "C", text: "$G$ không có đường đi Euler cũng không có chu trình Euler", isCorrect: false },
+      { letter: "D", text: "$G$ luôn có chu trình Hamilton", isCorrect: false }
+    ],
+    blankAnswer: "G có một đường đi Euler từ A đến B",
+    explanation: "Theo Định lí 2: một đa đồ thị $G$ có một đường đi Euler từ $A$ đến $B$ khi và chỉ khi $G$ liên thông và mọi đỉnh của $G$ đều có bậc chẵn, chỉ trừ $A$ và $B$ có bậc lẻ. Điều kiện bài cho khớp với định lí này nên $G$ có đường đi Euler từ $A$ đến $B$ (nhưng không có chu trình Euler vì có đỉnh bậc lẻ).",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 9, trang 42 (Định lí 2)"
+  },
+  {
+    id: "mr21",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Trong đồ thị có trọng số ở Hình 2.28 (Chuyên đề học tập Toán 11, Bài 10), áp dụng thuật toán gắn nhãn vĩnh viễn xuất phát từ đỉnh $A$, ta lần lượt tìm được các nhãn vĩnh viễn $l(A)=0$, $l(C)=1$, $l(B)=3$, $l(D)=5$, $l(E)=5$. Độ dài đường đi ngắn nhất nối $A$ với $F$ là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$13$", isCorrect: true },
+      { letter: "B", text: "$14$", isCorrect: false },
+      { letter: "C", text: "$11$", isCorrect: false },
+      { letter: "D", text: "$10$", isCorrect: false }
+    ],
+    blankAnswer: "13",
+    explanation: "Xét đỉnh $F$ kề với $D$ và $E$: nhãn tạm thời từ $D$ là $l(D)+9=14$, từ $E$ là $l(E)+8=13$. Chọn nhãn nhỏ nhất nên $l(F)=13$. Vậy đường đi ngắn nhất từ $A$ đến $F$ có độ dài $13$, cụ thể là $A \\to B \\to E \\to F$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 10, trang 46-47 (Ví dụ 1)"
+  },
+  {
+    id: "mr22",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Đồ thị có trọng số ở Hình 2.30 (Chuyên đề học tập Toán 11) liên thông và có 4 đỉnh $A, B, C, D$ cùng đỉnh $E$, trong đó mọi đỉnh đều có bậc 4. Đồ thị này có chu trình Euler không?",
+    options: [
+      { letter: "A", text: "Có, vì đồ thị liên thông và mọi đỉnh đều có bậc chẵn", isCorrect: true },
+      { letter: "B", text: "Không, vì có đỉnh bậc lẻ", isCorrect: false },
+      { letter: "C", text: "Không, vì đồ thị không liên thông", isCorrect: false },
+      { letter: "D", text: "Có, nhưng chỉ khi bỏ bớt một cạnh", isCorrect: false }
+    ],
+    blankAnswer: "Có, vì đồ thị liên thông và mọi đỉnh đều có bậc chẵn",
+    explanation: "Theo Định lí 1 (Euler), một đa đồ thị liên thông có chu trình Euler khi và chỉ khi mọi đỉnh đều có bậc chẵn. Ở đây mọi đỉnh đều có bậc 4 (chẵn) và đồ thị liên thông, nên đồ thị có chu trình Euler, chẳng hạn $ABCBECDEADA$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 10, trang 48 (Ví dụ 2)"
+  },
+  {
+    id: "mr23",
+    topic: "Mở rộng",
+    grade: 11,
+    text: "Cho một đồ thị có trọng số với 5 đỉnh, chỉ có đúng hai đỉnh bậc lẻ là $A$ và $D$. Một đường đi Euler từ $A$ đến $D$ có tổng độ dài là $36$, và đường đi ngắn nhất từ $D$ quay về $A$ có độ dài là $5$. Giải bài toán người đưa thư xuất phát từ $A$: tổng trọng số nhỏ nhất của chu trình cần tìm là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$41$", isCorrect: true },
+      { letter: "B", text: "$36$", isCorrect: false },
+      { letter: "C", text: "$31$", isCorrect: false },
+      { letter: "D", text: "$5$", isCorrect: false }
+    ],
+    blankAnswer: "41",
+    explanation: "Vì đồ thị chỉ có hai đỉnh bậc lẻ ($A$ và $D$), ta tìm một đường đi Euler từ $A$ đến $D$ (độ dài $36$), sau đó cộng thêm đường đi ngắn nhất để quay về $A$ (độ dài $5$). Tổng trọng số của chu trình cần tìm là $36+5=41$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 2, Bài 10, trang 48 (Ví dụ 3)"
+  },
 ];
