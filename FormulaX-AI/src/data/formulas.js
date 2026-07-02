@@ -221,7 +221,8 @@ export const formulas = [
     example: "Tính giá trị của biểu thức $M = \\cos 15^\\circ$ không dùng máy tính bỏ túi.\n\n**Lời giải:**\nViết $15^\\circ = 45^\\circ - 30^\\circ$, ta có:\n$$\\cos 15^\\circ = \\cos(45^\\circ - 30^\\circ) = \\cos 45^\\circ \\cos 30^\\circ + \\sin 45^\\circ \\sin 30^\\circ$$\n$$= \\frac{\\sqrt{2}}{2} \\cdot \\frac{\\sqrt{3}}{2} + \\frac{\\sqrt{2}}{2} \\cdot \\frac{1}{2} = \\frac{\\sqrt{6} + \\sqrt{2}}{4}$$",
     tags: ["Lượng giác", "Biến đổi lượng giác"],
     difficulty: "Trung bình",
-    mnemonic: "Cos thì cos cos sin sin (dấu trừ ở giữa), Sin thì sin cos cos sin (giữ nguyên dấu)."
+    mnemonic: "Cos thì cos cos sin sin (dấu trừ ở giữa), Sin thì sin cos cos sin (giữ nguyên dấu).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 17"
   },
   {
     id: "gt11-gioihan-luonggiac",
@@ -640,7 +641,8 @@ export const formulas = [
     example: "Tính $\\sin 2a$ biết $\\sin a = \\dfrac{3}{5}$ và $a \\in \\left(0; \\dfrac{\\pi}{2}\\right)$.\n\n**Lời giải:**\n- $\\cos a = \\sqrt{1 - \\sin^2 a} = \\sqrt{1 - \\frac{9}{25}} = \\frac{4}{5}$ (dương vì $a$ ở góc phần tư I).\n- $\\sin 2a = 2 \\cdot \\frac{3}{5} \\cdot \\frac{4}{5} = \\frac{24}{25}$",
     tags: ["Lượng giác", "Nhân đôi", "Công thức biến đổi"],
     difficulty: "Trung bình",
-    mnemonic: "sin 2a = 2 sin cos (hai sin nhân cos). cos 2a có 3 dạng: cos² - sin², 1 - 2sin², 2cos² - 1. Chọn dạng nào tuỳ vào điều kiện đầu bài."
+    mnemonic: "sin 2a = 2 sin cos (hai sin nhân cos). cos 2a có 3 dạng: cos² - sin², 1 - 2sin², 2cos² - 1. Chọn dạng nào tuỳ vào điều kiện đầu bài.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 18"
   },
   {
     id: "ds11-luonggiac-habac",
@@ -652,7 +654,8 @@ export const formulas = [
     example: "Tính $\\int_0^{\\pi} \\sin^2 x\\,dx$.\n\n**Lời giải:**\nHạ bậc: $\\sin^2 x = \\dfrac{1 - \\cos 2x}{2}$\n$$\\int_0^{\\pi} \\frac{1 - \\cos 2x}{2}\\,dx = \\frac{1}{2}\\left[x - \\frac{\\sin 2x}{2}\\right]_0^{\\pi} = \\frac{\\pi}{2}$$",
     tags: ["Lượng giác", "Hạ bậc", "Công thức biến đổi", "Tích phân"],
     difficulty: "Trung bình",
-    mnemonic: "sin² hạ bậc dùng cos 2a: sin² = (1 - cos2a)/2, cos² = (1 + cos2a)/2. Âm là sin (s xuống), dương là cos (c lên)."
+    mnemonic: "sin² hạ bậc dùng cos 2a: sin² = (1 - cos2a)/2, cos² = (1 + cos2a)/2. Âm là sin (s xuống), dương là cos (c lên).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 19"
   },
   {
     id: "gt11-ptluonggiac-sincos",
@@ -664,7 +667,8 @@ export const formulas = [
     example: "Giải phương trình $\\cos 2x = \\cos\\dfrac{\\pi}{3}$.\n\n**Lời giải:**\n$$2x = \\pm\\frac{\\pi}{3} + 2k\\pi \\Rightarrow x = \\pm\\frac{\\pi}{6} + k\\pi \\quad (k \\in \\mathbb{Z})$$",
     tags: ["Phương trình lượng giác", "Sin", "Cos", "Nghiệm"],
     difficulty: "Trung bình",
-    mnemonic: "sin: hai nhánh đối xứng qua π/2 — góc α và góc π-α. cos: hai nhánh đối xứng qua trục — góc ±α. Đều cộng chu kỳ 2kπ."
+    mnemonic: "sin: hai nhánh đối xứng qua π/2 — góc α và góc π-α. cos: hai nhánh đối xứng qua trục — góc ±α. Đều cộng chu kỳ 2kπ.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 4, trang 33, 35"
   },
   {
     id: "gt11-ptluonggiac-tancot",
@@ -676,7 +680,8 @@ export const formulas = [
     example: "Giải phương trình $\\tan(2x - 1) = \\tan\\dfrac{\\pi}{4}$.\n\n**Lời giải:**\n$$2x - 1 = \\frac{\\pi}{4} + k\\pi \\Rightarrow x = \\frac{1}{2} + \\frac{\\pi}{8} + \\frac{k\\pi}{2} \\quad (k \\in \\mathbb{Z})$$",
     tags: ["Phương trình lượng giác", "Tan", "Cot", "Nghiệm"],
     difficulty: "Trung bình",
-    mnemonic: "Tan và cot: một nhánh duy nhất, chu kỳ π — nghiệm chỉ cộng kπ. Đơn giản hơn sin/cos vì chỉ một nghiệm cơ bản."
+    mnemonic: "Tan và cot: một nhánh duy nhất, chu kỳ π — nghiệm chỉ cộng kπ. Đơn giản hơn sin/cos vì chỉ một nghiệm cơ bản.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 4, trang 36-37"
   },
   {
     id: "ds11-csc-sohangtq",
@@ -803,7 +808,8 @@ export const formulas = [
     example: "Biết $\\sin x = \\dfrac{3}{5}$ và $x \\in \\left(\\dfrac{\\pi}{2}; \\pi\\right)$. Tính $\\cos x$ và $\\tan x$.\n\n**Lời giải:**\n- $\\cos^2 x = 1 - \\sin^2 x = 1 - \\frac{9}{25} = \\frac{16}{25}$\n- Vì $x \\in (\\pi/2; \\pi)$: $\\cos x < 0 \\Rightarrow \\cos x = -\\frac{4}{5}$\n- $\\tan x = \\frac{\\sin x}{\\cos x} = \\frac{3/5}{-4/5} = -\\frac{3}{4}$",
     tags: ["Lượng giác", "Công thức cơ bản", "Đường tròn đơn vị"],
     difficulty: "Dễ",
-    mnemonic: "sin² + cos² = 1: cạnh huyền bình phương. Chia cả hai vế cho cos²: 1 + tan² = 1/cos². Chia cho sin²: 1 + cot² = 1/sin²."
+    mnemonic: "sin² + cos² = 1: cạnh huyền bình phương. Chia cả hai vế cho cos²: 1 + tan² = 1/cos². Chia cho sin²: 1 + cot² = 1/sin².",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 14"
   },
   {
     id: "lg11-goc-dacbiet",
@@ -815,7 +821,8 @@ export const formulas = [
     example: "Tính $\\sin 135° + \\cos 120° - \\tan 60°$.\n\n**Lời giải:**\n- $\\sin 135° = \\sin(180°-45°) = \\sin 45° = \\dfrac{\\sqrt{2}}{2}$\n- $\\cos 120° = -\\cos 60° = -\\dfrac{1}{2}$\n- $\\tan 60° = \\sqrt{3}$\n\n$= \\dfrac{\\sqrt{2}}{2} - \\dfrac{1}{2} - \\sqrt{3}$",
     tags: ["Lượng giác", "Góc đặc biệt", "Bảng giá trị"],
     difficulty: "Dễ",
-    mnemonic: "Nhớ sin tăng dần từ 0 đến 1: sin(0°,30°,45°,60°,90°) = 0; 1/2; √2/2; √3/2; 1. Cos ngược lại. Tam giác 30-60-90 (1:√3:2) và 45-45-90 (1:1:√2)."
+    mnemonic: "Nhớ sin tăng dần từ 0 đến 1: sin(0°,30°,45°,60°,90°) = 0; 1/2; √2/2; √3/2; 1. Cos ngược lại. Tam giác 30-60-90 (1:√3:2) và 45-45-90 (1:1:√2).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 12"
   },
   {
     id: "lg11-hamso-luonggiac",
@@ -827,7 +834,8 @@ export const formulas = [
     example: "Tìm TXĐ của $y = \\dfrac{1}{\\cos 2x - 1}$.\n\n**Lời giải:**\nĐiều kiện: $\\cos 2x - 1 \\neq 0 \\Leftrightarrow \\cos 2x \\neq 1 \\Leftrightarrow 2x \\neq 2k\\pi \\Leftrightarrow x \\neq k\\pi$ $(k \\in \\mathbb{Z})$.\n\nTXĐ: $D = \\mathbb{R} \\setminus \\{k\\pi \\mid k \\in \\mathbb{Z}\\}$.",
     tags: ["Hàm số lượng giác", "Chu kỳ", "Tập giá trị", "TXĐ"],
     difficulty: "Trung bình",
-    mnemonic: "Sin và cos: chu kỳ 2π, giá trị [-1;1]. Tan và cot: chu kỳ π, giá trị R. Sin lẻ, cos chẵn (nhớ: s-odd, c-even). Tan tăng, cot giảm."
+    mnemonic: "Sin và cos: chu kỳ 2π, giá trị [-1;1]. Tan và cot: chu kỳ π, giá trị R. Sin lẻ, cos chẵn (nhớ: s-odd, c-even). Tan tăng, cot giảm.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 3, trang 26-30"
   },
   {
     id: "lg11-congthuc-phu",
@@ -839,7 +847,8 @@ export const formulas = [
     example: "Rút gọn $A = \\sin(\\pi + x) \\cdot \\cos(\\pi/2 - x) + \\cos(\\pi + x) \\cdot \\sin(\\pi/2 + x)$.\n\n**Lời giải:**\n- $\\sin(\\pi + x) = -\\sin x$; $\\cos(\\pi/2 - x) = \\sin x$\n- $\\cos(\\pi + x) = -\\cos x$; $\\sin(\\pi/2 + x) = \\cos x$\n\n$A = (-\\sin x)(\\sin x) + (-\\cos x)(\\cos x) = -\\sin^2 x - \\cos^2 x = -1$",
     tags: ["Lượng giác", "Công thức biến đổi", "Góc phụ", "Góc bù"],
     difficulty: "Trung bình",
-    mnemonic: "Quy tắc: Góc phụ (π/2±x): đổi hàm (sin↔cos, tan↔cot). Góc bù/đối/hơn kém π (π±x, -x): giữ nguyên tên hàm, xét dấu theo góc phần tư."
+    mnemonic: "Quy tắc: Góc phụ (π/2±x): đổi hàm (sin↔cos, tan↔cot). Góc bù/đối/hơn kém π (π±x, -x): giữ nguyên tên hàm, xét dấu theo góc phần tư.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 14-15"
   },
 
   // ===== ĐẠI SỐ MỚI (Kết nối tri thức) =====
@@ -1754,5 +1763,57 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "Ghi nhớ mốc tâm sai: e<1 → elip (\"e nhỏ, béo tròn\"); e=1 → parabol (ranh giới); e>1 → hypebol (\"e lớn, tách 2 nhánh\").",
     sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 8, trang 59"
+  },
+  {
+    id: "lg11-goc-luonggiac-dinhnghia",
+    name: "Số đo góc lượng giác và hệ thức Chasles",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "\\text{sđ}(Ou,Ov) = \\alpha^\\circ + k360^\\circ \\quad (k \\in \\mathbb{Z})",
+    explanation: "Trong đó:\n- $O$: Đỉnh góc; $Ou$: tia đầu; $Ov$: tia cuối.\n- $\\alpha^\\circ$: Số đo của MỘT góc lượng giác cụ thể có tia đầu $Ou$, tia cuối $Ov$ (chiều dương ngược chiều kim đồng hồ, chiều âm cùng chiều kim đồng hồ).\n- $k$: Số nguyên bất kỳ ($k \\in \\mathbb{Z}$) — các góc lượng giác cùng tia đầu, tia cuối sai khác nhau một bội nguyên của $360°$.\n\n**Hệ thức Chasles:** Với ba tia $Ou, Ov, Ow$ bất kì, ta có\n$\\text{sđ}(Ou,Ov) + \\text{sđ}(Ov,Ow) = \\text{sđ}(Ou,Ow) + k360° \\quad (k \\in \\mathbb{Z})$",
+    example: "Cho góc hình học $uOv = 60°$. Xác định số đo của góc lượng giác $(Ou,Ov)$.\n\n**Lời giải:**\nCác góc lượng giác tia đầu $Ou$, tia cuối $Ov$ có số đo là $sđ(Ou,Ov) = 60° + k360°\\ (k \\in \\mathbb{Z})$.",
+    tags: ["Lượng giác", "Góc lượng giác", "Hệ thức Chasles"],
+    difficulty: "Dễ",
+    mnemonic: "Góc lượng giác có vô số giá trị số đo, sai khác nhau bội của 360°. Hệ thức Chasles giống công thức cộng vectơ: sđ(Ou,Ov) = sđ(Ox,Ov) - sđ(Ox,Ou) + k360°.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 6-7"
+  },
+  {
+    id: "lg11-donvi-do-goc",
+    name: "Đơn vị radian và độ dài cung tròn",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "1^\\circ = \\frac{\\pi}{180}\\text{ rad}, \\quad 1\\text{ rad} = \\left(\\frac{180}{\\pi}\\right)^\\circ, \\quad l = R\\alpha",
+    explanation: "Trong đó:\n- Cung tròn có số đo bằng $1$ rađian là cung có độ dài đúng bằng bán kính $R$ của đường tròn.\n- $l$: Độ dài cung tròn.\n- $R$: Bán kính đường tròn.\n- $\\alpha$: Số đo cung (hoặc góc ở tâm chắn cung đó), tính bằng rađian.\n- Quan hệ độ ↔ rađian suy ra từ $360° = 2\\pi$ rad.",
+    example: "Một đường tròn có bán kính $R = 20$ cm. Tính độ dài cung tròn có số đo $\\dfrac{\\pi}{12}$.\n\n**Lời giải:**\nÁp dụng công thức $l = R\\alpha$:\n$l = 20 \\cdot \\frac{\\pi}{12} = \\frac{5\\pi}{3} \\approx 5{,}24 \\text{ cm}$",
+    tags: ["Lượng giác", "Radian", "Độ dài cung tròn"],
+    difficulty: "Dễ",
+    mnemonic: "1 vòng tròn = 360° = 2π rad. Muốn đổi độ→rad: nhân π/180. Đổi rad→độ: nhân 180/π. Độ dài cung = bán kính × số đo rad (l = Rα), không cần công thức riêng cho độ.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 8-9"
+  },
+  {
+    id: "ds11-luonggiac-cong-tan",
+    name: "Công thức cộng của tang",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "\\tan(a-b) = \\frac{\\tan a - \\tan b}{1+\\tan a \\tan b}, \\qquad \\tan(a+b) = \\frac{\\tan a + \\tan b}{1-\\tan a \\tan b}",
+    explanation: "Công thức cộng áp dụng cho hàm tang, hệ quả từ công thức cộng của sin và cos.\nTrong đó:\n- $a, b$: Hai góc bất kỳ (tính bằng radian hoặc độ).\n- Điều kiện: các biểu thức $\\tan a$, $\\tan b$, $\\tan(a \\pm b)$ đều phải có nghĩa (tức $a, b, a\\pm b \\neq \\dfrac{\\pi}{2}+k\\pi$) và với công thức $\\tan(a+b)$ cần thêm $\\tan a \\tan b \\neq 1$; với $\\tan(a-b)$ cần $\\tan a \\tan b \\neq -1$.",
+    example: "Không dùng máy tính, tính $\\tan\\dfrac{\\pi}{12}$.\n\n**Lời giải:**\nViết $\\dfrac{\\pi}{12} = \\dfrac{\\pi}{3} - \\dfrac{\\pi}{4}$:\n$\\tan\\frac{\\pi}{12} = \\frac{\\tan\\frac{\\pi}{3} - \\tan\\frac{\\pi}{4}}{1+\\tan\\frac{\\pi}{3}\\tan\\frac{\\pi}{4}} = \\frac{\\sqrt3 - 1}{1+\\sqrt3} = 2 - \\sqrt3$",
+    tags: ["Lượng giác", "Công thức cộng", "Tang"],
+    difficulty: "Trung bình",
+    mnemonic: "tan(a∓b): tử là tan trừ/cộng tan (giữ dấu ±), mẫu là 1 cộng/trừ tích hai tan (đảo dấu so với tử).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 17"
+  },
+  {
+    id: "ds11-luonggiac-tongthanhtich",
+    name: "Công thức biến đổi tổng thành tích",
+    topic: "Lượng giác",
+    grade: 11,
+    latex: "\\cos u + \\cos v = 2\\cos\\frac{u+v}{2}\\cos\\frac{u-v}{2}, \\qquad \\sin u + \\sin v = 2\\sin\\frac{u+v}{2}\\cos\\frac{u-v}{2}",
+    explanation: "Trong đó:\n- $u, v$: Hai góc bất kỳ (tính bằng radian hoặc độ).\n- Công thức được suy ra từ công thức biến đổi tích thành tổng bằng cách đặt $a=\\dfrac{u+v}{2}$, $b=\\dfrac{u-v}{2}$.\n\n**Bốn công thức đầy đủ:**\n$\\cos u + \\cos v = 2\\cos\\frac{u+v}{2}\\cos\\frac{u-v}{2}$\n$\\cos u - \\cos v = -2\\sin\\frac{u+v}{2}\\sin\\frac{u-v}{2}$\n$\\sin u + \\sin v = 2\\sin\\frac{u+v}{2}\\cos\\frac{u-v}{2}$\n$\\sin u - \\sin v = 2\\cos\\frac{u+v}{2}\\sin\\frac{u-v}{2}$",
+    example: "Không dùng máy tính, tính $A = \\sin\\dfrac{\\pi}{9} - \\sin\\dfrac{5\\pi}{9} + \\sin\\dfrac{7\\pi}{9}$.\n\n**Lời giải:**\n$A = \\left(\\sin\\frac{\\pi}{9}+\\sin\\frac{7\\pi}{9}\\right) - \\sin\\frac{5\\pi}{9} = 2\\sin\\frac{4\\pi}{9}\\cos\\frac{\\pi}{3} - \\sin\\frac{5\\pi}{9} = \\sin\\frac{4\\pi}{9} - \\sin\\frac{5\\pi}{9} = 0$",
+    tags: ["Lượng giác", "Tổng thành tích", "Công thức biến đổi"],
+    difficulty: "Khó",
+    mnemonic: "Đặt u=a+b, v=a-b rồi lấy nửa tổng/nửa hiệu. Cos cộng cos: cos.cos. Cos trừ cos: -sin.sin (có dấu trừ). Sin cộng sin: sin.cos. Sin trừ sin: cos.sin (đảo thứ tự so với sin cộng).",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 20"
   }
 ];

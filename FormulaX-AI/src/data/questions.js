@@ -3704,5 +3704,140 @@ export const questionsPool = [
     blankAnswer: "Hypebol",
     explanation: "Theo định nghĩa thống nhất ba đường conic theo tâm sai: nếu $e>1$ thì conic là đường hypebol. Vì $e=1{,}201>1$ nên quỹ đạo của Oumuamua là một nhánh hypebol (giải thích vì sao nó chỉ đi qua hệ Mặt Trời một lần rồi không quay lại).",
     sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 3, Bài 8, trang 59 (Vận dụng 2)"
+  },
+  {
+    id: "lg21",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Đổi số đo góc $150^\\circ$ sang radian.",
+    options: [
+      { letter: "A", text: "$\\dfrac{5\\pi}{6}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{5\\pi}{4}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{2\\pi}{3}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{7\\pi}{6}$", isCorrect: false }
+    ],
+    blankAnswer: "5pi/6",
+    explanation: "Ta có $150^\\circ = 150 \\cdot \\dfrac{\\pi}{180} = \\dfrac{5\\pi}{6}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 9"
+  },
+  {
+    id: "lg22",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Cho góc lượng giác $\\alpha$ thỏa mãn $\\sin\\alpha = \\dfrac{3}{5}$ và $90^\\circ < \\alpha < 180^\\circ$. Tính $\\cos\\alpha$.",
+    options: [
+      { letter: "A", text: "$\\cos\\alpha = -\\dfrac{4}{5}$", isCorrect: true },
+      { letter: "B", text: "$\\cos\\alpha = \\dfrac{4}{5}$", isCorrect: false },
+      { letter: "C", text: "$\\cos\\alpha = -\\dfrac{3}{5}$", isCorrect: false },
+      { letter: "D", text: "$\\cos\\alpha = \\dfrac{3}{4}$", isCorrect: false }
+    ],
+    blankAnswer: "-4/5",
+    explanation: "Vì $90^\\circ<\\alpha<180^\\circ$ nên $\\cos\\alpha<0$. Từ $\\sin^2\\alpha+\\cos^2\\alpha=1$ suy ra $\\cos\\alpha=-\\sqrt{1-\\frac{9}{25}}=-\\frac{4}{5}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 14"
+  },
+  {
+    id: "lg23",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Tính $\\cot(-675^\\circ)$.",
+    options: [
+      { letter: "A", text: "$1$", isCorrect: true },
+      { letter: "B", text: "$-1$", isCorrect: false },
+      { letter: "C", text: "$\\sqrt{3}$", isCorrect: false },
+      { letter: "D", text: "$0$", isCorrect: false }
+    ],
+    blankAnswer: "1",
+    explanation: "$\\cot(-675^\\circ) = \\cot(45^\\circ - 2\\cdot360^\\circ) = \\cot 45^\\circ = 1$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 1, trang 15"
+  },
+  {
+    id: "lg24",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Không dùng máy tính, tính $\\cos 75^\\circ$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{\\sqrt{6}-\\sqrt{2}}{4}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{\\sqrt{6}+\\sqrt{2}}{4}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{\\sqrt{2}-\\sqrt{6}}{4}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{\\sqrt{2}}{4}$", isCorrect: false }
+    ],
+    blankAnswer: "(sqrt6 - sqrt2)/4",
+    explanation: "$\\cos75^\\circ=\\cos(45^\\circ+30^\\circ)=\\cos45^\\circ\\cos30^\\circ-\\sin45^\\circ\\sin30^\\circ=\\dfrac{\\sqrt6-\\sqrt2}{4}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 18"
+  },
+  {
+    id: "lg25",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Cho $\\cos a = -\\dfrac{1}{3}$ với $\\dfrac{\\pi}{2} < a < \\pi$. Tính $\\sin 2a$.",
+    options: [
+      { letter: "A", text: "$-\\dfrac{4\\sqrt{2}}{9}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{4\\sqrt{2}}{9}$", isCorrect: false },
+      { letter: "C", text: "$-\\dfrac{2\\sqrt{2}}{9}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{8}{9}$", isCorrect: false }
+    ],
+    blankAnswer: "-4sqrt2/9",
+    explanation: "Vì $\\frac{\\pi}{2}<a<\\pi$ nên $\\sin a>0$: $\\sin a=\\sqrt{1-\\frac19}=\\frac{2\\sqrt2}{3}$. Vậy $\\sin2a=2\\sin a\\cos a=2\\cdot\\frac{2\\sqrt2}{3}\\cdot\\left(-\\frac13\\right)=-\\frac{4\\sqrt2}{9}$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 2, trang 18-19"
+  },
+  {
+    id: "lg26",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Xét tính chẵn, lẻ của hàm số $f(x) = x\\sin x$.",
+    options: [
+      { letter: "A", text: "Hàm số chẵn", isCorrect: true },
+      { letter: "B", text: "Hàm số lẻ", isCorrect: false },
+      { letter: "C", text: "Không chẵn không lẻ", isCorrect: false },
+      { letter: "D", text: "Vừa chẵn vừa lẻ", isCorrect: false }
+    ],
+    blankAnswer: "Hàm số chẵn",
+    explanation: "TXĐ $D=\\mathbb{R}$. Với mọi $x\\in D$: $f(-x)=(-x)\\sin(-x)=x\\sin x=f(x)$. Vậy $f(x)=x\\sin x$ là hàm số chẵn.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 3, trang 24"
+  },
+  {
+    id: "lg27",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Trên đoạn $\\left[-\\dfrac{\\pi}{2};\\dfrac{3\\pi}{2}\\right]$, hàm số $y=\\sin x$ nhận giá trị dương khi $x$ thuộc khoảng nào?",
+    options: [
+      { letter: "A", text: "$(0;\\pi)$", isCorrect: true },
+      { letter: "B", text: "$\\left(-\\dfrac{\\pi}{2};0\\right)$", isCorrect: false },
+      { letter: "C", text: "$\\left(\\dfrac{\\pi}{2};\\pi\\right)$", isCorrect: false },
+      { letter: "D", text: "$\\left(\\pi;\\dfrac{3\\pi}{2}\\right)$", isCorrect: false }
+    ],
+    blankAnswer: "(0;pi)",
+    explanation: "Từ đồ thị hàm số $y=\\sin x$, trên đoạn $\\left[-\\frac{\\pi}{2};\\frac{3\\pi}{2}\\right]$, ta có $y>0$ khi $x\\in(0;\\pi)$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 3, trang 27"
+  },
+  {
+    id: "lg28",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Giải phương trình $\\sin x = -\\dfrac{\\sqrt{3}}{2}$.",
+    options: [
+      { letter: "A", text: "$x=-\\dfrac{\\pi}{3}+k2\\pi$ hoặc $x=\\dfrac{4\\pi}{3}+k2\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: true },
+      { letter: "B", text: "$x=\\dfrac{\\pi}{3}+k2\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: false },
+      { letter: "C", text: "$x=-\\dfrac{\\pi}{3}+k\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: false },
+      { letter: "D", text: "$x=\\pm\\dfrac{\\pi}{3}+k2\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: false }
+    ],
+    blankAnswer: "x=-pi/3+k2pi hoặc x=4pi/3+k2pi",
+    explanation: "$\\sin x=-\\frac{\\sqrt3}{2}=\\sin\\left(-\\frac{\\pi}{3}\\right)\\Leftrightarrow x=-\\frac{\\pi}{3}+k2\\pi$ hoặc $x=\\pi-\\left(-\\frac{\\pi}{3}\\right)+k2\\pi=\\frac{4\\pi}{3}+k2\\pi\\ (k\\in\\mathbb{Z})$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 4, trang 33"
+  },
+  {
+    id: "lg29",
+    topic: "Lượng giác",
+    grade: 11,
+    text: "Giải phương trình $\\tan x = -\\sqrt{3}$.",
+    options: [
+      { letter: "A", text: "$x=-\\dfrac{\\pi}{3}+k\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: true },
+      { letter: "B", text: "$x=\\dfrac{\\pi}{3}+k\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: false },
+      { letter: "C", text: "$x=-\\dfrac{\\pi}{3}+k2\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: false },
+      { letter: "D", text: "$x=\\dfrac{2\\pi}{3}+k\\pi\\ (k\\in\\mathbb{Z})$", isCorrect: false }
+    ],
+    blankAnswer: "x=-pi/3+kpi",
+    explanation: "$\\tan x=-\\sqrt3=\\tan\\left(-\\frac{\\pi}{3}\\right)\\Leftrightarrow x=-\\frac{\\pi}{3}+k\\pi\\ (k\\in\\mathbb{Z})$.",
+    sgk_source: "Toán 11 KNTT Tập 1, Bài 4, trang 36"
   }
 ];
