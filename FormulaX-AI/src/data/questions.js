@@ -3314,5 +3314,125 @@ export const questionsPool = [
     blankAnswer: "2/11",
     explanation: "Các thẻ từ 10 đến 20 gồm 11 số, trong đó có 5 số lẻ $\\{11;13;15;17;19\\}$. Không gian mẫu $n(\\Omega)=C_{11}^2=55$. Biến cố $C$ có $n(C)=C_5^2=10$. Vậy $P(C)=\\dfrac{10}{55}=\\dfrac{2}{11}$.",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 27, Bài tập 9.7, trang 86"
+  },
+  {
+    id: "ds65",
+    topic: "Đại số",
+    grade: 10,
+    text: "Bộ ba số nào sau đây là nghiệm của hệ phương trình $\\begin{cases}-2x+y+z=-3\\\\5x+y-3z=16\\\\x+2y=5\\end{cases}$?",
+    options: [
+      { letter: "A", text: "$(1;2;-3)$", isCorrect: true },
+      { letter: "B", text: "$(1;2;3)$", isCorrect: false },
+      { letter: "C", text: "$(-1;2;-3)$", isCorrect: false },
+      { letter: "D", text: "$(1;-2;-3)$", isCorrect: false }
+    ],
+    blankAnswer: "(1;2;-3)",
+    explanation: "Thay $x=1,y=2,z=-3$ vào cả ba phương trình: $-2(1)+2+(-3)=-3$ (đúng); $5(1)+2-3(-3)=5+2+9=16$ (đúng); $1+2(2)=5$ (đúng). Vậy $(1;2;-3)$ là nghiệm của hệ.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 6-7"
+  },
+  {
+    id: "ds66",
+    topic: "Đại số",
+    grade: 10,
+    text: "Giải hệ phương trình $\\begin{cases}x+y-2z=4\\\\3y+z=2\\\\-z=1\\end{cases}$.",
+    options: [
+      { letter: "A", text: "$(x;y;z)=(1;1;-1)$", isCorrect: true },
+      { letter: "B", text: "$(x;y;z)=(1;1;1)$", isCorrect: false },
+      { letter: "C", text: "$(x;y;z)=(-1;1;-1)$", isCorrect: false },
+      { letter: "D", text: "$(x;y;z)=(1;-1;-1)$", isCorrect: false }
+    ],
+    blankAnswer: "(x;y;z)=(1;1;-1)",
+    explanation: "Từ phương trình thứ ba: $z=-1$. Thay vào phương trình thứ hai: $3y-1=2 \\Rightarrow y=1$. Thay $y=1,z=-1$ vào phương trình đầu: $x+1-2(-1)=4 \\Rightarrow x=1$. Vậy nghiệm của hệ là $(x;y;z)=(1;1;-1)$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 7"
+  },
+  {
+    id: "ds67",
+    topic: "Đại số",
+    grade: 10,
+    text: "Giải hệ phương trình sau bằng phương pháp Gauss: $\\begin{cases}x+y+z=2\\\\7x+3y+z=4\\\\-5x+7y-2z=5\\end{cases}$.",
+    options: [
+      { letter: "A", text: "$(x;y;z)=(0;1;1)$", isCorrect: true },
+      { letter: "B", text: "$(x;y;z)=(1;0;1)$", isCorrect: false },
+      { letter: "C", text: "$(x;y;z)=(1;1;0)$", isCorrect: false },
+      { letter: "D", text: "$(x;y;z)=(2;-1;1)$", isCorrect: false }
+    ],
+    blankAnswer: "(x;y;z)=(0;1;1)",
+    explanation: "Khử $x$ ở phương trình 2 và 3, rồi khử $y$ ở phương trình 3 để đưa hệ về dạng tam giác $\\begin{cases}x+y+z=2\\\\-4y-6z=-10\\\\-15z=-15\\end{cases}$. Từ phương trình thứ ba: $z=1$. Thế vào phương trình thứ hai: $y=1$. Thế vào phương trình đầu: $x=2-1-1=0$. Vậy nghiệm là $(x;y;z)=(0;1;1)$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 8-9"
+  },
+  {
+    id: "ds68",
+    topic: "Đại số",
+    grade: 10,
+    text: "Hệ phương trình $\\begin{cases}2x+y-z=5\\\\x+y+z=3\\\\5x+4y+2z=10\\end{cases}$ có bao nhiêu nghiệm?",
+    options: [
+      { letter: "A", text: "Vô nghiệm", isCorrect: true },
+      { letter: "B", text: "Một nghiệm duy nhất", isCorrect: false },
+      { letter: "C", text: "Vô số nghiệm", isCorrect: false },
+      { letter: "D", text: "Đúng hai nghiệm", isCorrect: false }
+    ],
+    blankAnswer: "Vô nghiệm",
+    explanation: "Biến đổi Gauss đưa hệ về dạng $\\begin{cases}x+y+z=3\\\\-y-3z=-1\\\\-y-3z=-5\\end{cases}$. Từ hai phương trình cuối suy ra $-1=-5$, vô lí. Vậy hệ đã cho vô nghiệm.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 9-10"
+  },
+  {
+    id: "ds69",
+    topic: "Đại số",
+    grade: 10,
+    text: "Hệ phương trình $\\begin{cases}5x+y-4z=2\\\\x-y-z=-1\\\\3x+3y-2z=4\\end{cases}$ có bao nhiêu nghiệm?",
+    options: [
+      { letter: "A", text: "Vô số nghiệm", isCorrect: true },
+      { letter: "B", text: "Vô nghiệm", isCorrect: false },
+      { letter: "C", text: "Một nghiệm duy nhất", isCorrect: false },
+      { letter: "D", text: "Đúng hai nghiệm", isCorrect: false }
+    ],
+    blankAnswer: "Vô số nghiệm",
+    explanation: "Biến đổi Gauss đưa hệ về dạng hình thang $\\begin{cases}x-y-z=-1\\\\6y+z=7\\end{cases}$ (phương trình thứ hai và thứ ba của hệ sau biến đổi trùng nhau). Hệ có vô số nghiệm với tập nghiệm $S=\\{(-5y+6;y;7-6y)\\mid y\\in\\mathbb{R}\\}$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 10"
+  },
+  {
+    id: "ds70",
+    topic: "Đại số",
+    grade: 10,
+    text: "Ông An đầu tư 240 triệu đồng vào ba quỹ: thị trường tiền tệ (lãi 3%/năm), trái phiếu Chính phủ (lãi 4%/năm) và một ngân hàng (lãi 7%/năm). Biết số tiền đầu tư vào ngân hàng nhiều hơn quỹ trái phiếu Chính phủ 80 triệu đồng, và tổng số tiền lãi thu được trong năm đầu là 13,4 triệu đồng. Hỏi ông An đầu tư vào quỹ thị trường tiền tệ, trái phiếu Chính phủ và ngân hàng lần lượt bao nhiêu triệu đồng?",
+    options: [
+      { letter: "A", text: "$40$; $60$; $140$ (triệu đồng)", isCorrect: true },
+      { letter: "B", text: "$60$; $40$; $140$ (triệu đồng)", isCorrect: false },
+      { letter: "C", text: "$50$; $70$; $120$ (triệu đồng)", isCorrect: false },
+      { letter: "D", text: "$40$; $80$; $120$ (triệu đồng)", isCorrect: false }
+    ],
+    blankAnswer: "40; 60; 140 (triệu đồng)",
+    explanation: "Gọi $x,y,z$ (triệu đồng) lần lượt là số tiền đầu tư vào quỹ thị trường tiền tệ, trái phiếu Chính phủ và ngân hàng. Ta có hệ $\\begin{cases}x+y+z=240\\\\-y+z=80\\\\0{,}03x+0{,}04y+0{,}07z=13{,}4\\end{cases}$. Giải bằng phương pháp Gauss (hoặc máy tính cầm tay) được $x=40, y=60, z=140$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 11"
+  },
+  {
+    id: "ds71",
+    topic: "Đại số",
+    grade: 10,
+    text: "Một khu rừng ngập mặn diện tích 1 ha có sinh khối trên mặt đất là 87,2 tấn/ha. Trong các ô tiêu chuẩn 100 m² người ta đếm được tổng số 161 cây, trong đó số cây bần bằng 15% tổng số cây đước và cây mắm. Khối lượng trung bình một cây bần là 10 kg, cây đước là 5 kg và cây mắm là 1 kg. Sinh khối cây bần trên 1 ha rừng là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$21$ tấn/ha", isCorrect: true },
+      { letter: "B", text: "$65{,}25$ tấn/ha", isCorrect: false },
+      { letter: "C", text: "$0{,}95$ tấn/ha", isCorrect: false },
+      { letter: "D", text: "$16{,}1$ tấn/ha", isCorrect: false }
+    ],
+    blankAnswer: "21 tấn/ha",
+    explanation: "Gọi $x,y,z$ lần lượt là số cây bần, cây đước, cây mắm trên 1 ha ($10\\,000$ m²). Từ giả thiết: $x+y+z=16100$; $20x-3y-3z=0$; $10x+5y+z=87200$. Giải hệ (bằng máy tính cầm tay) được $x=2100, y=13050, z=950$. Vậy sinh khối bần là $10x=21000$ kg/ha $=21$ tấn/ha.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 2, trang 16"
+  },
+  {
+    id: "ds72",
+    topic: "Đại số",
+    grade: 10,
+    text: "Xét thị trường thực phẩm gồm ba mặt hàng thịt lợn, thịt bò, thịt gà với giá lần lượt là $x, y, z$ (nghìn đồng/kg). Cho hàm cung và hàm cầu: thịt lợn $Q_{S_1}=-120+2x$, $Q_{D_1}=190-3x+y-z$; thịt bò $Q_{S_2}=-200+2y$, $Q_{D_2}=440+2x-y-z$; thịt gà $Q_{S_3}=-210+3z$, $Q_{D_3}=260-x-2y+4z$. Tìm mức giá cân bằng cung - cầu của thịt lợn, thịt bò và thịt gà.",
+    options: [
+      { letter: "A", text: "$90$; $240$; $100$ (nghìn đồng/kg)", isCorrect: true },
+      { letter: "B", text: "$100$; $240$; $90$ (nghìn đồng/kg)", isCorrect: false },
+      { letter: "C", text: "$90$; $200$; $140$ (nghìn đồng/kg)", isCorrect: false },
+      { letter: "D", text: "$120$; $220$; $90$ (nghìn đồng/kg)", isCorrect: false }
+    ],
+    blankAnswer: "90; 240; 100 (nghìn đồng/kg)",
+    explanation: "Hệ phương trình cân bằng cung-cầu $Q_{S_i}=Q_{D_i}$ thu gọn thành $\\begin{cases}5x-y+z=310\\\\2x-3y-z=-640\\\\x+2y-z=470\\end{cases}$. Giải hệ (bằng máy tính cầm tay) được $x=90, y=240, z=100$. Vậy giá cân bằng của thịt lợn, thịt bò, thịt gà lần lượt là $90$, $240$, $100$ nghìn đồng/kg.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 2, trang 19"
   }
 ];

@@ -1571,5 +1571,31 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Xác suất biến cố đối = 1 trừ xác suất biến cố gốc. Dùng khi đếm trực tiếp khó, đếm biến cố đối (trường hợp ngược lại) dễ hơn.",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 27, trang 85"
+  },
+  {
+    id: "ds10-he-pt-bacnhat-ba-an",
+    name: "Hệ phương trình bậc nhất ba ẩn",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\begin{cases} a_1x+b_1y+c_1z=d_1 \\\\ a_2x+b_2y+c_2z=d_2 \\\\ a_3x+b_3y+c_3z=d_3 \\end{cases}",
+    explanation: "Trong đó:\n- $x, y, z$: Ba ẩn số.\n- $a_i, b_i, c_i, d_i$ ($i=1,2,3$): Các hệ số; trong mỗi phương trình, ít nhất một trong các hệ số $a_i, b_i, c_i$ phải khác $0$.\n- $(x_0;y_0;z_0)$: Một nghiệm của hệ nếu bộ ba số này thoả mãn đồng thời cả ba phương trình của hệ.\n\nPhương trình bậc nhất ba ẩn có dạng tổng quát $ax+by+cz=d$ (với $a,b,c$ không đồng thời bằng $0$); hệ phương trình bậc nhất ba ẩn là hệ gồm một số phương trình bậc nhất ba ẩn — sách này chỉ xét hệ có số phương trình bằng đúng số ẩn (3 phương trình, 3 ẩn). Một hệ phương trình bậc nhất ba ẩn có thể có nghiệm duy nhất, vô nghiệm hoặc có vô số nghiệm.",
+    example: "**Ví dụ (SGK):** Kiểm tra bộ ba số $(1;2;-3)$ có phải là nghiệm của hệ $\\begin{cases}-2x+y+z=-3\\\\5x+y-3z=16\\\\x+2y=5\\end{cases}$ không.\n\n**Lời giải:** Thay $x=1,y=2,z=-3$ vào hệ: $-2(1)+2+(-3)=-3$ (đúng); $5(1)+2-3(-3)=16$ (đúng); $1+2(2)=5$ (đúng). Cả ba phương trình đều thoả mãn nên $(1;2;-3)$ là một nghiệm của hệ.",
+    tags: ["Hệ phương trình", "Bậc nhất ba ẩn", "Nghiệm của hệ"],
+    difficulty: "Dễ",
+    mnemonic: "Hệ bậc nhất 3 ẩn = 3 phương trình dạng ax+by+cz=d. Kiểm tra nghiệm: thay trực tiếp (x0;y0;z0) vào TỪNG phương trình, đúng cả 3 mới là nghiệm.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 6-7"
+  },
+  {
+    id: "ds10-phuongphap-gauss",
+    name: "Phương pháp Gauss giải hệ phương trình bậc nhất ba ẩn",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\begin{cases} a_1x+b_1y+c_1z=d_1 \\\\ a_2x+b_2y+c_2z=d_2 \\\\ a_3x+b_3y+c_3z=d_3 \\end{cases} \\;\\Longrightarrow\\; \\begin{cases} x+py+qz=r \\\\ y+sz=t \\\\ z=u \\end{cases}",
+    explanation: "Trong đó, hệ ở vế phải là hệ dạng tam giác: phương trình cuối chỉ còn một ẩn, phương trình giữa còn hai ẩn, phương trình đầu còn đủ ba ẩn — giải từ dưới lên (thế ngược) để tìm nghiệm.\n\nBa phép biến đổi dùng để đưa hệ bậc nhất ba ẩn về dạng tam giác (phương pháp Gauss):\n- Nhân hai vế của một phương trình của hệ với một số khác $0$.\n- Đổi vị trí hai phương trình của hệ.\n- Cộng mỗi vế của một phương trình (sau khi đã nhân với một số khác $0$) với vế tương ứng của phương trình khác để được phương trình mới có số ẩn ít hơn.\n\nSau khi đưa hệ về dạng tam giác, giải từ phương trình chỉ còn một ẩn trước, thế giá trị tìm được vào phương trình chứa hai ẩn để tìm ẩn thứ hai, cuối cùng thế cả hai giá trị vào phương trình còn lại để tìm ẩn thứ ba. Hệ phương trình bậc nhất ba ẩn có thể vô nghiệm hoặc có vô số nghiệm nếu trong quá trình biến đổi xuất hiện một phương trình vô lí (như $0=k$, $k\\neq0$) hoặc một phương trình luôn đúng (như hai phương trình trùng nhau, dạng hình thang).",
+    example: "**Ví dụ (SGK):** Giải hệ phương trình sau bằng phương pháp Gauss $\\begin{cases}x+y+z=2\\\\7x+3y+z=4\\\\-5x+7y-2z=5\\end{cases}$\n\n**Lời giải:** Khử $x$ ở phương trình thứ hai và thứ ba (nhân phương trình đầu với $-7$ rồi với $5$, cộng lần lượt vào phương trình 2 và 3), sau đó khử $y$ ở phương trình thứ ba, đưa hệ về dạng tam giác $\\begin{cases}x+y+z=2\\\\-4y-6z=-10\\\\-15z=-15\\end{cases}$. Từ phương trình thứ ba: $z=1$. Thế vào phương trình thứ hai: $y=1$. Thế vào phương trình đầu: $x=2-1-1=0$. Vậy nghiệm của hệ là $(x;y;z)=(0;1;1)$.",
+    tags: ["Phương pháp Gauss", "Hệ phương trình", "Bậc nhất ba ẩn", "Dạng tam giác"],
+    difficulty: "Trung bình",
+    mnemonic: "Gauss = khử dần từng ẩn để đưa hệ về dạng TAM GIÁC (pt cuối 1 ẩn, pt giữa 2 ẩn, pt đầu 3 ẩn), rồi giải NGƯỢC từ dưới lên: tìm z trước, thế ra y, thế ra x.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 8-9"
   }
 ];
