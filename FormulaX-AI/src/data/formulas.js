@@ -1065,7 +1065,8 @@ export const formulas = [
     example: "Tìm ảnh của điểm $M(2;3)$ qua phép quay tâm $O$ góc $90°$.\n\n**Lời giải:**\n$\\cos 90° = 0$, $\\sin 90° = 1$:\n$$x' = 2\\cdot0 - 3\\cdot1 = -3, \\quad y' = 2\\cdot1 + 3\\cdot0 = 2$$\nVậy $M'(-3; 2)$.",
     tags: ["Phép biến hình", "Tịnh tiến", "Phép quay", "Vị tự", "Mở rộng"],
     difficulty: "Trung bình",
-    mnemonic: "Tịnh tiến: cộng tọa độ vector. Quay góc α: nhân ma trận (cosα -sinα; sinα cosα). Đối xứng: đổi dấu tọa độ. Vị tự tỉ số k: nhân tọa độ với k."
+    mnemonic: "Tịnh tiến: cộng tọa độ vector. Quay góc α: nhân ma trận (cosα -sinα; sinα cosα). Đối xứng: đổi dấu tọa độ. Vị tự tỉ số k: nhân tọa độ với k.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 2/3/4/6"
   },
   {
     id: "mr-lythuyet-dothi",
@@ -2501,5 +2502,83 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Đạo hàm của đạo hàm — lấy đạo hàm hai lần liên tiếp; trong Vật lí, đạo hàm cấp hai của quãng đường theo thời gian chính là gia tốc.",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 33, trang 95"
+  },
+  {
+    id: "hh11-phepdoixungtruc",
+    name: "Phép đối xứng trục",
+    topic: "Hình học",
+    grade: 11,
+    latex: "Đ_d(M) = M' \\iff d \\text{ là đường trung trực của } MM'",
+    explanation: "Cho đường thẳng $d$. Phép biến hình biến mỗi điểm $M$ thuộc $d$ thành chính nó và biến mỗi điểm $M$ không thuộc $d$ thành điểm $M'$ sao cho $d$ là đường trung trực của đoạn thẳng $MM'$ được gọi là phép đối xứng trục $d$, kí hiệu $Đ_d$.\nTrong đó:\n- Phép đối xứng trục bảo toàn khoảng cách giữa hai điểm bất kì.\n- Biến đoạn thẳng thành đoạn thẳng bằng nó, tam giác thành tam giác bằng nó, đường tròn thành đường tròn cùng bán kính.\n- Hình $\\mathcal{H}$ nhận đường thẳng $d$ là trục đối xứng khi và chỉ khi $Đ_d$ biến $\\mathcal{H}$ thành chính nó.",
+    example: "Trong mặt phẳng toạ độ $Oxy$, tìm toạ độ ảnh của điểm $M(3;4)$ qua phép đối xứng trục $\\Delta: x+3y-15=0$.\n\n**Lời giải:**\nToạ độ điểm $M(3;4)$ thoả mãn phương trình $\\Delta$ (vì $3+3\\cdot4-15=0$) nên $M \\in \\Delta$, do đó ảnh của $M$ qua $Đ_\\Delta$ chính là $M(3;4)$.",
+    tags: ["Phép biến hình", "Đối xứng trục", "Hình học"],
+    difficulty: "Trung bình",
+    mnemonic: "Trục d là đường trung trực của đoạn nối điểm với ảnh của nó — điểm trên trục thì biến thành chính nó.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 3, trang 12"
+  },
+  {
+    id: "hh11-phepquay",
+    name: "Phép quay",
+    topic: "Hình học",
+    grade: 11,
+    latex: "Q_{(O,\\alpha)}(M) = M' \\iff OM' = OM \\text{ và } (OM, OM') = \\alpha",
+    explanation: "Cho điểm $O$ và góc lượng giác $\\alpha$. Phép biến hình biến điểm $O$ thành điểm $O$ và biến mỗi điểm $M$ khác $O$ thành điểm $M'$ sao cho $OM'=OM$ và các góc lượng giác $(OM, OM') = \\alpha$ gọi là phép quay tâm $O$, góc quay $\\alpha$, kí hiệu $Q_{(O,\\alpha)}$.\nTrong đó:\n- $O$: Tâm quay.\n- $\\alpha$: Góc quay (chiều dương ngược chiều kim đồng hồ).\n- Phép quay bảo toàn khoảng cách giữa hai điểm bất kì.\n- Hai phép quay cùng tâm và có hai góc quay sai khác nhau bội của $2\\pi$ thì trùng nhau.\n- Phép đối xứng tâm $O$ chính là phép quay tâm $O$, góc quay $\\pi$.",
+    example: "Cho hình vuông $ABCD$ tâm $O$. Tìm ảnh của điểm $A$ qua phép quay $Q_{(O,\\frac{\\pi}{2})}$.\n\n**Lời giải:**\nVì $OA=OB$ và góc quay $\\dfrac{\\pi}{2}$ nên phép quay $Q_{(O,\\frac{\\pi}{2})}$ biến điểm $A$ thành điểm $B$.",
+    tags: ["Phép biến hình", "Phép quay", "Đối xứng tâm", "Hình học"],
+    difficulty: "Trung bình",
+    mnemonic: "Quay tâm O góc α: giữ nguyên khoảng cách tới O, chỉ đổi hướng. Góc quay π chính là phép đối xứng tâm.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 4, trang 16-18"
+  },
+  {
+    id: "hh11-phepdoihinh",
+    name: "Phép dời hình",
+    topic: "Hình học",
+    grade: 11,
+    latex: "f \\text{ là phép dời hình} \\iff M'N' = MN \\; \\forall M, N",
+    explanation: "Phép biến hình $f$ được gọi là phép dời hình nếu nó bảo toàn khoảng cách giữa hai điểm bất kì (tức là với hai điểm $M$, $N$ bất kì và ảnh $M'$, $N'$ tương ứng, ta luôn có $M'N' = MN$).\nTrong đó:\n- Phép dời hình biến đoạn thẳng thành đoạn thẳng bằng nó, tam giác thành tam giác bằng nó, đường tròn thành đường tròn cùng bán kính, đường thẳng thành đường thẳng.\n- Hai hình $\\mathcal{H}$ và $\\mathcal{H}'$ được gọi là bằng nhau nếu có phép dời hình biến hình $\\mathcal{H}$ thành hình $\\mathcal{H}'$.\n- Phép tịnh tiến, phép đối xứng trục, phép quay, phép đối xứng tâm đều là các phép dời hình.\n- Thực hiện liên tiếp hai phép dời hình cũng được một phép dời hình.",
+    example: "Trong mặt phẳng toạ độ $Oxy$, gọi $f$ là phép biến hình biến mỗi điểm có toạ độ $(x;y)$ thành điểm có toạ độ $(-x; y+1)$. Chứng minh $f$ là một phép dời hình.\n\n**Lời giải:**\nVới hai điểm bất kì $M(x;y)$, $N(x';y')$ có ảnh qua $f$ tương ứng là $M'(-x;y+1)$, $N'(-x';y'+1)$:\n$M'N' = \\sqrt{(-x'-(-x))^2+((y'+1)-(y+1))^2} = \\sqrt{(x'-x)^2+(y'-y)^2} = MN$\nDo đó, $f$ là một phép dời hình.",
+    tags: ["Phép biến hình", "Phép dời hình", "Hai hình bằng nhau", "Hình học"],
+    difficulty: "Trung bình",
+    mnemonic: "Phép dời hình = phép biến hình bảo toàn khoảng cách. Hai hình bằng nhau khi có một phép dời hình biến hình này thành hình kia.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 5, trang 21"
+  },
+  {
+    id: "hh11-phepvitu",
+    name: "Phép vị tự",
+    topic: "Hình học",
+    grade: 11,
+    latex: "V_{(O,k)}(M) = M' \\iff \\overrightarrow{OM'} = k\\overrightarrow{OM}",
+    explanation: "Cho điểm $O$ và số thực $k \\neq 0$. Phép biến hình biến mỗi điểm $M$ thành điểm $M'$ sao cho $\\overrightarrow{OM'} = k\\overrightarrow{OM}$ được gọi là phép vị tự tâm $O$, tỉ số $k$, kí hiệu $V_{(O,k)}$.\nTrong đó:\n- $O$: Tâm vị tự.\n- $k$: Tỉ số vị tự.\n- Tính chất: nếu $V_{(O,k)}$ biến $M, N$ thành $M', N'$ thì $\\overrightarrow{M'N'} = k\\overrightarrow{MN}$ (do đó $M'N' = |k|MN$).\n- Biến đoạn thẳng (độ dài $a$) thành đoạn thẳng (độ dài $|k|a$); biến đường tròn bán kính $R$ thành đường tròn bán kính $|k|R$ có tâm là ảnh của tâm; biến tam giác thành tam giác đồng dạng với tỉ số $|k|$.\n- $V_{(O,1)}$ là phép đồng nhất; $V_{(O,-1)}$ là phép đối xứng tâm $O$.",
+    example: "Cho tam giác $ABC$ có trọng tâm $G$ và $M$ là trung điểm $BC$. Tìm ảnh của điểm $A$ qua phép vị tự $V_{(M,-\\frac{1}{3})}$.\n\n**Lời giải:**\nVì $G$ là trọng tâm nên $\\overrightarrow{MG} = -\\dfrac{1}{3}\\overrightarrow{MA}$. Vậy phép vị tự $V_{(M,-\\frac{1}{3})}$ biến điểm $A$ thành điểm $G$.",
+    tags: ["Phép biến hình", "Phép vị tự", "Tâm vị tự", "Hình học"],
+    difficulty: "Trung bình",
+    mnemonic: "Vị tự tâm O tỉ số k: vectơ tới ảnh gấp k lần vectơ tới điểm gốc — OM' = k·OM. k=-1 chính là đối xứng tâm.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 6, trang 26-27"
+  },
+  {
+    id: "hh11-phepdongdang",
+    name: "Phép đồng dạng",
+    topic: "Hình học",
+    grade: 11,
+    latex: "f \\text{ là phép đồng dạng tỉ số } k \\iff M'N' = kMN \\; (k>0) \\; \\forall M, N",
+    explanation: "Phép biến hình $f$ được gọi là phép đồng dạng tỉ số $k$ ($k>0$) nếu với hai điểm bất kì $M, N$ và hai ảnh $M', N'$ tương ứng của chúng, ta có $M'N' = kMN$.\nTrong đó:\n- Phép dời hình là phép đồng dạng tỉ số $1$.\n- Phép vị tự tỉ số $k$ là phép đồng dạng tỉ số $|k|$.\n- Thực hiện liên tiếp một phép dời hình và một phép vị tự tỉ số $k$ ta được một phép đồng dạng tỉ số $|k|$; ngược lại, mọi phép đồng dạng đều có thể phân tích thành hợp của một phép dời hình và một phép vị tự.\n- Nếu có phép đồng dạng biến hình $\\mathcal{H}$ thành hình $\\mathcal{H}'$ thì cũng có phép đồng dạng biến $\\mathcal{H}'$ thành $\\mathcal{H}$, khi đó ta nói $\\mathcal{H}$ và $\\mathcal{H}'$ đồng dạng với nhau.",
+    example: "Trong mặt phẳng toạ độ $Oxy$, cho phép biến hình $f$ biến mỗi điểm $M(x;y)$ thành điểm $M'(3x;-3y)$. Tìm tỉ số đồng dạng của $f$.\n\n**Lời giải:**\nVới hai điểm bất kì $M_1(x_1;y_1)$, $M_2(x_2;y_2)$ có ảnh $M_1'(3x_1;-3y_1)$, $M_2'(3x_2;-3y_2)$:\n$M_1'M_2' = \\sqrt{9(x_2-x_1)^2+9(y_2-y_1)^2} = 3\\sqrt{(x_2-x_1)^2+(y_2-y_1)^2} = 3M_1M_2$\nVậy $f$ là phép đồng dạng tỉ số $3$.",
+    tags: ["Phép biến hình", "Phép đồng dạng", "Tỉ số đồng dạng", "Hình học"],
+    difficulty: "Khó",
+    mnemonic: "Phép đồng dạng tỉ số k: khoảng cách giữa hai ảnh gấp k lần khoảng cách hai điểm gốc — tổng quát hoá phép dời hình (k=1) và phép vị tự (k=|tỉ số vị tự|).",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 7, trang 30"
+  },
+  {
+    id: "hh11-phéptinhtien",
+    name: "Phép tịnh tiến",
+    topic: "Hình học",
+    grade: 11,
+    latex: "T_{\\vec u}(M) = M' \\iff \\overrightarrow{MM'} = \\vec u",
+    explanation: "Cho vectơ $\\vec u$. Phép biến hình biến mỗi điểm $M$ thành điểm $M'$ sao cho $\\overrightarrow{MM'} = \\vec u$ gọi là phép tịnh tiến theo $\\vec u$, kí hiệu $T_{\\vec u}$. Vectơ $\\vec u$ được gọi là vectơ tịnh tiến.\nTrong đó:\n- Phép tịnh tiến theo vectơ $\\vec 0$ là phép đồng nhất.\n- Tính chất: nếu $T_{\\vec u}$ biến $M, N$ thành $M', N'$ thì $\\overrightarrow{MN} = \\overrightarrow{M'N'}$ — phép tịnh tiến bảo toàn khoảng cách giữa hai điểm.\n- Biến đoạn thẳng thành đoạn thẳng bằng nó, tam giác thành tam giác bằng nó, đường tròn thành đường tròn cùng bán kính có tâm là ảnh của tâm, đường thẳng thành đường thẳng song song hoặc trùng với nó.",
+    example: "Trong mặt phẳng toạ độ $Oxy$, xác định phép tịnh tiến biến điểm $A(1;2)$ thành điểm $A'(2;5)$.\n\n**Lời giải:**\nGiả sử phép tịnh tiến theo vectơ $\\vec u$ biến $A(1;2)$ thành $A'(2;5)$. Khi đó $\\overrightarrow{AA'} = \\vec u$. Mặt khác $\\overrightarrow{AA'} = (1;3)$ nên $\\vec u = (1;3)$.",
+    tags: ["Phép biến hình", "Phép tịnh tiến", "Vectơ tịnh tiến", "Hình học"],
+    difficulty: "Dễ",
+    mnemonic: "Tịnh tiến theo vectơ u: mọi điểm 'trượt' đúng theo vectơ u — MM' = u với mọi điểm M.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 2, trang 9"
   },
 ];

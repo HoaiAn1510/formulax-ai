@@ -4845,4 +4845,124 @@ export const questionsPool = [
     explanation: "$P'(x) = 2ax + b$, $P''(x) = 2a$. Từ $P''(1) = 2a = -2 \\Rightarrow a = -1$. Thay vào $P'(1) = 2a + b = 0 \\Rightarrow -2 + b = 0 \\Rightarrow b = 2$.",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 33, trang 96 (Bài 9.15)"
   },
+  {
+    id: "hh70",
+    topic: "Hình học",
+    grade: 11,
+    text: "Trong mặt phẳng toạ độ $Oxy$ cho điểm $I(1;2)$. Xét phép biến hình $f$ biến điểm $I$ thành điểm $I$ và biến mỗi điểm $M$ khác $I$ thành điểm $M'$ sao cho $I$ là trung điểm của $MM'$. Tìm toạ độ ảnh của điểm $A(3;-2)$ qua phép biến hình $f$.",
+    options: [
+      { letter: "A", text: "$A'(-1; 6)$", isCorrect: true },
+      { letter: "B", text: "$A'(1; -6)$", isCorrect: false },
+      { letter: "C", text: "$A'(-1; -6)$", isCorrect: false },
+      { letter: "D", text: "$A'(5; -2)$", isCorrect: false }
+    ],
+    blankAnswer: "A'(-1; 6)",
+    explanation: "Đây là phép đối xứng tâm $I(1;2)$. Vì $I$ là trung điểm $AA'$ nên $x_{A'} = 2\\cdot1 - 3 = -1$, $y_{A'} = 2\\cdot2 - (-2) = 6$. Vậy $A'(-1;6)$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 1, trang 8 (Bài 1.1)"
+  },
+  {
+    id: "hh71",
+    topic: "Hình học",
+    grade: 11,
+    text: "Trong mặt phẳng toạ độ $Oxy$, cho đường tròn $(C): (x-1)^2+(y+2)^2=25$ và vectơ $\\vec u = (3;4)$. Viết phương trình đường tròn $(C')$ là ảnh của $(C)$ qua phép tịnh tiến $T_{\\vec u}$.",
+    options: [
+      { letter: "A", text: "$(x-4)^2+(y-2)^2=25$", isCorrect: true },
+      { letter: "B", text: "$(x+2)^2+(y+6)^2=25$", isCorrect: false },
+      { letter: "C", text: "$(x-4)^2+(y-2)^2=9$", isCorrect: false },
+      { letter: "D", text: "$(x-1)^2+(y+2)^2=25$", isCorrect: false }
+    ],
+    blankAnswer: "(x-4)^2+(y-2)^2=25",
+    explanation: "$(C)$ có tâm $I(1;-2)$, bán kính $R=5$. Ảnh của tâm qua $T_{\\vec u}$ là $I' = I+\\vec u = (1+3; -2+4) = (4;2)$, bán kính không đổi. Vậy $(C'): (x-4)^2+(y-2)^2=25$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 2, trang 11 (Bài 1.4)"
+  },
+  {
+    id: "hh72",
+    topic: "Hình học",
+    grade: 11,
+    text: "Trong mặt phẳng toạ độ $Oxy$, cho $\\Delta: x+2y-1=0$. Viết phương trình đường thẳng $d$ đối xứng với $\\Delta$ qua trục $Ox$.",
+    options: [
+      { letter: "A", text: "$x - 2y - 1 = 0$", isCorrect: true },
+      { letter: "B", text: "$x + 2y + 1 = 0$", isCorrect: false },
+      { letter: "C", text: "$-x + 2y - 1 = 0$", isCorrect: false },
+      { letter: "D", text: "$x - 2y + 1 = 0$", isCorrect: false }
+    ],
+    blankAnswer: "x - 2y - 1 = 0",
+    explanation: "Điểm $(x;y) \\in d$ khi và chỉ khi ảnh của nó qua phép đối xứng trục $Ox$ là $(x;-y)$ thuộc $\\Delta$. Thay vào phương trình $\\Delta$: $x+2(-y)-1=0 \\iff x-2y-1=0$. Vậy $d: x-2y-1=0$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 3, trang 15 (Bài 1.9)"
+  },
+  {
+    id: "hh73",
+    topic: "Hình học",
+    grade: 11,
+    text: "Trong mặt phẳng toạ độ $Oxy$, cho đường tròn $(C): (x-2)^2+y^2=1$. Viết phương trình đường tròn $(C')$ là ảnh của $(C)$ qua phép quay $Q_{(O,\\frac{\\pi}{2})}$.",
+    options: [
+      { letter: "A", text: "$x^2+(y-2)^2=1$", isCorrect: true },
+      { letter: "B", text: "$x^2+(y+2)^2=1$", isCorrect: false },
+      { letter: "C", text: "$(x+2)^2+y^2=1$", isCorrect: false },
+      { letter: "D", text: "$(x-2)^2+y^2=1$", isCorrect: false }
+    ],
+    blankAnswer: "x^2+(y-2)^2=1",
+    explanation: "Tâm $I(2;0)$ của $(C)$ qua phép quay $90°$ quanh $O$ biến thành $I'(x';y')$ với $x'=x\\cos90°-y\\sin90°=-0=0$, $y'=x\\sin90°+y\\cos90°=2$. Vậy $I'(0;2)$, bán kính không đổi. $(C'): x^2+(y-2)^2=1$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 4, trang 20 (Bài 1.14)"
+  },
+  {
+    id: "hh74",
+    topic: "Hình học",
+    grade: 11,
+    text: "Trong mặt phẳng toạ độ $Oxy$, cho $A(1;2)$, $B(3;6)$. Viết phương trình đường tròn $(C)$ là ảnh của đường tròn đường kính $AB$ qua phép vị tự $V_{(O,3)}$.",
+    options: [
+      { letter: "A", text: "$(x-6)^2+(y-12)^2=45$", isCorrect: true },
+      { letter: "B", text: "$(x-2)^2+(y-4)^2=5$", isCorrect: false },
+      { letter: "C", text: "$(x-6)^2+(y-12)^2=5$", isCorrect: false },
+      { letter: "D", text: "$(x-6)^2+(y-12)^2=15$", isCorrect: false }
+    ],
+    blankAnswer: "(x-6)^2+(y-12)^2=45",
+    explanation: "Đường tròn đường kính $AB$ có tâm $I(2;4)$ (trung điểm $AB$), bán kính $R=\\dfrac{AB}{2}=\\dfrac{2\\sqrt5}{2}=\\sqrt5$. Qua $V_{(O,3)}$: tâm ảnh $I'=3I=(6;12)$, bán kính $R'=|3|\\sqrt5=3\\sqrt5$, nên $R'^2=45$. Vậy $(C): (x-6)^2+(y-12)^2=45$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 6, trang 29 (Bài 1.21)"
+  },
+  {
+    id: "hh75",
+    topic: "Hình học",
+    grade: 11,
+    text: "Trong mặt phẳng toạ độ $Oxy$, cho phép biến hình $f$ biến mỗi điểm $M(x;y)$ thành điểm $M'(3x;-3y)$. Tìm tỉ số đồng dạng của phép đồng dạng $f$.",
+    options: [
+      { letter: "A", text: "$3$", isCorrect: true },
+      { letter: "B", text: "$-3$", isCorrect: false },
+      { letter: "C", text: "$9$", isCorrect: false },
+      { letter: "D", text: "$\\sqrt3$", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "Với hai điểm bất kì $M_1(x_1;y_1)$, $M_2(x_2;y_2)$ có ảnh $M_1'(3x_1;-3y_1)$, $M_2'(3x_2;-3y_2)$, ta có $M_1'M_2' = \\sqrt{9(x_2-x_1)^2+9(y_2-y_1)^2} = 3M_1M_2$. Vậy $f$ là phép đồng dạng tỉ số $3$.",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 7, trang 31 (Bài 1.25)"
+  },
+  {
+    id: "hh76",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hai đường tròn không đồng tâm nhưng có cùng bán kính $(O_1; R)$ và $(O_2; R)$. Phép đối xứng trục biến $(O_1; R)$ thành $(O_2; R)$ nhận đường nào làm trục đối xứng?",
+    options: [
+      { letter: "A", text: "Đường trung trực của đoạn thẳng $O_1O_2$", isCorrect: true },
+      { letter: "B", text: "Đường thẳng $O_1O_2$", isCorrect: false },
+      { letter: "C", text: "Đường trung tuyến từ $O_1$ trong tam giác bất kì chứa $O_1O_2$", isCorrect: false },
+      { letter: "D", text: "Đường phân giác của góc bất kì tạo bởi $O_1O_2$", isCorrect: false }
+    ],
+    blankAnswer: "Đường trung trực của đoạn thẳng O1O2",
+    explanation: "Vì $(O_1;R)$ và $(O_2;R)$ có cùng bán kính, phép đối xứng trục biến $(O_1;R)$ thành $(O_2;R)$ phải biến tâm $O_1$ thành tâm $O_2$, tức là trục đối xứng $d$ phải là đường trung trực của đoạn thẳng $O_1O_2$ (vì $d$ là đường trung trực của $O_1O_2$ khi và chỉ khi $Đ_d(O_1)=O_2$).",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 3, trang 15 (Bài 1.7)"
+  },
+  {
+    id: "hh77",
+    topic: "Hình học",
+    grade: 11,
+    text: "Cho hình thang $ABCD$ có hai đáy $AB$ và $CD$, $CD = 2AB$. Gọi $O$ là giao điểm của hai cạnh bên $AD$, $BC$. Phép vị tự $V_{(O,2)}$ biến đoạn thẳng $AB$ thành đoạn thẳng nào?",
+    options: [
+      { letter: "A", text: "Đoạn thẳng $CD$", isCorrect: true },
+      { letter: "B", text: "Đoạn thẳng $AD$", isCorrect: false },
+      { letter: "C", text: "Đoạn thẳng $BC$", isCorrect: false },
+      { letter: "D", text: "Chính đoạn thẳng $AB$", isCorrect: false }
+    ],
+    blankAnswer: "Đoạn thẳng CD",
+    explanation: "Vì $O$ là giao điểm hai cạnh bên của hình thang $ABCD$ ($AB \\parallel CD$, $CD=2AB$), ta có $\\overrightarrow{OD} = 2\\overrightarrow{OA}$ và $\\overrightarrow{OC} = 2\\overrightarrow{OB}$. Do đó phép vị tự $V_{(O,2)}$ biến $A$ thành $D$, biến $B$ thành $C$, tức là biến đoạn thẳng $AB$ thành đoạn thẳng $DC$ (chính là $CD$).",
+    sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 1, Bài 6, trang 29 (Bài 1.20)"
+  },
 ];
