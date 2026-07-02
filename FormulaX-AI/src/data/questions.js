@@ -3209,5 +3209,110 @@ export const questionsPool = [
     blankAnswer: "x^5 + 15x^4 + 90x^3 + 270x^2 + 405x + 243",
     explanation: "Thay $a=x, b=3$ vào $(a+b)^5=a^5+5a^4b+10a^3b^2+10a^2b^3+5ab^4+b^5$: $x^5+5x^4\\cdot3+10x^3\\cdot9+10x^2\\cdot27+5x\\cdot81+243=x^5+15x^4+90x^3+270x^2+405x+243$.",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 25, Ví dụ 2, trang 75"
+  },
+  {
+    id: "ds58",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Gieo một đồng xu cân đối liên tiếp ba lần. Gọi $E$ là biến cố: \"Có hai lần xuất hiện mặt sấp và một lần xuất hiện mặt ngửa\". Tính $P(E)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{3}{8}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{8}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{3}{4}$", isCorrect: false }
+    ],
+    blankAnswer: "3/8",
+    explanation: "Không gian mẫu $\\Omega=\\{SSN;SNS;SNN;SSS;NSN;NNS;NNN;NSS\\}$ nên $n(\\Omega)=8$. Biến cố $E=\\{SSN;SNS;NSS\\}$ nên $n(E)=3$. Vậy $P(E)=\\dfrac{3}{8}$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 26, Ví dụ 4, trang 80"
+  },
+  {
+    id: "ds59",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Hai túi I và II chứa các tấm thẻ được đánh số. Túi I: $\\{1;2;3;4;5\\}$, túi II: $\\{1;2;3;4\\}$. Rút ngẫu nhiên một tấm thẻ từ mỗi túi I và II. Tính xác suất để tổng hai số trên hai tấm thẻ lớn hơn 6.",
+    options: [
+      { letter: "A", text: "$0{,}3$", isCorrect: true },
+      { letter: "B", text: "$0{,}6$", isCorrect: false },
+      { letter: "C", text: "$0{,}15$", isCorrect: false },
+      { letter: "D", text: "$0{,}5$", isCorrect: false }
+    ],
+    blankAnswer: "0.3",
+    explanation: "Không gian mẫu có $n(\\Omega)=5\\times4=20$ (mỗi ô trong bảng là một kết quả). Biến cố tổng lớn hơn 6 gồm: tổng bằng 7 là $(3,4),(4,3),(5,2)$; tổng bằng 8 là $(4,4),(5,3)$; tổng bằng 9 là $(5,4)$ — tổng cộng 6 kết quả. Vậy $P=\\dfrac{6}{20}=\\dfrac{3}{10}=0{,}3$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 26, Ví dụ 5, trang 81"
+  },
+  {
+    id: "ds60",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Một tổ trong lớp 10A có 10 học sinh, trong đó có 6 học sinh nam và 4 học sinh nữ. Giáo viên chọn ngẫu nhiên 6 học sinh trong tổ đó để tham gia đội tình nguyện Mùa hè xanh. Gọi $D$ là biến cố: \"Trong 6 học sinh được chọn có 4 nam và 2 nữ\". Tính $P(D)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{3}{7}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{210}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{14}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{2}{7}$", isCorrect: false }
+    ],
+    blankAnswer: "3/7",
+    explanation: "Không gian mẫu $n(\\Omega)=C_{10}^6=210$. Mỗi phần tử của $D$ gồm 2 công đoạn: chọn 4 nam từ 6 nam ($C_6^4=15$ cách) và chọn 2 nữ từ 4 nữ ($C_4^2=6$ cách), theo quy tắc nhân $n(D)=15\\times6=90$. Vậy $P(D)=\\dfrac{90}{210}=\\dfrac{3}{7}$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 27, Ví dụ 1, trang 83"
+  },
+  {
+    id: "ds61",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Có ba chiếc hộp. Hộp I chứa ba viên bi: 1 viên màu đỏ, 1 viên màu xanh và 1 viên màu vàng. Hộp II chứa hai viên bi: 1 viên màu xanh và 1 viên màu vàng. Hộp III chứa hai viên bi: 1 viên màu đỏ và 1 viên màu xanh. Từ mỗi hộp lấy ngẫu nhiên một viên bi. Gọi $K$ là biến cố: \"Trong ba viên bi lấy ra có đúng một viên bi màu xanh\". Tính $P(K)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{5}{12}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{12}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{7}{12}$", isCorrect: false }
+    ],
+    blankAnswer: "5/12",
+    explanation: "Dùng sơ đồ hình cây, không gian mẫu có $n(\\Omega)=12$. Biến cố $K=\\{ĐXĐ;ĐVX;XVĐ;VXĐ;VVX\\}$ nên $n(K)=5$. Vậy $P(K)=\\dfrac{5}{12}$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 27, Ví dụ 2, trang 84-85"
+  },
+  {
+    id: "ds62",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Chọn ngẫu nhiên hai số từ tập $\\{1;2;\\ldots;9\\}$. Gọi $H$ là biến cố: \"Trong hai số được chọn có ít nhất một số chẵn\". Tính $P(H)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{13}{18}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{5}{18}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{1}{4}$", isCorrect: false }
+    ],
+    blankAnswer: "13/18",
+    explanation: "Xét biến cố đối $\\overline{H}$: \"Cả hai số được chọn đều là số lẻ\". $n(\\Omega)=C_9^2=36$, tập số lẻ $\\{1;3;5;7;9\\}$ có $n(\\overline{H})=C_5^2=10$. Vậy $P(\\overline{H})=\\dfrac{10}{36}=\\dfrac{5}{18}$, suy ra $P(H)=1-\\dfrac{5}{18}=\\dfrac{13}{18}$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 27, Ví dụ 3, trang 85"
+  },
+  {
+    id: "ds63",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Trong trò chơi bốc thăm trúng thưởng, người chơi chọn một bộ 6 số đôi một khác nhau từ 45 số. Bạn An chọn bộ số $\\{5;13;20;31;32;35\\}$. Gọi $G$ là biến cố: \"Bạn An trúng giải nhất\" (trùng đúng 5 trong 6 số của bộ số trúng thưởng). Hỏi $n(G)$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$234$", isCorrect: true },
+      { letter: "B", text: "$39$", isCorrect: false },
+      { letter: "C", text: "$6$", isCorrect: false },
+      { letter: "D", text: "$45$", isCorrect: false }
+    ],
+    blankAnswer: "234",
+    explanation: "Mỗi phần tử của $G$ được hình thành từ hai công đoạn: chọn 5 trong 6 số của bộ $\\{5;13;20;31;32;35\\}$ (có $C_6^5=6$ cách) và chọn 1 số còn lại trong 39 số không thuộc bộ đó (có $C_{39}^1=39$ cách). Theo quy tắc nhân: $n(G)=6\\times39=234$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 27, Vận dụng, trang 86"
+  },
+  {
+    id: "ds64",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    text: "Một hộp đựng các tấm thẻ đánh số 10; 11; ...; 20. Rút ngẫu nhiên từ hộp hai tấm thẻ. Gọi $C$ là biến cố: \"Cả hai thẻ rút được đều mang số lẻ\". Tính $P(C)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{2}{11}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{5}{11}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{1}{11}$", isCorrect: false }
+    ],
+    blankAnswer: "2/11",
+    explanation: "Các thẻ từ 10 đến 20 gồm 11 số, trong đó có 5 số lẻ $\\{11;13;15;17;19\\}$. Không gian mẫu $n(\\Omega)=C_{11}^2=55$. Biến cố $C$ có $n(C)=C_5^2=10$. Vậy $P(C)=\\dfrac{10}{55}=\\dfrac{2}{11}$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 27, Bài tập 9.7, trang 86"
   }
 ];

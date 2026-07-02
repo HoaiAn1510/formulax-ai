@@ -208,7 +208,8 @@ export const formulas = [
     example: "Gieo một con xúc xắc cân đối và đồng chất. Tính xác suất để xuất hiện mặt có số chấm chia hết cho 3.\n\n**Lời giải:**\n- Không gian mẫu $\\Omega = \\{1, 2, 3, 4, 5, 6\\} \\implies n(\\Omega) = 6$.\n- Biến cố $A$ có số chấm chia hết cho 3: $A = \\{3, 6\\} \\implies n(A) = 2$.\n- Xác suất: $P(A) = \\frac{2}{6} = \\frac{1}{3}$.",
     tags: ["Xác suất", "Biến cố", "Xúc xắc"],
     difficulty: "Dễ",
-    mnemonic: "Số kết quả thuận lợi chia cho tổng số kết quả có thể xảy ra: phần nhỏ chia toàn thể."
+    mnemonic: "Số kết quả thuận lợi chia cho tổng số kết quả có thể xảy ra: phần nhỏ chia toàn thể.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 26, trang 80"
   },
   {
     id: "ds11-luonggiac-cong",
@@ -1557,5 +1558,18 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Hệ số (a+b)^4 là 1,4,6,4,1 và (a+b)^5 là 1,5,10,10,5,1 — đúng hàng tương ứng của tam giác Pascal. Số mũ a giảm dần, số mũ b tăng dần, tổng luôn bằng n.",
     sgk_source: "Toán 10 KNTT Tập 2, Bài 25, trang 73, 75"
+  },
+  {
+    id: "xs10-xacsuat-bienco-doi",
+    name: "Xác suất của biến cố đối",
+    topic: "Xác suất & Thống kê",
+    grade: 10,
+    latex: "P(\\overline{E}) = 1 - P(E)",
+    explanation: "Cho $E$ là một biến cố. Xác suất của biến cố đối $\\overline{E}$ (biến cố \"$E$ không xảy ra\") liên hệ với xác suất của $E$ bởi công thức trên.\nTrong đó:\n- $\\overline{E}$: Biến cố đối của $E$, gồm các kết quả không thuộc $E$.\n- Công thức thường dùng khi tính trực tiếp $P(E)$ khó hơn tính $P(\\overline{E})$ (tính gián tiếp qua biến cố đối).",
+    example: "Chọn ngẫu nhiên hai số từ tập $\\{1;2;\\ldots;9\\}$. Gọi $H$ là biến cố: \"Trong hai số được chọn có ít nhất một số chẵn\". Tính $P(H)$.\n\n**Lời giải:**\nBiến cố đối $\\overline{H}$: \"Cả hai số được chọn đều là số lẻ\". Không gian mẫu có $n(\\Omega)=C_9^2=36$; tập số lẻ $\\{1;3;5;7;9\\}$ có 5 phần tử nên $n(\\overline{H})=C_5^2=10$.\n$P(\\overline{H})=\\frac{10}{36}=\\frac{5}{18} \\implies P(H)=1-\\frac{5}{18}=\\frac{13}{18}$",
+    tags: ["Xác suất", "Biến cố đối", "Định nghĩa cổ điển"],
+    difficulty: "Trung bình",
+    mnemonic: "Xác suất biến cố đối = 1 trừ xác suất biến cố gốc. Dùng khi đếm trực tiếp khó, đếm biến cố đối (trường hợp ngược lại) dễ hơn.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 27, trang 85"
   }
 ];
