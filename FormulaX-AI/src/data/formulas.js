@@ -1121,5 +1121,46 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Giao ∩ = VÀ (chung cả hai). Hợp ∪ = HOẶC (gộp lại). Hiệu \\ = thuộc S nhưng KHÔNG thuộc T. n(A∪B)=n(A)+n(B)-n(A∩B) vì phần giao bị đếm 2 lần nên phải trừ đi.",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 2, trang 17-19"
+  },
+
+  // ===== BẤT PHƯƠNG TRÌNH VÀ HỆ BPT BẬC NHẤT HAI ẨN (Chương II, Toán 10 KNTT Tập 1, Bài 3-4) =====
+  {
+    id: "ds10-bpt-bacnhat-2an",
+    name: "Bất phương trình bậc nhất hai ẩn và miền nghiệm",
+    topic: "Đại số",
+    grade: 10,
+    latex: "ax + by \\leq c \\quad (a, b \\text{ không đồng thời bằng } 0)",
+    explanation: "Trong đó:\n- $a$, $b$, $c$: Các số thực đã cho, $a$ và $b$ không đồng thời bằng $0$.\n- $x$, $y$: Các ẩn số.\n- $(x_0; y_0)$: Một nghiệm của bất phương trình nếu $ax_0 + by_0 \\leq c$ đúng.\n- Miền nghiệm: Tập hợp các điểm $(x;y)$ trên mặt phẳng tọa độ có tọa độ là nghiệm của bất phương trình.\n\n**Cách biểu diễn miền nghiệm của $ax+by \\leq c$:**\n1. Vẽ đường thẳng $d: ax+by=c$ trên mặt phẳng tọa độ $Oxy$.\n2. Lấy một điểm $M_0(x_0;y_0)$ không thuộc $d$ (thường chọn gốc tọa độ $O$ nếu $c \\neq 0$).\n3. Tính $ax_0+by_0$ và so sánh với $c$.\n4. Nếu $ax_0+by_0<c$ thì nửa mặt phẳng bờ $d$ chứa $M_0$ là miền nghiệm; nếu $ax_0+by_0>c$ thì nửa mặt phẳng bờ $d$ không chứa $M_0$ là miền nghiệm.\n\n**Chú ý:** Miền nghiệm của $ax+by<c$ (bất đẳng thức nghiêm ngặt) giống miền nghiệm của $ax+by \\leq c$ nhưng bỏ đi đường thẳng biên (vẽ nét đứt). Bất phương trình bậc nhất hai ẩn luôn có vô số nghiệm.",
+    example: "**Ví dụ (SGK):** Biểu diễn miền nghiệm của bất phương trình $5x-7y \\leq 0$ trên mặt phẳng tọa độ.\n\n**Lời giải:**\n- Vẽ đường thẳng $d: 5x-7y=0$.\n- Lấy điểm $M_0(0;1)$ không thuộc $d$, thay vào: $5\\cdot0-7\\cdot1=-7<0$.\n- Do đó miền nghiệm là nửa mặt phẳng bờ $d$ chứa điểm $M_0$ (miền không bị gạch).",
+    tags: ["Bất phương trình", "Bậc nhất hai ẩn", "Miền nghiệm", "Mặt phẳng tọa độ"],
+    difficulty: "Trung bình",
+    mnemonic: "Vẽ đường thẳng ax+by=c, chọn điểm thử không nằm trên đường thẳng, so sánh ax0+by0 với c: nhỏ hơn → miền chứa điểm thử; lớn hơn → miền không chứa điểm thử.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 3, trang 22-24"
+  },
+  {
+    id: "ds10-he-bpt-bacnhat-2an",
+    name: "Hệ bất phương trình bậc nhất hai ẩn và miền nghiệm",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\begin{cases} a_1x+b_1y \\leq c_1 \\\\ a_2x+b_2y \\leq c_2 \\\\ \\ldots \\end{cases}",
+    explanation: "Trong đó:\n- Mỗi bất phương trình trong hệ là một bất phương trình bậc nhất hai ẩn dạng $a_ix+b_iy \\leq c_i$ (hoặc $\\geq$, $<$, $>$).\n- $(x_0;y_0)$: Nghiệm của hệ nếu $(x_0;y_0)$ đồng thời là nghiệm của tất cả các bất phương trình trong hệ.\n- Miền nghiệm của hệ: Giao của các miền nghiệm của từng bất phương trình trong hệ.\n\n**Cách xác định miền nghiệm của hệ bất phương trình bậc nhất hai ẩn:**\n1. Trên cùng một mặt phẳng tọa độ, xác định miền nghiệm của mỗi bất phương trình trong hệ và gạch bỏ miền còn lại (miền không thỏa mãn).\n2. Miền không bị gạch (còn lại) chính là miền nghiệm của hệ bất phương trình đã cho.",
+    example: "**Ví dụ (SGK):** Biểu diễn miền nghiệm của hệ $\\begin{cases}7x+4y \\leq 2400 \\\\ x+y \\leq 100 \\\\ x \\geq 0\\end{cases}$ trên mặt phẳng tọa độ.\n\n**Lời giải:**\n- Xác định miền nghiệm $D_1$ của $7x+4y \\leq 2400$: nửa mặt phẳng bờ $d: 7x+4y=2400$ chứa gốc tọa độ $O$ (vì $7\\cdot0+4\\cdot0=0<2400$).\n- Tương tự xác định $D_2$ (bờ $x+y=100$ chứa $O$) và $D_3$ (bờ $Oy$ chứa điểm $(1;0)$).\n- Miền nghiệm của hệ là giao $D_1 \\cap D_2 \\cap D_3$ — miền không bị gạch.",
+    tags: ["Hệ bất phương trình", "Bậc nhất hai ẩn", "Miền nghiệm"],
+    difficulty: "Trung bình",
+    mnemonic: "Miền nghiệm hệ = GIAO các miền nghiệm từng bất phương trình. Vẽ từng đường thẳng, gạch bỏ phần không thỏa, phần còn trắng (không gạch) là đáp số.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 4, trang 26-28"
+  },
+  {
+    id: "ds10-ungdung-hebpt",
+    name: "Giá trị lớn nhất, nhỏ nhất của F(x;y)=ax+by trên miền đa giác",
+    topic: "Đại số",
+    grade: 10,
+    latex: "F(x;y) = ax+by, \\quad \\max F, \\min F \\text{ đạt tại một đỉnh của miền đa giác nghiệm}",
+    explanation: "Trong đó:\n- $F(x;y)=ax+by$: Biểu thức mục tiêu (hàm mục tiêu) cần tìm giá trị lớn nhất hoặc nhỏ nhất.\n- $(x;y)$: Điểm thuộc miền đa giác nghiệm $A_1A_2\\ldots A_n$ của một hệ bất phương trình bậc nhất hai ẩn (miền đa giác gồm các điểm bên trong và trên các cạnh).\n- $A_1, A_2, \\ldots, A_n$: Các đỉnh của miền đa giác nghiệm.\n\n**Định lý:** Giá trị lớn nhất (hay nhỏ nhất) của $F(x;y)=ax+by$ trên miền đa giác nghiệm $A_1A_2\\ldots A_n$ luôn đạt được tại một trong các đỉnh của đa giác đó.\n\n**Các bước tìm GTLN/GTNN của $F(x;y)$ trên miền nghiệm của hệ bất phương trình:**\n1. Xác định miền nghiệm (miền đa giác) của hệ bất phương trình.\n2. Tính giá trị của $F$ tại tất cả các đỉnh của đa giác.\n3. So sánh các giá trị vừa tính để tìm GTLN hoặc GTNN.",
+    example: "**Ví dụ (SGK):** Cửa hàng cần nhập máy điều hòa hai chiều ($x$ máy, lãi $3{,}5$ triệu/máy) và một chiều ($y$ máy, lãi $2$ triệu/máy), thỏa hệ $\\begin{cases}x\\geq0,\\,y\\geq0\\\\x+y\\leq100\\\\2x+y\\leq120\\end{cases}$. Tìm $x,y$ để lợi nhuận $F(x;y)=3{,}5x+2y$ lớn nhất.\n\n**Lời giải:**\n- Miền nghiệm là tứ giác $OABC$ với $O(0;0)$, $A(0;100)$, $B(20;80)$, $C(60;0)$.\n- Tính $F$ tại từng đỉnh: $F(0;0)=0$; $F(0;100)=200$; $F(20;80)=3{,}5(20)+2(80)=230$; $F(60;0)=210$.\n- So sánh: GTLN là $F(20;80)=230$. Vậy cần nhập 20 máy hai chiều và 80 máy một chiều.",
+    tags: ["Quy hoạch tuyến tính", "GTLN", "GTNN", "Miền đa giác", "Hệ bất phương trình"],
+    difficulty: "Khó",
+    mnemonic: "GTLN/GTNN của F(x;y)=ax+by trên miền đa giác luôn rơi vào 1 ĐỈNH của đa giác — không cần thử điểm bên trong, chỉ cần tính F tại các đỉnh rồi so sánh.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 4, trang 29-30"
   }
 ];

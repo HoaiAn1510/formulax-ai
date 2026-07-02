@@ -2258,5 +2258,127 @@ export const questionsPool = [
     blankAnswer: "3",
     explanation: "Gọi $x$ là số bạn thi đấu cả hai môn. Áp dụng công thức $n(A \\cup B)=n(A)+n(B)-n(A \\cap B)$: $24 = 16+11-x \\Rightarrow x = 27-24 = 3$.",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 2, Vận dụng, trang 18"
+  },
+
+  // ==================== BẤT PHƯƠNG TRÌNH BẬC NHẤT HAI ẨN (Chương II, Toán 10 Tập 1) ====================
+  {
+    id: "ds31",
+    topic: "Đại số",
+    grade: 10,
+    text: "Trong hai bất phương trình sau, bất phương trình nào là bất phương trình bậc nhất hai ẩn? $2x+3y<1$ và $2x^2+3y<1$.",
+    options: [
+      { letter: "A", text: "Chỉ $2x+3y<1$", isCorrect: true },
+      { letter: "B", text: "Chỉ $2x^2+3y<1$", isCorrect: false },
+      { letter: "C", text: "Cả hai bất phương trình", isCorrect: false },
+      { letter: "D", text: "Không bất phương trình nào", isCorrect: false }
+    ],
+    blankAnswer: "Chỉ 2x+3y<1",
+    explanation: "Bất phương trình $2x+3y<1$ là bất phương trình bậc nhất hai ẩn (đúng dạng $ax+by<c$). Bất phương trình $2x^2+3y<1$ không phải bất phương trình bậc nhất hai ẩn vì chứa $x^2$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 3, Ví dụ 1, trang 23"
+  },
+  {
+    id: "ds32",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho bất phương trình bậc nhất hai ẩn $x+2y>5$. Cặp số nào sau đây là một nghiệm của bất phương trình trên?",
+    options: [
+      { letter: "A", text: "$(x;y)=(3;4)$", isCorrect: true },
+      { letter: "B", text: "$(x;y)=(0;-1)$", isCorrect: false },
+      { letter: "C", text: "Cả hai cặp trên", isCorrect: false },
+      { letter: "D", text: "Không cặp nào", isCorrect: false }
+    ],
+    blankAnswer: "(3;4)",
+    explanation: "Với $(3;4)$: $3+2\\cdot4=11>5$ nên là nghiệm. Với $(0;-1)$: $0+2\\cdot(-1)=-2<5$ nên không phải là nghiệm.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 3, Ví dụ 2, trang 24"
+  },
+  {
+    id: "ds33",
+    topic: "Đại số",
+    grade: 10,
+    text: "Xét bất phương trình $x+y \\geq 100$. Gốc tọa độ $O(0;0)$ có thuộc miền nghiệm của bất phương trình này không?",
+    options: [
+      { letter: "A", text: "Không, vì $0+0=0<100$", isCorrect: true },
+      { letter: "B", text: "Có, vì gốc tọa độ luôn thuộc miền nghiệm", isCorrect: false },
+      { letter: "C", text: "Có, vì $0+0 \\geq 100$", isCorrect: false },
+      { letter: "D", text: "Không xác định được nếu không vẽ hình", isCorrect: false }
+    ],
+    blankAnswer: "Không, vì 0+0=0<100",
+    explanation: "Thay $O(0;0)$ vào biểu thức $x+y$: $0+0=0<100$, không thỏa mãn $x+y \\geq 100$. Do đó miền nghiệm là nửa mặt phẳng bờ $d: x+y=100$ không chứa gốc tọa độ.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 3, Ví dụ 3, trang 24"
+  },
+  {
+    id: "ds34",
+    topic: "Đại số",
+    grade: 10,
+    text: "Điểm $M_0(0;1)$ có thuộc miền nghiệm của bất phương trình $5x-7y \\leq 0$ không?",
+    options: [
+      { letter: "A", text: "Có, vì $5\\cdot0-7\\cdot1=-7 \\leq 0$", isCorrect: true },
+      { letter: "B", text: "Không, vì $5\\cdot0-7\\cdot1=-7>0$", isCorrect: false },
+      { letter: "C", text: "Có, nhưng chỉ khi $x=0$", isCorrect: false },
+      { letter: "D", text: "Không xác định được nếu không vẽ hình", isCorrect: false }
+    ],
+    blankAnswer: "Có, vì 5(0)-7(1)=-7 ≤ 0",
+    explanation: "Thay $M_0(0;1)$ vào biểu thức $5x-7y$: $5\\cdot0-7\\cdot1=-7$, và $-7 \\leq 0$ nên $M_0$ thỏa mãn bất phương trình, tức là thuộc miền nghiệm.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 3, Ví dụ 4, trang 24"
+  },
+  {
+    id: "ds35",
+    topic: "Đại số",
+    grade: 10,
+    text: "Một rạp chiếu phim bán vé loại 1 giá 50 nghìn đồng/vé và vé loại 2 giá 100 nghìn đồng/vé. Để không phải bù lỗ, số tiền vé thu được phải đạt tối thiểu 20 triệu đồng. Nếu rạp bán được 100 vé loại 1 và 100 vé loại 2 thì rạp có phải bù lỗ không?",
+    options: [
+      { letter: "A", text: "Có, vì thu được 15 triệu đồng, nhỏ hơn 20 triệu đồng", isCorrect: true },
+      { letter: "B", text: "Không, vì thu được đúng 20 triệu đồng", isCorrect: false },
+      { letter: "C", text: "Không, vì thu được 25 triệu đồng", isCorrect: false },
+      { letter: "D", text: "Không đủ thông tin để kết luận", isCorrect: false }
+    ],
+    blankAnswer: "Có, vì thu được 15 triệu đồng < 20 triệu đồng",
+    explanation: "Số tiền thu được: $100 \\times 50\\,000 + 100 \\times 100\\,000 = 5\\,000\\,000 + 10\\,000\\,000 = 15\\,000\\,000$ đồng $=15$ triệu đồng, nhỏ hơn mức tối thiểu 20 triệu đồng, nên rạp phải bù lỗ.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 3, Ví dụ 5 và Nhận xét, trang 25"
+  },
+  {
+    id: "ds36",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho hệ bất phương trình $\\begin{cases}x \\geq 0\\\\y \\geq 0\\\\x+y \\leq 150\\end{cases}$. Cặp số $(x;y)=(0;0)$ có phải là một nghiệm của hệ bất phương trình trên không?",
+    options: [
+      { letter: "A", text: "Có, vì thỏa mãn cả ba bất phương trình", isCorrect: true },
+      { letter: "B", text: "Không, vì $x=0$ không thỏa mãn $x \\geq 0$", isCorrect: false },
+      { letter: "C", text: "Có, nhưng chỉ là nghiệm của bất phương trình thứ ba", isCorrect: false },
+      { letter: "D", text: "Không, vì thiếu điều kiện $x \\neq 0$", isCorrect: false }
+    ],
+    blankAnswer: "Có, vì thỏa mãn cả ba bất phương trình",
+    explanation: "Thay $(0;0)$: $x=0 \\geq 0$ (đúng), $y=0 \\geq 0$ (đúng), $x+y=0 \\leq 150$ (đúng). Vì $(0;0)$ thỏa mãn cả ba bất phương trình nên nó là một nghiệm của hệ.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 4, Ví dụ 1, trang 27"
+  },
+  {
+    id: "ds37",
+    topic: "Đại số",
+    grade: 10,
+    text: "Xét miền nghiệm $D_1$ của bất phương trình $7x+4y \\leq 2400$ (một bất phương trình trong hệ ở Ví dụ 2, Bài 4). Gốc tọa độ $O(0;0)$ có thuộc miền nghiệm $D_1$ không?",
+    options: [
+      { letter: "A", text: "Có, vì $7\\cdot0+4\\cdot0=0<2400$", isCorrect: true },
+      { letter: "B", text: "Không, vì $0$ không thỏa mãn bất phương trình", isCorrect: false },
+      { letter: "C", text: "Có, nhưng chỉ nằm trên đường biên", isCorrect: false },
+      { letter: "D", text: "Không xác định được nếu không vẽ hình", isCorrect: false }
+    ],
+    blankAnswer: "Có, vì 7(0)+4(0)=0 < 2400",
+    explanation: "Thay $O(0;0)$ vào $7x+4y$: $7\\cdot0+4\\cdot0=0$, và $0<2400$ nên $O$ thỏa mãn bất phương trình $7x+4y \\leq 2400$, tức là thuộc miền nghiệm $D_1$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 4, Ví dụ 2, trang 28"
+  },
+  {
+    id: "ds38",
+    topic: "Đại số",
+    grade: 10,
+    text: "Một cửa hàng nhập $x$ máy điều hòa hai chiều (lãi $3{,}5$ triệu đồng/máy) và $y$ máy điều hòa một chiều (lãi $2$ triệu đồng/máy), thỏa mãn hệ $\\begin{cases}x\\geq0,\\,y\\geq0\\\\x+y\\leq100\\\\2x+y\\leq120\\end{cases}$. Miền nghiệm là tứ giác $OABC$ với $O(0;0)$, $A(0;100)$, $B(20;80)$, $C(60;0)$. Lợi nhuận lớn nhất mà cửa hàng có thể thu được từ hàm $F(x;y)=3{,}5x+2y$ là bao nhiêu?",
+    options: [
+      { letter: "A", text: "230 (triệu đồng), tại $(20;80)$", isCorrect: true },
+      { letter: "B", text: "210 (triệu đồng), tại $(60;0)$", isCorrect: false },
+      { letter: "C", text: "200 (triệu đồng), tại $(0;100)$", isCorrect: false },
+      { letter: "D", text: "0 (triệu đồng), tại $(0;0)$", isCorrect: false }
+    ],
+    blankAnswer: "230",
+    explanation: "Tính $F$ tại từng đỉnh: $F(0;0)=0$; $F(0;100)=200$; $F(20;80)=3{,}5(20)+2(80)=70+160=230$; $F(60;0)=210$. Giá trị lớn nhất trong các giá trị trên là $230$, đạt tại $(20;80)$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 4, Ví dụ 3, trang 29-30"
   }
 ];
