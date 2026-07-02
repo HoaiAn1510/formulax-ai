@@ -4605,4 +4605,124 @@ export const questionsPool = [
     explanation: "Diện tích hình bình hành đáy: $S_{ABCD}=2S_{ABD}=2\\left(\\dfrac12 AB\\cdot AD\\sin\\widehat{BAD}\\right)=20\\text{ cm}^2$. Gọi $H$ là hình chiếu của $A'$ trên $(ABCD)$; góc giữa $AA'$ và $(ABCD)$ là $\\widehat{A'AH}=45°$, nên $A'H=AA'\\sin45°=3\\sqrt2\\text{ cm}$ — đây chính là chiều cao khối hộp ứng với mặt $ABCD$. Vậy $V=A'H\\cdot S_{ABCD}=3\\sqrt2\\cdot20=60\\sqrt2\\text{ cm}^3$.",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 27, Ví dụ 3, trang 63"
   },
+  {
+    id: "xs43",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Một hộp đựng 15 tấm thẻ cùng loại được đánh số từ 1 đến 15. Rút ngẫu nhiên một tấm thẻ. Gọi $E$ là biến cố \"Số ghi trên tấm thẻ là số lẻ\", $F$ là biến cố \"Số ghi trên tấm thẻ là số nguyên tố\". Biến cố hợp $G=E\\cup F$ là:",
+    options: [
+      { letter: "A", text: "$\\{1;2;3;5;7;9;11;13;15\\}$", isCorrect: true },
+      { letter: "B", text: "$\\{1;3;5;7;9;11;13;15\\}$", isCorrect: false },
+      { letter: "C", text: "$\\{2;3;5;7;11;13\\}$", isCorrect: false },
+      { letter: "D", text: "$\\{3;5;7;11;13\\}$", isCorrect: false }
+    ],
+    blankAnswer: "{1;2;3;5;7;9;11;13;15}",
+    explanation: "$E=\\{1;3;5;7;9;11;13;15\\}$ (các số lẻ), $F=\\{2;3;5;7;11;13\\}$ (các số nguyên tố). Biến cố hợp $G=E\\cup F=\\{1;2;3;5;7;9;11;13;15\\}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 28, Ví dụ 1, trang 67-68"
+  },
+  {
+    id: "xs44",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Một tổ có 9 học sinh. Xét biến cố $U$: \"Học sinh được chọn biết chơi cầu lông\" và $V$: \"Học sinh được chọn biết chơi bóng bàn\". Biến cố giao $T=UV$ có nội dung là:",
+    options: [
+      { letter: "A", text: "Học sinh được chọn biết chơi cả cầu lông và bóng bàn", isCorrect: true },
+      { letter: "B", text: "Học sinh được chọn biết chơi cầu lông hoặc bóng bàn", isCorrect: false },
+      { letter: "C", text: "Học sinh được chọn không biết chơi môn nào", isCorrect: false },
+      { letter: "D", text: "Học sinh được chọn chỉ biết chơi đúng một trong hai môn", isCorrect: false }
+    ],
+    blankAnswer: "Học sinh được chọn biết chơi cả cầu lông và bóng bàn",
+    explanation: "Biến cố giao $T=UV$ là biến cố \"Cả $U$ và $V$ đều xảy ra\", tức là \"Học sinh được chọn biết chơi cả cầu lông và bóng bàn\".",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 28, Ví dụ 2, trang 68-69"
+  },
+  {
+    id: "xs45",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Một hộp đựng 4 viên bi đỏ và 5 viên bi xanh, cùng kích thước và khối lượng. Bạn Minh lấy ngẫu nhiên một viên bi, ghi lại màu rồi trả lại vào hộp; tiếp theo bạn Hùng lấy ngẫu nhiên một viên bi từ hộp đó. Gọi $B$ là biến cố \"Hùng lấy được viên bi màu xanh\". Xác suất $P(B)$ bằng:",
+    options: [
+      { letter: "A", text: "$\\dfrac{5}{9}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{4}{9}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{5}{8}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{4}{8}$", isCorrect: false }
+    ],
+    blankAnswer: "5/9",
+    explanation: "Vì Minh trả lại viên bi đã lấy vào hộp nên khi Hùng lấy, trong hộp luôn có 4 bi đỏ và 5 bi xanh (dù $A$ xảy ra hay không). Vậy $P(B)=\\dfrac{5}{9}$, không đổi — chứng tỏ $A$ và $B$ độc lập.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 28, Ví dụ 3, trang 70"
+  },
+  {
+    id: "xs46",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Gieo đồng thời hai con xúc xắc cân đối, đồng chất. Xét $A$: \"Tổng số chấm xuất hiện trên hai con xúc xắc lớn hơn hoặc bằng 7\"; $B$: \"Tổng số chấm xuất hiện trên hai con xúc xắc nhỏ hơn hoặc bằng 4\". Hai biến cố $A$ và $B$:",
+    options: [
+      { letter: "A", text: "Xung khắc, vì không đồng thời xảy ra", isCorrect: true },
+      { letter: "B", text: "Không xung khắc, vì có thể đồng thời xảy ra", isCorrect: false },
+      { letter: "C", text: "Xung khắc chỉ khi tổng bằng 5", isCorrect: false },
+      { letter: "D", text: "Không thể xác định được", isCorrect: false }
+    ],
+    blankAnswer: "xung khắc, vì không đồng thời xảy ra",
+    explanation: "Tổng số chấm không thể vừa $\\ge 7$ vừa $\\le 4$ cùng lúc, nên $A$ và $B$ không đồng thời xảy ra — hai biến cố xung khắc.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 29, Ví dụ 1, trang 72-73"
+  },
+  {
+    id: "xs47",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Một hộp đựng 9 tấm thẻ cùng loại được ghi số từ 1 đến 9. Rút ngẫu nhiên đồng thời hai tấm thẻ. Gọi $C$ là biến cố \"Tích hai số ghi trên hai tấm thẻ là một số chẵn\". Xác suất $P(C)$ bằng:",
+    options: [
+      { letter: "A", text: "$\\dfrac{13}{18}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{6}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{5}{9}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{13}{9}$", isCorrect: false }
+    ],
+    blankAnswer: "13/18",
+    explanation: "Gọi $A$: \"cả hai thẻ đều chẵn\", $B$: \"chỉ một thẻ chẵn\"; $C=A\\cup B$ với $A,B$ xung khắc. $n(\\Omega)=C_9^2=36$, $n(A)=C_4^2=6$ nên $P(A)=6/36$; $n(B)=4\\cdot5=20$ nên $P(B)=20/36$. Vậy $P(C)=P(A)+P(B)=\\dfrac{6}{36}+\\dfrac{20}{36}=\\dfrac{26}{36}=\\dfrac{13}{18}$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 29, Ví dụ 2, trang 73-74"
+  },
+  {
+    id: "xs48",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Ở một trường trung học phổ thông X, có 19% học sinh học khá môn Ngữ văn, 32% học sinh học khá môn Toán, 7% học sinh học khá cả hai môn Ngữ văn và Toán. Chọn ngẫu nhiên một học sinh của trường X. Xác suất để học sinh đó học khá môn Ngữ văn hoặc học khá môn Toán là:",
+    options: [
+      { letter: "A", text: "$0,44$", isCorrect: true },
+      { letter: "B", text: "$0,51$", isCorrect: false },
+      { letter: "C", text: "$0,58$", isCorrect: false },
+      { letter: "D", text: "$0,25$", isCorrect: false }
+    ],
+    blankAnswer: "0.44",
+    explanation: "Theo công thức cộng xác suất: $P(A\\cup B)=P(A)+P(B)-P(AB)=0,19+0,32-0,07=0,44$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 29, Ví dụ 3, trang 74-75"
+  },
+  {
+    id: "xs49",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Tại vòng chung kết của một đại hội thể thao, vận động viên An thi đấu môn Bắn súng, vận động viên Bình thi đấu môn Bơi lội. Biết xác suất giành huy chương của An và Bình tương ứng là $0,8$ và $0,9$. Xác suất để cả hai vận động viên đạt huy chương là:",
+    options: [
+      { letter: "A", text: "$0,72$", isCorrect: true },
+      { letter: "B", text: "$1,7$", isCorrect: false },
+      { letter: "C", text: "$0,08$", isCorrect: false },
+      { letter: "D", text: "$0,9$", isCorrect: false }
+    ],
+    blankAnswer: "0.72",
+    explanation: "Vì An và Bình thi đấu hai môn khác nhau nên hai biến cố độc lập. Áp dụng công thức nhân xác suất: $P(AB)=P(A)\\cdot P(B)=0,8\\cdot0,9=0,72$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 30, Ví dụ 1, trang 77"
+  },
+  {
+    id: "xs50",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    text: "Tại vòng chung kết của một đại hội thể thao, vận động viên An thi đấu môn Bắn súng, vận động viên Bình thi đấu môn Bơi lội, với xác suất giành huy chương tương ứng là $0,8$ và $0,9$. Xác suất để vận động viên An đạt huy chương còn vận động viên Bình không đạt huy chương là:",
+    options: [
+      { letter: "A", text: "$0,08$", isCorrect: true },
+      { letter: "B", text: "$0,18$", isCorrect: false },
+      { letter: "C", text: "$0,02$", isCorrect: false },
+      { letter: "D", text: "$0,72$", isCorrect: false }
+    ],
+    blankAnswer: "0.08",
+    explanation: "Gọi $A$: An đạt huy chương ($P(A)=0,8$), $B$: Bình đạt huy chương ($P(B)=0,9$, nên $P(\\overline{B})=0,1$). Vì $A,B$ độc lập nên $A,\\overline{B}$ cũng độc lập: $P(A\\overline{B})=P(A)\\cdot P(\\overline{B})=0,8\\cdot0,1=0,08$.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 30, Ví dụ 1, trang 78"
+  },
 ];

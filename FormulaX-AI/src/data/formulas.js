@@ -928,25 +928,27 @@ export const formulas = [
     id: "xs10-xacsuat-cong",
     name: "Xác suất của biến cố hợp và xung khắc",
     topic: "Xác suất & Thống kê",
-    grade: 10,
+    grade: 11,
     latex: "P(A \\cup B) = P(A) + P(B) - P(A \\cap B)",
     explanation: "**Công thức cộng xác suất** (công thức tổng quát):\n$$P(A \\cup B) = P(A) + P(B) - P(A \\cap B)$$\n\n**Biến cố xung khắc** (không thể xảy ra đồng thời: $A \\cap B = \\emptyset$):\n$$P(A \\cup B) = P(A) + P(B)$$\n\n**Biến cố đối** $\\bar{A}$ (không xảy ra $A$):\n$$P(\\bar{A}) = 1 - P(A)$$\n\n**Biến cố chắc chắn:** $P(\\Omega) = 1$. **Biến cố không thể:** $P(\\emptyset) = 0$.\n\n**Điều kiện:** $0 \\leq P(A) \\leq 1$ với mọi biến cố $A$.",
     example: "Tung xúc xắc 1 lần. $A$ = ra số chẵn, $B$ = ra số $\\leq 3$. Tính $P(A \\cup B)$.\n\n**Lời giải:**\n- $A = \\{2,4,6\\}$, $P(A) = 1/2$\n- $B = \\{1,2,3\\}$, $P(B) = 1/2$\n- $A \\cap B = \\{2\\}$, $P(A \\cap B) = 1/6$\n\n$P(A \\cup B) = 1/2 + 1/2 - 1/6 = 5/6$",
     tags: ["Xác suất", "Công thức cộng", "Biến cố hợp", "Xung khắc"],
     difficulty: "Dễ",
-    mnemonic: "P(A hoặc B) = P(A) + P(B) - P(A và B). Trừ đi phần giao vì đã đếm 2 lần. Xung khắc: không giao → chỉ cộng."
+    mnemonic: "P(A hoặc B) = P(A) + P(B) - P(A và B). Trừ đi phần giao vì đã đếm 2 lần. Xung khắc: không giao → chỉ cộng.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 29, trang 72-74"
   },
   {
     id: "xs11-xacsuat-nhan",
-    name: "Công thức nhân xác suất",
+    name: "Công thức nhân xác suất cho hai biến cố độc lập",
     topic: "Xác suất & Thống kê",
     grade: 11,
-    latex: "P(A \\cap B) = P(A) \\cdot P(B|A) = P(B) \\cdot P(A|B)",
-    explanation: "**Công thức nhân** (suy ra từ định nghĩa xác suất có điều kiện):\n$$P(A \\cap B) = P(A) \\cdot P(A|B) = P(B) \\cdot P(A|B)$$\n\n**Hai sự kiện độc lập** ($A$ và $B$ không ảnh hưởng nhau): $P(A|B) = P(A)$, do đó:\n$$P(A \\cap B) = P(A) \\cdot P(B)$$\n\n**Mở rộng cho nhiều sự kiện độc lập:**\n$$P(A_1 \\cap A_2 \\cap \\cdots \\cap A_n) = P(A_1) \\cdot P(A_2) \\cdots P(A_n)$$",
-    example: "Rút 2 lần (không hoàn lại) từ hộp gồm 4 bi đỏ, 2 bi xanh. Tính xác suất cả hai lần đều ra bi đỏ.\n\n**Lời giải:**\n- $A$ = lần 1 ra đỏ: $P(A) = 4/6 = 2/3$\n- $B|A$ = lần 2 ra đỏ khi lần 1 đã ra đỏ: $P(B|A) = 3/5$\n\n$P(A \\cap B) = \\dfrac{2}{3} \\cdot \\dfrac{3}{5} = \\dfrac{2}{5}$",
-    tags: ["Xác suất", "Công thức nhân", "Độc lập", "Có điều kiện"],
+    latex: "P(AB) = P(A) \\cdot P(B) \\quad (A, B \\text{ độc lập})",
+    explanation: "Trong đó:\n- $A, B$: Hai biến cố độc lập (việc xảy ra hay không xảy ra của biến cố này không ảnh hưởng tới xác suất xảy ra của biến cố kia).\n- $AB$: Biến cố giao của $A$ và $B$ (cả $A$ và $B$ đều xảy ra).\n- Nếu $P(AB) \\neq P(A) \\cdot P(B)$ thì $A$ và $B$ không độc lập.\n\n**Mở rộng cho nhiều biến cố độc lập:**\n$$P(A_1 A_2 \\cdots A_n) = P(A_1) \\cdot P(A_2) \\cdots P(A_n)$$",
+    example: "Vận động viên An thi đấu môn Bắn súng, vận động viên Bình thi đấu môn Bơi lội. Xác suất giành huy chương của An và Bình tương ứng là $0,8$ và $0,9$. Tính xác suất để cả hai vận động viên đạt huy chương.\n\n**Lời giải:**\nVì hai vận động viên thi đấu hai môn thể thao khác nhau nên hai biến cố $A$ = \"An đạt huy chương\" và $B$ = \"Bình đạt huy chương\" là độc lập.\n$$P(AB) = P(A) \\cdot P(B) = 0,8 \\cdot 0,9 = 0,72$$",
+    tags: ["Xác suất", "Công thức nhân", "Độc lập"],
     difficulty: "Trung bình",
-    mnemonic: "P(A và B) = P(A) × P(B|A). Rút không hoàn lại: lần sau phụ thuộc lần trước → nhân xác suất có điều kiện. Độc lập: P(A và B) = P(A)×P(B)."
+    mnemonic: "Hai biến cố độc lập: P(A và B) = P(A) × P(B) — nhân trực tiếp, không cần điều kiện. Nếu tích này khác P(AB) thực tế thì hai biến cố không độc lập.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 30, trang 76"
   },
 
   // ===== HÌNH HỌC KHÔNG GIAN LỚP 11 =====
@@ -2400,5 +2402,44 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "Thể tích chóp cụt = 1/3 chiều cao nhân (đáy lớn + đáy bé + căn tích hai đáy) — không phải trung bình cộng hai đáy mà có thêm căn bậc hai.",
     sgk_source: "Toán 11 KNTT Tập 2, Bài 27, trang 61"
+  },
+  {
+    id: "xs11-biencohop-giao",
+    name: "Biến cố hợp và biến cố giao",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "A \\cup B: \\text{“}A \\text{ hoặc } B \\text{ xảy ra”}; \\qquad AB: \\text{“cả } A \\text{ và } B \\text{ đều xảy ra”}",
+    explanation: "Trong đó:\n- $A, B$: Hai biến cố cùng liên quan đến một phép thử.\n- **Biến cố hợp** của $A$ và $B$, kí hiệu $A \\cup B$, là biến cố \"$A$ hoặc $B$ xảy ra\"; đây là tập con $A \\cup B$ của không gian mẫu $\\Omega$.\n- **Biến cố giao** của $A$ và $B$, kí hiệu $AB$ (hay $A \\cap B$), là biến cố \"cả $A$ và $B$ đều xảy ra\"; đây là tập con $A \\cap B$ của không gian mẫu $\\Omega$.",
+    example: "Một hộp đựng 15 tấm thẻ đánh số từ 1 đến 15. Rút ngẫu nhiên một tấm thẻ. Gọi $E$ là biến cố \"Số ghi trên thẻ là số lẻ\", $F$ là biến cố \"Số ghi trên thẻ là số nguyên tố\". Tìm biến cố hợp $G=E\\cup F$.\n\n**Lời giải:**\n$E=\\{1;3;5;7;9;11;13;15\\}$, $F=\\{2;3;5;7;11;13\\}$.\nVậy $G=E\\cup F=\\{1;2;3;5;7;9;11;13;15\\}$.",
+    tags: ["Biến cố hợp", "Biến cố giao", "Xác suất"],
+    difficulty: "Dễ",
+    mnemonic: "Hợp = HOẶC (∪), giao = VÀ (giao nhau, viết liền AB). Cả hai đều là tập con của không gian mẫu Ω.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 28, trang 67-68"
+  },
+  {
+    id: "xs11-biencodoclap",
+    name: "Biến cố độc lập",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "A, B \\text{ độc lập} \\Leftrightarrow \\text{xác suất của biến cố này không đổi dù biến cố kia xảy ra hay không}",
+    explanation: "Trong đó:\n- Cặp biến cố $A$ và $B$ được gọi là **độc lập** nếu việc xảy ra hay không xảy ra của biến cố này không ảnh hưởng tới xác suất xảy ra của biến cố kia.\n- **Chú ý:** Nếu cặp biến cố $A$ và $B$ độc lập thì các cặp biến cố $A$ và $\\overline{B}$; $\\overline{A}$ và $B$; $\\overline{A}$ và $\\overline{B}$ cũng độc lập.",
+    example: "Một hộp đựng 4 viên bi đỏ và 5 viên bi xanh. Bạn Minh lấy ngẫu nhiên một viên bi, ghi lại màu rồi trả lại vào hộp; sau đó bạn Hùng lấy ngẫu nhiên một viên bi từ hộp đó. Xét $A$: \"Minh lấy được bi đỏ\"; $B$: \"Hùng lấy được bi xanh\". Chứng tỏ $A$ và $B$ độc lập.\n\n**Lời giải:**\nDù $A$ xảy ra hay không xảy ra, vì Minh đã trả lại viên bi vào hộp nên hộp luôn có 4 bi đỏ và 5 bi xanh khi Hùng lấy. Do đó $P(B)=\\dfrac{5}{9}$ không đổi. Vậy $A$ và $B$ độc lập.",
+    tags: ["Biến cố độc lập", "Xác suất"],
+    difficulty: "Trung bình",
+    mnemonic: "Độc lập: biến cố này xảy ra hay không cũng KHÔNG làm thay đổi xác suất biến cố kia. Có hoàn lại thường độc lập; không hoàn lại thường không độc lập.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 28, trang 69"
+  },
+  {
+    id: "xs11-biencoxungkhac",
+    name: "Biến cố xung khắc",
+    topic: "Xác suất & Thống kê",
+    grade: 11,
+    latex: "A, B \\text{ xung khắc} \\Leftrightarrow A \\cap B = \\emptyset",
+    explanation: "Trong đó:\n- Biến cố $A$ và biến cố $B$ được gọi là **xung khắc** nếu $A$ và $B$ không đồng thời xảy ra.\n- Hai biến cố $A$ và $B$ xung khắc khi và chỉ khi $A \\cap B = \\emptyset$.\n- Khi $A, B$ xung khắc: $P(A \\cup B) = P(A) + P(B)$ (trường hợp đặc biệt của công thức cộng xác suất, hệ quả của $P(AB)=0$).",
+    example: "Gieo một con xúc xắc cân đối, đồng chất. Xét $A$: \"Số chấm là số chia hết cho 3\"; $B$: \"Số chấm là số chia hết cho 4\". Hai biến cố $A$ và $B$ có xung khắc không?\n\n**Lời giải:**\n$A=\\{3;6\\}$, $B=\\{4\\}$. Ta có $A\\cap B=\\emptyset$ nên $A$ và $B$ xung khắc — không đồng thời xảy ra.",
+    tags: ["Biến cố xung khắc", "Xác suất"],
+    difficulty: "Dễ",
+    mnemonic: "Xung khắc = không giao nhau (A∩B=∅) = không thể cùng xảy ra một lúc. Khác với biến cố đối: xung khắc chỉ cần không giao, không bắt buộc phủ kín cả Ω.",
+    sgk_source: "Toán 11 KNTT Tập 2, Bài 29, trang 72"
   },
 ];
