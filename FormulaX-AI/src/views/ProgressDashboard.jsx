@@ -1,21 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, ChevronDown } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
+import { gradients, glow, glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({ icon, value, label, color }) {
   return (
     <div style={{
-      background: "white",
-      borderRadius: "14px",
+      ...glassCard,
       padding: "14px 12px",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       gap: "4px",
-      border: "1px solid #E2E8F0",
-      boxShadow: "0 2px 8px rgba(30,58,95,0.05)",
     }}>
       <div style={{ color, marginBottom: "2px" }}>{icon}</div>
       <div style={{ fontSize: "1.35rem", fontWeight: "800", color: "#1E3A5F", lineHeight: 1.2 }}>{value}</div>
@@ -106,7 +104,7 @@ function StreakChart({ activityDates, streak }) {
   }
 
   return (
-    <div style={{ background: "white", borderRadius: "14px", padding: "14px", border: "1px solid #E2E8F0", boxShadow: "0 2px 8px rgba(30,58,95,0.05)", marginBottom: "20px" }}>
+    <div style={{ ...glassCard, padding: "14px", marginBottom: "20px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
           <Flame size={16} color="#F97316" />
@@ -172,7 +170,7 @@ function DayHistoryCard({ date, quizzes, flashcardIds, formulaMap }) {
   const scoreColor = (p) => p >= 80 ? "#10B981" : p >= 60 ? "#F59E0B" : "#EF4444";
 
   return (
-    <div style={{ background: "white", borderRadius: "14px", border: "1px solid #E2E8F0", overflow: "hidden", marginBottom: "10px", boxShadow: "0 2px 8px rgba(30,58,95,0.04)" }}>
+    <div style={{ ...glassCard, overflow: "hidden", marginBottom: "10px" }}>
       <div
         onClick={() => setExpanded(v => !v)}
         style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", cursor: "pointer" }}
@@ -299,6 +297,11 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
   return (
     <div className="view-container">
+    <div style={pageWrapper}>
+      {orbs.map((orb, idx) => (
+        <div key={idx} style={orbStyle(orb)} />
+      ))}
+      <div style={contentLayer}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
         <button
@@ -324,9 +327,10 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
       {/* Premium gate */}
       {!isPremium && (
         <div style={{
-          background: "linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)",
-          borderRadius: "16px", padding: "20px", color: "white",
+          background: gradients.purpleBanner,
+          borderRadius: "18px", padding: "20px", color: "white",
           textAlign: "center", marginBottom: "20px",
+          boxShadow: glow.purple,
         }}>
           <Crown size={28} fill="#F59E0B" color="#F59E0B" style={{ margin: "0 auto 10px" }} />
           <h3 style={{ margin: "0 0 6px", fontSize: "1rem", fontWeight: "800" }}>Tính năng Premium</h3>
@@ -386,9 +390,8 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
       {/* Topic performance */}
       <div style={{
-        background: "white", borderRadius: "16px", padding: "16px",
-        border: "1px solid #E2E8F0", marginBottom: "16px",
-        boxShadow: "0 2px 8px rgba(30,58,95,0.05)",
+        ...glassCard,
+        padding: "16px", marginBottom: "16px",
         position: "relative", overflow: "hidden",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
@@ -436,10 +439,12 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
       {/* AI Coach suggestions */}
       <div style={{
-        background: "linear-gradient(135deg, #EFF6FF 0%, #F0FDF4 100%)",
-        borderRadius: "16px", padding: "16px",
-        border: "1px solid rgba(59,130,246,0.15)", marginBottom: "16px",
-        boxShadow: "0 2px 8px rgba(30,58,95,0.05)",
+        background: "linear-gradient(135deg, rgba(239,246,255,0.75) 0%, rgba(240,253,244,0.75) 100%)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: "18px", padding: "16px",
+        border: "1px solid rgba(255,255,255,0.6)", marginBottom: "16px",
+        boxShadow: "0 8px 32px rgba(31, 38, 135, 0.10)",
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
           <Target size={16} color="#10B981" />
@@ -527,9 +532,10 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
         onClick={() => setActiveTab("flashcard")}
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          background: "linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)",
-          borderRadius: "14px", padding: "14px 16px", cursor: "pointer",
+          background: gradients.purpleBanner,
+          borderRadius: "18px", padding: "14px 16px", cursor: "pointer",
           color: "white", marginBottom: "8px",
+          boxShadow: glow.purple,
         }}
       >
         <div>
@@ -540,6 +546,8 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
         </div>
         <Layers size={22} style={{ opacity: 0.9, flexShrink: 0 }} />
       </div>
+      </div>
+    </div>
     </div>
   );
 }

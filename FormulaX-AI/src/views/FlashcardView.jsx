@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { saveFlashcardActivity } from "../lib/supabase";
+import { glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -446,6 +447,11 @@ export default function FlashcardView({
 
     return (
       <div className="view-container">
+      <div style={pageWrapper}>
+        {orbs.map((orb, idx) => (
+          <div key={idx} style={orbStyle(orb)} />
+        ))}
+        <div style={contentLayer}>
         {/* Header */}
         <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"8px" }}>
           <button className="breadcrumb-back" onClick={() => setActiveTab("dashboard")} style={{ marginBottom:0 }}>
@@ -508,6 +514,7 @@ export default function FlashcardView({
                     <div
                       key={deck.id}
                       className="deck-list-card-figma"
+                      style={glassCard}
                       onClick={() => {
                         if (renamingDeckId === deck.id) return;
                         if (deck.formulaIds.length === 0) return;
@@ -556,6 +563,7 @@ export default function FlashcardView({
                     <div
                       key={deck.id}
                       className="deck-list-card-figma"
+                      style={glassCard}
                       onClick={() => {
                         if (renamingDeckId === deck.id) return;
                         if (deck.formulaIds.length === 0) return;
@@ -639,6 +647,8 @@ export default function FlashcardView({
             onConfirm={handleCreateFilteredDeck}
           />
         )}
+        </div>
+      </div>
       </div>
     );
   }
@@ -650,7 +660,12 @@ export default function FlashcardView({
     if (cards.length === 0) {
       return (
         <div className="view-container">
-          <div className="summary-card">
+        <div style={pageWrapper}>
+          {orbs.map((orb, idx) => (
+            <div key={idx} style={orbStyle(orb)} />
+          ))}
+          <div style={contentLayer}>
+          <div className="summary-card" style={glassCard}>
             <HelpCircle size={32} />
             <h2>Bộ thẻ trống</h2>
             <p>Không có công thức nào trong bộ thẻ này.</p>
@@ -658,6 +673,8 @@ export default function FlashcardView({
               Quay lại danh sách
             </button>
           </div>
+          </div>
+        </div>
         </div>
       );
     }
@@ -666,6 +683,11 @@ export default function FlashcardView({
 
     return (
       <div className="view-container">
+      <div style={pageWrapper}>
+        {orbs.map((orb, idx) => (
+          <div key={idx} style={orbStyle(orb)} />
+        ))}
+        <div style={contentLayer}>
         <div className="flashcard-study-container">
           <div className="study-header">
             <button className="back-to-decks" onClick={() => setView("list")}>
@@ -681,7 +703,7 @@ export default function FlashcardView({
           <div className="card-scene" onClick={() => setIsFlipped(!isFlipped)}>
             <div className={`card-3d ${isFlipped ? "flipped" : ""}`}>
               {/* Front */}
-              <div className="card-face front">
+              <div className="card-face front" style={glassCard}>
                 <span className="card-hint">Mặt trước - Tên công thức</span>
                 <div className="card-content-front">
                   <span className="tag" style={{ background:"#f1f5f9", color:"#1E3A5F" }}>
@@ -695,7 +717,7 @@ export default function FlashcardView({
               </div>
 
               {/* Back */}
-              <div className="card-face back">
+              <div className="card-face back" style={glassCard}>
                 <span className="card-hint" style={{ color:"#3B82F6" }}>Mặt sau - Công thức</span>
                 <div className="card-content-back">
                   <div className="formula-display-box" style={{ width:"100%" }}>
@@ -755,6 +777,8 @@ export default function FlashcardView({
             </div>
           )}
         </div>
+        </div>
+      </div>
       </div>
     );
   }
@@ -764,7 +788,12 @@ export default function FlashcardView({
   if (view === "summary") {
     return (
       <div className="view-container">
-        <div className="summary-card">
+      <div style={pageWrapper}>
+        {orbs.map((orb, idx) => (
+          <div key={idx} style={orbStyle(orb)} />
+        ))}
+        <div style={contentLayer}>
+        <div className="summary-card" style={glassCard}>
           <div className="summary-icon">
             <CheckCircle size={32} />
           </div>
@@ -811,6 +840,8 @@ export default function FlashcardView({
             </button>
           </div>
         </div>
+        </div>
+      </div>
       </div>
     );
   }

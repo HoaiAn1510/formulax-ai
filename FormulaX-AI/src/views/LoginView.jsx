@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, LayoutGrid, AlertCircle } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext";
+import { glassCard, orbs, orbStyle, gradients } from "../styles/theme";
 
 // Google icon SVG
 function GoogleIcon() {
@@ -56,24 +57,28 @@ export default function LoginView() {
 
   return (
     <div style={{
+      position: "relative",
+      overflow: "hidden",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
       justifyContent: "center",
       minHeight: "100vh",
       width: "100%",
-      backgroundColor: "#F8FAFC",
+      background: gradients.pageBackground,
       padding: "20px",
     }}>
+      {orbs.map((orb, idx) => (
+        <div key={idx} style={orbStyle(orb)} />
+      ))}
       {/* Card */}
       <div style={{
+        ...glassCard,
+        position: "relative",
+        zIndex: 1,
         maxWidth: "400px",
         width: "100%",
         padding: "32px 28px",
-        backgroundColor: "white",
-        borderRadius: "20px",
-        border: "1px solid #E2E8F0",
-        boxShadow: "0 10px 40px rgba(30,58,95,0.08)",
         display: "flex",
         flexDirection: "column",
         gap: "20px"
@@ -224,7 +229,7 @@ export default function LoginView() {
       </div>
 
       {/* Footer */}
-      <p style={{ marginTop: "20px", fontSize: "0.7rem", color: "#94A3B8", textAlign: "center", maxWidth: "320px", lineHeight: "1.5" }}>
+      <p style={{ position: "relative", zIndex: 1, marginTop: "20px", fontSize: "0.7rem", color: "#94A3B8", textAlign: "center", maxWidth: "320px", lineHeight: "1.5" }}>
         Bằng cách đăng nhập, bạn đồng ý với{" "}
         <span style={{ color: "#3B82F6", cursor: "pointer" }}>Điều khoản dịch vụ</span>{" "}
         và{" "}

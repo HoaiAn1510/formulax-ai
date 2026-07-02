@@ -1,6 +1,7 @@
 import React from "react";
 import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, BarChart2 } from "lucide-react";
 import { MathElement } from "../utils/katexHelper";
+import { gradients, glow, glassCard, glassCardSm, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 export default function Dashboard({
   user,
@@ -23,6 +24,11 @@ export default function Dashboard({
 
   return (
     <div className="view-container">
+      <div style={pageWrapper}>
+        {orbs.map((orb, idx) => (
+          <div key={idx} style={orbStyle(orb)} />
+        ))}
+        <div style={contentLayer}>
       {/* Greeting Header */}
       <div className="dashboard-greeting" style={{ marginBottom: "24px" }}>
         <h1 style={{ 
@@ -44,7 +50,7 @@ export default function Dashboard({
       {/* 2x2 Grid of Circular Icon Cards */}
       <div className="dashboard-grid-figma">
         {/* Card 1: Thư viện */}
-        <div className="grid-card-figma" onClick={() => setActiveTab("library")}>
+        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("library")}>
           <div className="grid-circle-icon" style={{ backgroundColor: "rgba(59, 130, 246, 0.08)", color: "#3B82F6" }}>
             <BookOpen size={22} />
           </div>
@@ -52,7 +58,7 @@ export default function Dashboard({
         </div>
 
         {/* Card 2: Tìm kiếm AI */}
-        <div className="grid-card-figma" onClick={() => setActiveTab("finder")}>
+        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("finder")}>
           <div className="grid-circle-icon" style={{ backgroundColor: "rgba(16, 185, 129, 0.08)", color: "#10B981" }}>
             <Search size={22} />
           </div>
@@ -60,7 +66,7 @@ export default function Dashboard({
         </div>
 
         {/* Card 3: Flashcard */}
-        <div className="grid-card-figma" onClick={() => setActiveTab("flashcard")}>
+        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("flashcard")}>
           <div className="grid-circle-icon" style={{ backgroundColor: "rgba(245, 158, 11, 0.08)", color: "#F59E0B" }}>
             <Zap size={22} />
           </div>
@@ -68,7 +74,7 @@ export default function Dashboard({
         </div>
 
         {/* Card 4: Kiểm tra */}
-        <div className="grid-card-figma" onClick={() => setActiveTab("quiz")}>
+        <div className="grid-card-figma" style={glassCard} onClick={() => setActiveTab("quiz")}>
           <div className="grid-circle-icon" style={{ backgroundColor: "rgba(239, 68, 68, 0.08)", color: "#EF4444" }}>
             <ClipboardList size={22} />
           </div>
@@ -81,10 +87,10 @@ export default function Dashboard({
         onClick={() => setActiveTab("progress")}
         style={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          background: "linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)",
-          borderRadius: "14px", padding: "13px 16px", cursor: "pointer",
+          background: gradients.purpleBanner,
+          borderRadius: "18px", padding: "13px 16px", cursor: "pointer",
           color: "white", marginBottom: "16px",
-          boxShadow: "0 4px 14px rgba(30,58,95,0.2)",
+          boxShadow: glow.purple,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -109,7 +115,7 @@ export default function Dashboard({
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
         <h2 className="section-title" style={{ fontSize: "1rem", color: "#1E3A5F", fontWeight: "800", margin: 0 }}>Hôm nay</h2>
       </div>
-      <div className="stats-card-container">
+      <div className="stats-card-container" style={glassCard}>
         <div className="stat-column">
           <div className="stat-column-val" style={{ color: "#3B82F6" }}>{todayStats?.formulasViewed ?? 0}</div>
           <div className="stat-column-lbl">Công thức xem</div>
@@ -132,9 +138,10 @@ export default function Dashboard({
 
       <div className="rec-stack-list">
         {recommendedFormulas.map((formula) => (
-          <div 
-            key={formula.id} 
+          <div
+            key={formula.id}
             className="rec-list-item"
+            style={glassCardSm}
             onClick={() => onViewDetail(formula)}
           >
             <div className="rec-item-left">
@@ -164,7 +171,7 @@ export default function Dashboard({
       </div>
 
       {/* Limit quota progress indicator card */}
-      <div className="quota-progress-card" style={{ marginTop: "24px" }}>
+      <div className="quota-progress-card" style={{ ...glassCard, marginTop: "24px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div className="quota-header-text">
             <Crown size={14} style={{ color: "#F59E0B" }} />
@@ -173,7 +180,7 @@ export default function Dashboard({
         </div>
 
         <div className="quota-progress-track">
-          <div className="quota-progress-bar" style={{ width: isPremium ? "100%" : `${(remainingQuizzes / 10) * 100}%` }} />
+          <div className="quota-progress-bar" style={{ width: isPremium ? "100%" : `${(remainingQuizzes / 10) * 100}%`, background: gradients.premiumProgressBar }} />
         </div>
 
         {/* Inner gold banner */}
@@ -181,31 +188,33 @@ export default function Dashboard({
           className="quota-gold-banner"
           onClick={() => setActiveTab("premium")}
           style={{
-            backgroundColor: "#FFFBEB",
-            border: "1px solid rgba(245, 158, 11, 0.15)",
+            background: gradients.orangeBanner,
+            border: "none",
             padding: "12px 16px",
-            borderRadius: "10px",
+            borderRadius: "14px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             cursor: "pointer",
             fontSize: "0.85rem",
             fontWeight: "700",
-            color: "#1E3A5F",
+            color: "white",
+            boxShadow: glow.orange,
             transition: "all 0.2s"
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <Gem size={14} style={{ color: "#F59E0B" }} />
-            <span style={{ color: "#1E3A5F", fontWeight: "700" }}>Mở khóa không giới hạn với Premium</span>
+            <Gem size={14} style={{ color: "white" }} />
+            <span style={{ color: "white", fontWeight: "700" }}>Mở khóa không giới hạn với Premium</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "#F59E0B", fontWeight: "800" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "white", fontWeight: "800" }}>
             <span>49.000 đ/tháng</span>
             <ChevronRight size={14} />
           </div>
         </div>
       </div>
-
+        </div>
+      </div>
     </div>
   );
 }

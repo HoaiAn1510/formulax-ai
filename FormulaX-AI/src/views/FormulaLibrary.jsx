@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Search, Heart, HelpCircle, XCircle, ArrowLeft, BookOpen, Layers } from "lucide-react";
+import { glassCard, glassCardSm, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 export default function FormulaLibrary({ 
   formulas, 
@@ -131,6 +132,11 @@ export default function FormulaLibrary({
 
   return (
     <div className="view-container">
+      <div style={pageWrapper}>
+        {orbs.map((orb, idx) => (
+          <div key={idx} style={orbStyle(orb)} />
+        ))}
+        <div style={contentLayer}>
       {/* Breadcrumb Back */}
       <button className="breadcrumb-back" onClick={() => setActiveTab("dashboard")}>
         <ArrowLeft size={12} />
@@ -151,7 +157,7 @@ export default function FormulaLibrary({
 
       {/* Autocomplete Search Bar */}
       <div className="library-search-container" ref={searchContainerRef}>
-        <div className="search-input-wrapper">
+        <div className="search-input-wrapper" style={glassCardSm}>
           <Search size={18} className="search-input-icon" />
           <input
             type="text"
@@ -258,7 +264,7 @@ export default function FormulaLibrary({
           filteredFormulas.map((formula) => {
             const isBookmarked = bookmarkedIds.includes(formula.id);
             return (
-              <div key={formula.id} className="library-card-figma">
+              <div key={formula.id} className="library-card-figma" style={glassCard}>
                 {/* Header: Title and Heart */}
                 <div className="library-card-header">
                   <h3 className="library-card-title">{formula.name}</h3>
@@ -310,6 +316,8 @@ export default function FormulaLibrary({
             </p>
           </div>
         )}
+      </div>
+        </div>
       </div>
     </div>
   );

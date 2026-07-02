@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem } from "lucide-react";
+import { glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }) {
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
@@ -85,6 +86,11 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
   return (
     <div className="view-container">
+    <div style={pageWrapper}>
+      {orbs.map((orb, idx) => (
+        <div key={idx} style={orbStyle(orb)} />
+      ))}
+      <div style={contentLayer}>
       <div className="premium-upgrade-container" style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
         
         {/* Section 1: Hero Banner */}
@@ -173,7 +179,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
             {goals.map((goal, idx) => {
               const GoalIcon = goal.icon;
               return (
-                <div key={idx} className="goal-card" style={{ display: "flex", gap: "12px", padding: "16px", backgroundColor: "white", borderRadius: "12px", border: "1px solid #E2E8F0" }}>
+                <div key={idx} className="goal-card" style={{ ...glassCard, display: "flex", gap: "12px", padding: "16px" }}>
                   <div style={{ 
                     width: "36px", 
                     height: "36px", 
@@ -208,7 +214,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
             </p>
           </div>
           
-          <div className="plan-compare-table-wrapper">
+          <div className="plan-compare-table-wrapper" style={glassCard}>
             <table className="plan-compare-table">
               <thead>
                 <tr>
@@ -260,14 +266,16 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
               }}>MỞ KHÓA NGAY</span>
             </div>
             
-            <div className="upgrade-pricing-card" style={{ 
-              border: "2px solid #F59E0B", 
-              borderRadius: "16px", 
-              padding: "24px", 
-              maxWidth: "400px", 
-              width: "100%", 
-              backgroundColor: "white", 
-              boxShadow: "0 10px 25px rgba(245, 158, 11, 0.08)" 
+            <div className="upgrade-pricing-card" style={{
+              border: "2px solid #F59E0B",
+              borderRadius: "20px",
+              padding: "24px",
+              maxWidth: "400px",
+              width: "100%",
+              backgroundColor: "rgba(255,255,255,0.75)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              boxShadow: "0 10px 25px rgba(245, 158, 11, 0.15)"
             }}>
               <div style={{ textAlign: "center", marginBottom: "16px" }}>
                 <Crown size={28} fill="#F59E0B" color="#F59E0B" style={{ margin: "0 auto 6px auto" }} />
@@ -390,6 +398,8 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
         )}
 
       </div>
+      </div>
+    </div>
     </div>
   );
 }

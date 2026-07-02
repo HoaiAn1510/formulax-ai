@@ -3,6 +3,7 @@ import { GraduationCap, Timer, CheckCircle, XCircle, Award, Crown, Lock, ArrowLe
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { questionsPool as pool } from "../data/questions";
 import { saveQuizResult } from "../lib/supabase";
+import { glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 export default function QuizView({
   setActiveTab,
@@ -266,6 +267,11 @@ export default function QuizView({
 
   return (
     <div className="view-container">
+    <div style={pageWrapper}>
+      {orbs.map((orb, idx) => (
+        <div key={idx} style={orbStyle(orb)} />
+      ))}
+      <div style={contentLayer}>
 
       {/* Modal hết quota */}
       {showQuotaModal && (
@@ -384,11 +390,8 @@ export default function QuizView({
 
           {/* Figma Setup Card Container */}
           <div className="quiz-setup-card-figma" style={{
-            backgroundColor: "white",
-            border: "1px solid #E2E8F0",
-            borderRadius: "16px",
+            ...glassCard,
             padding: "24px",
-            boxShadow: "0 4px 20px rgba(30, 58, 95, 0.02)",
             display: "flex",
             flexDirection: "column",
             gap: "24px",
@@ -669,7 +672,7 @@ export default function QuizView({
       {/* Active Quiz View */}
       {quizState === "active" && currentQ && (
         <div>
-          <div className="quiz-header">
+          <div className="quiz-header" style={glassCard}>
             <div className="quiz-meta-row">
               <span>Chủ đề: {currentQ.topic} • Lớp {currentQ.grade}</span>
               <div className={`quiz-timer ${timeLeft < 60 && timeLimit !== "Không giới hạn" ? "warning" : ""}`}>
@@ -691,7 +694,7 @@ export default function QuizView({
             </div>
           </div>
 
-          <div className="question-card">
+          <div className="question-card" style={glassCard}>
             <div className="question-text">
               <RichTextRenderer text={currentQ.text} />
             </div>
@@ -776,7 +779,7 @@ export default function QuizView({
       {/* Quiz Results Screen */}
       {quizState === "result" && (
         <div className="quiz-results-container">
-          <div className="summary-card" style={{ marginTop: 0 }}>
+          <div className="summary-card" style={{ ...glassCard, marginTop: 0 }}>
             <div className="summary-icon" style={{ backgroundColor: "rgba(30, 58, 95, 0.05)", color: "#1E3A5F" }}>
               <Award size={32} />
             </div>
@@ -1011,6 +1014,8 @@ export default function QuizView({
           </div>
         </div>
       )}
+      </div>
+    </div>
     </div>
   );
 }

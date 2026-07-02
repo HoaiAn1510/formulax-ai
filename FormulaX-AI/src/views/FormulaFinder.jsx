@@ -3,6 +3,7 @@ import { Send, ArrowLeft, History, Search, MessageSquare, Camera, X, Paperclip, 
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB } from "../lib/supabase";
+import { gradients, glassCard, glassCardSm } from "../styles/theme";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -396,7 +397,7 @@ export default function FormulaFinder({
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="view-container" style={{ padding: "10px", height: "calc(100vh - 124px)", display: "flex", flexDirection: "column" }}>
+    <div className="view-container" style={{ padding: "10px", height: "calc(100vh - 124px)", display: "flex", flexDirection: "column", background: gradients.pageBackground }}>
 
       {/* Top action row */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
@@ -441,7 +442,7 @@ export default function FormulaFinder({
 
       <div className="chat-layout">
         {/* ─── Session Sidebar ─── */}
-        <div className={`history-sidebar ${sidebarOpen ? "open" : ""}`}>
+        <div className={`history-sidebar ${sidebarOpen ? "open" : ""}`} style={glassCard}>
 
           {/* New chat button */}
           <button
@@ -568,8 +569,8 @@ export default function FormulaFinder({
         </div>
 
         {/* ─── Chat window ─── */}
-        <div className="chat-window">
-          <div className="chat-messages" ref={chatMessagesRef}>
+        <div className="chat-window" style={glassCard}>
+          <div className="chat-messages" ref={chatMessagesRef} style={{ backgroundColor: "transparent" }}>
             {messages.length === 0 ? (
               <div className="finder-welcome-container">
                 <div className="finder-robot-circle">
@@ -584,7 +585,7 @@ export default function FormulaFinder({
                 </p>
                 <div className="finder-suggestions-grid">
                   {suggestionsList.map((item, idx) => (
-                    <div key={idx} className="finder-suggestion-card" onClick={() => handleSend(item.query)}>
+                    <div key={idx} className="finder-suggestion-card" style={glassCardSm} onClick={() => handleSend(item.query)}>
                       <Search size={14} className="finder-suggestion-icon" />
                       <span>{item.text}</span>
                     </div>
@@ -603,7 +604,9 @@ export default function FormulaFinder({
                         ? { backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.3)", color: "#92400E" }
                         : (msg.isImage || msg.isFile)
                           ? { padding: "8px", backgroundColor: "white", border: "1px solid #E2E8F0", color: "#1E3A5F" }
-                          : {}
+                          : msg.sender === "bot"
+                            ? { backgroundColor: "rgba(255,255,255,0.72)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }
+                            : {}
                   }
                 >
                   {msg.isError && (
@@ -673,7 +676,7 @@ export default function FormulaFinder({
 
                   {/* Formula card */}
                   {msg.sender === "bot" && msg.aiResult && (
-                    <div className="ai-result-card">
+                    <div className="ai-result-card" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
                       <div className="ai-result-name">{msg.aiResult.name}</div>
                       <div className="ai-result-latex">
                         <MathElement math={msg.aiResult.latex} block={true} />
@@ -762,8 +765,8 @@ export default function FormulaFinder({
           )}
 
           {/* Chat input */}
-          <div style={{ padding: "12px", borderTop: "1px solid var(--border-slate)", background: "white" }}>
-            <div className="finder-input-container">
+          <div style={{ padding: "12px", borderTop: "1px solid var(--border-slate)", background: "transparent" }}>
+            <div className="finder-input-container" style={glassCardSm}>
               <button type="button" onClick={() => setCameraOpen(true)}
                 style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "8px 4px 8px 8px" }}
                 title="Quét đề bài bằng Camera AI"
