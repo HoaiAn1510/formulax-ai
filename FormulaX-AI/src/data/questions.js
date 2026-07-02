@@ -2789,5 +2789,155 @@ export const questionsPool = [
     blankAnswer: "Cả hai giá trị 340 và 0",
     explanation: "$Q_3+1,5\\Delta_Q = 205+105=310 < 340$ và $Q_1-1,5\\Delta_Q=135-105=30 > 0$, nên cả hai giá trị 340 và 0 đều là giá trị bất thường.",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 14"
+  },
+  {
+    id: "ds39",
+    topic: "Đại số",
+    grade: 10,
+    text: "Hàm số $y=x^2$ đồng biến trên khoảng nào sau đây?",
+    options: [
+      { letter: "A", text: "$(0;+\\infty)$", isCorrect: true },
+      { letter: "B", text: "$(-\\infty;0)$", isCorrect: false },
+      { letter: "C", text: "$\\mathbb{R}$", isCorrect: false },
+      { letter: "D", text: "$(-\\infty;0)$ và $(0;+\\infty)$", isCorrect: false }
+    ],
+    blankAnswer: "(0;+∞)",
+    explanation: "Trên khoảng $(0;+\\infty)$, với $x_3<x_4$ thì $f(x_3)<f(x_4)$ nên hàm số $y=x^2$ đồng biến. Trên khoảng $(-\\infty;0)$, hàm số nghịch biến.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 15, trang 8"
+  },
+  {
+    id: "ds40",
+    topic: "Đại số",
+    grade: 10,
+    text: "Một vật chuyển động thẳng đều với vận tốc $v=2$ m/s. Quãng đường $S$ (mét) vật đi được sau 10 giây là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$20$", isCorrect: true },
+      { letter: "B", text: "$10$", isCorrect: false },
+      { letter: "C", text: "$200$", isCorrect: false },
+      { letter: "D", text: "$5$", isCorrect: false }
+    ],
+    blankAnswer: "20",
+    explanation: "Hàm số mô tả quãng đường là $S=S(t)=2t$. Quãng đường vật đi được sau 10 giây là $S(10)=2\\cdot10=20$ (m).",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 15, trang 6"
+  },
+  {
+    id: "ds41",
+    topic: "Đại số",
+    grade: 10,
+    text: "Cho hàm số bậc hai $y=-2x^2+20x$. Giá trị của hàm số tại $x=5$ là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$50$", isCorrect: true },
+      { letter: "B", text: "$48$", isCorrect: false },
+      { letter: "C", text: "$32$", isCorrect: false },
+      { letter: "D", text: "$90$", isCorrect: false }
+    ],
+    blankAnswer: "50",
+    explanation: "Thay $x=5$ vào công thức: $y=-2\\cdot5^2+20\\cdot5=-50+100=50$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 16, trang 12"
+  },
+  {
+    id: "ds42",
+    topic: "Đại số",
+    grade: 10,
+    text: "Tọa độ đỉnh của parabol $y=-2x^2-2x+4$ là:",
+    options: [
+      { letter: "A", text: "$I\\left(-\\dfrac12;\\ \\dfrac92\\right)$", isCorrect: true },
+      { letter: "B", text: "$I\\left(\\dfrac12;\\ \\dfrac92\\right)$", isCorrect: false },
+      { letter: "C", text: "$I\\left(-\\dfrac12;\\ -\\dfrac92\\right)$", isCorrect: false },
+      { letter: "D", text: "$I(-1;\\ 4)$", isCorrect: false }
+    ],
+    blankAnswer: "I(-1/2; 9/2)",
+    explanation: "$a=-2,\\ b=-2$ nên hoành độ đỉnh $x_I=-\\dfrac{b}{2a}=-\\dfrac{-2}{2\\cdot(-2)}=-\\dfrac12$. Tung độ đỉnh $y_I=f\\left(-\\dfrac12\\right)=-2\\cdot\\dfrac14-2\\cdot\\left(-\\dfrac12\\right)+4=\\dfrac92$. Vậy $I\\left(-\\dfrac12;\\dfrac92\\right)$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 16, trang 15"
+  },
+  {
+    id: "ds43",
+    topic: "Đại số",
+    grade: 10,
+    text: "Hàm số $y=-2x^2-2x+4$ đồng biến trên khoảng nào?",
+    options: [
+      { letter: "A", text: "$\\left(-\\infty;-\\dfrac12\\right)$", isCorrect: true },
+      { letter: "B", text: "$\\left(-\\dfrac12;+\\infty\\right)$", isCorrect: false },
+      { letter: "C", text: "$\\mathbb{R}$", isCorrect: false },
+      { letter: "D", text: "$\\left(-\\infty;\\dfrac12\\right)$", isCorrect: false }
+    ],
+    blankAnswer: "(-∞; -1/2)",
+    explanation: "Vì $a=-2<0$ nên hàm số đồng biến trên $\\left(-\\infty;-\\dfrac{b}{2a}\\right)=\\left(-\\infty;-\\dfrac12\\right)$ và nghịch biến trên $\\left(-\\dfrac12;+\\infty\\right)$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 16, trang 15"
+  },
+  {
+    id: "ds44",
+    topic: "Đại số",
+    grade: 10,
+    text: "Xét dấu tam thức bậc hai $f(x)=x^2+x+1$. Khẳng định nào đúng?",
+    options: [
+      { letter: "A", text: "$f(x)>0$ với mọi $x\\in\\mathbb{R}$", isCorrect: true },
+      { letter: "B", text: "$f(x)<0$ với mọi $x\\in\\mathbb{R}$", isCorrect: false },
+      { letter: "C", text: "$f(x)=0$ có nghiệm kép", isCorrect: false },
+      { letter: "D", text: "$f(x)$ đổi dấu trên $\\mathbb{R}$", isCorrect: false }
+    ],
+    blankAnswer: "f(x)>0 với mọi x∈R",
+    explanation: "$f(x)=x^2+x+1$ có $\\Delta=1-4=-3<0$ và $a=1>0$ nên $f(x)$ cùng dấu với $a$ với mọi $x\\in\\mathbb{R}$, tức $f(x)>0$ với mọi $x$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 17, trang 21"
+  },
+  {
+    id: "ds45",
+    topic: "Đại số",
+    grade: 10,
+    text: "Tam thức bậc hai $h(x)=2x^2+6x-8$ nhận giá trị âm khi:",
+    options: [
+      { letter: "A", text: "$-4<x<1$", isCorrect: true },
+      { letter: "B", text: "$x<-4$ hoặc $x>1$", isCorrect: false },
+      { letter: "C", text: "$x<-4$", isCorrect: false },
+      { letter: "D", text: "$x>1$", isCorrect: false }
+    ],
+    blankAnswer: "-4<x<1",
+    explanation: "$h(x)=2x^2+6x-8$ có $\\Delta'=25>0$, hai nghiệm $x_1=-4,\\ x_2=1$ và $a=2>0$. Do đó $h(x)<0$ với $x\\in(-4;1)$ (trong khoảng hai nghiệm, trái dấu với $a$).",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 17, trang 21"
+  },
+  {
+    id: "ds46",
+    topic: "Đại số",
+    grade: 10,
+    text: "Tập nghiệm của bất phương trình $-x^2+2x+1>0$ là:",
+    options: [
+      { letter: "A", text: "$\\left(1-\\sqrt2;\\ 1+\\sqrt2\\right)$", isCorrect: true },
+      { letter: "B", text: "$\\left(-\\infty;1-\\sqrt2\\right)\\cup\\left(1+\\sqrt2;+\\infty\\right)$", isCorrect: false },
+      { letter: "C", text: "$\\mathbb{R}$", isCorrect: false },
+      { letter: "D", text: "$\\varnothing$", isCorrect: false }
+    ],
+    blankAnswer: "(1-√2; 1+√2)",
+    explanation: "$f(x)=-x^2+2x+1$ có $\\Delta'=2>0$, hai nghiệm $x_{1,2}=1\\mp\\sqrt2$ và $a=-1<0$. Do $a<0$, $f(x)>0$ trong khoảng hai nghiệm nên tập nghiệm là $\\left(1-\\sqrt2;1+\\sqrt2\\right)$.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 17, trang 22-23"
+  },
+  {
+    id: "ds47",
+    topic: "Đại số",
+    grade: 10,
+    text: "Nghiệm của phương trình $\\sqrt{2x^2-4x-2}=\\sqrt{x^2-x-2}$ là:",
+    options: [
+      { letter: "A", text: "$x=3$", isCorrect: true },
+      { letter: "B", text: "$x=0$ hoặc $x=3$", isCorrect: false },
+      { letter: "C", text: "$x=0$", isCorrect: false },
+      { letter: "D", text: "Vô nghiệm", isCorrect: false }
+    ],
+    blankAnswer: "3",
+    explanation: "Bình phương hai vế: $2x^2-4x-2=x^2-x-2$, thu gọn được $x^2-3x=0$, suy ra $x=0$ hoặc $x=3$. Thay lại vào phương trình ban đầu, chỉ có $x=3$ thỏa mãn.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 18, trang 25"
+  },
+  {
+    id: "ds48",
+    topic: "Đại số",
+    grade: 10,
+    text: "Nghiệm của phương trình $\\sqrt{2x^2-5x-9}=x-1$ là:",
+    options: [
+      { letter: "A", text: "$x=5$", isCorrect: true },
+      { letter: "B", text: "$x=-2$ hoặc $x=5$", isCorrect: false },
+      { letter: "C", text: "$x=-2$", isCorrect: false },
+      { letter: "D", text: "Vô nghiệm", isCorrect: false }
+    ],
+    blankAnswer: "5",
+    explanation: "Bình phương hai vế: $2x^2-5x-9=x^2-2x+1$, thu gọn được $x^2-3x-10=0$, suy ra $x=-2$ hoặc $x=5$. Thay lại vào phương trình ban đầu, chỉ có $x=5$ thỏa mãn (vì với $x=-2$, vế phải $x-1<0$ trong khi vế trái không âm).",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 18, trang 27"
   }
 ];

@@ -1405,5 +1405,57 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "Ngoài khoảng [Q1 − 1,5·ΔQ ; Q3 + 1,5·ΔQ] thì coi là giá trị bất thường (outlier).",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 14"
+  },
+  {
+    id: "ds10-ham-so-dinh-nghia",
+    name: "Hàm số, tập xác định và đồ thị của hàm số",
+    topic: "Đại số",
+    grade: 10,
+    latex: "y = f(x), \\quad x \\in D",
+    explanation: "Trong đó:\n- $D$: tập xác định của hàm số — tập hợp tất cả các giá trị $x$ mà với mỗi giá trị đó có một và chỉ một giá trị tương ứng của $y$\n- $x$: biến số\n- $y = f(x)$: hàm số của $x$ — giá trị tương ứng duy nhất ứng với mỗi $x \\in D$\n- Tập giá trị của hàm số: tập hợp tất cả các giá trị $y$ nhận được\n\nĐồ thị của hàm số $y=f(x)$ xác định trên tập $D$ là tập hợp tất cả các điểm $M(x; f(x))$ trên mặt phẳng tọa độ với mọi $x$ thuộc $D$. Một hàm số có thể được cho bằng bảng, bằng biểu đồ, bằng công thức hoặc bằng mô tả. Khi hàm số cho bằng công thức $y=f(x)$ mà không chỉ rõ tập xác định thì quy ước tập xác định là tập hợp tất cả các số thực $x$ sao cho biểu thức $f(x)$ có nghĩa.",
+    example: "Tìm tập xác định của hàm số $y=\\sqrt{2x-4}$.\n\n**Lời giải:** Biểu thức $\\sqrt{2x-4}$ có nghĩa khi $2x-4\\ge 0$, tức là khi $x\\ge 2$. Vậy tập xác định của hàm số là $D=[2;+\\infty)$.",
+    tags: ["Hàm số", "Tập xác định", "Tập giá trị", "Đồ thị hàm số"],
+    difficulty: "Dễ",
+    mnemonic: "Mỗi x trong D cho đúng 1 giá trị y — đó là hàm số. Đồ thị = tập hợp các điểm (x; f(x)).",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 15, trang 6-7"
+  },
+  {
+    id: "ds10-ham-so-dongbien-nghichbien",
+    name: "Hàm số đồng biến, nghịch biến",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\forall x_1, x_2 \\in (a;b),\\ x_1 < x_2 \\Rightarrow \\begin{cases} f(x_1) < f(x_2) & \\text{(đồng biến)} \\\\ f(x_1) > f(x_2) & \\text{(nghịch biến)} \\end{cases}",
+    explanation: "Trong đó:\n- Hàm số $y=f(x)$ đồng biến (tăng) trên khoảng $(a;b)$ nếu với mọi $x_1, x_2 \\in (a;b)$, $x_1<x_2 \\Rightarrow f(x_1)<f(x_2)$\n- Hàm số $y=f(x)$ nghịch biến (giảm) trên khoảng $(a;b)$ nếu với mọi $x_1, x_2 \\in (a;b)$, $x_1<x_2 \\Rightarrow f(x_1)>f(x_2)$\n\nĐồ thị của một hàm số đồng biến trên khoảng $(a;b)$ là đường \"đi lên\" từ trái sang phải; đồ thị của một hàm số nghịch biến trên khoảng $(a;b)$ là đường \"đi xuống\" từ trái sang phải.",
+    example: "Hàm số $y=x^2$ đồng biến hay nghịch biến trên mỗi khoảng $(-\\infty;0)$ và $(0;+\\infty)$?\n\n**Lời giải:** Trên khoảng $(-\\infty;0)$, với $x_1<x_2<0$ thì $f(x_1)>f(x_2)$ nên hàm số nghịch biến. Trên khoảng $(0;+\\infty)$, với $0<x_3<x_4$ thì $f(x_3)<f(x_4)$ nên hàm số đồng biến.",
+    tags: ["Hàm số", "Đồng biến", "Nghịch biến"],
+    difficulty: "Trung bình",
+    mnemonic: "Đồng biến: x tăng thì y tăng (đồ thị đi lên). Nghịch biến: x tăng thì y giảm (đồ thị đi xuống).",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 15, trang 8"
+  },
+  {
+    id: "ds10-hamso-bachai-bienthien",
+    name: "Sự biến thiên và giá trị lớn nhất, nhỏ nhất của hàm số bậc hai",
+    topic: "Đại số",
+    grade: 10,
+    latex: "a>0:\\ \\min y = -\\dfrac{\\Delta}{4a} \\text{ tại } x=-\\dfrac{b}{2a}; \\qquad a<0:\\ \\max y = -\\dfrac{\\Delta}{4a} \\text{ tại } x=-\\dfrac{b}{2a}",
+    explanation: "Trong đó:\n- Với $a>0$: hàm số $y=ax^2+bx+c$ nghịch biến trên khoảng $\\left(-\\infty;-\\dfrac{b}{2a}\\right)$, đồng biến trên khoảng $\\left(-\\dfrac{b}{2a};+\\infty\\right)$; giá trị nhỏ nhất của hàm số là $-\\dfrac{\\Delta}{4a}$ đạt tại $x=-\\dfrac{b}{2a}$\n- Với $a<0$: hàm số đồng biến trên khoảng $\\left(-\\infty;-\\dfrac{b}{2a}\\right)$, nghịch biến trên khoảng $\\left(-\\dfrac{b}{2a};+\\infty\\right)$; giá trị lớn nhất của hàm số là $-\\dfrac{\\Delta}{4a}$ đạt tại $x=-\\dfrac{b}{2a}$\n\nTính chất này suy ra trực tiếp từ dạng đồ thị (parabol) của hàm số bậc hai: đỉnh là điểm thấp nhất khi $a>0$ và là điểm cao nhất khi $a<0$.",
+    example: "Tìm khoảng đồng biến, nghịch biến và giá trị lớn nhất của hàm số $y=-2x^2-2x+4$.\n\n**Lời giải:** Có $a=-2<0$, đỉnh $I\\left(-\\dfrac12;\\dfrac92\\right)$. Vậy hàm số đồng biến trên $\\left(-\\infty;-\\dfrac12\\right)$, nghịch biến trên $\\left(-\\dfrac12;+\\infty\\right)$. Giá trị lớn nhất của hàm số là $y=\\dfrac92$, đạt tại $x=-\\dfrac12$.",
+    tags: ["Hàm số bậc hai", "Đồng biến", "Nghịch biến", "GTLN GTNN", "Parabol"],
+    difficulty: "Trung bình",
+    mnemonic: "a>0: chữ U — giảm rồi tăng, có GTNN tại đỉnh. a<0: chữ ∩ — tăng rồi giảm, có GTLN tại đỉnh.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 16, trang 15"
+  },
+  {
+    id: "ds10-phuongtrinh-can-quy-ve-bac2",
+    name: "Phương trình chứa căn quy về phương trình bậc hai",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\sqrt{ax^2+bx+c} = \\sqrt{dx^2+ex+f} \\quad \\text{hoặc} \\quad \\sqrt{ax^2+bx+c} = dx+e",
+    explanation: "Trong đó $a, b, c, d, e, f$ là các hệ số cho trước.\n\n**Dạng 1:** $\\sqrt{ax^2+bx+c}=\\sqrt{dx^2+ex+f}$ — bình phương hai vế và giải phương trình bậc hai nhận được: $ax^2+bx+c = dx^2+ex+f$.\n\n**Dạng 2:** $\\sqrt{ax^2+bx+c}=dx+e$ — bình phương hai vế và giải phương trình bậc hai nhận được: $ax^2+bx+c=(dx+e)^2$.\n\nSau khi giải phương trình bậc hai, phải thử lại các giá trị $x$ tìm được vào phương trình ban đầu (chứa căn) để loại nghiệm ngoại lai, vì phép bình phương hai vế có thể làm xuất hiện nghiệm không thỏa mãn phương trình gốc.",
+    example: "Giải phương trình $\\sqrt{2x^2-4x-2}=\\sqrt{x^2-x-2}$.\n\n**Lời giải:** Bình phương hai vế: $2x^2-4x-2=x^2-x-2$, thu gọn được $x^2-3x=0$, suy ra $x=0$ hoặc $x=3$. Thay lại vào phương trình đã cho, chỉ có $x=3$ thỏa mãn. Vậy nghiệm của phương trình là $x=3$.",
+    tags: ["Phương trình chứa căn", "Phương trình bậc hai", "Bình phương hai vế"],
+    difficulty: "Trung bình",
+    mnemonic: "Bình phương hai vế để mất căn, giải phương trình bậc hai, rồi PHẢI thử lại — nghiệm tìm được có thể là nghiệm ngoại lai.",
+    sgk_source: "Toán 10 KNTT Tập 2, Bài 18, trang 25-27"
   }
 ];
