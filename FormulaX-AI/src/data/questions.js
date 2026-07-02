@@ -2380,5 +2380,127 @@ export const questionsPool = [
     blankAnswer: "230",
     explanation: "Tính $F$ tại từng đỉnh: $F(0;0)=0$; $F(0;100)=200$; $F(20;80)=3{,}5(20)+2(80)=70+160=230$; $F(60;0)=210$. Giá trị lớn nhất trong các giá trị trên là $230$, đạt tại $(20;80)$.",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 4, Ví dụ 3, trang 29-30"
+  },
+
+  // ==================== GIÁ TRỊ LƯỢNG GIÁC & HỆ THỨC LƯỢNG TAM GIÁC (Chương III, Toán 10 Tập 1) ====================
+  {
+    id: "hh26",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tìm các giá trị lượng giác của góc $135°$.",
+    options: [
+      { letter: "A", text: "$\\sin135°=\\dfrac{\\sqrt2}{2}$, $\\cos135°=-\\dfrac{\\sqrt2}{2}$, $\\tan135°=-1$", isCorrect: true },
+      { letter: "B", text: "$\\sin135°=-\\dfrac{\\sqrt2}{2}$, $\\cos135°=\\dfrac{\\sqrt2}{2}$, $\\tan135°=-1$", isCorrect: false },
+      { letter: "C", text: "$\\sin135°=\\dfrac{\\sqrt2}{2}$, $\\cos135°=\\dfrac{\\sqrt2}{2}$, $\\tan135°=1$", isCorrect: false },
+      { letter: "D", text: "$\\sin135°=\\dfrac{1}{2}$, $\\cos135°=-\\dfrac{\\sqrt3}{2}$, $\\tan135°=-\\dfrac{\\sqrt3}{3}$", isCorrect: false }
+    ],
+    blankAnswer: "sin135°=√2/2, cos135°=-√2/2, tan135°=-1",
+    explanation: "Điểm $M$ trên nửa đường tròn đơn vị ứng với góc $135°$ có tọa độ $\\left(-\\dfrac{\\sqrt2}{2};\\dfrac{\\sqrt2}{2}\\right)$ (vì $135°$ bù với $45°$). Do đó $\\sin135°=\\dfrac{\\sqrt2}{2}$, $\\cos135°=-\\dfrac{\\sqrt2}{2}$, $\\tan135°=\\dfrac{\\sin135°}{\\cos135°}=-1$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 5, Ví dụ 1, trang 35"
+  },
+  {
+    id: "hh27",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tính $\\sin120°$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{\\sqrt3}{2}$", isCorrect: true },
+      { letter: "B", text: "$-\\dfrac{\\sqrt3}{2}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "D", text: "$-\\dfrac{1}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "√3/2",
+    explanation: "Góc $120°$ bù với góc $60°$. Theo công thức góc bù, $\\sin120°=\\sin60°=\\dfrac{\\sqrt3}{2}$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 5, Ví dụ 2, trang 36"
+  },
+  {
+    id: "hh28",
+    topic: "Hình học",
+    grade: 10,
+    text: "Hệ thức nào sau đây đúng với mọi góc $\\alpha$ thỏa $0° \\leq \\alpha \\leq 180°$?",
+    options: [
+      { letter: "A", text: "$\\sin^2\\alpha+\\cos^2\\alpha=1$", isCorrect: true },
+      { letter: "B", text: "$\\sin\\alpha+\\cos\\alpha=1$", isCorrect: false },
+      { letter: "C", text: "$\\sin^2\\alpha-\\cos^2\\alpha=1$", isCorrect: false },
+      { letter: "D", text: "$\\sin\\alpha \\cdot \\cos\\alpha=1$", isCorrect: false }
+    ],
+    blankAnswer: "sin²α+cos²α=1",
+    explanation: "Vì $M(x_0;y_0)$ (với $\\sin\\alpha=y_0$, $\\cos\\alpha=x_0$) là điểm thuộc nửa đường tròn đơn vị nên $x_0^2+y_0^2=1$, tức là $\\sin^2\\alpha+\\cos^2\\alpha=1$ với mọi góc $\\alpha$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 5, Bài tập 3.3, trang 37"
+  },
+  {
+    id: "hh29",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho tam giác $ABC$ có $\\widehat{A}=120°$, $AB=5$, $AC=8$. Tính độ dài cạnh $BC$.",
+    options: [
+      { letter: "A", text: "$BC=\\sqrt{129}$", isCorrect: true },
+      { letter: "B", text: "$BC=\\sqrt{89}$", isCorrect: false },
+      { letter: "C", text: "$BC=\\sqrt{49}=7$", isCorrect: false },
+      { letter: "D", text: "$BC=13$", isCorrect: false }
+    ],
+    blankAnswer: "√129",
+    explanation: "Áp dụng Định lí côsin: $BC^2=AB^2+AC^2-2\\cdot AB\\cdot AC\\cdot\\cos120°=5^2+8^2-2\\cdot5\\cdot8\\cdot\\left(-\\dfrac{1}{2}\\right)=25+64+40=129$. Vậy $BC=\\sqrt{129}$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, Ví dụ 1, trang 39"
+  },
+  {
+    id: "hh30",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho tam giác $ABC$ có $\\widehat{A}=135°$, $\\widehat{C}=15°$ và $b=12$. Tính bán kính $R$ của đường tròn ngoại tiếp tam giác.",
+    options: [
+      { letter: "A", text: "$R=12$", isCorrect: true },
+      { letter: "B", text: "$R=6$", isCorrect: false },
+      { letter: "C", text: "$R=24$", isCorrect: false },
+      { letter: "D", text: "$R=12\\sqrt2$", isCorrect: false }
+    ],
+    blankAnswer: "12",
+    explanation: "$\\widehat{B}=180°-(135°+15°)=30°$. Áp dụng Định lí sin: $\\dfrac{b}{\\sin B}=2R \\Rightarrow 2R=\\dfrac{12}{\\sin30°}=\\dfrac{12}{0{,}5}=24 \\Rightarrow R=12$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, Ví dụ 2, trang 40"
+  },
+  {
+    id: "hh31",
+    topic: "Hình học",
+    grade: 10,
+    text: "Giải tam giác $ABC$, biết $c=14$, $\\widehat{A}=60°$, $\\widehat{B}=40°$. Tính độ dài cạnh $a$ (làm tròn đến hàng phần trăm).",
+    options: [
+      { letter: "A", text: "$a \\approx 12{,}31$", isCorrect: true },
+      { letter: "B", text: "$a \\approx 9{,}14$", isCorrect: false },
+      { letter: "C", text: "$a \\approx 14{,}00$", isCorrect: false },
+      { letter: "D", text: "$a \\approx 16{,}20$", isCorrect: false }
+    ],
+    blankAnswer: "12.31",
+    explanation: "$\\widehat{C}=180°-(60°+40°)=80°$. Áp dụng Định lí sin: $\\dfrac{a}{\\sin60°}=\\dfrac{14}{\\sin80°} \\Rightarrow a=\\dfrac{14\\sin60°}{\\sin80°}\\approx12{,}31$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, Ví dụ 3, trang 40"
+  },
+  {
+    id: "hh32",
+    topic: "Hình học",
+    grade: 10,
+    text: "Tính diện tích $S$ của tam giác $ABC$ có $c=4$, $b=6$, $\\widehat{A}=150°$.",
+    options: [
+      { letter: "A", text: "$S=6$", isCorrect: true },
+      { letter: "B", text: "$S=12$", isCorrect: false },
+      { letter: "C", text: "$S=6\\sqrt3$", isCorrect: false },
+      { letter: "D", text: "$S=24$", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "Áp dụng công thức $S=\\dfrac{1}{2}bc\\sin A=\\dfrac{1}{2}\\cdot6\\cdot4\\cdot\\sin150°=12\\cdot\\dfrac{1}{2}=6$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, Ví dụ 5, trang 41"
+  },
+  {
+    id: "hh33",
+    topic: "Hình học",
+    grade: 10,
+    text: "Cho tam giác $ABC$ có $a=13$, $b=14$, $c=15$. Tính diện tích $S$ bằng công thức Heron.",
+    options: [
+      { letter: "A", text: "$S=84$", isCorrect: true },
+      { letter: "B", text: "$S=21$", isCorrect: false },
+      { letter: "C", text: "$S=42$", isCorrect: false },
+      { letter: "D", text: "$S=168$", isCorrect: false }
+    ],
+    blankAnswer: "84",
+    explanation: "Nửa chu vi $p=\\dfrac{13+14+15}{2}=21$. Áp dụng công thức Heron: $S=\\sqrt{p(p-a)(p-b)(p-c)}=\\sqrt{21\\cdot8\\cdot7\\cdot6}=\\sqrt{7056}=84$.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, Ví dụ 6, trang 42"
   }
 ];

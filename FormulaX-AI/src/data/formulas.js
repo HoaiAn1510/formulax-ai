@@ -279,7 +279,8 @@ export const formulas = [
     example: "Cho tam giác $ABC$ có cạnh $b = 5$, $c = 8$ and góc $A = 60^\\circ$. Tính độ dài cạnh $a$.\n\n**Lời giải:**\nÁp dụng định lý côsin:\n$$a^2 = 5^2 + 8^2 - 2 \\cdot 5 \\cdot 8 \\cdot \\cos 60^\\circ$$\n$$a^2 = 25 + 64 - 80 \\cdot \\frac{1}{2} = 89 - 40 = 49 \\implies a = 7$$",
     tags: ["Hệ thức lượng", "Định lý", "Tam giác"],
     difficulty: "Trung bình",
-    mnemonic: "Giống hằng đẳng thức bình phương trừ đi tích hai cạnh nhân cos góc xen giữa."
+    mnemonic: "Giống hằng đẳng thức bình phương trừ đi tích hai cạnh nhân cos góc xen giữa.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, trang 39"
   },
   {
     id: "hh10-herong",
@@ -291,7 +292,8 @@ export const formulas = [
     example: "Tính diện tích tam giác $ABC$ có độ dài ba cạnh lần lượt là $a = 13$, $b = 14$, $c = 15$.\n\n**Lời giải:**\n- Nửa chu vi: $p = \\frac{13 + 14 + 15}{2} = 21$.\n- Diện tích:\n  $$S = \\sqrt{21(21-13)(21-14)(21-15)} = \\sqrt{21 \\cdot 8 \\cdot 7 \\cdot 6}$$\n  $$S = \\sqrt{21 \\cdot 7 \\cdot 8 \\cdot 6} = \\sqrt{147 \\cdot 48} = \\sqrt{7056} = 84$$",
     tags: ["Diện tích", "Tam giác", "Chu vi"],
     difficulty: "Trung bình",
-    mnemonic: "Căn bậc hai của nửa chu vi nhân liên tiếp với hiệu của nửa chu vi và từng cạnh."
+    mnemonic: "Căn bậc hai của nửa chu vi nhân liên tiếp với hiệu của nửa chu vi và từng cạnh.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, trang 41"
   },
   {
     id: "hh10-vecto-toado",
@@ -327,7 +329,8 @@ export const formulas = [
     example: "Cho tam giác $ABC$ có cạnh $a = 6$, góc $A = 30^\\circ$. Tính bán kính $R$ của đường tròn ngoại tiếp tam giác đó.\n\n**Lời giải:**\nÁp dụng định lý Sin:\n$$\\frac{a}{\\sin A} = 2R \\implies 2R = \\frac{6}{\\sin 30^\\circ} = \\frac{6}{0.5} = 12 \\implies R = 6\\text{ cm}$$",
     tags: ["Hệ thức lượng", "Định lý", "Tam giác", "Đường tròn ngoại tiếp"],
     difficulty: "Trung bình",
-    mnemonic: "Cạnh chia sin góc đối diện bằng hai lần bán kính đường tròn ngoại tiếp: a trên sin A bằng 2R."
+    mnemonic: "Cạnh chia sin góc đối diện bằng hai lần bán kính đường tròn ngoại tiếp: a trên sin A bằng 2R.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, trang 39"
   },
   {
     id: "hh10-duongtron-phuongtrinh",
@@ -603,7 +606,8 @@ export const formulas = [
     example: "Cho tam giác $ABC$ có $b = 5$, $c = 6$, $A = 60°$. Tính diện tích.\n\n**Lời giải:**\n$$S = \\frac{1}{2} \\cdot 5 \\cdot 6 \\cdot \\sin 60° = 15 \\cdot \\frac{\\sqrt{3}}{2} = \\frac{15\\sqrt{3}}{2}$$",
     tags: ["Diện tích", "Tam giác", "Sin", "Hệ thức lượng"],
     difficulty: "Dễ",
-    mnemonic: "Nửa tích hai cạnh nhân sin góc xen giữa: S = (1/2)·a·b·sinC. Hai cạnh kẹp góc nào thì dùng sin góc đó."
+    mnemonic: "Nửa tích hai cạnh nhân sin góc xen giữa: S = (1/2)·a·b·sinC. Hai cạnh kẹp góc nào thì dùng sin góc đó.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 6, trang 41"
   },
   {
     id: "xs10-quitac-dem",
@@ -1162,5 +1166,46 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "GTLN/GTNN của F(x;y)=ax+by trên miền đa giác luôn rơi vào 1 ĐỈNH của đa giác — không cần thử điểm bên trong, chỉ cần tính F tại các đỉnh rồi so sánh.",
     sgk_source: "Toán 10 KNTT Tập 1, Bài 4, trang 29-30"
+  },
+
+  // ===== GIÁ TRỊ LƯỢNG GIÁC CỦA GÓC & HỆ THỨC LƯỢNG TAM GIÁC (Chương III, Toán 10 KNTT Tập 1, Bài 5-6) =====
+  {
+    id: "hh10-giatri-luonggiac-goc",
+    name: "Giá trị lượng giác của một góc từ 0° đến 180°",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\sin\\alpha = y_0, \\quad \\cos\\alpha = x_0, \\quad \\tan\\alpha = \\frac{y_0}{x_0}, \\quad \\cot\\alpha = \\frac{x_0}{y_0}",
+    explanation: "Trong đó:\n- $\\alpha$: Góc bất kỳ thỏa $0° \\leq \\alpha \\leq 180°$.\n- $M(x_0;y_0)$: Điểm trên nửa đường tròn đơn vị (tâm $O$, bán kính $R=1$, nằm phía trên trục hoành) sao cho $\\widehat{xOM}=\\alpha$.\n- $\\sin\\alpha$: Tung độ $y_0$ của điểm $M$.\n- $\\cos\\alpha$: Hoành độ $x_0$ của điểm $M$.\n- $\\tan\\alpha$: Bằng $\\dfrac{\\sin\\alpha}{\\cos\\alpha}$, xác định khi $\\alpha \\neq 90°$.\n- $\\cot\\alpha$: Bằng $\\dfrac{\\cos\\alpha}{\\sin\\alpha}$, xác định khi $\\alpha \\neq 0°$ và $\\alpha \\neq 180°$.\n\n**Bảng giá trị lượng giác các góc đặc biệt:**\n\n| $\\alpha$ | $0°$ | $30°$ | $45°$ | $60°$ | $90°$ | $180°$ |\n|---|---|---|---|---|---|---|\n| $\\sin\\alpha$ | $0$ | $\\frac{1}{2}$ | $\\frac{\\sqrt2}{2}$ | $\\frac{\\sqrt3}{2}$ | $1$ | $0$ |\n| $\\cos\\alpha$ | $1$ | $\\frac{\\sqrt3}{2}$ | $\\frac{\\sqrt2}{2}$ | $\\frac{1}{2}$ | $0$ | $-1$ |\n| $\\tan\\alpha$ | $0$ | $\\frac{\\sqrt3}{3}$ | $1$ | $\\sqrt3$ | không xác định | $0$ |\n| $\\cot\\alpha$ | không xác định | $\\sqrt3$ | $1$ | $\\frac{\\sqrt3}{3}$ | $0$ | không xác định |",
+    example: "**Ví dụ (SGK):** Tìm các giá trị lượng giác của góc $135°$.\n\n**Lời giải:** Gọi $M$ là điểm trên nửa đường tròn đơn vị sao cho $\\widehat{xOM}=135°$. Gọi $N$, $P$ là hình chiếu vuông góc của $M$ lên $Ox$, $Oy$. Vì $\\widehat{xOM}=135°$ nên $\\widehat{MON}=45°$, tam giác $MON$ vuông cân cạnh huyền $OM=1$, suy ra $ON=OP=\\dfrac{\\sqrt2}{2}$. Vì $M$ nằm bên trái trục tung nên tọa độ $M\\left(-\\dfrac{\\sqrt2}{2};\\dfrac{\\sqrt2}{2}\\right)$.\n\n$$\\sin135°=\\frac{\\sqrt2}{2}, \\quad \\cos135°=-\\frac{\\sqrt2}{2}, \\quad \\tan135°=-1, \\quad \\cot135°=-1$$",
+    tags: ["Lượng giác", "Góc", "Nửa đường tròn đơn vị", "Bảng giá trị đặc biệt"],
+    difficulty: "Trung bình",
+    mnemonic: "sin = tung độ, cos = hoành độ của điểm M trên nửa đường tròn đơn vị bán kính 1. Góc từ 0° đến 90°: mọi giá trị dương. Góc tù (90°-180°): cos âm, sin vẫn dương.",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 5, trang 34-35"
+  },
+  {
+    id: "hh10-hai-goc-bu-nhau",
+    name: "Mối quan hệ giữa giá trị lượng giác của hai góc bù nhau",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\sin(180°-\\alpha)=\\sin\\alpha, \\quad \\cos(180°-\\alpha)=-\\cos\\alpha",
+    explanation: "Trong đó:\n- $\\alpha$: Góc bất kỳ thỏa $0° \\leq \\alpha \\leq 180°$.\n- $180°-\\alpha$: Góc bù với $\\alpha$.\n- $\\sin(180°-\\alpha)=\\sin\\alpha$: Hai góc bù nhau có sin bằng nhau.\n- $\\cos(180°-\\alpha)=-\\cos\\alpha$: Hai góc bù nhau có côsin đối nhau.\n- $\\tan(180°-\\alpha)=-\\tan\\alpha$: Đúng khi $\\alpha \\neq 90°$ — tang đối nhau.\n- $\\cot(180°-\\alpha)=-\\cot\\alpha$: Đúng khi $0°<\\alpha<180°$ — côtang đối nhau.",
+    example: "**Ví dụ (SGK):** Tính các giá trị lượng giác của các góc $120°$, $135°$, $150°$.\n\n**Lời giải:** Do các góc $120°,135°,150°$ tương ứng bù với các góc $60°,45°,30°$ nên áp dụng công thức góc bù:\n$$\\sin120°=\\sin60°=\\frac{\\sqrt3}{2}, \\quad \\cos120°=-\\cos60°=-\\frac{1}{2}$$\n$$\\sin135°=\\sin45°=\\frac{\\sqrt2}{2}, \\quad \\cos135°=-\\cos45°=-\\frac{\\sqrt2}{2}$$\n$$\\sin150°=\\sin30°=\\frac{1}{2}, \\quad \\cos150°=-\\cos30°=-\\frac{\\sqrt3}{2}$$",
+    tags: ["Lượng giác", "Góc bù nhau", "Quan hệ lượng giác"],
+    difficulty: "Trung bình",
+    mnemonic: "Hai góc bù nhau: sin BẰNG NHAU, còn côsin-tang-côtang thì ĐỐI NHAU (đổi dấu).",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 5, trang 36"
+  },
+  {
+    id: "hh10-hethuc-luonggiac-goc",
+    name: "Hệ thức lượng giác cơ bản của một góc",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\sin^2\\alpha + \\cos^2\\alpha = 1",
+    explanation: "Trong đó:\n- $\\alpha$: Góc bất kỳ thỏa $0° \\leq \\alpha \\leq 180°$.\n- $\\sin^2\\alpha+\\cos^2\\alpha=1$: Hệ thức lượng giác cơ bản, đúng với mọi góc $\\alpha$.\n- $1+\\tan^2\\alpha=\\dfrac{1}{\\cos^2\\alpha}$: Đúng khi $\\alpha \\neq 90°$.\n- $1+\\cot^2\\alpha=\\dfrac{1}{\\sin^2\\alpha}$: Đúng khi $0°<\\alpha<180°$.\n\n**Nguồn gốc:** Vì $\\sin\\alpha=y_0$, $\\cos\\alpha=x_0$ với $M(x_0;y_0)$ thuộc nửa đường tròn đơn vị ($x_0^2+y_0^2=1$), nên $\\sin^2\\alpha+\\cos^2\\alpha=x_0^2+y_0^2=1$.",
+    example: "**Ví dụ (SGK):** Cho tam giác $ABC$ có $a=13,b=14,c=15$. Áp dụng Định lí côsin tính được $\\cos A=0{,}6$. Tính $\\sin A$.\n\n**Lời giải:** Áp dụng hệ thức $\\sin^2A+\\cos^2A=1$:\n$$\\sin A=\\sqrt{1-\\cos^2A}=\\sqrt{1-0{,}6^2}=\\sqrt{0{,}64}=0{,}8$$",
+    tags: ["Lượng giác", "Hệ thức cơ bản", "Góc"],
+    difficulty: "Trung bình",
+    mnemonic: "sin²+cos²=1 (từ điểm M trên đường tròn đơn vị, x0²+y0²=1). Chia cho cos² → 1+tan²=1/cos². Chia cho sin² → 1+cot²=1/sin².",
+    sgk_source: "Toán 10 KNTT Tập 1, Bài 5, Bài tập 3.3, trang 37"
   }
 ];
