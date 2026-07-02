@@ -3434,5 +3434,140 @@ export const questionsPool = [
     blankAnswer: "90; 240; 100 (nghìn đồng/kg)",
     explanation: "Hệ phương trình cân bằng cung-cầu $Q_{S_i}=Q_{D_i}$ thu gọn thành $\\begin{cases}5x-y+z=310\\\\2x-3y-z=-640\\\\x+2y-z=470\\end{cases}$. Giải hệ (bằng máy tính cầm tay) được $x=90, y=240, z=100$. Vậy giá cân bằng của thịt lợn, thịt bò, thịt gà lần lượt là $90$, $240$, $100$ nghìn đồng/kg.",
     sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 2, trang 19"
+  },
+  {
+    id: "ds73",
+    topic: "Đại số",
+    grade: 10,
+    text: "Trong phương pháp quy nạp toán học để chứng minh một mệnh đề $P(n)$ đúng với mọi số tự nhiên $n\\ge1$, Bước 2 (bước quy nạp) cần thực hiện điều gì?",
+    options: [
+      { letter: "A", text: "Giả sử $P(n)$ đúng với $n=k\\ge1$ (giả thiết quy nạp), chứng minh $P(n)$ cũng đúng với $n=k+1$", isCorrect: true },
+      { letter: "B", text: "Chứng minh $P(n)$ đúng với $n=1$", isCorrect: false },
+      { letter: "C", text: "Chứng minh $P(n)$ đúng với mọi $n$ bằng cách thử trực tiếp từng giá trị", isCorrect: false },
+      { letter: "D", text: "Giả sử $P(n)$ sai với $n=k$, suy ra mâu thuẫn", isCorrect: false }
+    ],
+    blankAnswer: "Giả sử P(n) đúng với n=k≥1 (giả thiết quy nạp), chứng minh P(n) cũng đúng với n=k+1",
+    explanation: "Theo phương pháp quy nạp toán học, Bước 1 kiểm tra mệnh đề đúng với $n=1$; Bước 2 giả thiết mệnh đề đúng với $n=k\\ge1$ (giả thiết quy nạp) rồi chứng minh nó cũng đúng với $n=k+1$. Hoàn thành cả hai bước thì kết luận mệnh đề đúng với mọi $n\\ge1$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 3, trang 27"
+  },
+  {
+    id: "ds74",
+    topic: "Đại số",
+    grade: 10,
+    text: "Theo phương pháp quy nạp toán học, tổng của $n$ số lẻ đầu tiên $1+3+5+7+\\ldots+(2n-1)$ bằng:",
+    options: [
+      { letter: "A", text: "$n^2$", isCorrect: true },
+      { letter: "B", text: "$n(n+1)$", isCorrect: false },
+      { letter: "C", text: "$2n-1$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{n(n+1)}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "n^2",
+    explanation: "Chứng minh bằng quy nạp: với $n=1$, $1=1^2$ đúng. Giả sử đúng với $n=k$: $1+3+\\cdots+(2k-1)=k^2$. Với $n=k+1$: $1+3+\\cdots+(2k-1)+(2k+1)=k^2+2k+1=(k+1)^2$. Vậy công thức đúng với mọi $n\\ge1$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 3, trang 27 (Ví dụ 1)"
+  },
+  {
+    id: "ds75",
+    topic: "Đại số",
+    grade: 10,
+    text: "Bất đẳng thức $2^n > 2n+1$ đúng với mọi số tự nhiên $n$ thỏa mãn điều kiện nào?",
+    options: [
+      { letter: "A", text: "$n\\ge3$", isCorrect: true },
+      { letter: "B", text: "$n\\ge1$", isCorrect: false },
+      { letter: "C", text: "$n\\ge2$", isCorrect: false },
+      { letter: "D", text: "$n\\ge0$", isCorrect: false }
+    ],
+    blankAnswer: "n≥3",
+    explanation: "Với $n=3$: $2^3=8>2\\cdot3+1=7$, đúng (với $n=1,2$ thì $2^n\\le2n+1$ nên bất đẳng thức không đúng). Dùng quy nạp với giả thiết $2^k>2k+1$ ($k\\ge3$), ta có $2^{k+1}=2\\cdot2^k>2(2k+1)=4k+2=2k+2(k+1)>2k+3=2(k+1)+1$ do $k\\ge3$. Vậy bất đẳng thức đúng với mọi $n\\ge3$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 3, trang 29 (Ví dụ 4)"
+  },
+  {
+    id: "ds76",
+    topic: "Đại số",
+    grade: 10,
+    text: "Theo Nhận xét trong SGK (chứng minh bằng quy nạp $n(n+1)(n+2)$ luôn chia hết cho 3), tích của ba số tự nhiên liên tiếp luôn chia hết cho:",
+    options: [
+      { letter: "A", text: "6", isCorrect: true },
+      { letter: "B", text: "3", isCorrect: false },
+      { letter: "C", text: "9", isCorrect: false },
+      { letter: "D", text: "12", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "Ví dụ 3 (SGK) chứng minh bằng quy nạp rằng $n(n+1)(n+2)$ luôn chia hết cho 3 với mọi số tự nhiên $n$. Vì trong hai số tự nhiên liên tiếp luôn có một số chẵn, nên tích ba số tự nhiên liên tiếp vừa chia hết cho 3 vừa chia hết cho 2, do đó chia hết cho 6.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 3, trang 29 (Ví dụ 3, Nhận xét)"
+  },
+  {
+    id: "ds77",
+    topic: "Đại số",
+    grade: 10,
+    text: "Khai triển $(3-2x)^5$ thành đa thức là:",
+    options: [
+      { letter: "A", text: "$243-810x+1080x^2-720x^3+240x^4-32x^5$", isCorrect: true },
+      { letter: "B", text: "$243+810x+1080x^2+720x^3+240x^4+32x^5$", isCorrect: false },
+      { letter: "C", text: "$243-810x+1080x^2-720x^3+240x^4+32x^5$", isCorrect: false },
+      { letter: "D", text: "$32-810x+1080x^2-720x^3+240x^4-243x^5$", isCorrect: false }
+    ],
+    blankAnswer: "243-810x+1080x^2-720x^3+240x^4-32x^5",
+    explanation: "Dùng tam giác Pascal (hàng 5: $1,5,10,10,5,1$) với $a=3,b=-2x$: $(3-2x)^5=3^5+5\\cdot3^4(-2x)+10\\cdot3^3(-2x)^2+10\\cdot3^2(-2x)^3+5\\cdot3(-2x)^4+(-2x)^5=243-810x+1080x^2-720x^3+240x^4-32x^5$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 34 (Ví dụ 2)"
+  },
+  {
+    id: "ds78",
+    topic: "Đại số",
+    grade: 10,
+    text: "Khai triển biểu thức $(3x-2)^4$ thành đa thức là:",
+    options: [
+      { letter: "A", text: "$81x^4-216x^3+216x^2-96x+16$", isCorrect: true },
+      { letter: "B", text: "$81x^4+216x^3+216x^2+96x+16$", isCorrect: false },
+      { letter: "C", text: "$81x^4-216x^3+216x^2-96x-16$", isCorrect: false },
+      { letter: "D", text: "$16x^4-96x^3+216x^2-216x+81$", isCorrect: false }
+    ],
+    blankAnswer: "81x^4-216x^3+216x^2-96x+16",
+    explanation: "Theo công thức nhị thức Newton: $(3x-2)^4=C_4^0(3x)^4+C_4^1(3x)^3(-2)+C_4^2(3x)^2(-2)^2+C_4^3(3x)(-2)^3+C_4^4(-2)^4=81x^4-216x^3+216x^2-96x+16$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 36 (Ví dụ 4)"
+  },
+  {
+    id: "ds79",
+    topic: "Đại số",
+    grade: 10,
+    text: "Hệ số của $x^4$ trong khai triển của $(x+2)^{10}$ là:",
+    options: [
+      { letter: "A", text: "$13\\,440$", isCorrect: true },
+      { letter: "B", text: "$210$", isCorrect: false },
+      { letter: "C", text: "$3\\,360$", isCorrect: false },
+      { letter: "D", text: "$6\\,720$", isCorrect: false }
+    ],
+    blankAnswer: "13440",
+    explanation: "Số hạng chứa $x^k$ trong khai triển của $(x+2)^{10}$ là $C_{10}^{10-k}x^k2^{10-k}$. Với $k=4$: số hạng là $C_{10}^{6}x^42^6=210\\cdot64\\cdot x^4=13\\,440x^4$. Vậy hệ số của $x^4$ là $13\\,440$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 36 (Ví dụ 5)"
+  },
+  {
+    id: "ds80",
+    topic: "Đại số",
+    grade: 10,
+    text: "Số nguyên dương $n$ thỏa mãn $C_n^03^n+C_n^13^{n-1}+\\ldots+C_n^{n-1}3+C_n^n=64$ là:",
+    options: [
+      { letter: "A", text: "$n=3$", isCorrect: true },
+      { letter: "B", text: "$n=2$", isCorrect: false },
+      { letter: "C", text: "$n=4$", isCorrect: false },
+      { letter: "D", text: "$n=64$", isCorrect: false }
+    ],
+    blankAnswer: "n=3",
+    explanation: "Vế trái là khai triển nhị thức Newton của $(x+3)^n$ tại $x=1$: $(1+3)^n=C_n^03^n+C_n^13^{n-1}+\\ldots+C_n^n$. Do đó $4^n=64=4^3$, suy ra $n=3$.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 36 (Ví dụ 6)"
+  },
+  {
+    id: "ds81",
+    topic: "Đại số",
+    grade: 10,
+    text: "Trong khai triển $(a+b)^6$, hệ số của số hạng $a^3b^3$ là:",
+    options: [
+      { letter: "A", text: "$20$", isCorrect: true },
+      { letter: "B", text: "$15$", isCorrect: false },
+      { letter: "C", text: "$6$", isCorrect: false },
+      { letter: "D", text: "$10$", isCorrect: false }
+    ],
+    blankAnswer: "20",
+    explanation: "Hàng 6 của tam giác Pascal là $1,6,15,20,15,6,1$, ứng với các hệ số của $a^6, a^5b, a^4b^2, a^3b^3, a^2b^4, ab^5, b^6$. Vậy hệ số của $a^3b^3$ là $20$ (cũng chính là $C_6^3$).",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 33 (Ví dụ 1)"
   }
 ];

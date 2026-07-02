@@ -764,7 +764,8 @@ export const formulas = [
     example: "**Ví dụ 1 — Khai triển đầy đủ:** Khai triển $(x+1)^4$.\n\n$$C_4^0 x^4 + C_4^1 x^3 \\cdot 1 + C_4^2 x^2 \\cdot 1^2 + C_4^3 x \\cdot 1^3 + C_4^4 \\cdot 1^4$$\n$$= x^4 + 4x^3 + 6x^2 + 4x + 1$$\n(Hệ số: 1, 4, 6, 4, 1 — hàng thứ 4 của tam giác Pascal)\n\n**Ví dụ 2 — Tìm số hạng:** Tìm số hạng thứ 4 trong $(x+2)^6$.\n\nSố hạng thứ 4 → $k=3$:\n$$T_4 = C_6^3 \\cdot x^{6-3} \\cdot 2^3 = 20 \\cdot x^3 \\cdot 8 = 160x^3$$",
     tags: ["Nhị thức Newton", "Tổ hợp", "Khai triển"],
     difficulty: "Trung bình",
-    mnemonic: "Số mũ a xuống, b lên, tổng luôn = n. Số hạng thứ (k+1) có k bắt đầu từ 0: T(k+1) = C(n,k) × a^(n-k) × b^k. Nhớ: số hạng thứ m → k = m-1. Hệ số: tam giác Pascal (1,1; 1,2,1; 1,3,3,1; ...)."
+    mnemonic: "Số mũ a xuống, b lên, tổng luôn = n. Số hạng thứ (k+1) có k bắt đầu từ 0: T(k+1) = C(n,k) × a^(n-k) × b^k. Nhớ: số hạng thứ m → k = m-1. Hệ số: tam giác Pascal (1,1; 1,2,1; 1,3,3,1; ...).",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 35"
   },
   {
     id: "gt12-gtln-gtnn",
@@ -1597,5 +1598,57 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Gauss = khử dần từng ẩn để đưa hệ về dạng TAM GIÁC (pt cuối 1 ẩn, pt giữa 2 ẩn, pt đầu 3 ẩn), rồi giải NGƯỢC từ dưới lên: tìm z trước, thế ra y, thế ra x.",
     sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 1, Bài 1, trang 8-9"
+  },
+  {
+    id: "ds10-phuongphap-quy-nap",
+    name: "Phương pháp quy nạp toán học",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\text{Bước 1: } P(1) \\text{ đúng.} \\quad \\text{Bước 2: } P(k) \\text{ đúng} \\Rightarrow P(k+1) \\text{ đúng}",
+    explanation: "Trong đó:\n- $P(n)$: Mệnh đề toán học phụ thuộc số tự nhiên $n$, cần chứng minh đúng với mọi $n \\in \\mathbb{N}^*$.\n- Bước 1 (cơ sở quy nạp): Kiểm tra mệnh đề đúng với $n=1$.\n- Bước 2 (bước quy nạp): Giả sử mệnh đề đúng với $n=k\\ge1$ (gọi là giả thiết quy nạp), chứng minh mệnh đề cũng đúng với $n=k+1$.\n\nSau khi hoàn thành cả hai bước, kết luận mệnh đề đúng với mọi số tự nhiên $n\\in\\mathbb{N}^*$. Nếu cần chứng minh mệnh đề đúng với mọi $n\\ge p$ ($p$ là một số tự nhiên nào đó) thì Bước 1 kiểm tra mệnh đề đúng với $n=p$, và Bước 2 giả sử mệnh đề đúng với $n=k\\ge p$ rồi chứng minh đúng với $n=k+1$.",
+    example: "**Ví dụ (SGK):** Chứng minh rằng với mọi số tự nhiên $n\\ge1$, ta có $1+3+5+7+\\cdots+(2n-1)=n^2$.\n\n**Lời giải:** Bước 1: Với $n=1$, ta có $1=1^2$, đúng. Bước 2: Giả sử đẳng thức đúng với $n=k$, tức $1+3+\\cdots+(2k-1)=k^2$. Ta chứng minh nó đúng với $n=k+1$: $1+3+\\cdots+(2k-1)+[2(k+1)-1] = k^2+(2k+1) = (k+1)^2$. Vậy đẳng thức đúng với mọi số tự nhiên $n\\ge1$.",
+    tags: ["Quy nạp toán học", "Chứng minh", "Mệnh đề toán học"],
+    difficulty: "Trung bình",
+    mnemonic: "Quy nạp = 2 bước: (1) đúng với n=1 (viên domino đầu đổ), (2) đúng với n=k thì đúng với n=k+1 (domino sau đổ theo domino trước).",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 3, trang 26-27"
+  },
+  {
+    id: "ds10-tam-giac-pascal",
+    name: "Tam giác Pascal",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\text{Hàng } n: \\; C_n^0, C_n^1, C_n^2, \\ldots, C_n^n \\quad (\\text{mỗi số } = \\text{tổng hai số ngay phía trên})",
+    explanation: "Trong đó:\n- Tam giác Pascal là bảng tam giác gồm các hệ số trong khai triển $(a+b)^n$, xếp thành từng hàng ứng với $n=0,1,2,\\ldots$ (hàng đầu tiên quy ước là hàng $0$).\n- Hàng $n$ gồm $n+1$ số, lần lượt là các hệ số $C_n^0, C_n^1, \\ldots, C_n^n$ trong khai triển $(a+b)^n$.\n\nTính chất cốt lõi: Trong tam giác Pascal, mọi số (khác $1$) đều là tổng của hai số ở ngay phía trên nó. Nhờ tính chất này, có thể xác định một hàng bất kì của tam giác Pascal (và do đó các hệ số khai triển $(a+b)^n$ tương ứng) từ hàng ngay phía trên nó, mà không cần tính trực tiếp bằng công thức tổ hợp.",
+    example: "**Ví dụ (SGK):** Sử dụng tam giác Pascal viết khai triển của $(a+b)^6$.\n\n**Lời giải:** Từ hàng 5: $1,5,10,10,5,1$, suy ra hàng 6 bằng cách cộng hai số liền kề: $1,6,15,20,15,6,1$. Do đó $(a+b)^6=a^6+6a^5b+15a^4b^2+20a^3b^3+15a^2b^4+6ab^5+b^6$.",
+    tags: ["Tam giác Pascal", "Nhị thức Newton", "Hệ số tổ hợp"],
+    difficulty: "Dễ",
+    mnemonic: "Tam giác Pascal: mỗi số (trừ số 1 ở hai đầu) = tổng 2 số NGAY PHÍA TRÊN nó. Hàng n có n+1 số, đối xứng hai đầu.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 32-33"
+  },
+  {
+    id: "ds10-tinh-chat-to-hop-cnk",
+    name: "Tính chất của các số C_n^k (đối xứng và hệ thức Pascal)",
+    topic: "Đại số",
+    grade: 10,
+    latex: "C_n^k = C_n^{n-k} \\;(0\\le k\\le n); \\qquad C_{n-1}^{k-1}+C_{n-1}^{k} = C_n^{k} \\;(1\\le k\\le n)",
+    explanation: "Trong đó:\n- $C_n^k$: Số tổ hợp chập $k$ của $n$ phần tử, cũng là hệ số của số hạng chứa $a^{n-k}b^k$ trong khai triển $(a+b)^n$.\n- Tính chất đối xứng: $C_n^k=C_n^{n-k}$ — hai hệ số cách đều số hạng đầu và số hạng cuối trong khai triển $(a+b)^n$ luôn bằng nhau.\n- Hệ thức Pascal: $C_{n-1}^{k-1}+C_{n-1}^{k}=C_n^{k}$ — đây chính là cơ sở của quy tắc \"mỗi số trong tam giác Pascal (khác 1) bằng tổng hai số ngay phía trên nó\".",
+    example: "**Ví dụ (SGK):** Vì $C_6^k=C_6^{6-k}$ ($0\\le k\\le6$) nên ta chỉ cần tính $C_6^0, C_6^1, C_6^2, C_6^3$ và dùng tính chất đối xứng để suy ra $C_6^4, C_6^5, C_6^6$.",
+    tags: ["Tổ hợp", "Hệ thức Pascal", "Tính chất đối xứng", "Nhị thức Newton"],
+    difficulty: "Trung bình",
+    mnemonic: "Đối xứng: chọn k hay chọn (n-k) phần tử để BỎ RA đều cho cùng số cách → C(n,k)=C(n,n-k). Pascal: cộng 2 số hàng trên (n-1) ra 1 số hàng dưới (n).",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 35"
+  },
+  {
+    id: "ds10-heso-xk-khaitrien-axb",
+    name: "Hệ số của x^k trong khai triển (ax+b)^n",
+    topic: "Đại số",
+    grade: 10,
+    latex: "\\text{Số hạng chứa } x^k \\text{ trong } (ax+b)^n \\text{ là } C_n^{n-k}(ax)^k b^{n-k} = C_n^{n-k}a^k b^{n-k} x^k",
+    explanation: "Trong đó:\n- $n$: Số mũ của nhị thức $(ax+b)^n$.\n- $k$ ($0\\le k\\le n$): Số mũ của $x$ trong số hạng cần tìm.\n- $C_n^{n-k}a^k b^{n-k}$: Hệ số của $x^k$ trong khai triển.\n\nDo đó, hệ số của $x^k$ trong khai triển của $(ax+b)^n$ là $C_n^{n-k}a^k b^{n-k}$. Công thức này giúp tìm trực tiếp hệ số của một số hạng cụ thể mà không cần khai triển toàn bộ đa thức.",
+    example: "**Ví dụ (SGK):** Tìm hệ số của $x^4$ trong khai triển của $(x+2)^{10}$.\n\n**Lời giải:** Số hạng chứa $x^k$ trong khai triển của $(x+2)^{10}$ là $C_{10}^{10-k}x^k 2^{10-k}$. Với $k=4$: số hạng là $C_{10}^{6}x^4 2^6 = 210 \\cdot 64 \\cdot x^4=13\\,440x^4$. Vậy hệ số của $x^4$ là $13\\,440$.",
+    tags: ["Nhị thức Newton", "Hệ số khai triển", "Tổ hợp"],
+    difficulty: "Khó",
+    mnemonic: "Muốn tìm hệ số x^k trong (ax+b)^n: số mũ của x luôn đi với a, nên chọn chỉ số dưới C_n^{n-k} ứng với lũy thừa của b là (n-k) — luôn kiểm tra lại bằng cách cộng hai số mũ phải bằng n.",
+    sgk_source: "Chuyên đề học tập Toán 10 KNTT, Chuyên đề 2, Bài 4, trang 36"
   }
 ];
