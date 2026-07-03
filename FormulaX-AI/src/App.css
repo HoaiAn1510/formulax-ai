@@ -1185,6 +1185,17 @@
   gap: 12px;
 }
 
+/* Hook thuần cho nút "Lưu ghi chú" trong FormulaDetailModal.jsx — .btn là CSS
+   unlayered nên Tailwind utility (layered) không override được padding/min-height/
+   font-size/border-radius của nó (xem Gotcha cascade layers), phải ghi đè bằng rule
+   thường ở đây thay vì className Tailwind. */
+.note-save-btn {
+  padding: 6px 16px;
+  min-height: 36px;
+  font-size: 0.8rem;
+  border-radius: var(--radius-sm);
+}
+
 /* Related suggestions list */
 .ai-related-section {
   margin-top: 8px;

@@ -32,7 +32,7 @@ function saveSessionsToStorage(key, sessions) {
   localStorage.setItem(key, JSON.stringify(sessions));
 }
 
-const FREE_AI_LIMIT = 5;
+const FREE_AI_LIMIT = 10;
 
 function getAiUsage(googleId) {
   const today = new Date().toISOString().slice(0, 10);

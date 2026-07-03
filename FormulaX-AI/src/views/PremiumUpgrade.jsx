@@ -1,18 +1,92 @@
-import React, { useState } from "react";
-import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
+import { supabase } from "../lib/supabase";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
 export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }) {
+  const { user } = useAuth();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending", text }
 
-  const handleUpgrade = () => {
-    setIsPremium(true);
-    alert("Chúc mừng! Bạn đã kích hoạt tài khoản FormulaX Pro giả lập thành công! Hãy trải nghiệm tính năng giải toán AI, luyện đề trắc nghiệm và tải tài liệu không giới hạn.");
-    setActiveTab("dashboard");
+  // Xử lý khi MoMo redirect người dùng quay lại qua /api/payment/momo/return
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paymentStatus = params.get("payment");
+    if (!paymentStatus) return;
+
+    const cleanUrl = () => {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("payment");
+      url.searchParams.delete("orderId");
+      url.searchParams.delete("message");
+      window.history.replaceState({}, "", url.pathname + url.search);
+    };
+
+    if (paymentStatus === "failed") {
+      setPaymentNotice({ type: "error", text: "Thanh toán không thành công hoặc đã bị hủy. Bạn có thể thử lại." });
+      cleanUrl();
+      return;
+    }
+
+    if (paymentStatus === "success") {
+      if (!user?.googleId) {
+        cleanUrl();
+        return;
+      }
+      (async () => {
+        // Kiểm tra trạng thái is_premium mới nhất từ Supabase — nguồn sự thật là IPN từ MoMo,
+        // không tự setIsPremium(true) chỉ vì redirect về có payment=success.
+        const { data, error } = await supabase
+          .from("users")
+          .select("is_premium, premium_expiry")
+          .eq("google_id", user.googleId)
+          .single();
+
+        if (!error && data?.is_premium) {
+          setIsPremium(true);
+          setPaymentNotice({ type: "success", text: "Thanh toán thành công! Tài khoản của bạn đã được nâng cấp lên Premium." });
+        } else {
+          setPaymentNotice({
+            type: "pending",
+            text: "MoMo đã ghi nhận giao dịch, hệ thống đang cập nhật tài khoản Premium. Nếu sau vài phút vẫn chưa thấy cập nhật, hãy tải lại trang này.",
+          });
+        }
+        cleanUrl();
+      })();
+    }
+  }, [user?.googleId, setIsPremium]);
+
+  const handleUpgrade = async (plan = "monthly") => {
+    if (!user?.googleId) {
+      alert("Vui lòng đăng nhập trước khi nâng cấp Premium.");
+      return;
+    }
+    setIsProcessing(true);
+    setPaymentNotice(null);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/payment/momo/create`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: user.googleId, plan }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.payUrl) {
+        throw new Error(data.error || "Không tạo được giao dịch MoMo");
+      }
+      // Chuyển hướng sang cổng thanh toán MoMo thật — is_premium chỉ được set khi IPN xác nhận.
+      window.location.href = data.payUrl;
+    } catch (err) {
+      setPaymentNotice({ type: "error", text: err.message || "Không thể kết nối cổng thanh toán MoMo. Vui lòng thử lại sau." });
+      setIsProcessing(false);
+    }
   };
 
   const handleDowngrade = () => {
     setIsPremium(false);
-    alert("Đã chuyển tài khoản về phiên bản Free.");
+    alert("Đã chuyển tài khoản về phiên bản Free (thao tác cục bộ, không ảnh hưởng trạng thái thanh toán thật).");
   };
 
   const toggleFaq = (idx) => {
@@ -92,6 +166,28 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
         <div className="relative z-[1]">
           <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-12">
 
+            {/* Payment notice — hiện sau khi MoMo redirect người dùng quay lại */}
+            {paymentNotice && (
+              <div
+                className={`flex items-center gap-2.5 py-3 px-4 rounded-xl text-[0.85rem] font-semibold ${
+                  paymentNotice.type === "success"
+                    ? "bg-success/10 text-success border border-success/20"
+                    : paymentNotice.type === "pending"
+                    ? "bg-premium/10 text-[#92400E] border border-premium/20"
+                    : "bg-error/10 text-error border border-error/20"
+                }`}
+              >
+                {paymentNotice.type === "success" ? (
+                  <CheckCircle2 size={18} className="shrink-0" />
+                ) : paymentNotice.type === "pending" ? (
+                  <Clock size={18} className="shrink-0" />
+                ) : (
+                  <XCircle size={18} className="shrink-0" />
+                )}
+                <span>{paymentNotice.text}</span>
+              </div>
+            )}
+
             {/* Section 1: Hero Banner */}
             <div className="bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] py-10 px-6 rounded-2xl text-center text-white relative shadow-[0_10px_30px_rgba(15,23,42,0.15)] overflow-hidden">
               <div className="mb-3">
@@ -115,11 +211,18 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
               {!isPremium ? (
                 <button
-                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg"
-                  onClick={handleUpgrade}
+                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                  onClick={() => handleUpgrade("monthly")}
+                  disabled={isProcessing}
                 >
-                  <span>Nâng cấp Pro ngay</span>
-                  <Crown size={14} fill="white" />
+                  {isProcessing ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <>
+                      <span>Nâng cấp Pro ngay</span>
+                      <Crown size={14} fill="white" />
+                    </>
+                  )}
                 </button>
               ) : (
                 <button
@@ -253,10 +356,11 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                   </div>
 
                   <button
-                    className="btn btn-premium vibrate w-full h-11 text-[0.9rem] rounded-lg border-none"
-                    onClick={handleUpgrade}
+                    className="btn btn-premium vibrate w-full h-11 text-[0.9rem] rounded-lg border-none disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={() => handleUpgrade("monthly")}
+                    disabled={isProcessing}
                   >
-                    <span>Mua ngay với Momo / Thẻ</span>
+                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Mua ngay với Momo / Thẻ</span>}
                   </button>
                 </div>
               </div>
@@ -268,18 +372,31 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 Nhiều cách thanh toán
               </div>
               <div className="flex justify-center gap-6 items-center">
-                <div className="flex flex-col items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => handleUpgrade("monthly")}
+                  disabled={isProcessing}
+                  className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                >
                   <div className="w-10 h-10 rounded-full bg-[#A20067] flex items-center justify-center text-white font-extrabold text-[0.7rem]">MoMo</div>
                   <span className="text-[0.65rem] text-text-muted font-semibold">Ví MoMo</span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
+                </button>
+                <button
+                  type="button"
+                  onClick={() => alert("ZaloPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.")}
+                  className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer opacity-50"
+                >
                   <div className="w-10 h-10 rounded-full bg-[#007DFF] flex items-center justify-center text-white font-extrabold text-[0.7rem]">Zalo</div>
-                  <span className="text-[0.65rem] text-text-muted font-semibold">ZaloPay</span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
+                  <span className="text-[0.65rem] text-text-muted font-semibold">ZaloPay (sắp ra mắt)</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => alert("VNPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.")}
+                  className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer opacity-50"
+                >
                   <div className="w-10 h-10 rounded-full bg-[#EA2027] flex items-center justify-center text-white font-extrabold text-[0.7rem]">VN</div>
-                  <span className="text-[0.65rem] text-text-muted font-semibold">VNPay</span>
-                </div>
+                  <span className="text-[0.65rem] text-text-muted font-semibold">VNPay (sắp ra mắt)</span>
+                </button>
               </div>
             </div>
 
@@ -315,10 +432,11 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 </p>
                 <div className="flex gap-3 w-full justify-center flex-wrap mt-1">
                   <button
-                    className="btn btn-premium vibrate h-[42px] text-[0.85rem] px-5 rounded-lg"
-                    onClick={handleUpgrade}
+                    className="btn btn-premium vibrate h-[42px] text-[0.85rem] px-5 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                    onClick={() => handleUpgrade("monthly")}
+                    disabled={isProcessing}
                   >
-                    <span>Nâng cấp Premium</span>
+                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Nâng cấp Premium</span>}
                   </button>
                   <button
                     className="btn btn-secondary h-[42px] text-[0.85rem] px-5 rounded-lg"
