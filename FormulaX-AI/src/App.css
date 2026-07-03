@@ -2887,6 +2887,10 @@
 .dark-mode .nav-item.active { color: #3B82F6; background-color: rgba(59,130,246,0.08) !important; }
 .dark-mode .nav-logo-header span { color: #E2E8F0; }
 .dark-mode .btn-header-login { background: #334155 !important; color: #E2E8F0 !important; }
+.dark-mode .chat-bubble.bot .detail-paragraph-line { color: #E2E8F0; }
+.dark-mode .chat-bubble.bot .detail-bullet-list li { color: #CBD5E1; }
+.dark-mode .quiz-question-text .detail-paragraph-line { color: #E2E8F0; }
+.dark-mode .quiz-question-text .detail-bullet-list li { color: #CBD5E1; }
 
 
 

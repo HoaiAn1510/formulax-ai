@@ -47,7 +47,7 @@ const parseMarkdownLine = (lineContent, keyPrefix) => {
       const inner = part.slice(2, -2);
       const innerParts = inner.split(/(\$\$.*?\$\$|\$.*?\$)/gs);
       return (
-        <strong key={`${keyPrefix}-${index}`} style={{ color: "#1E3A5F", fontWeight: "800" }}>
+        <strong key={`${keyPrefix}-${index}`} style={{ color: "var(--primary)", fontWeight: "800" }}>
           {innerParts.map((ip, ii) => {
             if (ip.startsWith("$$") && ip.endsWith("$$"))
               return <MathElement key={`${keyPrefix}-${index}-${ii}`} math={ip.slice(2,-2).trim()} block={true} />;

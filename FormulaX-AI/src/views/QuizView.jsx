@@ -3,7 +3,6 @@ import { GraduationCap, Timer, CheckCircle, XCircle, Award, Crown, Lock, ArrowLe
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { questionsPool as pool } from "../data/questions";
 import { saveQuizResult } from "../lib/supabase";
-import { glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 export default function QuizView({
   setActiveTab,
@@ -25,14 +24,14 @@ export default function QuizView({
   const [questionCountInput, setQuestionCountInput] = useState("10");
   const [quizType, setQuizType] = useState("multiple-choice"); // multiple-choice, fill-in, hybrid
   const [timeLimitInput, setTimeLimitInput] = useState("0"); // phút, 0 = không giới hạn
-  
+
   const [questions, setQuestions] = useState([]);
   const [currentQIdx, setCurrentQIdx] = useState(0);
   const [userAnswers, setUserAnswers] = useState({});
   const [fillInputs, setFillInputs] = useState({});
   const [score, setScore] = useState(0);
   const [failedQuestions, setFailedQuestions] = useState([]);
-  
+
   // Timer state
   const [timeLeft, setTimeLeft] = useState(600);
   const [timerActive, setTimerActive] = useState(false);
@@ -267,755 +266,652 @@ export default function QuizView({
 
   return (
     <div className="view-container">
-    <div style={pageWrapper}>
-      {orbs.map((orb, idx) => (
-        <div key={idx} style={orbStyle(orb)} />
-      ))}
-      <div style={contentLayer}>
+      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+        <div className="relative z-[1]">
 
-      {/* Modal hết quota */}
-      {showQuotaModal && (
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 9999,
-          background: "rgba(15,23,42,0.6)", backdropFilter: "blur(4px)",
-          display: "flex", alignItems: "center", justifyContent: "center", padding: "16px",
-        }}>
-          <div style={{
-            background: "white", borderRadius: "20px", width: "100%", maxWidth: "380px",
-            padding: "28px 24px", boxShadow: "0 24px 60px rgba(0,0,0,0.18)", textAlign: "center",
-          }}>
-            {/* Icon */}
-            <div style={{
-              width: "52px", height: "52px", borderRadius: "50%",
-              background: "rgba(245,158,11,0.1)", display: "flex", alignItems: "center",
-              justifyContent: "center", margin: "0 auto 16px",
-            }}>
-              <Crown size={24} color="#F59E0B" />
-            </div>
-
-            <h2 style={{ fontSize: "1.15rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "8px" }}>
-              Hết lượt quiz hôm nay!
-            </h2>
-            <p style={{ fontSize: "0.83rem", color: "#64748B", lineHeight: "1.55", marginBottom: "20px" }}>
-              Bạn đã dùng hết <strong>10/10 lượt quiz miễn phí</strong> ngày hôm nay.
-              Lượt sẽ được reset vào ngày mai — hoặc nâng cấp <strong>Premium</strong> để luyện không giới hạn!
-            </p>
-
-            {/* Highlight */}
-            <div style={{
-              background: "linear-gradient(135deg, #FFFBEB, #FEF3C7)",
-              border: "1px solid rgba(245,158,11,0.25)",
-              borderRadius: "12px", padding: "12px 16px", marginBottom: "20px",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-            }}>
-              <div style={{ textAlign: "left" }}>
-                <div style={{ fontSize: "0.7rem", color: "#92400E", fontWeight: "700", marginBottom: "2px" }}>Premium</div>
-                <div style={{ fontSize: "0.82rem", fontWeight: "800", color: "#1E3A5F" }}>Quiz không giới hạn mỗi ngày</div>
-              </div>
-              <div style={{ fontSize: "0.9rem", fontWeight: "800", color: "#F59E0B" }}>49.000đ/tháng</div>
-            </div>
-
-            {/* Buttons */}
-            <button
-              onClick={() => { setShowQuotaModal(false); setActiveTab("premium"); }}
-              style={{
-                width: "100%", padding: "12px", borderRadius: "12px", border: "none",
-                background: "linear-gradient(135deg, #F59E0B, #EF4444)",
-                color: "white", fontWeight: "800", fontSize: "0.9rem", cursor: "pointer",
-                marginBottom: "10px", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-              }}
-            >
-              <Crown size={16} /> Nâng cấp Premium ngay
-            </button>
-            <button
-              onClick={() => setShowQuotaModal(false)}
-              style={{
-                width: "100%", padding: "10px", borderRadius: "12px", border: "1px solid #E2E8F0",
-                background: "white", color: "#64748B", fontWeight: "600", fontSize: "0.85rem", cursor: "pointer",
-              }}
-            >
-              Để ngày mai quay lại
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Setup View matching Figma Screenshot 5 */}
-      {quizState === "setup" && (
-        <div>
-          {/* Breadcrumb Back */}
-          <button 
-            className="breadcrumb-back" 
-            onClick={() => setActiveTab("dashboard")}
-            style={{ 
-              background: "none", 
-              border: "none", 
-              color: "#64748B", 
-              fontSize: "0.85rem", 
-              fontWeight: "600", 
-              cursor: "pointer", 
-              display: "flex", 
-              alignItems: "center", 
-              gap: "6px",
-              marginBottom: "20px"
-            }}
-          >
-            <ArrowLeft size={14} />
-            <span>Về trang chủ</span>
-          </button>
-
-          {/* Centered Document Icon & Header */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "10px", marginBottom: "24px" }}>
-            <div 
-              style={{ 
-                width: "48px", 
-                height: "48px", 
-                borderRadius: "50%", 
-                backgroundColor: "rgba(59, 130, 246, 0.08)", 
-                color: "#3B82F6", 
-                display: "flex", 
-                alignItems: "center", 
-                justifyContent: "center" 
-              }}
-            >
-              <Clipboard size={22} />
-            </div>
-            <h2 style={{ fontSize: "1.45rem", fontWeight: "800", color: "#1E3A5F", margin: 0, letterSpacing: "-0.5px" }}>
-              Làm bài kiểm tra
-            </h2>
-            <p style={{ fontSize: "0.85rem", color: "#64748B", fontWeight: "500", margin: 0 }}>
-              Tùy chỉnh bài kiểm tra theo ý muốn
-            </p>
-          </div>
-
-          {/* Figma Setup Card Container */}
-          <div className="quiz-setup-card-figma" style={{
-            ...glassCard,
-            padding: "24px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "24px",
-            marginBottom: "16px"
-          }}>
-            
-            {/* Section 1: Chọn chủ đề */}
-            <div>
-              <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
-                <BookOpen size={15} style={{ color: "#3B82F6" }} />
-                <span>Chọn chủ đề</span>
-                {!allMode && selectedTopics.length > 0 && (
-                  <span style={{ fontSize: "0.7rem", fontWeight: "600", color: "#3B82F6", background: "rgba(59,130,246,0.08)", borderRadius: "10px", padding: "2px 8px" }}>
-                    {selectedTopics.length} đã chọn
-                  </span>
-                )}
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                {/* Tất cả chủ đề */}
-                <button
-                  onClick={() => handleTopicClick("Tất cả chủ đề")}
-                  style={{
-                    padding: "8px 16px", borderRadius: "20px",
-                    border: `1.5px solid ${allMode ? "#1E3A5F" : "#E2E8F0"}`,
-                    backgroundColor: allMode ? "#1E3A5F" : "#F8FAFC",
-                    color: allMode ? "white" : "#475569",
-                    fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.2s",
-                  }}
-                >
-                  Tất cả chủ đề
-                </button>
-                {/* Specific topics — disabled khi allMode */}
-                {specificTopics.map(t => {
-                  const isActive = !allMode && selectedTopics.includes(t);
-                  return (
-                    <button
-                      key={t}
-                      onClick={() => handleTopicClick(t)}
-                      style={{
-                        padding: "8px 16px", borderRadius: "20px",
-                        border: `1.5px solid ${isActive ? "#3B82F6" : "#E2E8F0"}`,
-                        backgroundColor: isActive ? "#3B82F6" : "#F8FAFC",
-                        color: isActive ? "white" : "#475569",
-                        fontSize: "0.8rem", fontWeight: "700",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      {t}
-                    </button>
-                  );
-                })}
-              </div>
-              {!allMode && selectedTopics.length === 0 && (
-                <p style={{ fontSize: "0.72rem", color: "#F59E0B", marginTop: "6px", fontWeight: "600" }}>
-                  Chưa chọn chủ đề nào — sẽ lấy tất cả câu hỏi
-                </p>
-              )}
-            </div>
-
-            {/* Section 1b: Chọn lớp */}
-            <div>
-              <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
-                <GraduationCap size={15} style={{ color: "#3B82F6" }} />
-                <span>Chọn lớp</span>
-                {!allGradeMode && selectedGrades.length > 0 && (
-                  <span style={{ fontSize: "0.7rem", fontWeight: "600", color: "#3B82F6", background: "rgba(59,130,246,0.08)", borderRadius: "10px", padding: "2px 8px" }}>
-                    {selectedGrades.length} đã chọn
-                  </span>
-                )}
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-                <button
-                  onClick={() => handleGradeClick("Tất cả các lớp")}
-                  style={{
-                    padding: "8px 16px", borderRadius: "20px",
-                    border: `1.5px solid ${allGradeMode ? "#1E3A5F" : "#E2E8F0"}`,
-                    backgroundColor: allGradeMode ? "#1E3A5F" : "#F8FAFC",
-                    color: allGradeMode ? "white" : "#475569",
-                    fontSize: "0.8rem", fontWeight: "700", cursor: "pointer", transition: "all 0.2s",
-                  }}
-                >
-                  Tất cả các lớp
-                </button>
-                {[10, 11, 12].map(g => {
-                  const isActive = !allGradeMode && selectedGrades.includes(g);
-                  return (
-                    <button
-                      key={g}
-                      onClick={() => handleGradeClick(g)}
-                      style={{
-                        padding: "8px 16px", borderRadius: "20px",
-                        border: `1.5px solid ${isActive ? "#3B82F6" : "#E2E8F0"}`,
-                        backgroundColor: isActive ? "#3B82F6" : "#F8FAFC",
-                        color: isActive ? "white" : "#475569",
-                        fontSize: "0.8rem", fontWeight: "700",
-                        cursor: "pointer",
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      Lớp {g}
-                    </button>
-                  );
-                })}
-              </div>
-              {!allGradeMode && selectedGrades.length === 0 && (
-                <p style={{ fontSize: "0.72rem", color: "#F59E0B", marginTop: "6px", fontWeight: "600" }}>
-                  Chưa chọn lớp nào — sẽ lấy tất cả các lớp
-                </p>
-              )}
-            </div>
-
-            {/* Section 2: Số câu hỏi */}
-            <div>
-              <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
-                <BarChart2 size={15} style={{ color: "#3B82F6" }} />
-                <span>Số câu hỏi</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <input
-                  type="number"
-                  min={1}
-                  max={maxQuestions}
-                  value={questionCountInput}
-                  onChange={e => setQuestionCountInput(e.target.value)}
-                  onBlur={e => {
-                    const n = parseInt(e.target.value);
-                    if (isNaN(n) || n < 1) setQuestionCountInput("1");
-                    else if (n > maxQuestions) setQuestionCountInput(String(maxQuestions));
-                    else setQuestionCountInput(String(n));
-                  }}
-                  style={{
-                    width: "90px", height: "42px", textAlign: "center",
-                    fontSize: "1.05rem", fontWeight: "800", color: "#1E3A5F",
-                    border: "1.5px solid #3B82F6", borderRadius: "10px",
-                    outline: "none", background: "#F8FAFF",
-                  }}
-                />
-                <span style={{ fontSize: "0.82rem", color: "#64748B", fontWeight: "600" }}>
-                  câu <span style={{ color: "#94A3B8" }}>(tối đa {maxQuestions} câu)</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Section 3: Loại câu hỏi */}
-            <div>
-              <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
-                <Layers size={15} style={{ color: "#3B82F6" }} />
-                <span>Loại câu hỏi</span>
-              </div>
-              <div className="type-cards-row">
-                {/* Option 1: Trắc nghiệm */}
-                <div 
-                  className={`type-select-card ${quizType === "multiple-choice" ? "active" : ""}`}
-                  onClick={() => setQuizType("multiple-choice")}
-                >
-                  <List size={18} />
-                  <span>Trắc nghiệm</span>
+          {/* Modal hết quota */}
+          {showQuotaModal && (
+            <div className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.6)] backdrop-blur-[4px] flex items-center justify-center p-4">
+              <div className="bg-white rounded-[20px] w-full max-w-[380px] py-7 px-6 shadow-[0_24px_60px_rgba(0,0,0,0.18)] text-center">
+                {/* Icon */}
+                <div className="w-[52px] h-[52px] rounded-full bg-premium/10 flex items-center justify-center mx-auto mb-4">
+                  <Crown size={24} color="#F59E0B" />
                 </div>
-                
-                {/* Option 2: Điền đáp án */}
-                <div 
-                  className={`type-select-card ${quizType === "fill-in" ? "active" : ""}`}
-                  onClick={() => {
-                    if (!isPremium) {
-                      alert("Phương thức Điền đáp án yêu cầu gói Premium!");
-                      setActiveTab("premium");
-                    } else {
-                      setQuizType("fill-in");
-                    }
-                  }}
+
+                <h2 className="text-[1.15rem] font-extrabold text-[#1E3A5F] mb-2">
+                  Hết lượt quiz hôm nay!
+                </h2>
+                <p className="text-[0.83rem] text-text-muted leading-[1.55] mb-5">
+                  Bạn đã dùng hết <strong>10/10 lượt quiz miễn phí</strong> ngày hôm nay.
+                  Lượt sẽ được reset vào ngày mai — hoặc nâng cấp <strong>Premium</strong> để luyện không giới hạn!
+                </p>
+
+                {/* Highlight */}
+                <div className="bg-[linear-gradient(135deg,#FFFBEB,#FEF3C7)] border border-premium/25 rounded-xl py-3 px-4 mb-5 flex items-center justify-between">
+                  <div className="text-left">
+                    <div className="text-[0.7rem] text-[#92400E] font-bold mb-0.5">Premium</div>
+                    <div className="text-[0.82rem] font-extrabold text-[#1E3A5F]">Quiz không giới hạn mỗi ngày</div>
+                  </div>
+                  <div className="text-[0.9rem] font-extrabold text-premium">49.000đ/tháng</div>
+                </div>
+
+                {/* Buttons */}
+                <button
+                  onClick={() => { setShowQuotaModal(false); setActiveTab("premium"); }}
+                  className="w-full py-3 rounded-xl border-none bg-[linear-gradient(135deg,#F59E0B,#EF4444)] text-white font-extrabold text-[0.9rem] cursor-pointer mb-2.5 flex items-center justify-center gap-2"
                 >
-                  <Pencil size={18} />
-                  <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-                    <span>Điền đáp án</span>
-                    {!isPremium && <Lock size={10} style={{ color: "#F59E0B" }} />}
+                  <Crown size={16} /> Nâng cấp Premium ngay
+                </button>
+                <button
+                  onClick={() => setShowQuotaModal(false)}
+                  className="w-full py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-text-muted font-semibold text-[0.85rem] cursor-pointer"
+                >
+                  Để ngày mai quay lại
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Setup View matching Figma Screenshot 5 */}
+          {quizState === "setup" && (
+            <div>
+              {/* Breadcrumb Back */}
+              <button
+                className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.85rem] font-semibold cursor-pointer flex items-center gap-1.5 mb-5"
+                onClick={() => setActiveTab("dashboard")}
+              >
+                <ArrowLeft size={14} />
+                <span>Về trang chủ</span>
+              </button>
+
+              {/* Centered Document Icon & Header */}
+              <div className="flex flex-col items-center gap-2.5 mb-6">
+                <div className="w-12 h-12 rounded-full bg-secondary/8 text-secondary flex items-center justify-center">
+                  <Clipboard size={22} />
+                </div>
+                <h2 className="text-[1.45rem] font-extrabold text-primary m-0 tracking-[-0.5px]">
+                  Làm bài kiểm tra
+                </h2>
+                <p className="text-[0.85rem] text-text-muted font-medium m-0">
+                  Tùy chỉnh bài kiểm tra theo ý muốn
+                </p>
+              </div>
+
+              {/* Figma Setup Card Container */}
+              <div className="glass-card p-6 flex flex-col gap-6 mb-4">
+
+                {/* Section 1: Chọn chủ đề */}
+                <div>
+                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                    <BookOpen size={15} className="text-secondary" />
+                    <span>Chọn chủ đề</span>
+                    {!allMode && selectedTopics.length > 0 && (
+                      <span className="text-[0.7rem] font-semibold text-secondary bg-secondary/8 rounded-[10px] py-0.5 px-2">
+                        {selectedTopics.length} đã chọn
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {/* Tất cả chủ đề */}
+                    <button
+                      onClick={() => handleTopicClick("Tất cả chủ đề")}
+                      className={`py-2 px-4 rounded-[20px] text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border-[1.5px] ${
+                        allMode ? "border-[#1E3A5F] bg-[#1E3A5F] text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
+                      }`}
+                    >
+                      Tất cả chủ đề
+                    </button>
+                    {/* Specific topics — disabled khi allMode */}
+                    {specificTopics.map(t => {
+                      const isActive = !allMode && selectedTopics.includes(t);
+                      return (
+                        <button
+                          key={t}
+                          onClick={() => handleTopicClick(t)}
+                          className={`py-2 px-4 rounded-[20px] text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border-[1.5px] ${
+                            isActive ? "border-secondary bg-secondary text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {!allMode && selectedTopics.length === 0 && (
+                    <p className="text-[0.72rem] text-premium mt-1.5 font-semibold">
+                      Chưa chọn chủ đề nào — sẽ lấy tất cả câu hỏi
+                    </p>
+                  )}
+                </div>
+
+                {/* Section 1b: Chọn lớp */}
+                <div>
+                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                    <GraduationCap size={15} className="text-secondary" />
+                    <span>Chọn lớp</span>
+                    {!allGradeMode && selectedGrades.length > 0 && (
+                      <span className="text-[0.7rem] font-semibold text-secondary bg-secondary/8 rounded-[10px] py-0.5 px-2">
+                        {selectedGrades.length} đã chọn
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleGradeClick("Tất cả các lớp")}
+                      className={`py-2 px-4 rounded-[20px] text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border-[1.5px] ${
+                        allGradeMode ? "border-[#1E3A5F] bg-[#1E3A5F] text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
+                      }`}
+                    >
+                      Tất cả các lớp
+                    </button>
+                    {[10, 11, 12].map(g => {
+                      const isActive = !allGradeMode && selectedGrades.includes(g);
+                      return (
+                        <button
+                          key={g}
+                          onClick={() => handleGradeClick(g)}
+                          className={`py-2 px-4 rounded-[20px] text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border-[1.5px] ${
+                            isActive ? "border-secondary bg-secondary text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
+                          }`}
+                        >
+                          Lớp {g}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {!allGradeMode && selectedGrades.length === 0 && (
+                    <p className="text-[0.72rem] text-premium mt-1.5 font-semibold">
+                      Chưa chọn lớp nào — sẽ lấy tất cả các lớp
+                    </p>
+                  )}
+                </div>
+
+                {/* Section 2: Số câu hỏi */}
+                <div>
+                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                    <BarChart2 size={15} className="text-secondary" />
+                    <span>Số câu hỏi</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      min={1}
+                      max={maxQuestions}
+                      value={questionCountInput}
+                      onChange={e => setQuestionCountInput(e.target.value)}
+                      onBlur={e => {
+                        const n = parseInt(e.target.value);
+                        if (isNaN(n) || n < 1) setQuestionCountInput("1");
+                        else if (n > maxQuestions) setQuestionCountInput(String(maxQuestions));
+                        else setQuestionCountInput(String(n));
+                      }}
+                      className="w-[90px] h-[42px] text-center text-[1.05rem] font-extrabold text-[#1E3A5F] border-[1.5px] border-secondary rounded-[10px] outline-none bg-[#F8FAFF]"
+                    />
+                    <span className="text-[0.82rem] text-text-muted font-semibold">
+                      câu <span className="text-[#94A3B8]">(tối đa {maxQuestions} câu)</span>
+                    </span>
                   </div>
                 </div>
 
-                {/* Option 3: Kết hợp */}
-                <div 
-                  className={`type-select-card ${quizType === "hybrid" ? "active" : ""}`}
-                  onClick={() => {
-                    if (!isPremium) {
-                      alert("Phương thức Kết hợp yêu cầu gói Premium!");
-                      setActiveTab("premium");
-                    } else {
-                      setQuizType("hybrid");
-                    }
-                  }}
-                >
-                  <Shuffle size={18} />
-                  <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-                    <span>Kết hợp</span>
-                    {!isPremium && <Lock size={10} style={{ color: "#F59E0B" }} />}
+                {/* Section 3: Loại câu hỏi */}
+                <div>
+                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                    <Layers size={15} className="text-secondary" />
+                    <span>Loại câu hỏi</span>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 4: Giới hạn thời gian */}
-            <div>
-              <div className="quiz-setup-label" style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.85rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px" }}>
-                <Timer size={15} style={{ color: "#3B82F6" }} />
-                <span>Giới hạn thời gian</span>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <input
-                  type="number"
-                  min={0}
-                  value={timeLimitInput}
-                  onChange={e => setTimeLimitInput(e.target.value)}
-                  onBlur={e => {
-                    const n = parseInt(e.target.value);
-                    if (isNaN(n) || n < 0) setTimeLimitInput("0");
-                    else setTimeLimitInput(String(n));
-                  }}
-                  style={{
-                    width: "90px", height: "42px", textAlign: "center",
-                    fontSize: "1.05rem", fontWeight: "800", color: "#1E3A5F",
-                    border: "1.5px solid #3B82F6", borderRadius: "10px",
-                    outline: "none", background: "#F8FAFF",
-                  }}
-                />
-                <span style={{ fontSize: "0.82rem", color: "#64748B", fontWeight: "600" }}>
-                  phút{" "}
-                  <span style={{ color: "#94A3B8" }}>
-                    {(parseInt(timeLimitInput) || 0) === 0 ? "(không giới hạn)" : ""}
-                  </span>
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          {/* Footer limits */}
-          <div style={{ textAlign: "left", fontSize: "0.8rem", color: "#64748B", marginBottom: "16px", fontWeight: "600", paddingLeft: "4px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span>
-              {isPremium ? "Premium — Không giới hạn lượt" : `Miễn phí — Còn ${remainingQuizzes}/10 lượt hôm nay`}
-            </span>
-            <span style={{ color: "#94A3B8", fontSize: "0.72rem", textAlign: "right" }}>
-              {allMode || selectedTopics.length === 0
-                ? "Tất cả chủ đề"
-                : selectedTopics.join(" + ")}
-              {" · "}
-              {allGradeMode || selectedGrades.length === 0
-                ? "Tất cả các lớp"
-                : selectedGrades.map(g => `Lớp ${g}`).join(" + ")}
-            </span>
-          </div>
-
-          {/* Figma CTA Start button */}
-          <button 
-            className="btn btn-primary" 
-            onClick={startQuiz}
-            style={{ 
-              width: "100%", 
-              height: "48px", 
-              borderRadius: "8px", 
-              fontSize: "0.95rem", 
-              fontWeight: "700",
-              backgroundColor: "#3B82F6",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              border: "none",
-              cursor: "pointer"
-            }}
-          >
-            <Play size={14} fill="white" />
-            <span>Bắt đầu làm bài</span>
-          </button>
-        </div>
-      )}
-
-      {/* Active Quiz View */}
-      {quizState === "active" && currentQ && (
-        <div>
-          <div className="quiz-header" style={glassCard}>
-            <div className="quiz-meta-row">
-              <span>Chủ đề: {currentQ.topic} • Lớp {currentQ.grade}</span>
-              <div className={`quiz-timer ${timeLeft < 60 && timeLimit !== "Không giới hạn" ? "warning" : ""}`}>
-                <Timer size={14} />
-                <span>{formatTime(timeLeft)}</span>
-              </div>
-            </div>
-            
-            <div className="quiz-progress-track">
-              <div 
-                className="quiz-progress-bar" 
-                style={{ width: `${((currentQIdx + 1) / questions.length) * 100}%` }}
-              />
-            </div>
-            
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "var(--text-muted)", fontWeight: "700" }}>
-              <span>Câu hỏi {currentQIdx + 1} / {questions.length}</span>
-              <span>Đã trả lời: {questions.filter((_, i) => isFillQuestion(i) ? !!fillInputs[i]?.trim() : !!userAnswers[i]).length} / {questions.length}</span>
-            </div>
-          </div>
-
-          <div className="question-card" style={glassCard}>
-            <div className="question-text">
-              <RichTextRenderer text={currentQ.text} />
-            </div>
-
-            {isFillQuestion(currentQIdx) ? (
-              <div style={{ marginTop: "8px" }}>
-                <div style={{ fontSize: "0.78rem", color: "#64748B", fontWeight: "600", marginBottom: "8px" }}>
-                  ✏️ Điền đáp án của bạn vào ô bên dưới:
-                </div>
-                <input
-                  key={currentQIdx}
-                  type="text"
-                  value={fillInputs[currentQIdx] || ""}
-                  onChange={e => setFillInputs(prev => ({ ...prev, [currentQIdx]: e.target.value }))}
-                  onKeyDown={e => { if (e.key === "Enter" && currentQIdx + 1 < questions.length) setCurrentQIdx(p => p + 1); }}
-                  placeholder="Nhập đáp án..."
-                  style={{
-                    width: "100%", padding: "12px 14px", fontSize: "0.95rem",
-                    borderRadius: "10px", border: "2px solid #3B82F6",
-                    outline: "none", fontWeight: "600", color: "#1E3A5F",
-                    background: "#F8FAFF", boxSizing: "border-box",
-                  }}
-                  autoFocus
-                />
-                <div style={{ fontSize: "0.72rem", color: "#94A3B8", marginTop: "6px" }}>
-                  Gợi ý: nhập số, biểu thức, hoặc tên công thức ngắn gọn
-                </div>
-              </div>
-            ) : (
-              <div className="quiz-options-list">
-                {currentQ.options.map((option) => {
-                  const isSelected = userAnswers[currentQIdx] === option;
-                  return (
-                    <button
-                      key={option.letter}
-                      className={`quiz-option-btn ${isSelected ? "selected" : ""}`}
-                      onClick={() => handleSelectOption(option)}
+                  <div className="grid grid-cols-3 gap-3">
+                    {/* Option 1: Trắc nghiệm */}
+                    <div
+                      className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
+                        quizType === "multiple-choice" ? "border-secondary bg-secondary/5 text-secondary" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                      }`}
+                      onClick={() => setQuizType("multiple-choice")}
                     >
-                      <div className="option-letter">{option.letter}</div>
-                      <div style={{ flex: 1 }}><RichTextRenderer text={option.text} /></div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+                      <List size={18} />
+                      <span>Trắc nghiệm</span>
+                    </div>
 
-          <div className="quiz-bottom-actions" style={{ display: "flex", justifyContent: "space-between", marginTop: "var(--sp-4)" }}>
-            <button 
-              className="btn btn-secondary" 
-              onClick={handlePrevQuestion}
-              disabled={currentQIdx === 0}
-              style={{ width: "130px", opacity: currentQIdx === 0 ? 0.4 : 1, cursor: currentQIdx === 0 ? "not-allowed" : "pointer" }}
-            >
-              <ArrowLeft size={16} />
-              <span>Câu trước</span>
-            </button>
-
-            {currentQIdx + 1 < questions.length ? (
-              <button 
-                className="btn btn-primary" 
-                onClick={handleNextQuestion}
-                style={{ width: "130px" }}
-              >
-                <span>Tiếp theo</span>
-                <ArrowRight size={16} />
-              </button>
-            ) : (
-              <button 
-                className="btn btn-success" 
-                onClick={handleSubmitQuiz}
-                style={{ width: "130px" }}
-              >
-                <Check size={16} />
-                <span>Nộp bài</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Quiz Results Screen */}
-      {quizState === "result" && (
-        <div className="quiz-results-container">
-          <div className="summary-card" style={{ ...glassCard, marginTop: 0 }}>
-            <div className="summary-icon" style={{ backgroundColor: "rgba(30, 58, 95, 0.05)", color: "#1E3A5F" }}>
-              <Award size={32} />
-            </div>
-            <h2 style={{ fontSize: "1.3rem", fontWeight: "800", color: "#1E3A5F" }}>Kết quả bài kiểm tra</h2>
-            
-            <div className="summary-score" style={{ color: score >= (questions.length / 2) ? "#10B981" : "#EF4444" }}>
-              {score} / {questions.length}
-            </div>
-            
-            <p style={{ fontSize: "0.85rem", color: "#64748B" }}>
-              Bạn trả lời đúng <strong>{Math.round((score / questions.length) * 100)}%</strong> số câu hỏi.
-            </p>
-
-            <div style={{ width: "100%", textAlign: "left", marginTop: "16px" }}>
-              <h4 style={{ fontSize: "0.95rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "12px", borderBottom: "1.5px solid #F1F5F9", paddingBottom: "6px" }}>
-                Xem chi tiết bài làm:
-              </h4>
-              <div className="review-questions-list" style={{ display: "flex", flexDirection: "column", gap: "16px", width: "100%" }}>
-                {questions.map((q, idx) => {
-                  const isFillQ = isFillQuestion(idx);
-                  const correctOpt = q.options.find(o => o.isCorrect);
-
-                  // Fill-in review
-                  if (isFillQ) {
-                    const userInput = fillInputs[idx] || "";
-                    const isCorrect = userInput.trim() !== "" &&
-                      normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
-                    const cardBorderColor = !userInput.trim() ? "var(--border-slate)"
-                      : isCorrect ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)";
-                    const cardBgColor = !userInput.trim() ? "#F8FAFC"
-                      : isCorrect ? "rgba(16,185,129,0.01)" : "rgba(239,68,68,0.01)";
-                    const statusLabel = !userInput.trim() ? "Chưa trả lời" : isCorrect ? "Đúng" : "Sai";
-                    const statusColor = !userInput.trim() ? "var(--text-muted)" : isCorrect ? "var(--success)" : "var(--error)";
-
-                    return (
-                      <div key={q.id} className="review-item-card"
-                        style={{ border: `1.5px solid ${cardBorderColor}`, backgroundColor: cardBgColor, borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}
-                      >
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem", fontWeight: "700" }}>
-                          <span style={{ color: "var(--text-muted)" }}>Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span style={{ background: "rgba(59,130,246,0.1)", color: "#3B82F6", borderRadius: "4px", padding: "1px 5px", marginLeft: "4px" }}>Điền đáp án</span></span>
-                          <span style={{ color: statusColor, background: `${statusColor}15`, padding: "4px 8px", borderRadius: "4px" }}>{statusLabel}</span>
-                        </div>
-                        <div style={{ fontSize: "0.9rem", fontWeight: "700", color: "var(--primary)" }}>
-                          <RichTextRenderer text={q.text} />
-                        </div>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", background: "white", borderRadius: "8px", padding: "10px", border: "1px solid #E2E8F0" }}>
-                          <div style={{ fontSize: "0.82rem" }}>
-                            <span style={{ color: "#64748B", fontWeight: "600" }}>Bạn trả lời: </span>
-                            <span style={{ fontWeight: "700", color: isCorrect ? "var(--success)" : "var(--error)" }}>{userInput || "(bỏ qua)"}</span>
-                          </div>
-                          <div style={{ fontSize: "0.82rem" }}>
-                            <span style={{ color: "#64748B", fontWeight: "600" }}>Đáp án đúng: </span>
-                            <span style={{ fontWeight: "700", color: "var(--success)" }}>{correctOpt?.text}</span>
-                          </div>
-                        </div>
-                        <div style={{ backgroundColor: "white", border: "1px dashed rgba(30,58,95,0.15)", borderRadius: "8px", padding: "12px", fontSize: "0.8rem", color: "#475569", lineHeight: "1.5" }}>
-                          <strong style={{ display: "block", color: "var(--primary)", marginBottom: "4px", fontSize: "0.8rem", fontWeight: "800" }}>Lời giải chi tiết:</strong>
-                          <RichTextRenderer text={q.explanation} />
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  // Multiple-choice review
-                  const selected = userAnswers[idx];
-                  const isCorrect = selected && selected.isCorrect;
-
-                  let cardBorderColor = "var(--border-slate)";
-                  let cardBgColor = "#F8FAFC";
-                  let statusLabel = "Chưa trả lời";
-                  let statusColor = "var(--text-muted)";
-
-                  if (selected) {
-                    if (isCorrect) {
-                      cardBorderColor = "rgba(16, 185, 129, 0.2)";
-                      cardBgColor = "rgba(16, 185, 129, 0.01)";
-                      statusLabel = "Đúng";
-                      statusColor = "var(--success)";
-                    } else {
-                      cardBorderColor = "rgba(239, 68, 68, 0.2)";
-                      cardBgColor = "rgba(239, 68, 68, 0.01)";
-                      statusLabel = `Sai (Chọn: ${selected.letter})`;
-                      statusColor = "var(--error)";
-                    }
-                  }
-
-                  return (
-                    <div 
-                      key={q.id} 
-                      className="review-item-card" 
-                      style={{ 
-                        border: "1.5px solid " + cardBorderColor, 
-                        backgroundColor: cardBgColor, 
-                        borderRadius: "12px", 
-                        padding: "16px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "12px"
+                    {/* Option 2: Điền đáp án */}
+                    <div
+                      className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
+                        quizType === "fill-in" ? "border-secondary bg-secondary/5 text-secondary" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                      }`}
+                      onClick={() => {
+                        if (!isPremium) {
+                          alert("Phương thức Điền đáp án yêu cầu gói Premium!");
+                          setActiveTab("premium");
+                        } else {
+                          setQuizType("fill-in");
+                        }
                       }}
                     >
-                      {/* Review Card Header */}
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "0.75rem", fontWeight: "700" }}>
-                        <span style={{ color: "var(--text-muted)" }}>Câu {idx + 1}: {q.topic} • Lớp {q.grade}</span>
-                        <span style={{ 
-                          color: statusColor,
-                          backgroundColor: selected ? (isCorrect ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)") : "rgba(100, 116, 139, 0.08)",
-                          padding: "4px 8px",
-                          borderRadius: "4px"
-                        }}>
-                          {statusLabel}
-                        </span>
-                      </div>
-
-                      {/* Question Text */}
-                      <div style={{ fontSize: "0.9rem", fontWeight: "700", color: "var(--primary)" }}>
-                        <RichTextRenderer text={q.text} />
-                      </div>
-
-                      {/* Options Review List */}
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        {q.options.map((option) => {
-                          const isOptSelected = selected === option;
-                          const isOptCorrect = option.isCorrect;
-                          
-                          let optBorder = "1px solid #E2E8F0";
-                          let optBg = "white";
-                          let optBadge = null;
-
-                          if (isOptCorrect) {
-                            optBorder = "1.5px solid var(--success)";
-                            optBg = "rgba(16, 185, 129, 0.04)";
-                            if (isOptSelected) {
-                              optBadge = <CheckCircle size={14} fill="var(--success)" color="white" />;
-                            }
-                          } else if (isOptSelected) {
-                            optBorder = "1.5px solid var(--error)";
-                            optBg = "rgba(239, 68, 68, 0.04)";
-                            optBadge = <XCircle size={14} fill="var(--error)" color="white" />;
-                          }
-
-                          return (
-                            <div 
-                              key={option.letter}
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "10px",
-                                padding: "8px 12px",
-                                borderRadius: "8px",
-                                border: optBorder,
-                                backgroundColor: optBg,
-                                fontSize: "0.85rem",
-                                fontWeight: "600"
-                              }}
-                            >
-                              <div 
-                                style={{
-                                  width: "22px",
-                                  height: "22px",
-                                  borderRadius: "50%",
-                                  backgroundColor: isOptCorrect ? "var(--success)" : (isOptSelected ? "var(--error)" : "#F1F5F9"),
-                                  color: isOptCorrect || isOptSelected ? "white" : "var(--text-muted)",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  fontSize: "0.75rem",
-                                  fontWeight: "800"
-                                }}
-                              >
-                                {option.letter}
-                              </div>
-                              <div style={{ flex: 1 }}><RichTextRenderer text={option.text} /></div>
-                              {optBadge}
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      {/* Explanation Box */}
-                      <div 
-                        style={{ 
-                          backgroundColor: "white", 
-                          border: "1px dashed rgba(30, 58, 95, 0.15)", 
-                          borderRadius: "8px", 
-                          padding: "12px",
-                          fontSize: "0.8rem",
-                          color: "#475569",
-                          lineHeight: "1.5"
-                        }}
-                      >
-                        <strong style={{ display: "block", color: "var(--primary)", marginBottom: "4px", fontSize: "0.8rem", fontWeight: "800" }}>
-                          Lời giải chi tiết:
-                        </strong>
-                        <RichTextRenderer text={q.explanation} />
+                      <Pencil size={18} />
+                      <div className="flex items-center gap-0.5">
+                        <span>Điền đáp án</span>
+                        {!isPremium && <Lock size={10} className="text-premium" />}
                       </div>
                     </div>
-                  );
-                })}
+
+                    {/* Option 3: Kết hợp */}
+                    <div
+                      className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
+                        quizType === "hybrid" ? "border-secondary bg-secondary/5 text-secondary" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                      }`}
+                      onClick={() => {
+                        if (!isPremium) {
+                          alert("Phương thức Kết hợp yêu cầu gói Premium!");
+                          setActiveTab("premium");
+                        } else {
+                          setQuizType("hybrid");
+                        }
+                      }}
+                    >
+                      <Shuffle size={18} />
+                      <div className="flex items-center gap-0.5">
+                        <span>Kết hợp</span>
+                        {!isPremium && <Lock size={10} className="text-premium" />}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Section 4: Giới hạn thời gian */}
+                <div>
+                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                    <Timer size={15} className="text-secondary" />
+                    <span>Giới hạn thời gian</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      min={0}
+                      value={timeLimitInput}
+                      onChange={e => setTimeLimitInput(e.target.value)}
+                      onBlur={e => {
+                        const n = parseInt(e.target.value);
+                        if (isNaN(n) || n < 0) setTimeLimitInput("0");
+                        else setTimeLimitInput(String(n));
+                      }}
+                      className="w-[90px] h-[42px] text-center text-[1.05rem] font-extrabold text-[#1E3A5F] border-[1.5px] border-secondary rounded-[10px] outline-none bg-[#F8FAFF]"
+                    />
+                    <span className="text-[0.82rem] text-text-muted font-semibold">
+                      phút{" "}
+                      <span className="text-[#94A3B8]">
+                        {(parseInt(timeLimitInput) || 0) === 0 ? "(không giới hạn)" : ""}
+                      </span>
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Footer limits */}
+              <div className="text-left text-[0.8rem] text-text-muted mb-4 font-semibold pl-1 flex justify-between items-center">
+                <span>
+                  {isPremium ? "Premium — Không giới hạn lượt" : `Miễn phí — Còn ${remainingQuizzes}/10 lượt hôm nay`}
+                </span>
+                <span className="text-[#94A3B8] text-[0.72rem] text-right">
+                  {allMode || selectedTopics.length === 0
+                    ? "Tất cả chủ đề"
+                    : selectedTopics.join(" + ")}
+                  {" · "}
+                  {allGradeMode || selectedGrades.length === 0
+                    ? "Tất cả các lớp"
+                    : selectedGrades.map(g => `Lớp ${g}`).join(" + ")}
+                </span>
+              </div>
+
+              {/* Figma CTA Start button */}
+              <button
+                className="btn btn-primary w-full h-12 rounded-lg text-[0.95rem] font-bold flex items-center justify-center gap-2"
+                onClick={startQuiz}
+              >
+                <Play size={14} fill="white" />
+                <span>Bắt đầu làm bài</span>
+              </button>
+            </div>
+          )}
+
+          {/* Active Quiz View */}
+          {quizState === "active" && currentQ && (
+            <div>
+              <div className="bg-white/95 dark:bg-[rgba(30,41,59,0.95)] border border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-2xl py-4 px-5 shadow-[0_4px_20px_rgba(30,58,95,0.04)] mb-4 flex flex-col gap-3 backdrop-blur-[10px]">
+                <div className="flex justify-between items-center text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-0.5">
+                  <span>Chủ đề: {currentQ.topic} • Lớp {currentQ.grade}</span>
+                  <div className={`flex items-center gap-1.5 py-1.5 px-3.5 rounded-full font-mono text-[0.9rem] font-extrabold transition-all duration-300 shadow-[0_2px_8px_rgba(59,130,246,0.04)] ${
+                    timeLeft < 60 && timerActive ? "bg-error/10 text-error [animation:pulse-timer_1s_infinite_alternate]" : "bg-secondary/8 text-secondary"
+                  }`}>
+                    <Timer size={14} />
+                    <span>{formatTime(timeLeft)}</span>
+                  </div>
+                </div>
+
+                <div className="w-full h-2 bg-[#f1f5f9] rounded-full overflow-hidden relative border border-[rgba(30,58,95,0.02)]">
+                  <div
+                    className="h-full rounded-full bg-[linear-gradient(90deg,#3B82F6_0%,#10B981_100%)] shadow-[0_0_8px_rgba(59,130,246,0.3)] transition-[width] duration-[0.4s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)]"
+                    style={{ width: `${((currentQIdx + 1) / questions.length) * 100}%` }}
+                  />
+                </div>
+
+                <div className="flex justify-between text-[0.8rem] text-text-muted dark:text-[#94A3B8] font-bold">
+                  <span>Câu hỏi {currentQIdx + 1} / {questions.length}</span>
+                  <span>Đã trả lời: {questions.filter((_, i) => isFillQuestion(i) ? !!fillInputs[i]?.trim() : !!userAnswers[i]).length} / {questions.length}</span>
+                </div>
+              </div>
+
+              <div className="bg-white/95 dark:bg-[rgba(30,41,59,0.95)] border border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-2xl p-6 shadow-[0_4px_20px_rgba(30,58,95,0.04)] mb-6 backdrop-blur-[10px] flex flex-col gap-6 [animation:fadeIn_0.4s_ease-out]">
+                <div className="quiz-question-text text-[1.15rem] font-bold leading-[1.6] text-primary dark:text-[#E2E8F0] break-words">
+                  <RichTextRenderer text={currentQ.text} />
+                </div>
+
+                {isFillQuestion(currentQIdx) ? (
+                  <div className="mt-2">
+                    <div className="text-[0.78rem] text-text-muted font-semibold mb-2">
+                      ✏️ Điền đáp án của bạn vào ô bên dưới:
+                    </div>
+                    <input
+                      key={currentQIdx}
+                      type="text"
+                      value={fillInputs[currentQIdx] || ""}
+                      onChange={e => setFillInputs(prev => ({ ...prev, [currentQIdx]: e.target.value }))}
+                      onKeyDown={e => { if (e.key === "Enter" && currentQIdx + 1 < questions.length) setCurrentQIdx(p => p + 1); }}
+                      placeholder="Nhập đáp án..."
+                      className="w-full py-3 px-3.5 text-[0.95rem] rounded-[10px] border-2 border-secondary outline-none font-semibold text-[#1E3A5F] bg-[#F8FAFF] box-border"
+                      autoFocus
+                    />
+                    <div className="text-[0.72rem] text-[#94A3B8] mt-1.5">
+                      Gợi ý: nhập số, biểu thức, hoặc tên công thức ngắn gọn
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {currentQ.options.map((option) => {
+                      const isSelected = userAnswers[currentQIdx] === option;
+                      return (
+                        <button
+                          key={option.letter}
+                          className={`flex items-center w-full min-h-[56px] py-3 px-4 rounded-xl text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 gap-3 border-[1.5px] text-primary dark:text-[#E2E8F0] ${
+                            isSelected
+                              ? "border-secondary bg-secondary/5 shadow-[0_4px_12px_rgba(59,130,246,0.1)]"
+                              : "border-[rgba(30,58,95,0.07)] bg-white shadow-[0_4px_20px_rgba(30,58,95,0.04)] hover:border-secondary hover:bg-secondary/[0.02] hover:shadow-[0_4px_12px_rgba(59,130,246,0.08)] hover:-translate-y-px"
+                          }`}
+                          onClick={() => handleSelectOption(option)}
+                        >
+                          <div className={`flex items-center justify-center w-7 h-7 rounded-full text-[0.85rem] font-extrabold shrink-0 transition-all duration-200 ${
+                            isSelected ? "bg-secondary border-secondary text-white" : "bg-[#f1f5f9] border border-[#cbd5e1] text-text-muted"
+                          }`}>{option.letter}</div>
+                          <div className="flex-1"><RichTextRenderer text={option.text} /></div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-between mt-4">
+                <button
+                  className="btn btn-secondary w-[130px]"
+                  onClick={handlePrevQuestion}
+                  disabled={currentQIdx === 0}
+                  style={{ opacity: currentQIdx === 0 ? 0.4 : 1, cursor: currentQIdx === 0 ? "not-allowed" : "pointer" }}
+                >
+                  <ArrowLeft size={16} />
+                  <span>Câu trước</span>
+                </button>
+
+                {currentQIdx + 1 < questions.length ? (
+                  <button
+                    className="btn btn-primary w-[130px]"
+                    onClick={handleNextQuestion}
+                  >
+                    <span>Tiếp theo</span>
+                    <ArrowRight size={16} />
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-success w-[130px]"
+                    onClick={handleSubmitQuiz}
+                  >
+                    <Check size={16} />
+                    <span>Nộp bài</span>
+                  </button>
+                )}
               </div>
             </div>
+          )}
 
-            <div style={{ borderTop: "1px solid #f1f5f9", width: "100%", paddingTop: "16px", marginTop: "16px" }}>
-              <p style={{ fontSize: "0.75rem", color: "var(--text-muted)", display: "flex", alignItems: "center", justifyContent: "center", gap: "4px" }}>
-                Lượt test miễn phí hôm nay: <strong>{isPremium ? "Không giới hạn" : `${remainingQuizzes} lượt`}</strong>
-              </p>
-            </div>
+          {/* Quiz Results Screen */}
+          {quizState === "result" && (
+            <div className="quiz-results-container">
+              <div className="summary-card !mt-0">
+                <div className="summary-icon" style={{ backgroundColor: "rgba(30, 58, 95, 0.05)", color: "#1E3A5F" }}>
+                  <Award size={32} />
+                </div>
+                <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F]">Kết quả bài kiểm tra</h2>
 
-            <div className="summary-actions" style={{ width: "100%" }}>
-              {!isPremium && remainingQuizzes <= 0 && (
-                <div className="premium-banner" style={{ textAlign: "left", marginBottom: "8px" }}>
-                  <div className="banner-badge">
-                    <Crown size={12} fill="white" />
-                    <span>Hết lượt test miễn phí</span>
+                <div className="summary-score" style={{ color: score >= (questions.length / 2) ? "#10B981" : "#EF4444" }}>
+                  {score} / {questions.length}
+                </div>
+
+                <p className="text-[0.85rem] text-[#64748B]">
+                  Bạn trả lời đúng <strong>{Math.round((score / questions.length) * 100)}%</strong> số câu hỏi.
+                </p>
+
+                <div className="w-full text-left mt-4">
+                  <h4 className="text-[0.95rem] font-extrabold text-[#1E3A5F] mb-3 border-b-[1.5px] border-[#F1F5F9] pb-1.5">
+                    Xem chi tiết bài làm:
+                  </h4>
+                  <div className="flex flex-col gap-4 w-full max-h-[420px] overflow-y-auto pr-1">
+                    {questions.map((q, idx) => {
+                      const isFillQ = isFillQuestion(idx);
+                      const correctOpt = q.options.find(o => o.isCorrect);
+
+                      // Fill-in review
+                      if (isFillQ) {
+                        const userInput = fillInputs[idx] || "";
+                        const isCorrect = userInput.trim() !== "" &&
+                          normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
+                        const cardBorderColor = !userInput.trim() ? "rgba(30,58,95,0.07)"
+                          : isCorrect ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)";
+                        const cardBgColor = !userInput.trim() ? "#F8FAFC"
+                          : isCorrect ? "rgba(16,185,129,0.01)" : "rgba(239,68,68,0.01)";
+                        const statusLabel = !userInput.trim() ? "Chưa trả lời" : isCorrect ? "Đúng" : "Sai";
+                        const statusColor = !userInput.trim() ? "#64748B" : isCorrect ? "#10B981" : "#EF4444";
+
+                        return (
+                          <div key={q.id}
+                            style={{ border: `1.5px solid ${cardBorderColor}`, backgroundColor: cardBgColor, borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}
+                          >
+                            <div className="flex justify-between items-center text-[0.75rem] font-bold">
+                              <span className="text-[#64748B]">Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span className="bg-secondary/10 text-secondary rounded ml-1" style={{ padding: "1px 5px" }}>Điền đáp án</span></span>
+                              <span style={{ color: statusColor, background: `${statusColor}15`, padding: "4px 8px", borderRadius: "4px" }}>{statusLabel}</span>
+                            </div>
+                            <div className="text-[0.9rem] font-bold text-[#1E3A5F]">
+                              <RichTextRenderer text={q.text} />
+                            </div>
+                            <div className="flex flex-col gap-1.5 bg-white rounded-lg p-2.5 border border-[#E2E8F0]">
+                              <div className="text-[0.82rem]">
+                                <span className="text-[#64748B] font-semibold">Bạn trả lời: </span>
+                                <span className="font-bold" style={{ color: isCorrect ? "#10B981" : "#EF4444" }}>{userInput || "(bỏ qua)"}</span>
+                              </div>
+                              <div className="text-[0.82rem]">
+                                <span className="text-[#64748B] font-semibold">Đáp án đúng: </span>
+                                <span className="font-bold text-[#10B981]">{correctOpt?.text}</span>
+                              </div>
+                            </div>
+                            <div className="bg-white border border-dashed border-[rgba(30,58,95,0.15)] rounded-lg p-3 text-[0.8rem] text-[#475569] leading-[1.5]">
+                              <strong className="block text-[#1E3A5F] mb-1 text-[0.8rem] font-extrabold">Lời giải chi tiết:</strong>
+                              <RichTextRenderer text={q.explanation} />
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      // Multiple-choice review
+                      const selected = userAnswers[idx];
+                      const isCorrect = selected && selected.isCorrect;
+
+                      let cardBorderColor = "rgba(30,58,95,0.07)";
+                      let cardBgColor = "#F8FAFC";
+                      let statusLabel = "Chưa trả lời";
+                      let statusColor = "#64748B";
+
+                      if (selected) {
+                        if (isCorrect) {
+                          cardBorderColor = "rgba(16, 185, 129, 0.2)";
+                          cardBgColor = "rgba(16, 185, 129, 0.01)";
+                          statusLabel = "Đúng";
+                          statusColor = "#10B981";
+                        } else {
+                          cardBorderColor = "rgba(239, 68, 68, 0.2)";
+                          cardBgColor = "rgba(239, 68, 68, 0.01)";
+                          statusLabel = `Sai (Chọn: ${selected.letter})`;
+                          statusColor = "#EF4444";
+                        }
+                      }
+
+                      return (
+                        <div
+                          key={q.id}
+                          style={{
+                            border: "1.5px solid " + cardBorderColor,
+                            backgroundColor: cardBgColor,
+                            borderRadius: "12px",
+                            padding: "16px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "12px"
+                          }}
+                        >
+                          {/* Review Card Header */}
+                          <div className="flex justify-between items-center text-[0.75rem] font-bold">
+                            <span className="text-[#64748B]">Câu {idx + 1}: {q.topic} • Lớp {q.grade}</span>
+                            <span style={{
+                              color: statusColor,
+                              backgroundColor: selected ? (isCorrect ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)") : "rgba(100, 116, 139, 0.08)",
+                              padding: "4px 8px",
+                              borderRadius: "4px"
+                            }}>
+                              {statusLabel}
+                            </span>
+                          </div>
+
+                          {/* Question Text */}
+                          <div className="text-[0.9rem] font-bold text-[#1E3A5F]">
+                            <RichTextRenderer text={q.text} />
+                          </div>
+
+                          {/* Options Review List */}
+                          <div className="flex flex-col gap-2">
+                            {q.options.map((option) => {
+                              const isOptSelected = selected === option;
+                              const isOptCorrect = option.isCorrect;
+
+                              let optBorder = "1px solid #E2E8F0";
+                              let optBg = "white";
+                              let optBadge = null;
+
+                              if (isOptCorrect) {
+                                optBorder = "1.5px solid #10B981";
+                                optBg = "rgba(16, 185, 129, 0.04)";
+                                if (isOptSelected) {
+                                  optBadge = <CheckCircle size={14} fill="#10B981" color="white" />;
+                                }
+                              } else if (isOptSelected) {
+                                optBorder = "1.5px solid #EF4444";
+                                optBg = "rgba(239, 68, 68, 0.04)";
+                                optBadge = <XCircle size={14} fill="#EF4444" color="white" />;
+                              }
+
+                              return (
+                                <div
+                                  key={option.letter}
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "10px",
+                                    padding: "8px 12px",
+                                    borderRadius: "8px",
+                                    border: optBorder,
+                                    backgroundColor: optBg,
+                                    fontSize: "0.85rem",
+                                    fontWeight: "600"
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      width: "22px",
+                                      height: "22px",
+                                      borderRadius: "50%",
+                                      backgroundColor: isOptCorrect ? "#10B981" : (isOptSelected ? "#EF4444" : "#F1F5F9"),
+                                      color: isOptCorrect || isOptSelected ? "white" : "#64748B",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      fontSize: "0.75rem",
+                                      fontWeight: "800"
+                                    }}
+                                  >
+                                    {option.letter}
+                                  </div>
+                                  <div style={{ flex: 1 }}><RichTextRenderer text={option.text} /></div>
+                                  {optBadge}
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {/* Explanation Box */}
+                          <div className="bg-white border border-dashed border-[rgba(30,58,95,0.15)] rounded-lg p-3 text-[0.8rem] text-[#475569] leading-[1.5]">
+                            <strong className="block text-[#1E3A5F] mb-1 text-[0.8rem] font-extrabold">
+                              Lời giải chi tiết:
+                            </strong>
+                            <RichTextRenderer text={q.explanation} />
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                  <p style={{ fontSize: "0.75rem", color: "white" }}>
-                    Nâng cấp Premium ngay để tiếp tục làm bài trắc nghiệm không giới hạn!
+                </div>
+
+                <div className="border-t border-[#f1f5f9] w-full pt-4 mt-4">
+                  <p className="text-xs text-[#64748B] flex items-center justify-center gap-1">
+                    Lượt test miễn phí hôm nay: <strong>{isPremium ? "Không giới hạn" : `${remainingQuizzes} lượt`}</strong>
                   </p>
-                  <button className="btn btn-premium vibrate" onClick={() => setActiveTab("premium")}>
-                    Nâng cấp Pro ngay
+                </div>
+
+                <div className="summary-actions w-full">
+                  {!isPremium && remainingQuizzes <= 0 && (
+                    <div className="premium-banner text-left mb-2">
+                      <div className="banner-badge">
+                        <Crown size={12} fill="white" />
+                        <span>Hết lượt test miễn phí</span>
+                      </div>
+                      <p className="text-xs text-white">
+                        Nâng cấp Premium ngay để tiếp tục làm bài trắc nghiệm không giới hạn!
+                      </p>
+                      <button className="btn btn-premium vibrate" onClick={() => setActiveTab("premium")}>
+                        Nâng cấp Pro ngay
+                      </button>
+                    </div>
+                  )}
+
+                  <button className="btn btn-primary" onClick={() => setQuizState("setup")}>
+                    Làm bài trắc nghiệm mới
+                  </button>
+
+                  <button className="btn btn-secondary" onClick={() => setActiveTab("dashboard")}>
+                    Quay lại Dashboard
                   </button>
                 </div>
-              )}
-
-              <button className="btn btn-primary" onClick={() => setQuizState("setup")}>
-                Làm bài trắc nghiệm mới
-              </button>
-              
-              <button className="btn btn-secondary" onClick={() => setActiveTab("dashboard")}>
-                Quay lại Dashboard
-              </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
-      )}
       </div>
-    </div>
     </div>
   );
 }
