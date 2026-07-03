@@ -5325,4 +5325,140 @@ export const questionsPool = [
     explanation: "Gọi $p$ (nghìn đồng) là giá vé, $x$ là số khán giả. Hàm cầu $p=p(x)$ là hàm bậc nhất đi qua hai điểm $(27\\,000;100)$ và $(30\\,000;90)$, suy ra $x=-300p+57\\,000$. Hàm doanh thu $R(p)=px=-300p^2+57\\,000p$. $R'(p)=-600p+57\\,000=0 \\Leftrightarrow p=95$. Lập bảng biến thiên suy ra $R$ đạt giá trị lớn nhất tại $p=95$ (nghìn đồng).",
     sgk_source: "Toán 12 KNTT Tập 1, Bài 5, trang 33, 38-39 (Ví dụ 6)"
   },
+  {
+    id: "hh78",
+    topic: "Hình học",
+    grade: 12,
+    text: "Cho hình lập phương $ABCD.A'B'C'D'$ có độ dài mỗi cạnh bằng $1$. Độ dài của vectơ $\\overrightarrow{BC}+\\overrightarrow{DD'}$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\sqrt{2}$", isCorrect: true },
+      { letter: "B", text: "$1$", isCorrect: false },
+      { letter: "C", text: "$2$", isCorrect: false },
+      { letter: "D", text: "$\\sqrt{3}$", isCorrect: false }
+    ],
+    blankAnswer: "\\sqrt{2}",
+    explanation: "Tứ giác $ABCD$ là hình vuông nên $\\overrightarrow{BC}=\\overrightarrow{AD}$. Do đó $\\overrightarrow{BC}+\\overrightarrow{DD'}=\\overrightarrow{AD}+\\overrightarrow{DD'}=\\overrightarrow{AD'}$. Tứ giác $ADD'A'$ là hình vuông nên $AD'=\\sqrt{AD^2+DD'^2}=\\sqrt{2}$, suy ra $|\\overrightarrow{BC}+\\overrightarrow{DD'}|=\\sqrt{2}$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 6, trang 49 (Ví dụ 3)"
+  },
+  {
+    id: "hh79",
+    topic: "Hình học",
+    grade: 12,
+    text: "Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình bình hành. Gọi $M$, $N$ lần lượt là trung điểm của $AB$, $CD$. Vectơ nào sau đây là vectơ đối của $\\overrightarrow{AM}$?",
+    options: [
+      { letter: "A", text: "$\\overrightarrow{CN}$", isCorrect: true },
+      { letter: "B", text: "$\\overrightarrow{NC}$", isCorrect: false },
+      { letter: "C", text: "$\\overrightarrow{MB}$", isCorrect: false },
+      { letter: "D", text: "$\\overrightarrow{DN}$", isCorrect: false }
+    ],
+    blankAnswer: "\\overrightarrow{CN}",
+    explanation: "Tứ giác $ABCD$ là hình bình hành nên $AB=CD$ và $AB \\parallel CD$, suy ra $AM=CN$ và $AM \\parallel CN$. Hai vectơ $\\overrightarrow{AM}$ và $\\overrightarrow{CN}$ có cùng độ dài và ngược hướng nên chúng là hai vectơ đối nhau.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 6, trang 51 (Ví dụ 6)"
+  },
+  {
+    id: "hh80",
+    topic: "Hình học",
+    grade: 12,
+    text: "Cho hình hộp chữ nhật $ABCD.A'B'C'D'$ có $AB=2$, $AD=3$, $AA'=4$. Độ dài của vectơ $\\overrightarrow{BD'}$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\sqrt{29}$", isCorrect: true },
+      { letter: "B", text: "$\\sqrt{13}$", isCorrect: false },
+      { letter: "C", text: "$9$", isCorrect: false },
+      { letter: "D", text: "$29$", isCorrect: false }
+    ],
+    blankAnswer: "\\sqrt{29}",
+    explanation: "Vì $ABCD.A'B'C'D'$ là hình hộp chữ nhật nên $BD'$ là đường chéo, có độ dài $BD'=\\sqrt{AB^2+AD^2+AA'^2}=\\sqrt{2^2+3^2+4^2}=\\sqrt{4+9+16}=\\sqrt{29}$.",
+    needs_review: true,
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 6, trang 58 (Bài tập 2.2)"
+  },
+  {
+    id: "hh81",
+    topic: "Hình học",
+    grade: 12,
+    text: "Cho hình chóp tứ giác đều $S.ABCD$ có độ dài tất cả các cạnh bằng $a$. Tích vô hướng $\\overrightarrow{AS}\\cdot\\overrightarrow{AC}$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$a^2$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{a^2}{2}$", isCorrect: false },
+      { letter: "C", text: "$-a^2$", isCorrect: false },
+      { letter: "D", text: "$a^2\\sqrt{2}$", isCorrect: false }
+    ],
+    blankAnswer: "a^2",
+    explanation: "Tứ giác $ABCD$ là hình vuông cạnh $a$ nên đường chéo $AC=\\sqrt{2}a$. Tam giác $SAC$ có $SA=SC=a$ và $AC=\\sqrt{2}a$ nên vuông cân tại $S$, suy ra $\\widehat{SAC}=45^\\circ$. Do đó $\\overrightarrow{AS}\\cdot\\overrightarrow{AC}=|\\overrightarrow{AS}|\\cdot|\\overrightarrow{AC}|\\cos\\widehat{SAC}=a\\cdot\\sqrt{2}a\\cdot\\dfrac{\\sqrt{2}}{2}=a^2$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 6, trang 56-57 (Ví dụ 10)"
+  },
+  {
+    id: "hh82",
+    topic: "Hình học",
+    grade: 12,
+    text: "Hình 2.38 minh hoạ một hệ toạ độ $Oxyz$ trong không gian cùng với các hình vuông có cạnh bằng $1$ đơn vị, trong đó $ABCM.FODE$ là hình hộp chữ nhật với $\\overrightarrow{OF}=3\\vec i$, $\\overrightarrow{OD}=4\\vec j$, $\\overrightarrow{OB}=3\\vec k$. Toạ độ của điểm $M$ là gì?",
+    options: [
+      { letter: "A", text: "$(3;4;3)$", isCorrect: true },
+      { letter: "B", text: "$(4;3;3)$", isCorrect: false },
+      { letter: "C", text: "$(3;3;4)$", isCorrect: false },
+      { letter: "D", text: "$(4;4;3)$", isCorrect: false }
+    ],
+    blankAnswer: "(3;4;3)",
+    explanation: "Áp dụng quy tắc hình hộp: $\\overrightarrow{OM}=\\overrightarrow{OF}+\\overrightarrow{OD}+\\overrightarrow{OB}=3\\vec i+4\\vec j+3\\vec k$. Vậy toạ độ của điểm $M$ là $(3;4;3)$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 7, trang 62 (Ví dụ 2)"
+  },
+  {
+    id: "hh83",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho hai vectơ $\\vec a=(2;1;5)$ và $\\vec b=(2;2;1)$. Toạ độ của vectơ $\\vec a - \\vec b$ là gì?",
+    options: [
+      { letter: "A", text: "$(0;-1;4)$", isCorrect: true },
+      { letter: "B", text: "$(4;3;6)$", isCorrect: false },
+      { letter: "C", text: "$(0;1;4)$", isCorrect: false },
+      { letter: "D", text: "$(4;-1;-4)$", isCorrect: false }
+    ],
+    blankAnswer: "(0;-1;4)",
+    explanation: "$\\vec a-\\vec b=(2-2;\\,1-2;\\,5-1)=(0;-1;4)$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 8, trang 68 (Ví dụ 1)"
+  },
+  {
+    id: "hh84",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho hai vectơ $\\vec a=(1;4;2)$ và $\\vec b=(-4;1;0)$. Khẳng định nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "$\\vec a \\cdot \\vec b = 0$ và $\\vec a \\perp \\vec b$", isCorrect: true },
+      { letter: "B", text: "$\\vec a \\cdot \\vec b = 4$ và $\\vec a, \\vec b$ không vuông góc", isCorrect: false },
+      { letter: "C", text: "$\\vec a \\cdot \\vec b = -4$ và $\\vec a, \\vec b$ không vuông góc", isCorrect: false },
+      { letter: "D", text: "$\\vec a \\cdot \\vec b = 8$ và $\\vec a, \\vec b$ không vuông góc", isCorrect: false }
+    ],
+    blankAnswer: "a.b = 0 và a vuông góc b",
+    explanation: "$\\vec a \\cdot \\vec b = 1\\cdot(-4)+4\\cdot1+2\\cdot0=-4+4+0=0$. Do đó hai vectơ $\\vec a$ và $\\vec b$ vuông góc với nhau.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 8, trang 69 (Ví dụ 3)"
+  },
+  {
+    id: "hh85",
+    topic: "Hình học",
+    grade: 12,
+    text: "Cho hình chóp $S.ABCD$ có đáy $ABCD$ là hình chữ nhật và $SA$ vuông góc với mặt phẳng $(ABCD)$. Biết $SA=2$, $AB=3$, $AD=4$. Xét hệ toạ độ $Oxyz$ với $O$ trùng $A$ và các tia $Ox, Oy, Oz$ lần lượt trùng với các tia $AB, AD, AS$. Độ dài đoạn thẳng $SC$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\sqrt{29}$", isCorrect: true },
+      { letter: "B", text: "$5$", isCorrect: false },
+      { letter: "C", text: "$\\sqrt{21}$", isCorrect: false },
+      { letter: "D", text: "$29$", isCorrect: false }
+    ],
+    blankAnswer: "\\sqrt{29}",
+    explanation: "Ta có $A(0;0;0)$, $B(3;0;0)$, $D(0;4;0)$, $S(0;0;2)$, và toạ độ hình chiếu của $C$ lên $Ox,Oy,Oz$ lần lượt là $B,D,A$ nên $C(3;4;0)$. Vectơ $\\overrightarrow{SC}=(3-0;\\,4-0;\\,0-2)=(3;4;-2)$, suy ra $SC=\\sqrt{3^2+4^2+(-2)^2}=\\sqrt{29}$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 8, trang 69-70 (Ví dụ 4)"
+  },
+  {
+    id: "hh86",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian với một hệ trục toạ độ cho trước (đơn vị đo lấy theo kilômét), ra đa phát hiện một chiếc máy bay di chuyển với vận tốc và hướng không đổi từ điểm $A(800;500;7)$ đến điểm $B(940;550;8)$ trong 10 phút. Nếu máy bay tiếp tục giữ nguyên vận tốc và hướng bay thì toạ độ của máy bay sau 5 phút tiếp theo (tính từ thời điểm ở $B$) là gì?",
+    options: [
+      { letter: "A", text: "$(1\\,010;575;8{,}5)$", isCorrect: true },
+      { letter: "B", text: "$(1\\,080;600;9)$", isCorrect: false },
+      { letter: "C", text: "$(1\\,010;550;8)$", isCorrect: false },
+      { letter: "D", text: "$(940;575;8{,}5)$", isCorrect: false }
+    ],
+    blankAnswer: "(1 010; 575; 8,5)",
+    explanation: "Gọi $C(x;y;z)$ là vị trí máy bay sau 5 phút tiếp theo. Vì vận tốc và hướng không đổi, thời gian bay từ $A$ đến $B$ (10 phút) gấp đôi thời gian từ $B$ đến $C$ (5 phút) nên $\\overrightarrow{BC}=\\dfrac{1}{2}\\overrightarrow{AB}=\\left(\\dfrac{940-800}{2};\\dfrac{550-500}{2};\\dfrac{8-7}{2}\\right)=(70;25;0{,}5)$. Mặt khác $\\overrightarrow{BC}=(x-940;y-550;z-8)$ nên $x=1\\,010$, $y=575$, $z=8{,}5$. Vậy toạ độ máy bay là $(1\\,010;575;8{,}5)$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 8, trang 70 (Ví dụ 5)"
+  },
 ];
