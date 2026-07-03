@@ -68,6 +68,7 @@ router.post("/create", async (req, res) => {
       requestType,
       autoCapture: true,
       extraData,
+      orderExpireTime: 30, // phút — field tùy chọn, không nằm trong raw signature; mặc định MoMo cấp khá ngắn
       signature,
     };
 
@@ -87,12 +88,19 @@ router.post("/create", async (req, res) => {
     });
     const momoData = await momoRes.json();
 
-    if (momoData.resultCode !== 0) {
-      console.error("[MoMo create] MoMo từ chối tạo đơn:", momoData.resultCode, momoData.message);
-      return res.status(502).json({ error: momoData.message || "Không tạo được giao dịch MoMo" });
+    // Log chi tiết phản hồi từ MoMo để debug (không commit logs có secrets lên public)
+    try {
+      console.log("[MoMo create] momoData:", JSON.stringify(momoData));
+    } catch (e) {
+      console.log("[MoMo create] momoData (stringify failed)");
     }
 
-    res.json({ payUrl: momoData.payUrl, orderId });
+    if (momoData.resultCode !== 0) {
+      console.error("[MoMo create] MoMo từ chối tạo đơn:", momoData.resultCode, momoData.message, momoData);
+      return res.status(502).json({ error: momoData.message || "Không tạo được giao dịch MoMo", details: momoData });
+    }
+
+    res.json({ payUrl: momoData.payUrl, orderId, raw: momoData });
   } catch (err) {
     console.error("[MoMo create] error:", err.message);
     res.status(500).json({ error: "Lỗi tạo thanh toán MoMo" });
@@ -171,6 +179,20 @@ router.get("/return", (req, res) => {
   const status = Number(resultCode) === 0 ? "success" : "failed";
   const target = `${frontendUrl}/?payment=${status}&orderId=${encodeURIComponent(orderId || "")}&message=${encodeURIComponent(message || "")}`;
   res.redirect(302, target);
+});
+
+// DEBUG: truy vấn trạng thái đơn payment theo orderId (dùng để kiểm tra nhanh từ client/postman)
+router.get('/payment/:orderId', async (req, res) => {
+  const { orderId } = req.params;
+  if (!supabaseAdmin) return res.status(500).json({ error: 'Supabase service role key not configured' });
+  try {
+    const { data, error } = await supabaseAdmin.from('payments').select('*').eq('order_id', orderId).single();
+    if (error) return res.status(500).json({ error: error.message });
+    res.json({ payment: data });
+  } catch (err) {
+    console.error('[MoMo debug] error fetching payment:', err.message);
+    res.status(500).json({ error: 'Error fetching payment' });
+  }
 });
 
 export default router;
