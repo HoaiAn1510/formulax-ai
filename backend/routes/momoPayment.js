@@ -181,6 +181,57 @@ router.get("/return", (req, res) => {
   res.redirect(302, target);
 });
 
+// DEV-ONLY: giả lập MoMo xác nhận thanh toán thành công — dùng khi không có app MoMo Test để quét QR.
+// Bắt buộc DEV_SIMULATE_SECRET đúng trong .env, không cấu hình thì route luôn từ chối (fail closed).
+// Nhắc: xoá route này trước khi có merchant Production thật, vì nó bỏ qua xác minh chữ ký MoMo.
+router.post("/simulate-success", async (req, res) => {
+  const devSecret = process.env.DEV_SIMULATE_SECRET;
+  if (!devSecret) {
+    return res.status(403).json({ error: "DEV_SIMULATE_SECRET chưa cấu hình trong .env — route giả lập bị khoá." });
+  }
+  const { orderId, secret } = req.body;
+  if (secret !== devSecret) {
+    return res.status(403).json({ error: "Sai khoá xác nhận." });
+  }
+  if (!orderId) {
+    return res.status(400).json({ error: "Thiếu orderId" });
+  }
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: "Supabase chưa cấu hình service role key" });
+  }
+
+  try {
+    const { data: order, error: findError } = await supabaseAdmin
+      .from("payments")
+      .select("status, google_id, plan")
+      .eq("order_id", orderId)
+      .single();
+
+    if (findError || !order) {
+      return res.status(404).json({ error: "Không tìm thấy đơn hàng với orderId này" });
+    }
+    if (order.status === "success") {
+      return res.json({ ok: true, message: "Đơn này đã được xác nhận thành công trước đó." });
+    }
+
+    const expiry = computeExpiry(order.plan);
+    const { error: userError } = await supabaseAdmin.from("users").upsert(
+      { google_id: order.google_id, is_premium: true, premium_expiry: expiry.toISOString(), updated_at: new Date().toISOString() },
+      { onConflict: "google_id" }
+    );
+    if (userError) return res.status(500).json({ error: userError.message });
+
+    await supabaseAdmin.from("payments").update({
+      status: "success", momo_trans_id: "SIMULATED", result_code: 0, updated_at: new Date().toISOString(),
+    }).eq("order_id", orderId);
+
+    res.json({ ok: true, message: `Đã kích hoạt Premium cho ${order.google_id}, hết hạn ${expiry.toISOString()}` });
+  } catch (err) {
+    console.error("[MoMo simulate-success] error:", err.message);
+    res.status(500).json({ error: "Lỗi giả lập xác nhận thanh toán" });
+  }
+});
+
 // DEBUG: truy vấn trạng thái đơn payment theo orderId (dùng để kiểm tra nhanh từ client/postman)
 router.get('/payment/:orderId', async (req, res) => {
   const { orderId } = req.params;

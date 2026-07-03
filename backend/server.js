@@ -16,6 +16,7 @@ const allowedOrigins = [
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
+app.use(express.static("public")); // trang dev-tool test thủ công MoMo (public/simulate-payment.html)
 
 app.use("/api/payment/momo", momoPaymentRouter);
 
