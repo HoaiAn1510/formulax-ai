@@ -390,6 +390,7 @@ export default function App() {
             onToggleBookmark={handleToggleBookmark}
             onCreateFlashcard={handleQuickFlashcard}
             onViewDetail={handleViewDetail}
+            setActiveTab={setActiveTab}
           />
         );
       case "finder":
