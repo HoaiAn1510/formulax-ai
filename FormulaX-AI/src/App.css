@@ -2272,15 +2272,21 @@
   }
   
   /* View wrapper scrollable on desktop — sidebar giờ position:fixed (không còn ở trong
-     CSS grid nữa, xem BottomNav.jsx), nên chỉ cần chừa margin-left đúng bằng bề rộng
-     sidebar lúc thu gọn (80px). Khi sidebar phóng to lúc hover, nó overlay đè lên phần
-     đầu content chứ không đẩy layout — đúng như yêu cầu. */
+     CSS grid nữa, xem BottomNav.jsx), nên chừa margin-left đúng bằng bề rộng sidebar lúc
+     thu gọn (88px). Khi hover sidebar mở rộng ra 240px, content cũng dịch margin-left
+     theo (:has() bắt trạng thái hover của <nav> — anh em trực tiếp trong .app-container)
+     để không bị che mất phần bên trái, thay vì để sidebar overlay đè lên. */
   .view-container {
     margin-left: 88px;
     height: 100vh;
     padding: var(--sp-6);
     overflow-y: auto;
     max-width: 100%;
+    transition: margin-left 0.3s ease-in-out;
+  }
+
+  .app-container:has(nav:hover) .view-container {
+    margin-left: 240px;
   }
 
   /* Grid changes */
