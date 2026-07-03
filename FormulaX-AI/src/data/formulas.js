@@ -588,7 +588,8 @@ export const formulas = [
     example: "**Ví dụ 1 — Có điều kiện:** Tung xúc xắc 6 mặt. Biết kết quả là số chẵn ($B$), tính xác suất ra số $> 3$ ($A$).\n- $B = \\{2,4,6\\}$, $P(B) = 1/2$; $A \\cap B = \\{4,6\\}$, $P(A\\cap B)=1/3$.\n$$P(A|B) = \\frac{1/3}{1/2} = \\frac{2}{3}$$\nSo sánh: nếu không có điều kiện $P(A) = P(\\{4,5,6\\})=1/2 \\neq 2/3$ — điều kiện $B$ đã làm thay đổi xác suất.\n\n**Ví dụ 2 — Độc lập:** Tung đồng xu 2 lần. $A$ = lần 1 ra mặt H, $B$ = lần 2 ra mặt H.\n- $P(A)=1/2$, $P(B)=1/2$, $P(A\\cap B)=1/4$.\n- Kiểm tra: $P(A)\\cdot P(B) = \\frac{1}{2}\\cdot\\frac{1}{2}=\\frac{1}{4}=P(A\\cap B)$ → **A và B độc lập** ✓.",
     tags: ["Xác suất", "Có điều kiện", "Nhân xác suất", "Độc lập"],
     difficulty: "Trung bình",
-    mnemonic: "P(A|B): thu hẹp không gian mẫu về B rồi tính A trong đó. Công thức: P(A∩B)/P(B). Độc lập: B không ảnh hưởng A nên P(A|B)=P(A), tức P(A∩B)=P(A)·P(B). Kiểm tra: so sánh P(A∩B) với P(A)·P(B)."
+    mnemonic: "P(A|B): thu hẹp không gian mẫu về B rồi tính A trong đó. Công thức: P(A∩B)/P(B). Độc lập: B không ảnh hưởng A nên P(A|B)=P(A), tức P(A∩B)=P(A)·P(B). Kiểm tra: so sánh P(A∩B) với P(A)·P(B).",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 18, trang 65-66 (định nghĩa), trang 68-69 (công thức nhân xác suất)"
   },
   {
     id: "xs12-xacsuat-toanphan",
@@ -600,7 +601,8 @@ export const formulas = [
     example: "Hộp 1 có 3 bi đỏ, 2 bi xanh. Hộp 2 có 1 bi đỏ, 4 bi xanh. Lấy ngẫu nhiên một hộp (mỗi hộp xác suất 1/2) rồi lấy 1 bi. Tính xác suất lấy được bi đỏ.\n\n**Lời giải:**\n$$P(A) = P(H_1) \\cdot P(A|H_1) + P(H_2) \\cdot P(A|H_2) = \\frac{1}{2} \\cdot \\frac{3}{5} + \\frac{1}{2} \\cdot \\frac{1}{5} = \\frac{3}{10} + \\frac{1}{10} = \\frac{2}{5}$$",
     tags: ["Xác suất", "Toàn phần", "Hệ đầy đủ"],
     difficulty: "Khó",
-    mnemonic: "Chia bài toán thành các trường hợp (giả thuyết) riêng, tính xác suất từng trường hợp rồi cộng lại có trọng số."
+    mnemonic: "Chia bài toán thành các trường hợp (giả thuyết) riêng, tính xác suất từng trường hợp rồi cộng lại có trọng số.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 19, trang 72 (SGK trình bày khung công thức cho trường hợp 2 giả thuyết A, Ā; dạng tổng quát n giả thuyết trong latex là mở rộng chuẩn mực của lý thuyết xác suất, không phải khung riêng trong SGK)"
   },
   {
     id: "xs12-bayes",
@@ -612,7 +614,8 @@ export const formulas = [
     example: "Dùng ví dụ trên. Biết lấy được bi đỏ (sự kiện $A$), tính xác suất bi đó từ Hộp 1.\n\n**Lời giải:**\n$$P(H_1|A) = \\frac{P(H_1)\\cdot P(A|H_1)}{P(A)} = \\frac{\\frac{1}{2}\\cdot\\frac{3}{5}}{\\frac{2}{5}} = \\frac{3/10}{2/5} = \\frac{3}{4}$$",
     tags: ["Xác suất", "Bayes", "Hậu nghiệm"],
     difficulty: "Khó",
-    mnemonic: "Bayes đảo chiều điều kiện: từ P(A|H) tính ngược ra P(H|A). Tử là xác suất nhân từng nhánh, mẫu là xác suất toàn phần."
+    mnemonic: "Bayes đảo chiều điều kiện: từ P(A|H) tính ngược ra P(H|A). Tử là xác suất nhân từng nhánh, mẫu là xác suất toàn phần.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 19, trang 75 (SGK trình bày khung công thức cho trường hợp 2 giả thuyết A, Ā; dạng tổng quát n giả thuyết trong latex là mở rộng chuẩn mực, không phải khung riêng trong SGK)"
   },
 
   // --- LỚP 10: BỔ SUNG ---

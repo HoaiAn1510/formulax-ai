@@ -5821,4 +5821,124 @@ export const questionsPool = [
     explanation: "$P(\\cos10°\\cos15°;\\cos10°\\sin15°;\\sin10°)$, $Q(\\cos80°\\cos70°;\\cos80°\\sin70°;\\sin80°)$. $\\overrightarrow{OP}\\cdot\\overrightarrow{OQ}\\approx0{,}2691 \\Rightarrow \\widehat{POQ}\\approx74{,}3893°$. Cung nhỏ $PQ \\approx \\dfrac{74{,}3893}{360}\\cdot2\\pi\\approx1{,}2983$ (đơn vị bán kính 1). Nhân với $6371$ km: khoảng cách $\\approx8271{,}4693$ km.",
     sgk_source: "Toán 12 KNTT Tập 2, Bài 17, Ví dụ 5, trang 58"
   },
+  {
+    id: "xs57",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Một hộp có 20 viên bi trắng và 10 viên bi đen, các viên bi có cùng kích thước và khối lượng. Bạn Bình lấy ngẫu nhiên một viên bi, không trả lại, sau đó bạn An lấy ngẫu nhiên một viên bi trong hộp. Gọi $A$: \"An lấy được viên bi trắng\", $B$: \"Bình lấy được viên bi trắng\". Tính $P(A|B)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{19}{29}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{19}{30}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{20}{29}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{10}{29}$", isCorrect: false }
+    ],
+    blankAnswer: "19/29",
+    explanation: "Nếu $B$ xảy ra (Bình lấy được bi trắng), trong hộp còn lại 29 viên với 19 bi trắng và 10 bi đen. Vậy $P(A|B) = \\dfrac{19}{29}$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 18, Ví dụ 1, trang 65-66"
+  },
+  {
+    id: "xs58",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Trong một hộp kín có 7 chiếc bút bi xanh và 5 chiếc bút bi đen, các chiếc bút có cùng kích thước và khối lượng. Bạn Sơn lấy ngẫu nhiên một chiếc bút, không trả lại. Sau đó bạn Tùng lấy ngẫu nhiên một trong 11 chiếc bút còn lại. Xác suất để Sơn lấy được bút đen và Tùng lấy được bút xanh là:",
+    options: [
+      { letter: "A", text: "$\\dfrac{35}{132}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{7}{132}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{35}{144}$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{12}{35}$", isCorrect: false }
+    ],
+    blankAnswer: "35/132",
+    explanation: "Gọi $A$: \"Sơn lấy được bút đen\", $B$: \"Tùng lấy được bút xanh\". $P(A) = \\dfrac{5}{12}$. Nếu $A$ xảy ra, còn 11 bút với 7 bút xanh nên $P(B|A) = \\dfrac{7}{11}$. Theo công thức nhân xác suất: $P(AB) = P(A)\\cdot P(B|A) = \\dfrac{5}{12}\\cdot\\dfrac{7}{11} = \\dfrac{35}{132}$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 18, Ví dụ 4, trang 68-69"
+  },
+  {
+    id: "xs59",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Một viện nghiên cứu xét 577 006 vụ tai nạn giao thông ô tô. Trong số người lái xe không thắt dây an toàn, có 1 601 người tử vong và 162 527 người sống sót. Chọn ngẫu nhiên một người lái xe trong số người bị tai nạn. Xác suất để người đó tử vong, biết rằng người đó không thắt dây an toàn, xấp xỉ bằng:",
+    options: [
+      { letter: "A", text: "$0{,}009755$", isCorrect: true },
+      { letter: "B", text: "$0{,}001235$", isCorrect: false },
+      { letter: "C", text: "$0{,}002773$", isCorrect: false },
+      { letter: "D", text: "$0{,}284$", isCorrect: false }
+    ],
+    blankAnswer: "0,009755",
+    explanation: "Gọi $A$: \"tử vong\", $B$: \"không thắt dây an toàn\". $n(B) = 162\\,527+1\\,601=164\\,128$, $n(AB)=1\\,601$. $P(A|B) = \\dfrac{P(AB)}{P(B)} = \\dfrac{n(AB)}{n(B)} = \\dfrac{1\\,601}{164\\,128} \\approx 0{,}009755$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 18, Ví dụ 3, trang 66-67"
+  },
+  {
+    id: "xs60",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Ông An hằng ngày đi làm bằng xe máy hoặc xe buýt. Nếu hôm nay đi làm bằng xe buýt thì xác suất để hôm sau đi bằng xe máy là 0,4. Nếu hôm nay đi làm bằng xe máy thì xác suất để hôm sau đi bằng xe buýt là 0,7. Xét một tuần mà thứ Hai ông An đi làm bằng xe buýt. Tính xác suất để thứ Tư trong tuần đó, ông An đi làm bằng xe máy.",
+    options: [
+      { letter: "A", text: "$0{,}36$", isCorrect: true },
+      { letter: "B", text: "$0{,}34$", isCorrect: false },
+      { letter: "C", text: "$0{,}12$", isCorrect: false },
+      { letter: "D", text: "$0{,}70$", isCorrect: false }
+    ],
+    blankAnswer: "0,36",
+    explanation: "Gọi $A$: \"thứ Ba đi xe máy\", $B$: \"thứ Tư đi xe máy\". Vì thứ Hai đi xe buýt nên $P(A)=0{,}4$, $P(\\bar A)=0{,}6$. Nếu thứ Ba đi xe máy thì xác suất thứ Tư đi xe máy là $1-0{,}7=0{,}3$: $P(B|A)=0{,}3$. Nếu thứ Ba đi xe buýt thì xác suất thứ Tư đi xe máy là $0{,}4$: $P(B|\\bar A)=0{,}4$. Theo công thức xác suất toàn phần: $P(B) = P(A)\\cdot P(B|A) + P(\\bar A)\\cdot P(B|\\bar A) = 0{,}4\\cdot0{,}3+0{,}6\\cdot0{,}4=0{,}36$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 19, Ví dụ 1, trang 73"
+  },
+  {
+    id: "xs61",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Một tỉnh X có 80% học sinh chọn tổ hợp A00. Nếu học sinh chọn tổ hợp A00 thì xác suất đỗ đại học là 0,6; nếu không chọn tổ hợp A00 thì xác suất đỗ đại học là 0,7. Chọn ngẫu nhiên một học sinh đã đỗ đại học. Xác suất để học sinh đó chọn tổ hợp A00 xấp xỉ bằng:",
+    options: [
+      { letter: "A", text: "$0{,}7742$", isCorrect: true },
+      { letter: "B", text: "$0{,}6$", isCorrect: false },
+      { letter: "C", text: "$0{,}8$", isCorrect: false },
+      { letter: "D", text: "$0{,}48$", isCorrect: false }
+    ],
+    blankAnswer: "0,7742",
+    explanation: "Gọi $A$: \"chọn tổ hợp A00\" ($P(A)=0{,}8$, $P(\\bar A)=0{,}2$), $B$: \"đỗ đại học\" ($P(B|A)=0{,}6$, $P(B|\\bar A)=0{,}7$). Theo công thức Bayes: $P(A|B) = \\dfrac{P(A)\\cdot P(B|A)}{P(A)\\cdot P(B|A)+P(\\bar A)\\cdot P(B|\\bar A)} = \\dfrac{0{,}8\\cdot0{,}6}{0{,}8\\cdot0{,}6+0{,}2\\cdot0{,}7} \\approx 0{,}7742$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 19, Ví dụ 2, trang 76"
+  },
+  {
+    id: "xs62",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Tỉ lệ dân số mắc bệnh hiểm nghèo Y là 0,5%. Nếu mắc bệnh Y thì xác suất xét nghiệm dương tính là 0,94; nếu không mắc bệnh Y thì xác suất xét nghiệm âm tính là 0,97. Bà N xét nghiệm cho kết quả âm tính. Xác suất để bà N không mắc bệnh Y xấp xỉ bằng:",
+    options: [
+      { letter: "A", text: "$0{,}9997$", isCorrect: true },
+      { letter: "B", text: "$0{,}995$", isCorrect: false },
+      { letter: "C", text: "$0{,}97$", isCorrect: false },
+      { letter: "D", text: "$0{,}005$", isCorrect: false }
+    ],
+    blankAnswer: "0,9997",
+    explanation: "Gọi $A$: \"mắc bệnh Y\", $B$: \"xét nghiệm dương tính\". $P(\\bar A)=0{,}995$, $P(\\bar B|\\bar A)=0{,}97$, $P(\\bar B|A)=1-0{,}94=0{,}06$. Theo công thức Bayes: $P(\\bar A|\\bar B) = \\dfrac{P(\\bar A)\\cdot P(\\bar B|\\bar A)}{P(\\bar A)\\cdot P(\\bar B|\\bar A)+P(A)\\cdot P(\\bar B|A)} = \\dfrac{0{,}995\\cdot0{,}97}{0{,}995\\cdot0{,}97+0{,}005\\cdot0{,}06} \\approx 0{,}9997$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 19, Ví dụ 4, trang 77"
+  },
+  {
+    id: "xs63",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Trong một kho rượu có 30% là rượu loại I. Một chai rượu loại I có xác suất 0,9 để ông Tùng (người sành rượu) xác nhận đúng là loại I; một chai không phải loại I có xác suất 0,95 để ông Tùng xác nhận đây không phải loại I. Chọn ngẫu nhiên một chai đưa ông Tùng nếm thử, ông Tùng xác nhận đây là rượu loại I. Xác suất để chai rượu đúng là loại I xấp xỉ bằng:",
+    options: [
+      { letter: "A", text: "$0{,}8852$", isCorrect: true },
+      { letter: "B", text: "$0{,}9$", isCorrect: false },
+      { letter: "C", text: "$0{,}3$", isCorrect: false },
+      { letter: "D", text: "$0{,}73$", isCorrect: false }
+    ],
+    blankAnswer: "0,8852",
+    explanation: "Gọi $A$: \"chai rượu là loại I\" ($P(A)=0{,}3$, $P(\\bar A)=0{,}7$), $B$: \"ông Tùng xác nhận là loại I\". $P(B|A)=0{,}9$; $P(B|\\bar A)=1-0{,}95=0{,}05$ (xác suất xác nhận nhầm). Theo công thức Bayes: $P(A|B) = \\dfrac{0{,}3\\cdot0{,}9}{0{,}3\\cdot0{,}9+0{,}7\\cdot0{,}05} = \\dfrac{0{,}27}{0{,}305} \\approx 0{,}8852$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 19, Luyện tập 4, trang 76"
+  },
+  {
+    id: "xs64",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Cho $P(A) = 0{,}2$; $P(B) = 0{,}51$; $P(B|A) = 0{,}8$. Tính $P(A|B)$.",
+    options: [
+      { letter: "A", text: "$\\approx 0{,}3137$", isCorrect: true },
+      { letter: "B", text: "$0{,}16$", isCorrect: false },
+      { letter: "C", text: "$0{,}8$", isCorrect: false },
+      { letter: "D", text: "$0{,}55$", isCorrect: false }
+    ],
+    blankAnswer: "0,3137",
+    explanation: "Theo công thức nhân xác suất: $P(AB) = P(A)\\cdot P(B|A) = 0{,}2\\cdot0{,}8=0{,}16$. Theo định nghĩa xác suất có điều kiện: $P(A|B) = \\dfrac{P(AB)}{P(B)} = \\dfrac{0{,}16}{0{,}51} \\approx 0{,}3137$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 18, Bài tập 6.2, trang 70"
+  },
 ];
