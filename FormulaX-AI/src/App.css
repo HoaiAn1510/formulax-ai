@@ -2054,29 +2054,13 @@
   }
   
   .app-container {
-    padding-bottom: 0; /* No bottom nav, move to top/sidebar */
-    display: grid;
-    grid-template-columns: 240px 1fr;
-    grid-template-rows: 72px 1fr;
+    padding-bottom: 0; /* No bottom nav, move to sidebar */
     height: 100vh;
   }
 
-  /* Header sits at top right */
+  /* Header đã trống hoàn toàn trên desktop (logo/bell/account đều đã có trong sidebar)
+     — bỏ hẳn thay vì để lại 1 thanh trống phía trên. Xem Header.jsx (md:hidden). */
   .main-header {
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    position: relative;
-    box-shadow: none;
-    border-bottom: 1px solid var(--border-slate);
-  }
-
-  /* Sidebar đã có logo — ẩn phần logo trong header khi desktop */
-  .main-header .logo-section {
-    display: none;
-  }
-
-  /* Bell + Tài khoản đã xuống sidebar — ẩn trên desktop header */
-  .main-header .header-actions {
     display: none;
   }
 
@@ -2287,10 +2271,13 @@
     border-radius: var(--radius-full) 0 0 var(--radius-full);
   }
   
-  /* View wrapper scrollable on desktop */
+  /* View wrapper scrollable on desktop — sidebar giờ position:fixed (không còn ở trong
+     CSS grid nữa, xem BottomNav.jsx), nên chỉ cần chừa margin-left đúng bằng bề rộng
+     sidebar lúc thu gọn (80px). Khi sidebar phóng to lúc hover, nó overlay đè lên phần
+     đầu content chứ không đẩy layout — đúng như yêu cầu. */
   .view-container {
-    grid-column: 2 / 3;
-    grid-row: 2 / 3;
+    margin-left: 88px;
+    height: 100vh;
     padding: var(--sp-6);
     overflow-y: auto;
     max-width: 100%;

@@ -21,10 +21,14 @@ function navItemClass(active) {
 }
 
 function navIconClass(active) {
-  const base = "flex items-center justify-center relative w-9 h-9 md:w-auto md:h-auto rounded-xl transition duration-200";
+  const base = "flex items-center justify-center relative w-9 h-9 md:w-auto md:h-auto rounded-xl transition duration-200 shrink-0";
   if (active) return `${base} bg-secondary text-white shadow-[0_4px_10px_rgba(59,130,246,0.2)] md:bg-transparent md:text-secondary md:shadow-none`;
   return `${base} group-hover:text-secondary group-hover:bg-secondary/5`;
 }
+
+// Chữ nhãn cạnh icon — trên desktop mặc định thu về 0 (ẩn), chỉ hiện khi rê chuột vào
+// cả sidebar (group/sidebar, đặt ở thẻ <nav> gốc). Mobile không đổi (không có md: nào áp).
+const collapsibleLabel = "md:inline-block md:max-w-0 md:opacity-0 md:overflow-hidden md:whitespace-nowrap md:transition-all md:duration-300 md:group-hover/sidebar:max-w-[160px] md:group-hover/sidebar:opacity-100";
 
 export default function BottomNav({
   activeTab, setActiveTab,
@@ -55,12 +59,12 @@ export default function BottomNav({
   const toggleNotif   = () => { setNotifOpen(p => !p);   setAccountOpen(false); };
 
   return (
-    <nav className="fixed md:relative bottom-0 left-0 right-0 md:inset-auto h-[72px] md:h-full md:col-[1/2] md:row-[1/3] md:w-[240px] bg-white/95 dark:bg-[#1E293B] backdrop-blur-[20px] border-t md:border-t-0 md:border-r border-[rgba(30,58,95,0.07)] dark:border-[#334155] shadow-[0_-4px_20px_rgba(0,0,0,0.02)] md:shadow-none flex md:flex-col justify-around md:justify-start items-center md:items-stretch px-2 md:px-0 md:pt-4 md:overflow-y-auto z-[100]">
+    <nav className="group/sidebar fixed bottom-0 left-0 right-0 md:right-auto md:bottom-auto md:top-0 h-[72px] md:h-screen md:w-[88px] md:hover:w-60 bg-white/95 dark:bg-[#1E293B] backdrop-blur-[20px] border-t md:border-t-0 md:border-r border-[rgba(30,58,95,0.07)] dark:border-[#334155] shadow-[0_-4px_20px_rgba(0,0,0,0.02)] md:shadow-none flex md:flex-col justify-around md:justify-start items-center md:items-stretch px-2 md:px-0 md:pt-4 md:overflow-y-auto md:overflow-x-hidden z-[100] md:transition-[width] md:duration-300 md:ease-in-out">
 
       {/* Logo header — chỉ hiện trên desktop (sidebar) */}
       <div className="hidden md:flex items-center gap-2.5 pt-[18px] pb-3.5 px-5 border-b border-[#f1f5f9] dark:border-[#334155] mb-2">
-        <img src="/favicon.svg" alt="FormulaX" className="w-8 h-8 rounded-lg object-cover" />
-        <span className="font-extrabold text-[1.15rem] text-primary dark:text-[#E2E8F0] tracking-[-0.5px]">FormulaX AI</span>
+        <img src="/favicon.svg" alt="FormulaX" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+        <span className={`font-extrabold text-[1.15rem] text-primary dark:text-[#E2E8F0] tracking-[-0.5px] ${collapsibleLabel}`}>FormulaX AI</span>
       </div>
 
       {/* Main nav tabs */}
@@ -75,7 +79,7 @@ export default function BottomNav({
             title={tab.label}
           >
             <div className={navIconClass(active)}><Icon size={20} /></div>
-            <span>{tab.label}</span>
+            <span className={collapsibleLabel}>{tab.label}</span>
           </button>
         );
       })}
@@ -94,8 +98,8 @@ export default function BottomNav({
             <Bell size={18} />
             <span className="absolute -top-[3px] -right-[3px] w-[7px] h-[7px] rounded-full bg-error border-[1.5px] border-white dark:border-[#1E293B]" />
           </div>
-          <span className="flex-1">Thông báo</span>
-          <ChevronDown size={14} className={`transition-transform duration-200 text-[#94A3B8] shrink-0 ${notifOpen ? "rotate-180" : "rotate-0"}`} />
+          <span className={collapsibleLabel}>Thông báo</span>
+          <ChevronDown size={14} className={`hidden md:group-hover/sidebar:block md:ml-auto transition-transform duration-200 text-[#94A3B8] shrink-0 ${notifOpen ? "rotate-180" : "rotate-0"}`} />
         </button>
 
         {notifOpen && (
@@ -123,11 +127,13 @@ export default function BottomNav({
               <User size={18} />
             )}
           </div>
-          <span className="flex-1">Tài khoản</span>
-          {isPremium && (
-            <span className="text-[0.55rem] bg-[linear-gradient(135deg,#F59E0B,#EF4444)] text-white py-px px-1 rounded-[3px] font-bold shrink-0">PRO</span>
-          )}
-          <ChevronDown size={14} className={`transition-transform duration-200 text-[#94A3B8] shrink-0 ml-1 ${accountOpen ? "rotate-180" : "rotate-0"}`} />
+          <span className={collapsibleLabel}>Tài khoản</span>
+          <div className="hidden md:group-hover/sidebar:flex items-center gap-1 md:ml-auto shrink-0">
+            {isPremium && (
+              <span className="text-[0.55rem] bg-[linear-gradient(135deg,#F59E0B,#EF4444)] text-white py-px px-1 rounded-[3px] font-bold shrink-0">PRO</span>
+            )}
+            <ChevronDown size={14} className={`transition-transform duration-200 text-[#94A3B8] shrink-0 ${accountOpen ? "rotate-180" : "rotate-0"}`} />
+          </div>
         </button>
 
         {accountOpen && (
@@ -155,8 +161,8 @@ export default function BottomNav({
               <div className={navIconClass(false)}>
                 {darkMode ? <Sun size={16} /> : <Moon size={16} />}
               </div>
-              <span className="flex-1 text-[0.8rem]">{darkMode ? "Giao diện sáng" : "Giao diện tối"}</span>
-              <div className={`w-7 h-4 rounded-lg relative transition-colors duration-200 shrink-0 ${darkMode ? "bg-secondary" : "bg-[#CBD5E1]"}`}>
+              <span className={`text-[0.8rem] ${collapsibleLabel}`}>{darkMode ? "Giao diện sáng" : "Giao diện tối"}</span>
+              <div className={`md:ml-auto w-7 h-4 rounded-lg relative transition-colors duration-200 shrink-0 ${darkMode ? "bg-secondary" : "bg-[#CBD5E1]"}`}>
                 <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-[left] duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.2)] ${darkMode ? "left-3.5" : "left-0.5"}`} />
               </div>
             </button>
@@ -185,7 +191,7 @@ export default function BottomNav({
                 onClick={() => { setNameInput(displayName || ""); setEditingName(true); }}
               >
                 <div className={navIconClass(false)}><Pencil size={16} /></div>
-                <span className="flex-1 text-[0.8rem]">
+                <span className={`text-[0.8rem] ${collapsibleLabel}`}>
                   {displayName ? `Tên: ${displayName}` : "Đổi tên hiển thị"}
                 </span>
               </button>
@@ -196,8 +202,8 @@ export default function BottomNav({
               className="w-full flex items-center gap-2.5 px-5 h-11 bg-transparent border-none border-t border-[#f1f5f9] dark:border-[#334155] cursor-pointer text-error text-[0.85rem] font-semibold text-left rounded-none hover:bg-error/6"
               onClick={onLogout}
             >
-              <LogOut size={15} />
-              <span>Đăng xuất</span>
+              <LogOut size={15} className="shrink-0" />
+              <span className={collapsibleLabel}>Đăng xuất</span>
             </button>
           </div>
         )}

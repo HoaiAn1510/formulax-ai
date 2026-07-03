@@ -33,7 +33,7 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
   ];
 
   return (
-    <header className="sticky md:relative md:col-[2/3] md:row-[1/2] top-0 z-[100] flex justify-between items-center py-3 px-4 bg-white dark:bg-[#1E293B] border-b border-[rgba(30,58,95,0.07)] dark:border-[#334155] shadow-[0_2px_10px_rgba(0,0,0,0.01)] md:shadow-none">
+    <header className="sticky md:hidden top-0 z-[100] flex justify-between items-center py-3 px-4 bg-white dark:bg-[#1E293B] border-b border-[rgba(30,58,95,0.07)] dark:border-[#334155] shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
       {/* Logo — chỉ hiện trên mobile */}
       <div className="flex md:hidden items-center gap-2 text-primary dark:text-[#E2E8F0] whitespace-nowrap">
         <img src="/favicon.svg" alt="FormulaX" className="w-[30px] h-[30px] rounded-[7px]" />
