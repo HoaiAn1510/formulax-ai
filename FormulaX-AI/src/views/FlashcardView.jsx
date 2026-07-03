@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { saveFlashcardActivity } from "../lib/supabase";
-import { glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -83,32 +82,29 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
     onConfirm(deck);
   };
 
-  const chipStyle = (active) => ({
-    padding:"6px 14px", borderRadius:"20px", fontSize:"0.8rem", fontWeight:"600",
-    border: active ? "1.5px solid #3B82F6" : "1.5px solid #E2E8F0",
-    background: active ? "#EFF6FF" : "white",
-    color: active ? "#3B82F6" : "#64748B",
-    cursor:"pointer", transition:"all 0.15s",
-  });
+  const chipClass = (active) =>
+    `py-1.5 px-3.5 rounded-[20px] text-[0.8rem] font-semibold cursor-pointer transition-all duration-150 border-[1.5px] ${
+      active ? "border-secondary bg-[#EFF6FF] text-secondary" : "border-[#E2E8F0] bg-white text-text-muted"
+    }`;
 
   return (
     <div
-      style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.5)", zIndex:9998, display:"flex", alignItems:"center", justifyContent:"center", padding:"16px" }}
+      className="fixed inset-0 bg-black/50 z-[9998] flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
-        style={{ background:"white", borderRadius:"16px", padding:"24px", width:"100%", maxWidth:"420px", boxShadow:"0 20px 60px rgba(0,0,0,0.3)" }}
+        className="bg-white rounded-2xl p-6 w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
         onClick={e => e.stopPropagation()}
       >
-        <h3 style={{ fontSize:"1.1rem", fontWeight:"800", color:"#1E3A5F", marginBottom:"4px" }}>Tạo bộ thẻ theo chủ đề</h3>
-        <p style={{ fontSize:"0.8rem", color:"#64748B", marginBottom:"20px" }}>Chọn nhiều chủ đề và lớp để tạo bộ thẻ tự động</p>
+        <h3 className="text-[1.1rem] font-extrabold text-[#1E3A5F] mb-1">Tạo bộ thẻ theo chủ đề</h3>
+        <p className="text-[0.8rem] text-text-muted mb-5">Chọn nhiều chủ đề và lớp để tạo bộ thẻ tự động</p>
 
         {/* Topic chips — multi-select */}
-        <div style={{ marginBottom:"16px" }}>
-          <p style={{ fontSize:"0.8rem", fontWeight:"700", color:"#1E3A5F", marginBottom:"8px" }}>Chủ đề</p>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
+        <div className="mb-4">
+          <p className="text-[0.8rem] font-bold text-[#1E3A5F] mb-2">Chủ đề</p>
+          <div className="flex flex-wrap gap-2">
             {TOPICS.map(t => (
-              <button key={t} onClick={() => toggleTopic(t)} style={chipStyle(isTopicActive(t))}>
+              <button key={t} onClick={() => toggleTopic(t)} className={chipClass(isTopicActive(t))}>
                 {t}
               </button>
             ))}
@@ -116,11 +112,11 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
         </div>
 
         {/* Grade chips — multi-select */}
-        <div style={{ marginBottom:"20px" }}>
-          <p style={{ fontSize:"0.8rem", fontWeight:"700", color:"#1E3A5F", marginBottom:"8px" }}>Lớp</p>
-          <div style={{ display:"flex", flexWrap:"wrap", gap:"8px" }}>
+        <div className="mb-5">
+          <p className="text-[0.8rem] font-bold text-[#1E3A5F] mb-2">Lớp</p>
+          <div className="flex flex-wrap gap-2">
             {GRADES.map(g => (
-              <button key={g} onClick={() => toggleGrade(g)} style={chipStyle(isGradeActive(g))}>
+              <button key={g} onClick={() => toggleGrade(g)} className={chipClass(isGradeActive(g))}>
                 {g}
               </button>
             ))}
@@ -128,43 +124,35 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
         </div>
 
         {/* Preview */}
-        <div style={{ background:"#F8FAFC", borderRadius:"10px", padding:"12px 16px", marginBottom: dupError ? "10px" : "20px", textAlign:"center" }}>
-          <span style={{ fontSize:"0.85rem", fontWeight:"600", color:"#64748B" }}>
+        <div className={`bg-[#F8FAFC] rounded-[10px] py-3 px-4 text-center ${dupError ? "mb-2.5" : "mb-5"}`}>
+          <span className="text-[0.85rem] font-semibold text-text-muted">
             Bộ thẻ sẽ gồm{" "}
-            <strong style={{ color:"#1E3A5F", fontSize:"1rem" }}>{matched.length}</strong>
+            <strong className="text-[#1E3A5F] text-base">{matched.length}</strong>
             {" "}công thức
           </span>
         </div>
 
         {/* Duplicate error */}
         {dupError && (
-          <div style={{
-            background:"#FEF2F2", border:"1px solid #FECACA", borderRadius:"8px",
-            padding:"9px 12px", marginBottom:"14px",
-            fontSize:"0.78rem", color:"#DC2626", fontWeight:"600",
-          }}>
+          <div className="bg-[#FEF2F2] border border-[#FECACA] rounded-lg py-2.5 px-3 mb-3.5 text-[0.78rem] text-error font-semibold">
             ⚠️ {dupError}
           </div>
         )}
 
         {/* Buttons */}
-        <div style={{ display:"flex", gap:"10px" }}>
+        <div className="flex gap-2.5">
           <button
             onClick={onClose}
-            style={{ flex:1, padding:"11px", border:"1.5px solid #E2E8F0", borderRadius:"10px", background:"white", cursor:"pointer", fontSize:"0.875rem", color:"#64748B", fontWeight:"600" }}
+            className="flex-1 py-2.5 border-[1.5px] border-[#E2E8F0] rounded-[10px] bg-white cursor-pointer text-[0.875rem] text-text-muted font-semibold"
           >
             Huỷ
           </button>
           <button
             onClick={handleCreate}
             disabled={matched.length === 0}
-            style={{
-              flex:2, padding:"11px", borderRadius:"10px", fontSize:"0.875rem", fontWeight:"700",
-              background: matched.length === 0 ? "#E2E8F0" : "#3B82F6",
-              color: matched.length === 0 ? "#94A3B8" : "white",
-              border:"none", cursor: matched.length === 0 ? "not-allowed" : "pointer",
-              transition:"all 0.15s",
-            }}
+            className={`flex-[2] py-2.5 rounded-[10px] text-[0.875rem] font-bold border-none transition-all duration-150 ${
+              matched.length === 0 ? "bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed" : "bg-secondary text-white cursor-pointer"
+            }`}
           >
             Tạo bộ
           </button>
@@ -447,208 +435,200 @@ export default function FlashcardView({
 
     return (
       <div className="view-container">
-      <div style={pageWrapper}>
-        {orbs.map((orb, idx) => (
-          <div key={idx} style={orbStyle(orb)} />
-        ))}
-        <div style={contentLayer}>
-        {/* Header */}
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"8px" }}>
-          <button className="breadcrumb-back" onClick={() => setActiveTab("dashboard")} style={{ marginBottom:0 }}>
-            <ArrowLeft size={12} />
-            <span>Về trang chủ</span>
-          </button>
-        </div>
-
-        <div style={{ marginBottom:"20px" }}>
-          <h2 style={{ fontSize:"1.6rem", fontWeight:"800", color:"#1E3A5F", letterSpacing:"-0.5px" }}>
-            Flashcard
-          </h2>
-          <p style={{ fontSize:"0.85rem", color:"#64748B", fontWeight:"500", marginTop:"4px" }}>
-            Học công thức qua thẻ ghi nhớ
-          </p>
-        </div>
-
-        {/* EMPTY STATE */}
-        {!hasDecks && (
-          <div style={{ display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 24px", textAlign:"center", gap:"12px" }}>
-            <div style={{ width:"80px", height:"80px", borderRadius:"50%", background:"rgba(59,130,246,0.08)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:"8px" }}>
-              <Layers size={36} color="#3B82F6" />
-            </div>
-            <h3 style={{ fontSize:"1.15rem", fontWeight:"800", color:"#1E3A5F", margin:0 }}>Chưa có bộ thẻ nào</h3>
-            <p style={{ fontSize:"0.85rem", color:"#64748B", maxWidth:"280px", lineHeight:"1.5", margin:0 }}>
-              Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức.
-            </p>
-            <div style={{ display:"flex", flexDirection:"column", gap:"10px", width:"100%", maxWidth:"300px", marginTop:"8px" }}>
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowCreateFiltered(true)}
-                style={{ width:"100%", justifyContent:"center" }}
-              >
-                <Layers size={15} />
-                <span>Tạo theo chủ đề</span>
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={handleCreateFavoriteDeck}
-                style={{ width:"100%", justifyContent:"center" }}
-              >
-                <Heart size={15} />
-                <span>Tạo bộ yêu thích</span>
+        <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+          <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+          <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+          <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+          <div className="relative z-[1]">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-2">
+              <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0] mb-0" onClick={() => setActiveTab("dashboard")}>
+                <ArrowLeft size={12} />
+                <span>Về trang chủ</span>
               </button>
             </div>
-          </div>
-        )}
 
-        {/* DECK LIST */}
-        {hasDecks && (
-          <div>
-            {/* Filtered decks section */}
-            {filteredDecks.length > 0 && (
-              <div style={{ marginBottom:"20px" }}>
-                <p style={{ fontSize:"0.75rem", fontWeight:"700", color:"#94A3B8", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:"10px" }}>
-                  Theo chủ đề
+            <div className="mb-5">
+              <h2 className="text-[1.6rem] font-extrabold text-primary tracking-[-0.5px]">
+                Flashcard
+              </h2>
+              <p className="text-[0.85rem] text-text-muted font-medium mt-1">
+                Học công thức qua thẻ ghi nhớ
+              </p>
+            </div>
+
+            {/* EMPTY STATE */}
+            {!hasDecks && (
+              <div className="flex flex-col items-center justify-center py-10 px-6 text-center gap-3">
+                <div className="w-20 h-20 rounded-full bg-secondary/8 flex items-center justify-center mb-2">
+                  <Layers size={36} color="#3B82F6" />
+                </div>
+                <h3 className="text-[1.15rem] font-extrabold text-primary m-0">Chưa có bộ thẻ nào</h3>
+                <p className="text-[0.85rem] text-text-muted max-w-[280px] leading-[1.5] m-0">
+                  Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức.
                 </p>
-                <div className="deck-stack-list">
-                  {filteredDecks.map(deck => (
-                    <div
-                      key={deck.id}
-                      className="deck-list-card-figma"
-                      style={glassCard}
-                      onClick={() => {
-                        if (renamingDeckId === deck.id) return;
-                        if (deck.formulaIds.length === 0) return;
-                        handleStartDeck(deck.id);
-                      }}
-                      style={{ cursor: deck.formulaIds.length === 0 ? "default" : "pointer", opacity: deck.formulaIds.length === 0 ? 0.6 : 1 }}
-                    >
-                      <div className="deck-card-left">
-                        <div className="deck-circle-avatar" style={{ backgroundColor:"rgba(59,130,246,0.1)", color:"#3B82F6" }}>
-                          <BarChart3 size={20} />
-                        </div>
-                        <div>
-                          <h3 className="deck-card-name">{deck.name}</h3>
-                          <div className="deck-card-stats">{deck.formulaIds.length} thẻ</div>
-                        </div>
-                      </div>
-                      <div style={{ display:"flex", alignItems:"center", gap:"6px" }}>
-                        {deck.topic && (
-                          <span className="tag tag-blue" style={{ fontSize:"0.7rem", padding:"2px 8px" }}>{deck.topic}</span>
-                        )}
-                        {deck.grade && (
-                          <span className="tag" style={{ fontSize:"0.7rem", padding:"2px 8px", background:"#F1F5F9", color:"#475569" }}>Lớp {deck.grade}</span>
-                        )}
-                        <button
-                          onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
-                          title="Xoá bộ thẻ"
-                          style={{ background:"none", border:"none", cursor:"pointer", padding:"4px", color:"#CBD5E1", borderRadius:"6px", display:"flex", alignItems:"center" }}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex flex-col gap-2.5 w-full max-w-[300px] mt-2">
+                  <button
+                    className="btn btn-primary w-full justify-center"
+                    onClick={() => setShowCreateFiltered(true)}
+                  >
+                    <Layers size={15} />
+                    <span>Tạo theo chủ đề</span>
+                  </button>
+                  <button
+                    className="btn btn-secondary w-full justify-center"
+                    onClick={handleCreateFavoriteDeck}
+                  >
+                    <Heart size={15} />
+                    <span>Tạo bộ yêu thích</span>
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* Favorite decks section */}
-            {favoriteDecks.length > 0 && (
-              <div style={{ marginBottom:"20px" }}>
-                <p style={{ fontSize:"0.75rem", fontWeight:"700", color:"#94A3B8", textTransform:"uppercase", letterSpacing:"0.05em", marginBottom:"10px" }}>
-                  Yêu thích
-                </p>
-                <div className="deck-stack-list">
-                  {favoriteDecks.map(deck => (
-                    <div
-                      key={deck.id}
-                      className="deck-list-card-figma"
-                      style={glassCard}
-                      onClick={() => {
-                        if (renamingDeckId === deck.id) return;
-                        if (deck.formulaIds.length === 0) return;
-                        handleStartDeck(deck.id);
-                      }}
-                      style={{ cursor: deck.formulaIds.length === 0 ? "default" : "pointer", opacity: deck.formulaIds.length === 0 ? 0.6 : 1 }}
-                    >
-                      <div className="deck-card-left" style={{ flex:1, minWidth:0 }}>
-                        <div className="deck-circle-avatar" style={{ backgroundColor:"rgba(239,68,68,0.08)", color:"#EF4444" }}>
-                          <Heart size={20} />
-                        </div>
-                        <div style={{ flex:1, minWidth:0 }}>
-                          {renamingDeckId === deck.id ? (
-                            <input
-                              ref={renameInputRef}
-                              value={renameValue}
-                              onChange={e => setRenameValue(e.target.value)}
-                              onKeyDown={handleRenameKeyDown}
-                              onBlur={handleConfirmRename}
-                              onClick={e => e.stopPropagation()}
-                              style={{ fontSize:"0.9rem", fontWeight:"700", color:"#1E3A5F", border:"1.5px solid #3B82F6", borderRadius:"6px", padding:"2px 8px", width:"100%", outline:"none", background:"white" }}
-                            />
-                          ) : (
-                            <h3 className="deck-card-name">{deck.name}</h3>
-                          )}
-                          <div className="deck-card-stats">
-                            {deck.formulaIds.length === 0 ? "Chưa có thẻ — thêm từ Thư viện" : `${deck.formulaIds.length} thẻ`}
+            {/* DECK LIST */}
+            {hasDecks && (
+              <div>
+                {/* Filtered decks section */}
+                {filteredDecks.length > 0 && (
+                  <div className="mb-5">
+                    <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-[0.05em] mb-2.5">
+                      Theo chủ đề
+                    </p>
+                    <div className="deck-stack-list">
+                      {filteredDecks.map(deck => (
+                        <div
+                          key={deck.id}
+                          className={`deck-list-card-figma dark:bg-[#1E293B] dark:border-[#334155] ${deck.formulaIds.length === 0 ? "cursor-default opacity-60" : "cursor-pointer"}`}
+                          onClick={() => {
+                            if (renamingDeckId === deck.id) return;
+                            if (deck.formulaIds.length === 0) return;
+                            handleStartDeck(deck.id);
+                          }}
+                        >
+                          <div className="deck-card-left">
+                            <div className="w-11 h-11 rounded-full flex items-center justify-center bg-secondary/10 text-secondary">
+                              <BarChart3 size={20} />
+                            </div>
+                            <div>
+                              <h3 className="deck-card-name">{deck.name}</h3>
+                              <div className="deck-card-stats">{deck.formulaIds.length} thẻ</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            {deck.topic && (
+                              <span className="tag tag-blue text-[0.7rem] py-0.5 px-2">{deck.topic}</span>
+                            )}
+                            {deck.grade && (
+                              <span className="tag text-[0.7rem] py-0.5 px-2 bg-[#F1F5F9] text-[#475569]">Lớp {deck.grade}</span>
+                            )}
+                            <button
+                              onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
+                              title="Xoá bộ thẻ"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#CBD5E1] rounded-md flex items-center"
+                            >
+                              <Trash2 size={15} />
+                            </button>
                           </div>
                         </div>
-                      </div>
-                      <div style={{ display:"flex", alignItems:"center", gap:"4px" }}>
-                        <button
-                          onClick={e => { e.stopPropagation(); handleStartRename(deck); }}
-                          title="Đổi tên"
-                          style={{ background:"none", border:"none", cursor:"pointer", padding:"4px", color:"#CBD5E1", borderRadius:"6px", display:"flex", alignItems:"center" }}
-                        >
-                          <Pencil size={15} />
-                        </button>
-                        <button
-                          onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
-                          title="Xoá bộ thẻ"
-                          style={{ background:"none", border:"none", cursor:"pointer", padding:"4px", color:"#CBD5E1", borderRadius:"6px", display:"flex", alignItems:"center" }}
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                )}
+
+                {/* Favorite decks section */}
+                {favoriteDecks.length > 0 && (
+                  <div className="mb-5">
+                    <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-[0.05em] mb-2.5">
+                      Yêu thích
+                    </p>
+                    <div className="deck-stack-list">
+                      {favoriteDecks.map(deck => (
+                        <div
+                          key={deck.id}
+                          className={`deck-list-card-figma dark:bg-[#1E293B] dark:border-[#334155] ${deck.formulaIds.length === 0 ? "cursor-default opacity-60" : "cursor-pointer"}`}
+                          onClick={() => {
+                            if (renamingDeckId === deck.id) return;
+                            if (deck.formulaIds.length === 0) return;
+                            handleStartDeck(deck.id);
+                          }}
+                        >
+                          <div className="deck-card-left flex-1 min-w-0">
+                            <div className="w-11 h-11 rounded-full flex items-center justify-center bg-error/8 text-error">
+                              <Heart size={20} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              {renamingDeckId === deck.id ? (
+                                <input
+                                  ref={renameInputRef}
+                                  value={renameValue}
+                                  onChange={e => setRenameValue(e.target.value)}
+                                  onKeyDown={handleRenameKeyDown}
+                                  onBlur={handleConfirmRename}
+                                  onClick={e => e.stopPropagation()}
+                                  className="text-[0.9rem] font-bold text-[#1E3A5F] border-[1.5px] border-secondary rounded-md py-0.5 px-2 w-full outline-none bg-white"
+                                />
+                              ) : (
+                                <h3 className="deck-card-name">{deck.name}</h3>
+                              )}
+                              <div className="deck-card-stats">
+                                {deck.formulaIds.length === 0 ? "Chưa có thẻ — thêm từ Thư viện" : `${deck.formulaIds.length} thẻ`}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={e => { e.stopPropagation(); handleStartRename(deck); }}
+                              title="Đổi tên"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#CBD5E1] rounded-md flex items-center"
+                            >
+                              <Pencil size={15} />
+                            </button>
+                            <button
+                              onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
+                              title="Xoá bộ thẻ"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#CBD5E1] rounded-md flex items-center"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Add buttons */}
+                <div className="flex flex-col gap-2.5 mt-2">
+                  <button
+                    className="btn btn-secondary w-full justify-center !border-dashed"
+                    onClick={() => setShowCreateFiltered(true)}
+                  >
+                    <Plus size={15} />
+                    <span>Thêm bộ theo chủ đề</span>
+                  </button>
+                  <button
+                    className="btn btn-secondary w-full justify-center !border-dashed"
+                    onClick={handleCreateFavoriteDeck}
+                  >
+                    <Plus size={15} />
+                    <span>Thêm bộ yêu thích</span>
+                  </button>
                 </div>
               </div>
             )}
 
-            {/* Add buttons */}
-            <div style={{ display:"flex", flexDirection:"column", gap:"10px", marginTop:"8px" }}>
-              <button
-                className="btn btn-secondary"
-                onClick={() => setShowCreateFiltered(true)}
-                style={{ width:"100%", justifyContent:"center", borderStyle:"dashed" }}
-              >
-                <Plus size={15} />
-                <span>Thêm bộ theo chủ đề</span>
-              </button>
-              <button
-                className="btn btn-secondary"
-                onClick={handleCreateFavoriteDeck}
-                style={{ width:"100%", justifyContent:"center", borderStyle:"dashed" }}
-              >
-                <Plus size={15} />
-                <span>Thêm bộ yêu thích</span>
-              </button>
-            </div>
+            {/* Create Filtered Deck Modal */}
+            {showCreateFiltered && (
+              <CreateFilteredDeckModal
+                formulas={formulas}
+                existingDecks={decks.filter(d => d.type === "filtered")}
+                onClose={() => setShowCreateFiltered(false)}
+                onConfirm={handleCreateFilteredDeck}
+              />
+            )}
           </div>
-        )}
-
-        {/* Create Filtered Deck Modal */}
-        {showCreateFiltered && (
-          <CreateFilteredDeckModal
-            formulas={formulas}
-            existingDecks={decks.filter(d => d.type === "filtered")}
-            onClose={() => setShowCreateFiltered(false)}
-            onConfirm={handleCreateFilteredDeck}
-          />
-        )}
         </div>
-      </div>
       </div>
     );
   }
@@ -660,21 +640,21 @@ export default function FlashcardView({
     if (cards.length === 0) {
       return (
         <div className="view-container">
-        <div style={pageWrapper}>
-          {orbs.map((orb, idx) => (
-            <div key={idx} style={orbStyle(orb)} />
-          ))}
-          <div style={contentLayer}>
-          <div className="summary-card" style={glassCard}>
-            <HelpCircle size={32} />
-            <h2>Bộ thẻ trống</h2>
-            <p>Không có công thức nào trong bộ thẻ này.</p>
-            <button className="btn btn-primary" onClick={() => setView("list")}>
-              Quay lại danh sách
-            </button>
+          <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+            <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+            <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+            <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+            <div className="relative z-[1]">
+              <div className="summary-card !bg-white/72 !border !border-white/60 !rounded-[20px] !shadow-[0_8px_32px_rgba(31,38,135,0.10)] !backdrop-blur-[20px]">
+                <HelpCircle size={32} />
+                <h2>Bộ thẻ trống</h2>
+                <p>Không có công thức nào trong bộ thẻ này.</p>
+                <button className="btn btn-primary" onClick={() => setView("list")}>
+                  Quay lại danh sách
+                </button>
+              </div>
+            </div>
           </div>
-          </div>
-        </div>
         </div>
       );
     }
@@ -683,102 +663,102 @@ export default function FlashcardView({
 
     return (
       <div className="view-container">
-      <div style={pageWrapper}>
-        {orbs.map((orb, idx) => (
-          <div key={idx} style={orbStyle(orb)} />
-        ))}
-        <div style={contentLayer}>
-        <div className="flashcard-study-container">
-          <div className="study-header">
-            <button className="back-to-decks" onClick={() => setView("list")}>
-              <ArrowLeft size={14} />
-              <span>Danh sách bộ thẻ</span>
-            </button>
-            <span className="card-counter">
-              Thẻ: {currentIndex + 1} / {cards.length}
-            </span>
-          </div>
-
-          {/* 3D Flip Card */}
-          <div className="card-scene" onClick={() => setIsFlipped(!isFlipped)}>
-            <div className={`card-3d ${isFlipped ? "flipped" : ""}`}>
-              {/* Front */}
-              <div className="card-face front" style={glassCard}>
-                <span className="card-hint">Mặt trước - Tên công thức</span>
-                <div className="card-content-front">
-                  <span className="tag" style={{ background:"#f1f5f9", color:"#1E3A5F" }}>
-                    Lớp {currentCard.grade} • {currentCard.topic}
-                  </span>
-                  <div className="card-title-main">{currentCard.name}</div>
-                </div>
-                <div style={{ display:"flex", alignItems:"center", gap:"4px", fontSize:"0.75rem", color:"#64748B", fontWeight:"700" }}>
-                  <RotateCw size={12} /> Chạm để lật
-                </div>
+        <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+          <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+          <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+          <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+          <div className="relative z-[1]">
+            <div className="flex flex-col items-center w-full max-w-[500px] mx-auto gap-4 [animation:fadeIn_0.3s_ease-out]">
+              <div className="flex justify-between items-center w-full mb-2">
+                <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.85rem] font-bold flex items-center gap-1.5 cursor-pointer transition duration-200 py-1.5 px-3 rounded-lg hover:text-primary dark:hover:text-[#E2E8F0] hover:bg-[#f1f5f9]" onClick={() => setView("list")}>
+                  <ArrowLeft size={14} />
+                  <span>Danh sách bộ thẻ</span>
+                </button>
+                <span className="text-[0.85rem] font-bold text-secondary bg-secondary/8 py-1 px-3 rounded-full">
+                  Thẻ: {currentIndex + 1} / {cards.length}
+                </span>
               </div>
 
-              {/* Back */}
-              <div className="card-face back" style={glassCard}>
-                <span className="card-hint" style={{ color:"#3B82F6" }}>Mặt sau - Công thức</span>
-                <div className="card-content-back">
-                  <div className="formula-display-box" style={{ width:"100%" }}>
-                    <MathElement math={currentCard.latex} block={true} />
+              {/* 3D Flip Card */}
+              <div className="w-full h-[380px] [perspective:1000px] cursor-pointer mb-2" onClick={() => setIsFlipped(!isFlipped)}>
+                <div className={`w-full h-full relative transition-transform duration-[0.6s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}>
+                  {/* Front */}
+                  <div className="glass-card absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden">
+                    <span className="text-[0.7rem] font-bold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.5px]">Mặt trước - Tên công thức</span>
+                    <div className="flex flex-col items-center gap-4 text-center flex-1 justify-center">
+                      <span className="tag bg-[#f1f5f9] text-[#1E3A5F]">
+                        Lớp {currentCard.grade} • {currentCard.topic}
+                      </span>
+                      <div className="text-[1.4rem] font-extrabold text-primary dark:text-[#E2E8F0] leading-[1.4]">{currentCard.name}</div>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-text-muted dark:text-[#94A3B8] font-bold">
+                      <RotateCw size={12} /> Chạm để lật
+                    </div>
                   </div>
-                  <div style={{ fontSize:"0.8rem", color:"#475569", textAlign:"left", width:"100%", overflowX:"auto" }}>
-                    <strong>Giải thích:</strong>
-                    <div style={{ marginTop:"2px" }}>
-                      <RichTextRenderer text={currentCard.explanation} />
+
+                  {/* Back */}
+                  <div className="glass-card absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden [transform:rotateY(180deg)]">
+                    <span className="text-[0.7rem] font-bold text-secondary uppercase tracking-[0.5px]">Mặt sau - Công thức</span>
+                    <div className="flex flex-col items-center gap-3 w-full flex-1 min-h-0 justify-start overflow-y-auto overflow-x-hidden">
+                      <div className="bg-[#f1f5f9] rounded-xl p-4 flex items-center justify-center min-h-[70px] max-h-[200px] overflow-auto shrink-0 border border-[#e2e8f0] w-full">
+                        <MathElement math={currentCard.latex} block={true} />
+                      </div>
+                      <div className="text-[0.8rem] text-[#475569] text-left w-full overflow-x-auto">
+                        <strong>Giải thích:</strong>
+                        <div className="mt-0.5">
+                          <RichTextRenderer text={currentCard.explanation} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 text-xs text-text-muted dark:text-[#94A3B8] font-bold">
+                      <RotateCw size={12} /> Chạm để lật lại
                     </div>
                   </div>
                 </div>
-                <div style={{ display:"flex", alignItems:"center", gap:"4px", fontSize:"0.75rem", color:"#64748B", fontWeight:"700" }}>
-                  <RotateCw size={12} /> Chạm để lật lại
-                </div>
               </div>
+
+              {/* Arrows */}
+              <div className="flex justify-between items-center w-full mt-2 gap-4">
+                <button className="arrow-btn dark:text-[#E2E8F0]" onClick={handlePrev} disabled={currentIndex === 0}>
+                  <ArrowLeft size={18} />
+                </button>
+                <span className="text-[0.8rem] text-text-muted font-bold self-center">
+                  Lật thẻ xem đáp án trước khi chấm
+                </span>
+                <button className="arrow-btn dark:text-[#E2E8F0]" onClick={handleNext} disabled={currentIndex === cards.length - 1}>
+                  <ArrowRight size={18} />
+                </button>
+              </div>
+
+              {/* Grading panel */}
+              {isFlipped && (
+                <div className="grid grid-cols-2 gap-4 w-full mt-2 [animation:slideUp_0.3s_cubic-bezier(0.16,1,0.3,1)]">
+                  <button className="btn btn-error" onClick={() => handleGrade(false)}>
+                    <AlertTriangle size={16} />
+                    <span>Cần ôn thêm</span>
+                  </button>
+                  <button className="btn btn-success" onClick={() => handleGrade(true)}>
+                    <CheckCircle size={16} />
+                    <span>Nhớ rồi</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Remove from favorite deck button */}
+              {isFavoriteDeck && isFlipped && (
+                <div className="mt-2 text-center">
+                  <button
+                    onClick={e => { e.stopPropagation(); handleRemoveFromDeck(); }}
+                    className="bg-transparent border-none cursor-pointer text-xs text-error font-semibold inline-flex items-center gap-1 py-1 px-2 rounded-md"
+                  >
+                    <X size={13} />
+                    Xóa khỏi bộ này
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-
-          {/* Arrows */}
-          <div className="nav-arrows">
-            <button className="arrow-btn" onClick={handlePrev} disabled={currentIndex === 0}>
-              <ArrowLeft size={18} />
-            </button>
-            <span style={{ fontSize:"0.8rem", color:"#64748B", fontWeight:"700", alignSelf:"center" }}>
-              Lật thẻ xem đáp án trước khi chấm
-            </span>
-            <button className="arrow-btn" onClick={handleNext} disabled={currentIndex === cards.length - 1}>
-              <ArrowRight size={18} />
-            </button>
-          </div>
-
-          {/* Grading panel */}
-          {isFlipped && (
-            <div className="grading-panel">
-              <button className="btn btn-error" onClick={() => handleGrade(false)}>
-                <AlertTriangle size={16} />
-                <span>Cần ôn thêm</span>
-              </button>
-              <button className="btn btn-success" onClick={() => handleGrade(true)}>
-                <CheckCircle size={16} />
-                <span>Nhớ rồi</span>
-              </button>
-            </div>
-          )}
-
-          {/* Remove from favorite deck button */}
-          {isFavoriteDeck && isFlipped && (
-            <div style={{ marginTop:"8px", textAlign:"center" }}>
-              <button
-                onClick={e => { e.stopPropagation(); handleRemoveFromDeck(); }}
-                style={{ background:"none", border:"none", cursor:"pointer", fontSize:"0.75rem", color:"#EF4444", fontWeight:"600", display:"inline-flex", alignItems:"center", gap:"4px", padding:"4px 8px", borderRadius:"6px" }}
-              >
-                <X size={13} />
-                Xóa khỏi bộ này
-              </button>
-            </div>
-          )}
         </div>
-        </div>
-      </div>
       </div>
     );
   }
@@ -788,60 +768,63 @@ export default function FlashcardView({
   if (view === "summary") {
     return (
       <div className="view-container">
-      <div style={pageWrapper}>
-        {orbs.map((orb, idx) => (
-          <div key={idx} style={orbStyle(orb)} />
-        ))}
-        <div style={contentLayer}>
-        <div className="summary-card" style={glassCard}>
-          <div className="summary-icon">
-            <CheckCircle size={32} />
-          </div>
-          <h2 style={{ fontSize:"1.3rem", fontWeight:"800", color:"#1E3A5F" }}>Hoàn thành bộ thẻ!</h2>
-          <p style={{ fontSize:"0.85rem", color:"#64748B" }}>
-            Bạn đã ôn tập xong bộ thẻ <strong>{activeDeck?.name}</strong>.
-          </p>
+        <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+          <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+          <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+          <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+          <div className="relative z-[1]">
+            <div className="summary-card">
+              <div className="summary-icon">
+                <CheckCircle size={32} />
+              </div>
+              <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F]">Hoàn thành bộ thẻ!</h2>
+              <p className="text-[0.85rem] text-[#64748B]">
+                Bạn đã ôn tập xong bộ thẻ <strong>{activeDeck?.name}</strong>.
+              </p>
 
-          <div className="summary-stats-grid">
-            <div className="summary-stat-box">
-              <div className="summary-stat-val good">{rememberedCount}</div>
-              <div className="summary-stat-lbl">Đã nhớ tốt</div>
+              <div className="summary-stats-grid">
+                <div className="summary-stat-box">
+                  <div className="summary-stat-val good">{rememberedCount}</div>
+                  <div className="summary-stat-lbl">Đã nhớ tốt</div>
+                </div>
+                <div className="summary-stat-box">
+                  <div className="summary-stat-val retry">{reviewCount}</div>
+                  <div className="summary-stat-lbl">Cần ôn thêm</div>
+                </div>
+              </div>
+
+              <div className="text-[0.9rem] font-extrabold text-[#1E3A5F]">
+                Tỷ lệ ghi nhớ: {cards.length > 0 ? Math.round((rememberedCount / cards.length) * 100) : 0}%
+              </div>
+
+              <div className="summary-actions">
+                <div className="relative">
+                  <button
+                    className={`btn ${isPremium ? "btn-primary" : "btn-secondary"} w-full`}
+                    onClick={handlePdfExport}
+                  >
+                    <FileDown size={16} />
+                    <span>Xuất tài liệu ôn tập PDF/Ảnh</span>
+                    {!isPremium && <Lock size={14} className="ml-1 text-premium" />}
+                  </button>
+                  {!isPremium && (
+                    <span className="absolute -top-2 -right-2 bg-premium text-white text-[0.65rem] font-extrabold py-0.5 px-2 rounded-full shadow-[0_2px_6px_rgba(245,158,11,0.4)]">
+                      Pro
+                    </span>
+                  )}
+                </div>
+
+                <button className="btn btn-primary" onClick={handleRestartDeck}>
+                  Luyện tập lại
+                </button>
+
+                <button className="btn btn-secondary" onClick={() => setView("list")}>
+                  Về danh sách bộ thẻ
+                </button>
+              </div>
             </div>
-            <div className="summary-stat-box">
-              <div className="summary-stat-val retry">{reviewCount}</div>
-              <div className="summary-stat-lbl">Cần ôn thêm</div>
-            </div>
-          </div>
-
-          <div style={{ fontSize:"0.9rem", fontWeight:"800", color:"#1E3A5F" }}>
-            Tỷ lệ ghi nhớ: {cards.length > 0 ? Math.round((rememberedCount / cards.length) * 100) : 0}%
-          </div>
-
-          <div className="summary-actions">
-            <div className="locked-btn-container">
-              <button
-                className={`btn ${isPremium ? "btn-primary" : "btn-secondary"}`}
-                style={{ width:"100%" }}
-                onClick={handlePdfExport}
-              >
-                <FileDown size={16} />
-                <span>Xuất tài liệu ôn tập PDF/Ảnh</span>
-                {!isPremium && <Lock size={14} style={{ marginLeft:"4px", color:"#F59E0B" }} />}
-              </button>
-              {!isPremium && <span className="locked-badge-overlay">Pro</span>}
-            </div>
-
-            <button className="btn btn-primary" onClick={handleRestartDeck}>
-              Luyện tập lại
-            </button>
-
-            <button className="btn btn-secondary" onClick={() => setView("list")}>
-              Về danh sách bộ thẻ
-            </button>
           </div>
         </div>
-        </div>
-      </div>
       </div>
     );
   }
