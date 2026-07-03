@@ -70,6 +70,21 @@ export async function loadUserData(googleId) {
   };
 }
 
+// ─── Premium status ─────────────────────────────────────────────────────────
+
+/** Đọc trạng thái Premium mới nhất từ Supabase (do backend ghi sau khi MoMo xác nhận thanh toán) */
+export async function checkPremiumStatus(googleId) {
+  if (!googleId) return { isPremium: false, premiumExpiry: null };
+  const { data, error } = await supabase
+    .from("users")
+    .select("is_premium, premium_expiry")
+    .eq("google_id", googleId)
+    .single();
+  if (error || !data) return { isPremium: false, premiumExpiry: null };
+  const expired = data.premium_expiry && new Date(data.premium_expiry) < new Date();
+  return { isPremium: Boolean(data.is_premium) && !expired, premiumExpiry: data.premium_expiry };
+}
+
 // ─── Bookmark ───────────────────────────────────────────────────────────────
 
 export async function addBookmark(googleId, formulaId) {

@@ -5,6 +5,7 @@ import { useAuth } from "./context/AuthContext";
 import { formulas } from "./data/formulas";
 import {
   loadUserData,
+  checkPremiumStatus,
   addBookmark, removeBookmark,
   saveNote,
   saveStats,
@@ -141,6 +142,14 @@ export default function App() {
       })
       .catch((err) => console.error("[Supabase] loadUserData:", err))
       .finally(() => setIsLoadingData(false));
+  }, [user?.googleId]);
+
+  // ─── Đồng bộ trạng thái Premium từ Supabase (nguồn sự thật do backend ghi sau khi MoMo xác nhận) ──
+  useEffect(() => {
+    if (!user?.googleId) return;
+    checkPremiumStatus(user.googleId)
+      .then((result) => setIsPremium(result.isPremium))
+      .catch((err) => console.error("[Supabase] checkPremiumStatus:", err));
   }, [user?.googleId]);
 
   // ─── Stats — lưu ngay vào localStorage + debounce Supabase ────────────
