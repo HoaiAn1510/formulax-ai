@@ -5205,4 +5205,124 @@ export const questionsPool = [
     explanation: "Hình chiếu trục đo của hình $\\mathcal{H}$ là hình chiếu song song của $\\mathcal{H}$ theo phương $l$ không song song với bất kì mặt nào của $\\mathcal{H}$. Nếu phương chiếu song song với một mặt của hình lập phương thì hình chiếu chỉ cho thấy được hai mặt, nên đó không phải là hình chiếu trục đo. Chỉ khi phương chiếu không song song với mặt nào (cho thấy được cả ba mặt) thì hình chiếu mới là hình chiếu trục đo của hình lập phương.",
     sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 11, trang 60 (Ví dụ 6)"
   },
+  {
+    id: "gt46",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Hàm số $y=-x^2+2x+3$ đồng biến trên khoảng nào sau đây?",
+    options: [
+      { letter: "A", text: "$(-\\infty;1)$", isCorrect: true },
+      { letter: "B", text: "$(1;+\\infty)$", isCorrect: false },
+      { letter: "C", text: "$(-\\infty;+\\infty)$", isCorrect: false },
+      { letter: "D", text: "$(-1;1)$", isCorrect: false }
+    ],
+    blankAnswer: "(-\\infty;1)",
+    explanation: "Ta có $y'=-2x+2$; $y'=0 \\Leftrightarrow x=1$. Vì $y'>0$ với $x<1$ và $y'<0$ với $x>1$ nên hàm số đồng biến trên khoảng $(-\\infty;1)$ và nghịch biến trên khoảng $(1;+\\infty)$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 1, trang 10 (Luyện tập 2)"
+  },
+  {
+    id: "gt47",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm cực trị của hàm số $y=x^3-6x^2+9x+30$.",
+    options: [
+      { letter: "A", text: "Hàm số đạt cực đại tại $x=1$ ($y_{CĐ}=34$), đạt cực tiểu tại $x=3$ ($y_{CT}=30$)", isCorrect: true },
+      { letter: "B", text: "Hàm số đạt cực tiểu tại $x=1$ ($y_{CT}=34$), đạt cực đại tại $x=3$ ($y_{CĐ}=30$)", isCorrect: false },
+      { letter: "C", text: "Hàm số đạt cực đại tại $x=0$ ($y_{CĐ}=30$), đạt cực tiểu tại $x=3$ ($y_{CT}=3$)", isCorrect: false },
+      { letter: "D", text: "Hàm số không có cực trị", isCorrect: false }
+    ],
+    blankAnswer: "Hàm số đạt cực đại tại x=1 (yCĐ=34), đạt cực tiểu tại x=3 (yCT=30)",
+    explanation: "Ta có $y'=3x^2-12x+9$; $y'=0 \\Leftrightarrow x=1$ hoặc $x=3$. Lập bảng biến thiên: $y'$ đổi dấu từ $+$ sang $-$ tại $x=1$ nên đó là điểm cực đại với $y_{CĐ}=y(1)=34$; $y'$ đổi dấu từ $-$ sang $+$ tại $x=3$ nên đó là điểm cực tiểu với $y_{CT}=y(3)=30$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 1, trang 11 (Ví dụ 6)"
+  },
+  {
+    id: "gt48",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Trong các hình chữ nhật có chu vi là $24$ cm, hình chữ nhật có diện tích lớn nhất có kích thước và diện tích lần lượt là bao nhiêu?",
+    options: [
+      { letter: "A", text: "Cạnh $6$ cm, diện tích $36\\text{ cm}^2$", isCorrect: true },
+      { letter: "B", text: "Cạnh $8\\times4$ cm, diện tích $32\\text{ cm}^2$", isCorrect: false },
+      { letter: "C", text: "Cạnh $10\\times2$ cm, diện tích $20\\text{ cm}^2$", isCorrect: false },
+      { letter: "D", text: "Cạnh $12\\times0$ cm, diện tích không xác định", isCorrect: false }
+    ],
+    blankAnswer: "Cạnh 6 cm, diện tích 36 cm^2",
+    explanation: "Gọi $x$ (cm) là một cạnh, $0<x<12$. Chu vi $24$ cm nên cạnh còn lại là $12-x$. Diện tích $S(x)=x(12-x)=12x-x^2$. $S'(x)=12-2x=0 \\Leftrightarrow x=6$; $S''(x)=-2<0$ nên $x=6$ là điểm cực đại của $S$. Vậy hình chữ nhật có diện tích lớn nhất là hình vuông cạnh $6$ cm, diện tích $S=36\\text{ cm}^2$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 1, trang 19 (Bài 1.13)"
+  },
+  {
+    id: "gt49",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm tiệm cận ngang của đồ thị hàm số $y=\\dfrac{3x-2}{x+1}$.",
+    options: [
+      { letter: "A", text: "$y=3$", isCorrect: true },
+      { letter: "B", text: "$y=-2$", isCorrect: false },
+      { letter: "C", text: "$x=-1$", isCorrect: false },
+      { letter: "D", text: "$y=1$", isCorrect: false }
+    ],
+    blankAnswer: "y=3",
+    explanation: "Ta có $\\lim_{x\\to+\\infty}\\dfrac{3x-2}{x+1}=\\lim_{x\\to+\\infty}\\dfrac{3-\\frac2x}{1+\\frac1x}=3$; tương tự $\\lim_{x\\to-\\infty}f(x)=3$. Vậy đồ thị hàm số có tiệm cận ngang là đường thẳng $y=3$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 3, trang 21 (Ví dụ 1)"
+  },
+  {
+    id: "gt50",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm tiệm cận xiên của đồ thị hàm số $y=\\dfrac{x^2-x+2}{x+1}$.",
+    options: [
+      { letter: "A", text: "$y=x-2$", isCorrect: true },
+      { letter: "B", text: "$y=x+2$", isCorrect: false },
+      { letter: "C", text: "$y=-x-2$", isCorrect: false },
+      { letter: "D", text: "$y=2x-1$", isCorrect: false }
+    ],
+    blankAnswer: "y=x-2",
+    explanation: "Ta có $a=\\lim_{x\\to+\\infty}\\dfrac{f(x)}{x}=\\lim_{x\\to+\\infty}\\dfrac{x^2-x+2}{x^2+x}=1$ và $b=\\lim_{x\\to+\\infty}[f(x)-x]=\\lim_{x\\to+\\infty}\\dfrac{-2x+2}{x+1}=-2$. Vậy đồ thị hàm số có tiệm cận xiên là đường thẳng $y=x-2$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 3, trang 24 (Ví dụ 6)"
+  },
+  {
+    id: "gt51",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tìm giá trị lớn nhất và giá trị nhỏ nhất của hàm số $y=x^4-4x^2+3$ trên đoạn $[0;4]$.",
+    options: [
+      { letter: "A", text: "$\\max y=195$ tại $x=4$; $\\min y=-1$ tại $x=\\sqrt2$", isCorrect: true },
+      { letter: "B", text: "$\\max y=3$ tại $x=0$; $\\min y=-1$ tại $x=\\sqrt2$", isCorrect: false },
+      { letter: "C", text: "$\\max y=195$ tại $x=4$; $\\min y=3$ tại $x=0$", isCorrect: false },
+      { letter: "D", text: "$\\max y=-1$ tại $x=\\sqrt2$; $\\min y=195$ tại $x=4$", isCorrect: false }
+    ],
+    blankAnswer: "max y=195 tại x=4; min y=-1 tại x=√2",
+    explanation: "Ta có $y'=4x^3-8x=4x(x^2-2)$; $y'=0 \\Leftrightarrow x=0$ hoặc $x=\\sqrt2$ (do $x\\in[0;4]$). Tính $y(0)=3$, $y(4)=195$, $y(\\sqrt2)=-1$. So sánh các giá trị: $\\max_{[0;4]}y=y(4)=195$; $\\min_{[0;4]}y=y(\\sqrt2)=-1$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 2, trang 18 (Ví dụ 4)"
+  },
+  {
+    id: "gt52",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Từ một tấm bìa carton hình vuông có độ dài cạnh bằng $60$ cm, người ta cắt bốn hình vuông bằng nhau ở bốn góc rồi gập thành một chiếc hộp không có nắp. Tìm độ dài cạnh của các hình vuông bị cắt sao cho thể tích của chiếc hộp là lớn nhất.",
+    options: [
+      { letter: "A", text: "$10$ cm (thể tích lớn nhất là $16\\,000\\text{ cm}^3$)", isCorrect: true },
+      { letter: "B", text: "$15$ cm (thể tích lớn nhất là $13\\,500\\text{ cm}^3$)", isCorrect: false },
+      { letter: "C", text: "$20$ cm (thể tích lớn nhất là $8\\,000\\text{ cm}^3$)", isCorrect: false },
+      { letter: "D", text: "$30$ cm (thể tích bằng $0$)", isCorrect: false }
+    ],
+    blankAnswer: "10 cm (thể tích lớn nhất là 16 000 cm^3)",
+    explanation: "Gọi $x$ (cm) là cạnh hình vuông bị cắt, $0<x<30$. Đáy hộp là hình vuông cạnh $(60-2x)$, chiều cao $x$, thể tích $V(x)=(60-2x)^2\\cdot x=4x^3-240x^2+3\\,600x$. $V'(x)=12x^2-480x+3\\,600=0 \\Leftrightarrow x^2-40x+300=0 \\Leftrightarrow x=10$ (thoả mãn) hoặc $x=30$ (loại). Lập bảng biến thiên: $V(10)=16\\,000$ là giá trị lớn nhất trên $(0;30)$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 2, trang 17-18 (Ví dụ 3)"
+  },
+  {
+    id: "gt53",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Một đội bóng đá thi đấu trong sân vận động có sức chứa $55\\,000$ khán giả. Với giá vé $100$ nghìn đồng, số khán giả trung bình là $27\\,000$ người. Mỗi khi giá vé giảm thêm $10$ nghìn đồng thì có thêm khoảng $3\\,000$ khán giả. Ban tổ chức nên đặt giá vé là bao nhiêu để doanh thu từ tiền bán vé là lớn nhất?",
+    options: [
+      { letter: "A", text: "$95$ nghìn đồng/vé", isCorrect: true },
+      { letter: "B", text: "$100$ nghìn đồng/vé", isCorrect: false },
+      { letter: "C", text: "$90$ nghìn đồng/vé", isCorrect: false },
+      { letter: "D", text: "$50$ nghìn đồng/vé", isCorrect: false }
+    ],
+    blankAnswer: "95 nghìn đồng/vé",
+    explanation: "Gọi $p$ (nghìn đồng) là giá vé, $x$ là số khán giả. Hàm cầu $p=p(x)$ là hàm bậc nhất đi qua hai điểm $(27\\,000;100)$ và $(30\\,000;90)$, suy ra $x=-300p+57\\,000$. Hàm doanh thu $R(p)=px=-300p^2+57\\,000p$. $R'(p)=-600p+57\\,000=0 \\Leftrightarrow p=95$. Lập bảng biến thiên suy ra $R$ đạt giá trị lớn nhất tại $p=95$ (nghìn đồng).",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 5, trang 33, 38-39 (Ví dụ 6)"
+  },
 ];

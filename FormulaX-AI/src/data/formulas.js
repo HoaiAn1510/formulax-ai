@@ -446,7 +446,8 @@ export const formulas = [
     example: "**Ví dụ 1 — TCN và TCD:** Tìm tiệm cận của $y = \\dfrac{2x+1}{x-3}$.\n\n- **TCN:** $\\lim_{x \\to \\pm\\infty} \\dfrac{2x+1}{x-3} = \\lim \\dfrac{2 + 1/x}{1 - 3/x} = 2 \\Rightarrow$ TCN: $y = 2$.\n- **TCD:** Mẫu $x-3=0 \\Rightarrow x=3$; tử $2(3)+1=7 \\neq 0$. Kiểm tra: $\\lim_{x\\to 3^+}\\dfrac{2x+1}{x-3}=+\\infty \\Rightarrow$ TCD: $x=3$.\n\n**Ví dụ 2 — TCX:** Tìm tiệm cận xiên của $y = \\dfrac{x^2 + x + 1}{x}$.\n\n- $k = \\lim_{x\\to\\infty}\\dfrac{y}{x} = \\lim\\dfrac{x^2+x+1}{x^2} = 1$.\n- $b = \\lim_{x\\to\\infty}(y - kx) = \\lim\\left(\\dfrac{x^2+x+1}{x}-x\\right) = \\lim\\dfrac{x+1}{x} = 1$.\n- TCX: $y = x + 1$. Kiểm tra: $y - (x+1) = \\dfrac{1}{x} \\to 0$ ✓.",
     tags: ["Tiệm cận", "Giới hạn", "Khảo sát hàm số"],
     difficulty: "Trung bình",
-    mnemonic: "Ba loại tiệm cận: TCN (ngang) khi x→±∞ ra số L thì y=L. TCD (đứng) khi mẫu=0 và tử≠0 thì x=nghiệm đó. TCX (xiên) khi bậc tử = bậc mẫu+1: tìm k=lim(y/x), b=lim(y−kx), ra y=kx+b."
+    mnemonic: "Ba loại tiệm cận: TCN (ngang) khi x→±∞ ra số L thì y=L. TCD (đứng) khi mẫu=0 và tử≠0 thì x=nghiệm đó. TCX (xiên) khi bậc tử = bậc mẫu+1: tìm k=lim(y/x), b=lim(y−kx), ra y=kx+b.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 3, trang 20-24"
   },
 
   // --- THÊM TỪ PDF: NGUYÊN HÀM VÀ TÍCH PHÂN ---
@@ -758,7 +759,8 @@ export const formulas = [
     example: "Tìm cực trị của $f(x) = x^3 - 3x + 2$.\n\n**Lời giải:**\n- $f'(x) = 3x^2 - 3 = 3(x-1)(x+1) = 0 \\Rightarrow x = \\pm 1$.\n- Bảng xét dấu $f'$: âm trên $(-1;1)$, dương ngoài.\n- $x = -1$: $f'$ đổi dấu $+\\to-$ → **cực đại**, $f(-1) = 4$.\n- $x = 1$: $f'$ đổi dấu $-\\to+$ → **cực tiểu**, $f(1) = 0$.",
     tags: ["Cực trị", "Đạo hàm", "Khảo sát hàm số", "Cực đại", "Cực tiểu"],
     difficulty: "Trung bình",
-    mnemonic: "Cực trị: đạo hàm bằng 0 VÀ đổi dấu. Dương→Âm: cực đại (đỉnh núi). Âm→Dương: cực tiểu (đáy thung lũng). Không đổi dấu: không phải cực trị."
+    mnemonic: "Cực trị: đạo hàm bằng 0 VÀ đổi dấu. Dương→Âm: cực đại (đỉnh núi). Âm→Dương: cực tiểu (đáy thung lũng). Không đổi dấu: không phải cực trị.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 1, trang 9-11"
   },
 
   // --- BẤT ĐẲNG THỨC & ĐẠI SỐ BỔ SUNG ---
@@ -797,7 +799,8 @@ export const formulas = [
     example: "Tìm GTLN và GTNN của $f(x) = x^3 - 3x + 1$ trên $[-2; 2]$.\n\n**Lời giải:**\n- $f'(x) = 3x^2 - 3 = 0 \\Rightarrow x = \\pm 1$.\n- Bảng giá trị: $f(-2) = -1$, $f(-1) = 3$, $f(1) = -1$, $f(2) = 3$.\n- $\\max f = 3$ tại $x = -1$ hoặc $x = 2$.\n- $\\min f = -1$ tại $x = -2$ hoặc $x = 1$.",
     tags: ["GTLN", "GTNN", "Cực trị", "Đoạn", "Hàm số"],
     difficulty: "Trung bình",
-    mnemonic: "Tìm GTLN/GTNN trên đoạn: tính f tại điểm dừng (f'=0) VÀ tại hai đầu mút, lấy max/min trong các giá trị đó."
+    mnemonic: "Tìm GTLN/GTNN trên đoạn: tính f tại điểm dừng (f'=0) VÀ tại hai đầu mút, lấy max/min trong các giá trị đó.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 2, trang 15-19"
   },
   {
     id: "ds10-bpt-bac2",
@@ -1103,7 +1106,8 @@ export const formulas = [
     example: "Một công ty có hàm lợi nhuận $P(x) = -x^2 + 100x - 500$ (đơn vị: triệu đồng, $x$: số sản phẩm). Tìm mức sản xuất $x$ để lợi nhuận cực đại.\n\n**Lời giải:**\n- $P'(x) = -2x + 100 = 0 \\Rightarrow x = 50$.\n- $P''(x) = -2 < 0 \\Rightarrow x = 50$ là điểm cực đại.\n- Lợi nhuận cực đại: $P(50) = -2500 + 5000 - 500 = 2000$ triệu đồng.",
     tags: ["Đạo hàm", "Ứng dụng tài chính", "Kinh tế", "Tối ưu hóa", "Mở rộng"],
     difficulty: "Khó",
-    mnemonic: "Lợi nhuận cực đại khi đạo hàm P'(x)=0, tức doanh thu biên = chi phí biên (MR=MC). Đây là ứng dụng thực tế của bài toán tìm cực trị bằng đạo hàm."
+    mnemonic: "Lợi nhuận cực đại khi đạo hàm P'(x)=0, tức doanh thu biên = chi phí biên (MR=MC). Đây là ứng dụng thực tế của bài toán tìm cực trị bằng đạo hàm.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 5, trang 33-36 (phần chi phí/doanh thu/lợi nhuận biên; công thức lãi kép tham khảo thêm nguồn khác)"
   },
 
   // ===== MỆNH ĐỀ VÀ TẬP HỢP (Chương I, Toán 10 KNTT Tập 1, Bài 1-2) =====
@@ -2724,5 +2728,70 @@ export const formulas = [
     difficulty: "Trung bình",
     mnemonic: "Đọc bản vẽ: Khung tên → Hình biểu diễn → Kích thước → Yêu cầu kĩ thuật. Lập bản vẽ: Phân tích khối → Chọn hướng chiếu → Vẽ hình chiếu vuông góc → Chỉnh nét/ghi kích thước → Vẽ hình chiếu trục đo → Hoàn thành khung.",
     sgk_source: "Toán 11 KNTT - Chuyên đề học tập, Chuyên đề 3, Bài 12, trang 74-77"
+  },
+  {
+    id: "gt12-tinhdondieu-daoham",
+    name: "Tính đơn điệu của hàm số qua dấu đạo hàm",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "f'(x) > 0\\ \\forall x \\in K \\Rightarrow f \\text{ đồng biến trên } K; \\quad f'(x) < 0\\ \\forall x \\in K \\Rightarrow f \\text{ nghịch biến trên } K",
+    explanation: "Trong đó:\n- $K$ là một khoảng, đoạn hoặc nửa khoảng mà hàm số $f(x)$ có đạo hàm.\n- Định lí trên vẫn đúng trong trường hợp $f'(x)$ bằng $0$ tại một số hữu hạn điểm trong khoảng $K$.\n- Nếu $f'(x) = 0$ với mọi $x \\in K$ thì hàm số $f(x)$ không đổi trên khoảng $K$.\n\n**Các bước xét tính đơn điệu của hàm số $y=f(x)$:**\n1. Tìm tập xác định của hàm số.\n2. Tính đạo hàm $f'(x)$. Tìm các điểm $x_i$ mà tại đó đạo hàm bằng $0$ hoặc không tồn tại.\n3. Sắp xếp các điểm $x_i$ theo thứ tự tăng dần và lập bảng biến thiên của hàm số.\n4. Nêu kết luận về khoảng đồng biến, khoảng nghịch biến của hàm số.",
+    example: "Tìm các khoảng đơn điệu của hàm số $y = \\dfrac{x^2-2x+5}{x-1}$.\n\n**Lời giải:**\nTập xác định: $\\mathbb{R}\\setminus\\{1\\}$. Ta có $y' = \\dfrac{x^2-2x-3}{(x-1)^2}$; $y'=0 \\Leftrightarrow x=-1$ hoặc $x=3$. Lập bảng biến thiên suy ra: hàm số đồng biến trên các khoảng $(-\\infty;-1)$ và $(3;+\\infty)$; nghịch biến trên các khoảng $(-1;1)$ và $(1;3)$.",
+    tags: ["Đơn điệu", "Đồng biến", "Nghịch biến", "Đạo hàm", "Bảng biến thiên", "Khảo sát hàm số"],
+    difficulty: "Trung bình",
+    mnemonic: "Đạo hàm dương trên khoảng → hàm tăng (đồ thị đi lên). Đạo hàm âm → hàm giảm (đồ thị đi xuống). 4 bước: TXĐ → tính f' và tìm nghiệm f'=0 → bảng biến thiên → kết luận.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 1, trang 7-9"
+  },
+  {
+    id: "gt12-khaosat-hambacba",
+    name: "Sơ đồ khảo sát hàm số và khảo sát hàm bậc ba",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "y = ax^3+bx^2+cx+d\\ (a\\neq 0):\\ \\text{tâm đối xứng } I\\left(-\\dfrac{b}{3a};\\, y\\!\\left(-\\dfrac{b}{3a}\\right)\\right),\\ \\text{không có tiệm cận}",
+    explanation: "Trong đó:\n- Sơ đồ khảo sát hàm số $y=f(x)$ gồm ba bước: (1) Tìm tập xác định của hàm số; (2) Khảo sát sự biến thiên: tính $y'$, tìm các điểm mà tại đó $y'$ bằng $0$ hoặc không tồn tại; xét dấu $y'$ để chỉ ra các khoảng đơn điệu; tìm cực trị; tìm các giới hạn tại vô cực, giới hạn vô cực và tiệm cận (nếu có); lập bảng biến thiên; (3) Vẽ đồ thị dựa vào bảng biến thiên, có thể xác định thêm giao điểm của đồ thị với các trục toạ độ nếu việc tìm không quá phức tạp, và lưu ý tính đối xứng của đồ thị.\n- Đồ thị của hàm số bậc ba $y=ax^3+bx^2+cx+d$ ($a\\neq 0$) có tâm đối xứng là điểm có hoành độ thoả mãn $y''=0$, tức $x=-\\dfrac{b}{3a}$.\n- Đồ thị của hàm số bậc ba không có tiệm cận.",
+    example: "Khảo sát sự biến thiên và vẽ đồ thị của hàm số $y=-x^3+3x^2-4$.\n\n**Lời giải (tóm tắt):**\nTập xác định: $\\mathbb{R}$. $y'=-3x^2+6x$; $y'=0 \\Leftrightarrow x=0$ hoặc $x=2$. Hàm số đồng biến trên $(0;2)$, nghịch biến trên $(-\\infty;0)$ và $(2;+\\infty)$. Hàm số đạt cực tiểu tại $x=0$ ($y_{CT}=-4$), đạt cực đại tại $x=2$ ($y_{CĐ}=0$). $\\lim_{x\\to-\\infty}y=+\\infty$, $\\lim_{x\\to+\\infty}y=-\\infty$. Đồ thị cắt trục tung tại $(0;-4)$, cắt trục hoành tại $(-1;0)$ và $(2;0)$, nhận điểm $(1;-2)$ làm tâm đối xứng.",
+    tags: ["Khảo sát hàm số", "Hàm bậc ba", "Bảng biến thiên", "Tâm đối xứng", "Đồ thị"],
+    difficulty: "Trung bình",
+    mnemonic: "Sơ đồ khảo sát: TXĐ → biến thiên (đạo hàm, cực trị, giới hạn, tiệm cận, bảng biến thiên) → đồ thị. Hàm bậc ba: tâm đối xứng tại x=-b/3a (nghiệm y''=0), không có tiệm cận.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 4, trang 26-28"
+  },
+  {
+    id: "gt12-khaosat-hamphanthuc",
+    name: "Khảo sát và vẽ đồ thị hàm số phân thức hữu tỉ",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "y=\\dfrac{ax+b}{cx+d}:\\ \\text{TCĐ } x=-\\dfrac{d}{c},\\ \\text{TCN } y=\\dfrac{a}{c};\\qquad y=\\dfrac{ax^2+bx+c}{px+q}:\\ \\text{TCĐ và TCX}",
+    explanation: "Trong đó:\n- Hàm số $y=\\dfrac{ax+b}{cx+d}$ ($c\\neq 0$, $ad-bc\\neq 0$) có tiệm cận đứng $x=-\\dfrac{d}{c}$, tiệm cận ngang $y=\\dfrac{a}{c}$. Đồ thị nhận giao điểm $I$ của hai đường tiệm cận làm tâm đối xứng, và nhận hai đường phân giác của các góc tạo bởi hai đường tiệm cận này làm các trục đối xứng.\n- Hàm số $y=\\dfrac{ax^2+bx+c}{px+q}$ ($a\\neq 0$, $p\\neq 0$, đa thức tử không chia hết cho đa thức mẫu) có tiệm cận đứng (nghiệm của mẫu) và tiệm cận xiên (thương của phép chia đa thức tử cho mẫu). Đồ thị cũng nhận giao điểm $I$ của hai đường tiệm cận (đứng và xiên) làm tâm đối xứng, và nhận hai đường phân giác của các góc tạo bởi hai đường tiệm cận này làm các trục đối xứng.",
+    example: "Khảo sát sự biến thiên và vẽ đồ thị của hàm số $y=\\dfrac{x+1}{x-2}$.\n\n**Lời giải (tóm tắt):**\nTập xác định: $\\mathbb{R}\\setminus\\{2\\}$. $y'=\\dfrac{-3}{(x-2)^2}<0$ với mọi $x\\neq 2$ nên hàm số nghịch biến trên từng khoảng $(-\\infty;2)$ và $(2;+\\infty)$, không có cực trị. $\\lim_{x\\to2^-}y=-\\infty$, $\\lim_{x\\to2^+}y=+\\infty$ nên tiệm cận đứng $x=2$; $\\lim_{x\\to\\pm\\infty}y=1$ nên tiệm cận ngang $y=1$. Đồ thị nhận giao điểm $I(2;1)$ của hai tiệm cận làm tâm đối xứng.",
+    tags: ["Khảo sát hàm số", "Hàm phân thức", "Tiệm cận", "Tâm đối xứng", "Trục đối xứng"],
+    difficulty: "Khó",
+    mnemonic: "Hàm phân thức bậc nhất/bậc nhất: TCĐ tại nghiệm mẫu, TCN = tỉ số hệ số bậc cao nhất (a/c). Hàm bậc hai/bậc nhất: TCĐ + TCX (chia đa thức). Cả hai đều nhận giao điểm 2 tiệm cận làm tâm đối xứng.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 4, trang 28-31"
+  },
+  {
+    id: "gt12-tocdo-thaydoi",
+    name: "Tốc độ thay đổi của một đại lượng qua đạo hàm",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "\\dfrac{\\Delta y}{\\Delta x}=\\dfrac{f(x_2)-f(x_1)}{x_2-x_1}\\ (\\text{trung bình}); \\quad \\lim_{x_2\\to x_1}\\dfrac{f(x_2)-f(x_1)}{x_2-x_1}=f'(x_1)\\ (\\text{tức thời})",
+    explanation: "Trong đó:\n- Nếu $x$ thay đổi từ $x_1$ đến $x_2$ thì $\\Delta x = x_2-x_1$ và $\\Delta y = f(x_2)-f(x_1)$.\n- Tỉ số $\\dfrac{\\Delta y}{\\Delta x}$ được gọi là tốc độ thay đổi trung bình của $y$ đối với $x$ trên đoạn $[x_1;x_2]$.\n- Giới hạn $\\lim_{\\Delta x\\to0}\\dfrac{\\Delta y}{\\Delta x}$ được gọi là tốc độ thay đổi tức thời của $y$ đối với $x$ tại điểm $x=x_1$; đó chính là đạo hàm $f'(x_1)$.\n\nMột số ứng dụng của tốc độ thay đổi tức thời: nếu $s=s(t)$ là hàm vị trí thì $v=s'(t)$ là vận tốc tức thời và $a(t)=v'(t)=s''(t)$ là gia tốc tức thời; nếu $C=C(t)$ là nồng độ chất trong phản ứng hoá học tại thời điểm $t$ thì $C'(t)$ là tốc độ phản ứng tức thời; nếu $P=P(t)$ là số lượng cá thể trong quần thể tại thời điểm $t$ thì $P'(t)$ là tốc độ tăng trưởng tức thời; nếu $C=C(x)$ là hàm chi phí sản xuất $x$ đơn vị hàng hoá thì $C'(x)$ là chi phí biên — xấp xỉ chi phí để sản xuất thêm đơn vị hàng hoá thứ $x+1$.",
+    example: "Độ cao (mét) của một vật được phóng thẳng đứng lên từ điểm cách mặt đất $2$ m với vận tốc ban đầu $24{,}5$ m/s là $h(t)=2+24{,}5t-4{,}9t^2$. Tìm vận tốc của vật sau $2$ giây.\n\n**Lời giải:**\nTheo ý nghĩa cơ học của đạo hàm, vận tốc $v=h'(t)=24{,}5-9{,}8t$ (m/s). Vận tốc sau $2$ giây: $v(2)=24{,}5-9{,}8\\cdot2=4{,}9$ (m/s).",
+    tags: ["Tốc độ thay đổi", "Vận tốc tức thời", "Gia tốc", "Chi phí biên", "Ứng dụng đạo hàm"],
+    difficulty: "Trung bình",
+    mnemonic: "Đạo hàm f'(a) = tốc độ thay đổi tức thời của y=f(x) tại x=a. Trong Vật lí: v=s', a=v'=s''. Trong Kinh tế: chi phí biên = C'(x).",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 5, trang 33-34"
+  },
+  {
+    id: "gt12-baitoan-toiuuhoa",
+    name: "Quy trình giải bài toán tối ưu hoá bằng đạo hàm",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "\\text{B1: xác định đại lượng } Q \\to \\text{B2: biểu diễn } Q=Q(x) \\to \\text{B3: tìm max/min của } Q(x)",
+    explanation: "Trong đó:\n- Bước 1: Xác định đại lượng $Q$ mà ta cần làm cho giá trị của nó lớn nhất hoặc nhỏ nhất, biểu diễn nó qua các đại lượng khác trong bài toán.\n- Bước 2: Chọn một đại lượng thích hợp làm biến, kí hiệu là $x$, biểu diễn các đại lượng còn lại theo $x$. Khi đó $Q$ là hàm số của biến $x$: $Q=Q(x)$. Tìm tập xác định của hàm số $Q(x)$ (miền biến thiên hợp lí của $x$ theo điều kiện thực tế của bài toán).\n- Bước 3: Tìm giá trị lớn nhất hoặc giá trị nhỏ nhất của hàm số $Q(x)$ bằng các phương pháp đã biết (lập bảng biến thiên, xét dấu đạo hàm) và kết luận.",
+    example: "Một nhà sản xuất cần làm những hộp đựng hình trụ có thể tích $1$ lít ($1000$ cm³). Tìm bán kính đáy $r$ để diện tích toàn phần (chi phí vật liệu) là nhỏ nhất.\n\n**Lời giải (tóm tắt):**\nGọi $r$ (cm) là bán kính đáy, $h$ (cm) là chiều cao. Từ $V=\\pi r^2h=1000 \\Rightarrow h=\\dfrac{1000}{\\pi r^2}$. Diện tích toàn phần: $S(r)=2\\pi r^2+\\dfrac{2000}{r}$, $r>0$. $S'(r)=4\\pi r-\\dfrac{2000}{r^2}=0 \\Leftrightarrow r=\\sqrt[3]{\\dfrac{500}{\\pi}}\\approx5{,}42$ cm. Lập bảng biến thiên suy ra $S(r)$ đạt giá trị nhỏ nhất tại $r=\\sqrt[3]{\\dfrac{500}{\\pi}}$.",
+    tags: ["Tối ưu hoá", "Giá trị lớn nhất", "Giá trị nhỏ nhất", "Bài toán thực tiễn", "Ứng dụng đạo hàm"],
+    difficulty: "Khó",
+    mnemonic: "3 bước tối ưu hoá: (1) gọi tên đại lượng cần tối ưu Q, (2) đưa Q về hàm một biến x với miền xác định hợp lí, (3) tìm max/min bằng bảng biến thiên.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 5, trang 36-37"
   },
 ];
