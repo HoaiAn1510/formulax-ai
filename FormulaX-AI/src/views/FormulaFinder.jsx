@@ -3,7 +3,6 @@ import { Send, ArrowLeft, History, Search, MessageSquare, Camera, X, Paperclip, 
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB } from "../lib/supabase";
-import { gradients, glassCard, glassCardSm } from "../styles/theme";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -397,33 +396,30 @@ export default function FormulaFinder({
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="view-container" style={{ padding: "10px", height: "calc(100vh - 124px)", display: "flex", flexDirection: "column", background: gradients.pageBackground }}>
+    <div className="view-container !p-[10px] h-[calc(100vh-124px)] flex flex-col bg-page-gradient">
 
       {/* Top action row */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-        <button className="breadcrumb-back" onClick={() => setActiveTab("dashboard")} style={{ marginBottom: 0 }}>
+      <div className="flex justify-between items-center mb-2">
+        <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0] mb-0" onClick={() => setActiveTab("dashboard")}>
           <ArrowLeft size={12} />
           <span>Về trang chủ</span>
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{
-            display: "flex", alignItems: "center", gap: "5px",
-            padding: "4px 10px", borderRadius: "20px",
-            backgroundColor: "rgba(16, 185, 129, 0.08)",
-            border: "1px solid rgba(16, 185, 129, 0.2)",
-            fontSize: "0.7rem", fontWeight: "700", color: "#059669"
-          }}>
-            <div style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#10B981" }}></div>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-[5px] py-1 px-2.5 rounded-[20px] bg-[rgba(16,185,129,0.08)] border border-[rgba(16,185,129,0.2)] text-[0.7rem] font-bold text-[#059669]">
+            <div className="w-1.5 h-1.5 rounded-full bg-success" />
             GPT-OSS 20B (Groq)
           </div>
 
-          <button className="chat-history-toggle" onClick={() => setSidebarOpen(!sidebarOpen)} style={{ marginBottom: 0 }}>
+          <button
+            className="md:hidden relative inline-flex items-center gap-1.5 bg-white border border-[#E2E8F0] rounded-full px-3 py-2 text-[0.75rem] font-bold text-primary cursor-pointer transition duration-200 hover:bg-[#f8fafc] hover:border-[#cbd5e1] mb-0"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
             <History size={14} />
-            <span style={{ position: "relative" }}>
+            <span>
               Lịch sử chat
               {sessions.length > 0 && (
-                <span style={{ position: "absolute", top: "-8px", right: "-12px", background: "#3B82F6", color: "white", borderRadius: "50%", width: "14px", height: "14px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem" }}>
+                <span className="absolute -top-2 -right-3 bg-secondary text-white rounded-full w-3.5 h-3.5 flex items-center justify-center text-[0.6rem]">
                   {sessions.length}
                 </span>
               )}
@@ -436,52 +432,40 @@ export default function FormulaFinder({
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          style={{ position: "fixed", inset: 0, zIndex: 299, background: "rgba(0,0,0,0.3)" }}
+          className="fixed inset-0 z-[299] bg-black/30"
         />
       )}
 
-      <div className="chat-layout">
+      <div className="flex flex-col md:flex-row gap-4 flex-1 overflow-hidden h-full relative">
         {/* ─── Session Sidebar ─── */}
-        <div className={`history-sidebar ${sidebarOpen ? "open" : ""}`} style={glassCard}>
+        <div className={`glass-card dark:bg-[#1E293B] ${sidebarOpen ? "flex" : "hidden"} md:flex flex-col gap-2 fixed md:relative top-[68px] md:top-auto left-0 md:left-auto right-0 md:right-auto bottom-14 md:bottom-auto z-[300] md:z-auto w-full md:w-[250px] md:shrink-0 p-4 overflow-y-auto`}>
 
           {/* New chat button */}
           <button
             onClick={startNewChat}
-            style={{
-              width: "100%", display: "flex", alignItems: "center", gap: "8px",
-              padding: "9px 12px", marginBottom: "12px",
-              background: "#1E3A5F", color: "white",
-              border: "none", borderRadius: "10px", cursor: "pointer",
-              fontSize: "0.8rem", fontWeight: "700"
-            }}
+            className="w-full flex items-center gap-2 py-2.5 px-3 mb-3 bg-primary text-white border-none rounded-[10px] cursor-pointer text-[0.8rem] font-bold"
           >
             <Plus size={14} />
             Chat mới
           </button>
 
-          <div className="sidebar-title" style={{ marginBottom: "8px" }}>Cuộc trò chuyện đã lưu</div>
+          <div className="text-[0.85rem] max-md:text-[0.8rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-2">Cuộc trò chuyện đã lưu</div>
 
           {sessions.length === 0 ? (
-            <div style={{ fontSize: "0.75rem", color: "#999", padding: "10px 0", textAlign: "center" }}>
+            <div className="text-[0.75rem] text-[#999] py-2.5 text-center">
               Chưa có cuộc trò chuyện nào
             </div>
           ) : (
             sessions.map((session) => (
               <div
                 key={session.id}
-                style={{
-                  marginBottom: "6px",
-                  borderRadius: "10px",
-                  border: currentSessionId === session.id
-                    ? "1.5px solid #3B82F6"
-                    : "1.5px solid #E2E8F0",
-                  backgroundColor: currentSessionId === session.id ? "rgba(59,130,246,0.05)" : "white",
-                  overflow: "hidden"
-                }}
+                className={`mb-1.5 rounded-[10px] overflow-hidden border-[1.5px] ${
+                  currentSessionId === session.id ? "border-secondary bg-secondary/5" : "border-[#E2E8F0] bg-white"
+                }`}
               >
                 {/* Rename mode */}
                 {renamingId === session.id ? (
-                  <div style={{ padding: "8px 10px", display: "flex", gap: "6px", alignItems: "center" }}>
+                  <div className="py-2 px-2.5 flex gap-1.5 items-center">
                     <input
                       ref={renameInputRef}
                       value={renameValue}
@@ -490,34 +474,31 @@ export default function FormulaFinder({
                         if (e.key === "Enter") confirmRename();
                         if (e.key === "Escape") setRenamingId(null);
                       }}
-                      style={{
-                        flex: 1, border: "1.5px solid #3B82F6", borderRadius: "6px",
-                        padding: "4px 8px", fontSize: "0.78rem", outline: "none"
-                      }}
+                      className="flex-1 border-[1.5px] border-secondary rounded-md py-1 px-2 text-[0.78rem] outline-none"
                     />
-                    <button onClick={confirmRename} style={{ background: "#10B981", border: "none", borderRadius: "6px", padding: "4px 6px", cursor: "pointer", color: "white", display: "flex", alignItems: "center" }}>
+                    <button onClick={confirmRename} className="bg-success border-none rounded-md py-1 px-1.5 cursor-pointer text-white flex items-center">
                       <Check size={12} />
                     </button>
-                    <button onClick={() => setRenamingId(null)} style={{ background: "#F1F5F9", border: "none", borderRadius: "6px", padding: "4px 6px", cursor: "pointer", color: "#64748B", display: "flex", alignItems: "center" }}>
+                    <button onClick={() => setRenamingId(null)} className="bg-[#F1F5F9] border-none rounded-md py-1 px-1.5 cursor-pointer text-text-muted flex items-center">
                       <X size={12} />
                     </button>
                   </div>
                 ) : deletingId === session.id ? (
                   /* Delete confirm mode */
-                  <div style={{ padding: "8px 10px" }}>
-                    <div style={{ fontSize: "0.75rem", color: "#EF4444", fontWeight: "700", marginBottom: "6px" }}>
+                  <div className="p-2.5">
+                    <div className="text-[0.75rem] text-error font-bold mb-1.5">
                       Xóa cuộc trò chuyện này?
                     </div>
-                    <div style={{ display: "flex", gap: "6px" }}>
+                    <div className="flex gap-1.5">
                       <button
                         onClick={() => deleteSession(session.id)}
-                        style={{ flex: 1, padding: "5px", background: "#EF4444", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "0.75rem", fontWeight: "700" }}
+                        className="flex-1 py-1.5 bg-error text-white border-none rounded-md cursor-pointer text-[0.75rem] font-bold"
                       >
                         Xóa
                       </button>
                       <button
                         onClick={() => setDeletingId(null)}
-                        style={{ flex: 1, padding: "5px", background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "0.75rem", fontWeight: "700" }}
+                        className="flex-1 py-1.5 bg-[#F1F5F9] text-text-muted border-none rounded-md cursor-pointer text-[0.75rem] font-bold"
                       >
                         Hủy
                       </button>
@@ -525,38 +506,31 @@ export default function FormulaFinder({
                   </div>
                 ) : (
                   /* Normal mode */
-                  <div style={{ display: "flex", alignItems: "center" }}>
+                  <div className="flex items-center">
                     <button
                       onClick={() => loadSession(session)}
-                      style={{
-                        flex: 1, textAlign: "left", padding: "9px 10px",
-                        background: "none", border: "none", cursor: "pointer",
-                        minWidth: 0
-                      }}
+                      className="flex-1 text-left py-2.5 px-2.5 bg-transparent border-none cursor-pointer min-w-0"
                     >
-                      <div style={{
-                        fontSize: "0.78rem", fontWeight: "600", color: "#1E3A5F",
-                        whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
-                      }}>
+                      <div className="text-[0.78rem] font-semibold text-[#1E3A5F] whitespace-nowrap overflow-hidden text-ellipsis">
                         {session.name}
                       </div>
-                      <div style={{ fontSize: "0.68rem", color: "#94A3B8", marginTop: "2px" }}>
+                      <div className="text-[0.68rem] text-[#94A3B8] mt-0.5">
                         {formatDate(session.updatedAt)}
                       </div>
                     </button>
 
-                    <div style={{ display: "flex", gap: "2px", paddingRight: "6px", flexShrink: 0 }}>
+                    <div className="flex gap-0.5 pr-1.5 shrink-0">
                       <button
                         onClick={() => { setRenamingId(session.id); setRenameValue(session.name); }}
                         title="Đổi tên"
-                        style={{ background: "none", border: "none", cursor: "pointer", padding: "5px", color: "#94A3B8", borderRadius: "5px", display: "flex", alignItems: "center" }}
+                        className="bg-transparent border-none cursor-pointer p-1.5 text-[#94A3B8] rounded-md flex items-center"
                       >
                         <Pencil size={12} />
                       </button>
                       <button
                         onClick={() => setDeletingId(session.id)}
                         title="Xóa"
-                        style={{ background: "none", border: "none", cursor: "pointer", padding: "5px", color: "#94A3B8", borderRadius: "5px", display: "flex", alignItems: "center" }}
+                        className="bg-transparent border-none cursor-pointer p-1.5 text-[#94A3B8] rounded-md flex items-center"
                       >
                         <Trash2 size={12} />
                       </button>
@@ -569,165 +543,155 @@ export default function FormulaFinder({
         </div>
 
         {/* ─── Chat window ─── */}
-        <div className="chat-window" style={glassCard}>
-          <div className="chat-messages" ref={chatMessagesRef} style={{ backgroundColor: "transparent" }}>
+        <div className="glass-card dark:bg-[#0F172A] flex flex-col flex-1 overflow-hidden">
+          <div className="flex-1 py-5 px-4 overflow-y-auto flex flex-col gap-4 bg-transparent dark:bg-[#0F172A]" ref={chatMessagesRef}>
             {messages.length === 0 ? (
-              <div className="finder-welcome-container">
-                <div className="finder-robot-circle">
+              <div className="flex flex-col items-center text-center py-8 md:py-12 max-w-[500px] mx-auto gap-4">
+                <div className="w-[68px] h-[68px] rounded-full bg-secondary/8 text-secondary flex items-center justify-center">
                   <MessageSquare size={32} fill="rgba(59,130,246,0.1)" />
                 </div>
-                <h2 style={{ fontSize: "1.35rem", fontWeight: "800", color: "#1E3A5F" }}>
+                <h2 className="text-[1.35rem] font-extrabold text-[#1E3A5F]">
                   Xin chào! Mình là FormulaX AI
                 </h2>
-                <p style={{ fontSize: "0.85rem", color: "#64748B", lineHeight: "1.5" }}>
+                <p className="text-[0.85rem] text-[#64748B] leading-[1.5]">
                   Được hỗ trợ bởi <strong>GPT-OSS 20B · Groq</strong>. Hỏi bất kỳ bài toán nào,
                   mình sẽ giải từng bước và gợi ý công thức phù hợp.
                 </p>
-                <div className="finder-suggestions-grid">
+                <div className="grid grid-cols-1 gap-3 w-full">
                   {suggestionsList.map((item, idx) => (
-                    <div key={idx} className="finder-suggestion-card" style={glassCardSm} onClick={() => handleSend(item.query)}>
-                      <Search size={14} className="finder-suggestion-icon" />
+                    <div key={idx} className="glass-card-sm flex items-center gap-3 py-3 px-4 cursor-pointer text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] transition duration-200 hover:-translate-y-px text-left" onClick={() => handleSend(item.query)}>
+                      <Search size={14} className="text-secondary shrink-0" />
                       <span>{item.text}</span>
                     </div>
                   ))}
                 </div>
               </div>
             ) : (
-              messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`chat-bubble ${msg.sender}`}
-                  style={
-                    msg.isError
-                      ? { backgroundColor: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.2)", color: "#b91c1c" }
-                      : msg.isLimitHit
-                        ? { backgroundColor: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.3)", color: "#92400E" }
-                        : (msg.isImage || msg.isFile)
-                          ? { padding: "8px", backgroundColor: "white", border: "1px solid #E2E8F0", color: "#1E3A5F" }
-                          : msg.sender === "bot"
-                            ? { backgroundColor: "rgba(255,255,255,0.72)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }
-                            : {}
-                  }
-                >
-                  {msg.isError && (
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <AlertCircle size={16} />
-                      <span>{msg.text}</span>
-                    </div>
-                  )}
-
-                  {msg.isImage && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                      <div style={{
-                        position: "relative", width: "180px", height: "100px",
-                        background: "linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)",
-                        borderRadius: "8px", border: "1.5px solid #CBD5E1",
-                        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        fontSize: "0.8rem", color: "#475569", fontWeight: "700"
-                      }}>
-                        <div style={{ fontSize: "0.85rem", color: "#1E3A5F", fontFamily: "monospace", zIndex: 1 }}>R = 3cm | V = ?</div>
-                        <span style={{ position: "absolute", bottom: "6px", right: "6px", backgroundColor: "#10B981", color: "white", fontSize: "0.6rem", padding: "2px 6px", borderRadius: "4px", fontWeight: "800", zIndex: 1 }}>CAPTURE OCR</span>
-                      </div>
-                      <div style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: "600", paddingLeft: "4px" }}>Ảnh chụp đề bài từ Camera AI</div>
-                    </div>
-                  )}
-
-                  {msg.isFile && (
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "6px 10px", backgroundColor: "#F8FAFC", borderRadius: "8px", border: "1px solid #E2E8F0" }}>
-                      <div style={{ padding: "8px", backgroundColor: "rgba(59,130,246,0.08)", color: "#3B82F6", borderRadius: "6px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <FileText size={18} />
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", overflow: "hidden" }}>
-                        <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#1E3A5F", textOverflow: "ellipsis", overflow: "hidden", whiteSpace: "nowrap", maxWidth: "160px" }}>{msg.fileName}</span>
-                        <span style={{ fontSize: "0.65rem", color: "#64748B", fontWeight: "600" }}>Tài liệu đính kèm</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {!msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && (
-                    <div style={{ lineHeight: "1.65", fontSize: "0.88rem" }}>
-                      {msg.sender === "bot"
-                        ? <RichTextRenderer text={msg.text || ""} />
-                        : <span style={{ whiteSpace: "pre-wrap" }}>{msg.text}</span>
-                      }
-                    </div>
-                  )}
-
-                  {msg.isLimitHit && (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.88rem" }}>
-                        <Crown size={16} fill="#F59E0B" color="#F59E0B" />
+              messages.map((msg) => {
+                const isUser = msg.sender === "user";
+                const bubbleStateClass = msg.isError
+                  ? "bg-[rgba(239,68,68,0.06)] border border-[rgba(239,68,68,0.2)] text-[#b91c1c]"
+                  : msg.isLimitHit
+                    ? "bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.3)] text-[#92400E]"
+                    : (msg.isImage || msg.isFile)
+                      ? "p-2 bg-white border border-[#E2E8F0] text-[#1E3A5F]"
+                      : isUser
+                        ? "bg-secondary text-white"
+                        : "bg-white/72 backdrop-blur-[14px] text-primary dark:text-[#E2E8F0]";
+                return (
+                  <div
+                    key={msg.id}
+                    className={`max-w-[85%] ${!isUser ? "md:max-w-[92%]" : ""} py-3 px-4 rounded-xl text-[0.85rem] leading-[1.5] break-words ${
+                      isUser
+                        ? "self-end rounded-br-[2px] shadow-[0_4px_10px_rgba(59,130,246,0.15)]"
+                        : "self-start rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] dark:bg-[#1E293B]"
+                    } ${bubbleStateClass}`}
+                  >
+                    {msg.isError && (
+                      <div className="flex items-center gap-2">
+                        <AlertCircle size={16} />
                         <span>{msg.text}</span>
                       </div>
-                      <button
-                        onClick={() => setActiveTab("premium")}
-                        style={{
-                          display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-                          background: "#F59E0B", color: "#1E3A5F", border: "none",
-                          borderRadius: "8px", padding: "8px 16px",
-                          fontSize: "0.82rem", fontWeight: "800", cursor: "pointer",
-                        }}
-                      >
-                        <Crown size={13} fill="#1E3A5F" color="#1E3A5F" />
-                        Nâng cấp Premium — Hỏi không giới hạn
-                      </button>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Formula card */}
-                  {msg.sender === "bot" && msg.aiResult && (
-                    <div className="ai-result-card" style={{ background: "rgba(255,255,255,0.75)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
-                      <div className="ai-result-name">{msg.aiResult.name}</div>
-                      <div className="ai-result-latex">
-                        <MathElement math={msg.aiResult.latex} block={true} />
-                      </div>
-                      <div style={{ fontSize: "0.75rem", color: "#334155" }}>
-                        <strong>Ý nghĩa:</strong>
-                        <RichTextRenderer text={msg.aiResult.explanation.split('\n')[0]} />
-                      </div>
-                      {msg.aiResult.mnemonic && (
-                        <div className="ai-result-mnemonic">
-                          <strong>💡 Mẹo nhớ:</strong> {msg.aiResult.mnemonic}
+                    {msg.isImage && (
+                      <div className="flex flex-col gap-1.5">
+                        <div className="relative w-[180px] h-[100px] bg-[linear-gradient(135deg,#F8FAFC_0%,#E2E8F0_100%)] rounded-lg border-[1.5px] border-[#CBD5E1] flex flex-col items-center justify-center text-[0.8rem] text-[#475569] font-bold">
+                          <div className="text-[0.85rem] text-[#1E3A5F] font-mono z-[1]">R = 3cm | V = ?</div>
+                          <span className="absolute bottom-1.5 right-1.5 bg-success text-white text-[0.6rem] py-0.5 px-1.5 rounded z-[1] font-extrabold">CAPTURE OCR</span>
                         </div>
-                      )}
-                      <div className="ai-result-actions">
+                        <div className="text-xs text-text-muted font-semibold pl-1">Ảnh chụp đề bài từ Camera AI</div>
+                      </div>
+                    )}
+
+                    {msg.isFile && (
+                      <div className="flex items-center gap-2.5 py-1.5 px-2.5 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
+                        <div className="p-2 bg-secondary/8 text-secondary rounded-md flex items-center justify-center">
+                          <FileText size={18} />
+                        </div>
+                        <div className="flex flex-col overflow-hidden">
+                          <span className="text-[0.8rem] font-bold text-[#1E3A5F] text-ellipsis overflow-hidden whitespace-nowrap max-w-[160px]">{msg.fileName}</span>
+                          <span className="text-[0.65rem] text-text-muted font-semibold">Tài liệu đính kèm</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {!msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && (
+                      <div className="leading-[1.65] text-[0.88rem]">
+                        {msg.sender === "bot"
+                          ? <RichTextRenderer text={msg.text || ""} />
+                          : <span className="whitespace-pre-wrap">{msg.text}</span>
+                        }
+                      </div>
+                    )}
+
+                    {msg.isLimitHit && (
+                      <div className="flex flex-col gap-2.5">
+                        <div className="flex items-center gap-2 text-[0.88rem]">
+                          <Crown size={16} fill="#F59E0B" color="#F59E0B" />
+                          <span>{msg.text}</span>
+                        </div>
                         <button
-                          className="ai-result-btn"
-                          onClick={() => onCreateFlashcard(msg.aiResult)}
-                          style={{ backgroundColor: "rgba(16,185,129,0.08)", color: "#10B981" }}
+                          onClick={() => setActiveTab("premium")}
+                          className="flex items-center justify-center gap-1.5 bg-premium text-[#1E3A5F] border-none rounded-lg py-2 px-4 text-[0.82rem] font-extrabold cursor-pointer"
                         >
-                          Tạo Flashcard
-                        </button>
-                        <button
-                          className="ai-result-btn"
-                          onClick={() => handleBookmarkWithPopup(msg.aiResult.id, msg.aiResult.name)}
-                          style={{
-                            backgroundColor: bookmarkedIds.includes(msg.aiResult.id) ? "rgba(239,68,68,0.08)" : "rgba(30,58,95,0.05)",
-                            color: bookmarkedIds.includes(msg.aiResult.id) ? "#EF4444" : "#1E3A5F"
-                          }}
-                        >
-                          {bookmarkedIds.includes(msg.aiResult.id) ? "✓ Đã lưu" : "Lưu lại"}
-                        </button>
-                        <button
-                          className="ai-result-btn"
-                          onClick={() => onViewDetail(msg.aiResult)}
-                          style={{ backgroundColor: "#1E3A5F", color: "white" }}
-                        >
-                          Chi tiết
+                          <Crown size={13} fill="#1E3A5F" color="#1E3A5F" />
+                          Nâng cấp Premium — Hỏi không giới hạn
                         </button>
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))
+                    )}
+
+                    {/* Formula card */}
+                    {msg.sender === "bot" && msg.aiResult && (
+                      <div className="mt-3.5 bg-[linear-gradient(135deg,#ffffff_0%,#fcfdff_100%)] border-[1.5px] border-[#e2e8f0] border-l-4 border-l-secondary rounded-xl p-4 flex flex-col gap-3 shadow-[0_10px_25px_-5px_rgba(30,58,95,0.04),0_8px_16px_-6px_rgba(30,58,95,0.02)]">
+                        <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5 before:content-['✨'] before:text-[0.95rem]">{msg.aiResult.name}</div>
+                        <div className="bg-[#f8fafc] border border-secondary/15 rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)]">
+                          <MathElement math={msg.aiResult.latex} block={true} />
+                        </div>
+                        <div className="text-xs text-[#334155]">
+                          <strong>Ý nghĩa:</strong>
+                          <RichTextRenderer text={msg.aiResult.explanation.split('\n')[0]} />
+                        </div>
+                        {msg.aiResult.mnemonic && (
+                          <div className="text-xs text-[#78350f] bg-[#fffbeb] border border-[rgba(245,158,11,0.15)] py-2 px-3 rounded-lg leading-[1.45] mt-1">
+                            <strong>💡 Mẹo nhớ:</strong> {msg.aiResult.mnemonic}
+                          </div>
+                        )}
+                        <div className="flex gap-2 mt-1">
+                          <button
+                            className="flex-1 py-2 px-3 rounded-lg text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border border-black/[0.03] inline-flex items-center justify-center min-h-[38px] hover:-translate-y-[1.5px] hover:scale-[1.02] hover:shadow-[0_4px_8px_rgba(30,58,95,0.06)] active:translate-y-0 active:scale-100 bg-success/8 text-success"
+                            onClick={() => onCreateFlashcard(msg.aiResult)}
+                          >
+                            Tạo Flashcard
+                          </button>
+                          <button
+                            className={`flex-1 py-2 px-3 rounded-lg text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border border-black/[0.03] inline-flex items-center justify-center min-h-[38px] hover:-translate-y-[1.5px] hover:scale-[1.02] hover:shadow-[0_4px_8px_rgba(30,58,95,0.06)] active:translate-y-0 active:scale-100 ${
+                              bookmarkedIds.includes(msg.aiResult.id) ? "bg-error/8 text-error" : "bg-[rgba(30,58,95,0.05)] text-[#1E3A5F]"
+                            }`}
+                            onClick={() => handleBookmarkWithPopup(msg.aiResult.id, msg.aiResult.name)}
+                          >
+                            {bookmarkedIds.includes(msg.aiResult.id) ? "✓ Đã lưu" : "Lưu lại"}
+                          </button>
+                          <button
+                            className="flex-1 py-2 px-3 rounded-lg text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border border-black/[0.03] inline-flex items-center justify-center min-h-[38px] hover:-translate-y-[1.5px] hover:scale-[1.02] hover:shadow-[0_4px_8px_rgba(30,58,95,0.06)] active:translate-y-0 active:scale-100 bg-primary text-white"
+                            onClick={() => onViewDetail(msg.aiResult)}
+                          >
+                            Chi tiết
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
             )}
 
             {isAnalyzing && (
-              <div className="chat-bubble bot">
-                <div className="ai-loader">
-                  <div className="pulse-bubble"></div>
-                  <div className="pulse-bubble"></div>
-                  <div className="pulse-bubble"></div>
+              <div className="self-start max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white/72 backdrop-blur-[14px] dark:bg-[#1E293B]">
+                <div className="flex items-center gap-2 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8]">
+                  <div className="w-2 h-2 rounded-full bg-secondary animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
+                  <div className="w-2 h-2 rounded-full bg-secondary animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
+                  <div className="w-2 h-2 rounded-full bg-secondary animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
                   <span>AI đang phân tích...</span>
                 </div>
               </div>
@@ -736,13 +700,9 @@ export default function FormulaFinder({
 
           {/* Free user AI query counter */}
           {!isPremium && (
-            <div style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "6px 12px", borderTop: "1px solid var(--border-slate)",
-              background: aiQueriesLeft === 0 ? "rgba(239,68,68,0.04)" : "rgba(245,158,11,0.04)",
-              fontSize: "0.72rem", fontWeight: "600",
-              color: aiQueriesLeft === 0 ? "#DC2626" : "#92400E",
-            }}>
+            <div className={`flex items-center justify-between py-1.5 px-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] text-[0.72rem] font-semibold ${
+              aiQueriesLeft === 0 ? "bg-[rgba(239,68,68,0.04)] text-[#DC2626]" : "bg-[rgba(245,158,11,0.04)] text-[#92400E]"
+            }`}>
               <span>
                 {aiQueriesLeft === 0
                   ? "Đã dùng hết lượt hỏi AI hôm nay"
@@ -751,12 +711,7 @@ export default function FormulaFinder({
               </span>
               <button
                 onClick={() => setActiveTab("premium")}
-                style={{
-                  display: "flex", alignItems: "center", gap: "4px",
-                  background: "#F59E0B", color: "#1E3A5F", border: "none",
-                  borderRadius: "6px", padding: "3px 8px", fontSize: "0.68rem",
-                  fontWeight: "800", cursor: "pointer",
-                }}
+                className="flex items-center gap-1 bg-premium text-[#1E3A5F] border-none rounded-md py-[3px] px-2 text-[0.68rem] font-extrabold cursor-pointer"
               >
                 <Crown size={10} fill="#1E3A5F" color="#1E3A5F" />
                 Nâng cấp
@@ -765,24 +720,24 @@ export default function FormulaFinder({
           )}
 
           {/* Chat input */}
-          <div style={{ padding: "12px", borderTop: "1px solid var(--border-slate)", background: "transparent" }}>
-            <div className="finder-input-container" style={glassCardSm}>
+          <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
+            <div className="glass-card-sm flex items-center gap-2 py-1.5 px-3">
               <button type="button" onClick={() => setCameraOpen(true)}
-                style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "8px 4px 8px 8px" }}
+                className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-1 pl-2"
                 title="Quét đề bài bằng Camera AI"
               >
                 <Camera size={18} />
               </button>
               <button type="button" onClick={() => fileInputRef.current?.click()}
-                style={{ background: "none", border: "none", color: "#94A3B8", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: "8px 8px 8px 4px" }}
+                className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-2 pl-1"
                 title="Tải đề bài lên từ máy tính"
               >
                 <Paperclip size={18} />
               </button>
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} style={{ display: "none" }} accept="image/*,.pdf,.txt,.docx" />
+              <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,.pdf,.txt,.docx" />
               <textarea
                 ref={textareaRef}
-                className="finder-input-field"
+                className="flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] bg-transparent py-2 px-2 outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]"
                 placeholder="Hỏi AI về bất kỳ công thức toán nào..."
                 rows={1}
                 onChange={(e) => {
@@ -791,11 +746,14 @@ export default function FormulaFinder({
                   e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
                 }}
                 disabled={isAnalyzing}
-                style={{ resize: "none", overflow: "hidden", lineHeight: "1.5" }}
               />
               <button
                 type="button"
-                className={`finder-send-btn ${query.trim() && (isPremium || aiQueriesLeft > 0) ? "active" : ""}`}
+                className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition duration-200 shrink-0 ${
+                  query.trim() && (isPremium || aiQueriesLeft > 0)
+                    ? "bg-[linear-gradient(135deg,#1E3A5F_0%,#3B82F6_100%)] text-white"
+                    : "bg-[#f1f5f9] text-text-muted"
+                }`}
                 disabled={isAnalyzing || !query.trim() || (!isPremium && aiQueriesLeft === 0)}
                 onClick={() => handleSend(textareaRef.current?.value || "")}
                 title="Gửi câu hỏi"
@@ -809,56 +767,32 @@ export default function FormulaFinder({
 
       {/* ─── Saved formula popup ─── */}
       {savedPopup && (
-        <div style={{
-          position: "fixed",
-          bottom: "80px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 2000,
-          background: "white",
-          border: "1px solid #E2E8F0",
-          borderRadius: "14px",
-          padding: "16px 20px",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.14)",
-          minWidth: "280px",
-          maxWidth: "340px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px"
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            <div style={{ width: "28px", height: "28px", borderRadius: "50%", background: "rgba(16,185,129,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[2000] bg-white border border-[#E2E8F0] rounded-2xl py-4 px-5 shadow-[0_8px_32px_rgba(0,0,0,0.14)] min-w-[280px] max-w-[340px] flex flex-col gap-2.5">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-full bg-success/10 flex items-center justify-center shrink-0">
               <BookMarked size={14} color="#10B981" />
             </div>
             <div>
-              <div style={{ fontSize: "0.82rem", fontWeight: "700", color: "#1E3A5F" }}>Đã lưu vào thư viện!</div>
-              <div style={{ fontSize: "0.75rem", color: "#64748B", marginTop: "1px" }}>
+              <div className="text-[0.82rem] font-bold text-[#1E3A5F]">Đã lưu vào thư viện!</div>
+              <div className="text-[0.75rem] text-text-muted mt-0.5">
                 "{savedPopup.formulaName.length > 35 ? savedPopup.formulaName.slice(0, 35) + "..." : savedPopup.formulaName}"
               </div>
             </div>
-            <button onClick={() => setSavedPopup(null)} style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "#94A3B8", display: "flex", alignItems: "center" }}>
+            <button onClick={() => setSavedPopup(null)} className="ml-auto bg-transparent border-none cursor-pointer text-[#94A3B8] flex items-center">
               <X size={14} />
             </button>
           </div>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div className="flex gap-2">
             <button
               onClick={() => { setActiveTab("library"); setSavedPopup(null); }}
-              style={{
-                flex: 1, padding: "9px", background: "#1E3A5F", color: "white",
-                border: "none", borderRadius: "9px", cursor: "pointer",
-                fontSize: "0.78rem", fontWeight: "700", display: "flex", alignItems: "center", justifyContent: "center", gap: "5px"
-              }}
+              className="flex-1 py-2.5 bg-primary text-white border-none rounded-[9px] cursor-pointer text-[0.78rem] font-bold flex items-center justify-center gap-1.5"
             >
               <BookOpen size={13} />
               Xem thư viện
             </button>
             <button
               onClick={() => setSavedPopup(null)}
-              style={{
-                flex: 1, padding: "9px", background: "#F1F5F9", color: "#64748B",
-                border: "none", borderRadius: "9px", cursor: "pointer",
-                fontSize: "0.78rem", fontWeight: "700"
-              }}
+              className="flex-1 py-2.5 bg-[#F1F5F9] text-text-muted border-none rounded-[9px] cursor-pointer text-[0.78rem] font-bold"
             >
               Tiếp tục chat
             </button>
@@ -868,62 +802,39 @@ export default function FormulaFinder({
 
       {/* ─── Camera Modal ─── */}
       {cameraOpen && (
-        <div style={{
-          position: "fixed", top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: "rgba(15,23,42,0.75)", backdropFilter: "blur(4px)",
-          zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px"
-        }}>
-          <div style={{
-            backgroundColor: "white", borderRadius: "16px", width: "100%", maxWidth: "420px",
-            padding: "24px", boxShadow: "0 10px 25px rgba(0,0,0,0.15)",
-            position: "relative", display: "flex", flexDirection: "column", gap: "16px"
-          }}>
-            <button onClick={() => setCameraOpen(false)} style={{
-              position: "absolute", top: "16px", right: "16px",
-              background: "#F1F5F9", border: "none", width: "32px", height: "32px",
-              borderRadius: "50%", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: "#1E3A5F"
-            }}>
+        <div className="fixed inset-0 bg-[rgba(15,23,42,0.75)] backdrop-blur-[4px] z-[1000] flex items-center justify-center p-5">
+          <div className="bg-white rounded-2xl w-full max-w-[420px] p-6 shadow-[0_10px_25px_rgba(0,0,0,0.15)] relative flex flex-col gap-4">
+            <button onClick={() => setCameraOpen(false)} className="absolute top-4 right-4 bg-[#F1F5F9] border-none w-8 h-8 rounded-full cursor-pointer flex items-center justify-center text-[#1E3A5F]">
               <X size={16} />
             </button>
-            <div style={{ textAlign: "center", marginTop: "8px" }}>
-              <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1E3A5F", margin: 0 }}>Chụp ảnh đề bài bằng Camera AI</h3>
-              <p style={{ fontSize: "0.75rem", color: "#64748B", margin: "4px 0 0 0" }}>Đặt công thức/đề bài vào khung quét bên dưới</p>
+            <div className="text-center mt-2">
+              <h3 className="text-[1.1rem] font-extrabold text-[#1E3A5F] m-0">Chụp ảnh đề bài bằng Camera AI</h3>
+              <p className="text-xs text-text-muted mt-1 mb-0">Đặt công thức/đề bài vào khung quét bên dưới</p>
             </div>
-            <div style={{
-              position: "relative", width: "100%", height: "220px", backgroundColor: "#0F172A",
-              borderRadius: "12px", overflow: "hidden", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center"
-            }}>
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "2px", backgroundColor: "#10B981", boxShadow: "0 0 8px #10B981", animation: "float 3s infinite ease-in-out" }}></div>
-              <div style={{
-                position: "absolute", width: "80%", height: "50%", border: "2px dashed #F59E0B", borderRadius: "8px",
-                boxShadow: "0 0 0 9999px rgba(15,23,42,0.4)", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center"
-              }}>
-                <div style={{ position: "absolute", top: "-4px", left: "-4px", width: "12px", height: "12px", borderTop: "3px solid #F59E0B", borderLeft: "3px solid #F59E0B" }}></div>
-                <div style={{ position: "absolute", top: "-4px", right: "-4px", width: "12px", height: "12px", borderTop: "3px solid #F59E0B", borderRight: "3px solid #F59E0B" }}></div>
-                <div style={{ position: "absolute", bottom: "-4px", left: "-4px", width: "12px", height: "12px", borderBottom: "3px solid #F59E0B", borderLeft: "3px solid #F59E0B" }}></div>
-                <div style={{ position: "absolute", bottom: "-4px", right: "-4px", width: "12px", height: "12px", borderBottom: "3px solid #F59E0B", borderRight: "3px solid #F59E0B" }}></div>
+            <div className="relative w-full h-[220px] bg-[#0F172A] rounded-xl overflow-hidden flex flex-col items-center justify-center">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-success shadow-[0_0_8px_#10B981] animate-[float_3s_infinite_ease-in-out]" />
+              <div className="absolute w-4/5 h-1/2 border-2 border-dashed border-premium rounded-lg shadow-[0_0_0_9999px_rgba(15,23,42,0.4)] z-[2] flex items-center justify-center">
+                <div className="absolute -top-1 -left-1 w-3 h-3 border-t-[3px] border-l-[3px] border-premium" />
+                <div className="absolute -top-1 -right-1 w-3 h-3 border-t-[3px] border-r-[3px] border-premium" />
+                <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-[3px] border-l-[3px] border-premium" />
+                <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-[3px] border-r-[3px] border-premium" />
               </div>
-              <div style={{ color: "#E2E8F0", fontSize: "0.9rem", fontFamily: "monospace", textAlign: "center", lineHeight: "1.6", padding: "20px", zIndex: 1 }}>
-                <div style={{ fontSize: "0.8rem", color: "#94A3B8" }}>[ Đề bài mẫu ]</div>
+              <div className="text-[#E2E8F0] text-[0.9rem] font-mono text-center leading-[1.6] p-5 z-[1]">
+                <div className="text-[0.8rem] text-[#94A3B8]">[ Đề bài mẫu ]</div>
                 <strong>Cho mặt cầu bán kính R = 3cm.</strong><br />
                 <strong>Tính thể tích V của khối cầu đó.</strong>
               </div>
-              <span style={{ position: "absolute", bottom: "12px", backgroundColor: "rgba(0,0,0,0.6)", color: "#10B981", fontSize: "0.65rem", padding: "3px 8px", borderRadius: "4px", fontWeight: "700", letterSpacing: "0.5px" }}>ĐANG TỰ ĐỘNG LẤY NÉT</span>
+              <span className="absolute bottom-3 bg-black/60 text-success text-[0.65rem] py-1 px-2 rounded font-bold tracking-[0.5px]">ĐANG TỰ ĐỘNG LẤY NÉT</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", marginTop: "4px" }}>
+            <div className="flex flex-col items-center gap-2 mt-1">
               <button
                 onClick={handleCapturePhoto}
-                style={{
-                  width: "56px", height: "56px", borderRadius: "50%", backgroundColor: "white",
-                  border: "4px solid #3B82F6", padding: "4px", cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  boxShadow: "0 4px 12px rgba(59,130,246,0.3)"
-                }}
+                className="w-14 h-14 rounded-full bg-white border-4 border-secondary p-1 cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(59,130,246,0.3)]"
                 title="Chụp ngay"
               >
-                <div style={{ width: "100%", height: "100%", borderRadius: "50%", backgroundColor: "#3B82F6" }}></div>
+                <div className="w-full h-full rounded-full bg-secondary" />
               </button>
-              <span style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: "700" }}>Nhấn nút để quét công thức</span>
+              <span className="text-xs text-text-muted font-bold">Nhấn nút để quét công thức</span>
             </div>
           </div>
         </div>
