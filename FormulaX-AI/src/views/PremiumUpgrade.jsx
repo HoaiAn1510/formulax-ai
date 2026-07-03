@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem } from "lucide-react";
-import { glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }) {
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
@@ -86,320 +85,254 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
   return (
     <div className="view-container">
-    <div style={pageWrapper}>
-      {orbs.map((orb, idx) => (
-        <div key={idx} style={orbStyle(orb)} />
-      ))}
-      <div style={contentLayer}>
-      <div className="premium-upgrade-container" style={{ display: "flex", flexDirection: "column", gap: "48px" }}>
-        
-        {/* Section 1: Hero Banner */}
-        <div className="upgrade-header-hero" style={{ 
-          background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%)", 
-          padding: "40px 24px", 
-          borderRadius: "16px", 
-          textAlign: "center",
-          color: "white",
-          position: "relative",
-          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.15)",
-          overflow: "hidden"
-        }}>
-          <div style={{ marginBottom: "12px" }}>
-            <span className="tier-badge-pill" style={{ 
-              background: "rgba(245, 158, 11, 0.15)", 
-              color: "#F59E0B",
-              fontSize: "0.75rem",
-              fontWeight: "700",
-              padding: "4px 12px",
-              borderRadius: "20px"
-            }}>CHƯƠNG TRÌNH KHUYÊN DÙNG</span>
-          </div>
-          
-          <Crown size={36} fill="#F59E0B" color="#F59E0B" style={{ margin: "0 auto 12px auto" }} />
-          
-          <h1 style={{ fontSize: "1.45rem", fontWeight: "800", color: "#FFFFFF", margin: "0 0 8px 0" }}>
-            Mở khóa toàn bộ sức mạnh <span style={{ color: "#F59E0B" }}>FormulaX AI</span>
-          </h1>
-          
-          <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: "6px", margin: "12px 0" }}>
-            <span style={{ fontSize: "2.2rem", fontWeight: "800", color: "#F59E0B" }}>49.000 ₫</span>
-            <span style={{ fontSize: "0.9rem", color: "#94A3B8", fontWeight: "600" }}>/ tháng</span>
-          </div>
+      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+        <div className="relative z-[1]">
+          <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-12">
 
-          <p style={{ fontSize: "0.85rem", color: "#CBD5E1", maxWidth: "480px", margin: "0 auto 20px auto", lineHeight: "1.5" }}>
-            Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý giải toán AI đắc lực.
-          </p>
-
-          {!isPremium ? (
-            <button 
-              className="btn btn-premium vibrate" 
-              onClick={handleUpgrade}
-              style={{ width: "100%", maxWidth: "300px", height: "46px", fontSize: "0.95rem", borderRadius: "8px" }}
-            >
-              <span>Nâng cấp Pro ngay</span>
-              <Crown size={14} fill="white" />
-            </button>
-          ) : (
-            <button 
-              className="btn btn-secondary" 
-              onClick={handleDowngrade}
-              style={{ width: "100%", maxWidth: "300px", height: "46px", fontSize: "0.95rem", borderRadius: "8px" }}
-            >
-              <span>Trở về gói Free (Giả lập)</span>
-            </button>
-          )}
-        </div>
-
-        {/* Section 2: Account Progress Tracker Links */}
-        <div style={{ 
-          backgroundColor: "#F1F5F9", 
-          padding: "12px 16px", 
-          borderRadius: "12px", 
-          textAlign: "center",
-          fontSize: "0.8rem",
-          fontWeight: "600",
-          color: "#475569"
-        }}>
-          <div style={{ display: "flex", justifyContent: "center", gap: "16px", flexWrap: "wrap" }}>
-            <span>• 1. Thư viện công thức</span>
-            <span>• 2. Flashcard ghi nhớ</span>
-            <span>• 3. Đánh giá kiểm tra</span>
-          </div>
-        </div>
-
-        {/* Section 3: Goals Grid */}
-        <div>
-          <div style={{ textAlign: "center", marginBottom: "24px" }}>
-            <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1E3A5F", margin: 0 }}>
-              Mọi thứ bạn cần để đạt điểm cao
-            </h2>
-            <p style={{ fontSize: "0.8rem", color: "#64748B", marginTop: "4px" }}>Đầy đủ tính năng hỗ trợ thi THPT Quốc gia tốt nhất</p>
-          </div>
-          <div className="goals-grid">
-            {goals.map((goal, idx) => {
-              const GoalIcon = goal.icon;
-              return (
-                <div key={idx} className="goal-card" style={{ ...glassCard, display: "flex", gap: "12px", padding: "16px" }}>
-                  <div style={{ 
-                    width: "36px", 
-                    height: "36px", 
-                    borderRadius: "8px", 
-                    backgroundColor: "rgba(245, 158, 11, 0.08)", 
-                    color: "#F59E0B", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center",
-                    flexShrink: 0
-                  }}>
-                    <GoalIcon size={18} />
-                  </div>
-                  <div>
-                    <h3 style={{ fontSize: "0.9rem", fontWeight: "800", color: "#1E3A5F", margin: "0 0 4px 0" }}>{goal.title}</h3>
-                    <p style={{ fontSize: "0.75rem", color: "#64748B", margin: 0, lineHeight: "1.4" }}>{goal.desc}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Section 4: Detailed Compare Table */}
-        <div>
-          <div style={{ textAlign: "center", marginBottom: "20px" }}>
-            <h2 style={{ fontSize: "1.3rem", fontWeight: "800", color: "#1E3A5F", margin: 0 }}>
-              So sánh các gói học tập
-            </h2>
-            <p style={{ fontSize: "0.8rem", color: "#64748B", marginTop: "4px" }}>
-              Lựa chọn thông minh để bứt phá điểm số tối đa
-            </p>
-          </div>
-          
-          <div className="plan-compare-table-wrapper" style={glassCard}>
-            <table className="plan-compare-table">
-              <thead>
-                <tr>
-                  <th className="feature-name">Tính năng</th>
-                  <th>Bản Free</th>
-                  <th className="premium-col-header">Bản Pro</th>
-                </tr>
-              </thead>
-              <tbody>
-                {features.map((feat, idx) => (
-                  <tr key={idx}>
-                    <td className="feature-name">{feat.name}</td>
-                    <td>
-                      {feat.free === "Khóa" ? (
-                        <div className="compare-icon-x">
-                          <X size={12} />
-                        </div>
-                      ) : (
-                        <span style={{ color: "#64748B", fontWeight: "500" }}>{feat.free}</span>
-                      )}
-                    </td>
-                    <td className="premium-col-cell">
-                      {feat.premium === "Mở khóa toàn bộ" || feat.premium === "Tải về chất lượng cao" ? (
-                        <div className="compare-icon-check">
-                          <Check size={12} />
-                        </div>
-                      ) : (
-                        <span>{feat.premium}</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Section 5: Gold Card - Nâng cấp trải nghiệm học */}
-        {!isPremium && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ marginBottom: "8px" }}>
-              <span style={{ 
-                backgroundColor: "#10B981", 
-                color: "white", 
-                fontSize: "0.7rem", 
-                fontWeight: "800", 
-                padding: "2px 8px", 
-                borderRadius: "4px" 
-              }}>MỞ KHÓA NGAY</span>
-            </div>
-            
-            <div className="upgrade-pricing-card" style={{
-              border: "2px solid #F59E0B",
-              borderRadius: "20px",
-              padding: "24px",
-              maxWidth: "400px",
-              width: "100%",
-              backgroundColor: "rgba(255,255,255,0.75)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              boxShadow: "0 10px 25px rgba(245, 158, 11, 0.15)"
-            }}>
-              <div style={{ textAlign: "center", marginBottom: "16px" }}>
-                <Crown size={28} fill="#F59E0B" color="#F59E0B" style={{ margin: "0 auto 6px auto" }} />
-                <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1E3A5F", margin: 0 }}>Premium hàng tháng</h3>
-                <p style={{ fontSize: "0.75rem", color: "#64748B", margin: "2px 0 0 0" }}>Gói tài khoản ưu việt nhất</p>
-                <h3 style={{ fontSize: "1.8rem", fontWeight: "800", color: "#F59E0B", margin: "10px 0 0 0" }}>49.000 ₫</h3>
-                <span style={{ fontSize: "0.7rem", color: "#64748B", fontWeight: "600" }}>/tháng</span>
-              </div>
-              
-              <div style={{ height: "1px", backgroundColor: "#E2E8F0", margin: "16px 0" }}></div>
-              
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.8rem", color: "#334155" }}>
-                  <Check size={14} style={{ color: "#10B981", flexShrink: 0 }} />
-                  <span>Tra cứu & Giải toán Finder AI không giới hạn</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.8rem", color: "#334155" }}>
-                  <Check size={14} style={{ color: "#10B981", flexShrink: 0 }} />
-                  <span>Mở khóa toàn bộ ngân hàng câu hỏi trắc nghiệm tự điền</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.8rem", color: "#334155" }}>
-                  <Check size={14} style={{ color: "#10B981", flexShrink: 0 }} />
-                  <span>Không có quảng cáo & ưu tiên máy chủ AI tốc độ cao</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "0.8rem", color: "#334155" }}>
-                  <Check size={14} style={{ color: "#10B981", flexShrink: 0 }} />
-                  <span>Xuất PDF/Ảnh Flashcard chất lượng cao ôn offline</span>
-                </div>
+            {/* Section 1: Hero Banner */}
+            <div className="bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] py-10 px-6 rounded-2xl text-center text-white relative shadow-[0_10px_30px_rgba(15,23,42,0.15)] overflow-hidden">
+              <div className="mb-3">
+                <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">CHƯƠNG TRÌNH KHUYÊN DÙNG</span>
               </div>
 
-              <button 
-                className="btn btn-premium vibrate" 
-                onClick={handleUpgrade}
-                style={{ width: "100%", height: "44px", fontSize: "0.9rem", borderRadius: "8px", border: "none" }}
-              >
-                <span>Mua ngay với Momo / Thẻ</span>
-              </button>
-            </div>
-          </div>
-        )}
+              <Crown size={36} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-3" />
 
-        {/* Section 6: Nhiều cách thanh toán */}
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: "0.75rem", color: "#64748B", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px" }}>
-            Nhiều cách thanh toán
-          </div>
-          <div style={{ display: "flex", justifyContent: "center", gap: "24px", alignItems: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-              <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#A20067", display: "flex", alignItems: "center", justifyCenter: "center", color: "white", fontWeight: "800", fontSize: "0.7rem" }}>MoMo</div>
-              <span style={{ fontSize: "0.65rem", color: "#64748B", fontWeight: "600" }}>Ví MoMo</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-              <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#007DFF", display: "flex", alignItems: "center", justifyCenter: "center", color: "white", fontWeight: "800", fontSize: "0.7rem" }}>Zalo</div>
-              <span style={{ fontSize: "0.65rem", color: "#64748B", fontWeight: "600" }}>ZaloPay</span>
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "4px" }}>
-              <div style={{ width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#EA2027", display: "flex", alignItems: "center", justifyCenter: "center", color: "white", fontWeight: "800", fontSize: "0.7rem" }}>VN</div>
-              <span style={{ fontSize: "0.65rem", color: "#64748B", fontWeight: "600" }}>VNPay</span>
-            </div>
-          </div>
-        </div>
+              <h1 className="text-[1.45rem] font-extrabold text-white mb-2">
+                Mở khóa toàn bộ sức mạnh <span className="text-premium">FormulaX AI</span>
+              </h1>
 
-        {/* Section 7: FAQs Accordion */}
-        <div>
-          <h2 className="section-title" style={{ justifyContent: "center", fontSize: "1.15rem", fontWeight: "800" }}>Câu hỏi thường gặp</h2>
-          <div className="faq-accordion">
-            {faqs.map((faq, idx) => {
-              const isOpen = openFaqIdx === idx;
-              return (
-                <div key={idx} className="faq-item" style={{ borderBottom: "1px solid #E2E8F0", padding: "8px 0" }}>
-                  <button className="faq-question" onClick={() => toggleFaq(idx)} style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", background: "none", border: "none", padding: "12px 4px", fontSize: "0.85rem", fontWeight: "700", color: "#1E3A5F", cursor: "pointer", textAlign: "left" }}>
-                    <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                  </button>
-                  {isOpen && (
-                    <div className="faq-answer" style={{ padding: "4px 4px 12px 4px", fontSize: "0.8rem", color: "#475569", lineHeight: "1.5" }}>
-                      {faq.a}
+              <div className="flex items-baseline justify-center gap-1.5 my-3">
+                <span className="text-[2.2rem] font-extrabold text-premium">49.000 ₫</span>
+                <span className="text-[0.9rem] text-[#94A3B8] font-semibold">/ tháng</span>
+              </div>
+
+              <p className="text-[0.85rem] text-[#CBD5E1] max-w-[480px] mx-auto mb-5 leading-[1.5]">
+                Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý giải toán AI đắc lực.
+              </p>
+
+              {!isPremium ? (
+                <button
+                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg"
+                  onClick={handleUpgrade}
+                >
+                  <span>Nâng cấp Pro ngay</span>
+                  <Crown size={14} fill="white" />
+                </button>
+              ) : (
+                <button
+                  className="btn btn-secondary w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg"
+                  onClick={handleDowngrade}
+                >
+                  <span>Trở về gói Free (Giả lập)</span>
+                </button>
+              )}
+            </div>
+
+            {/* Section 2: Account Progress Tracker Links */}
+            <div className="bg-[#F1F5F9] py-3 px-4 rounded-xl text-center text-[0.8rem] font-semibold text-[#475569]">
+              <div className="flex justify-center gap-4 flex-wrap">
+                <span>• 1. Thư viện công thức</span>
+                <span>• 2. Flashcard ghi nhớ</span>
+                <span>• 3. Đánh giá kiểm tra</span>
+              </div>
+            </div>
+
+            {/* Section 3: Goals Grid */}
+            <div>
+              <div className="text-center mb-6">
+                <h2 className="text-[1.25rem] font-extrabold text-primary m-0">
+                  Mọi thứ bạn cần để đạt điểm cao
+                </h2>
+                <p className="text-[0.8rem] text-text-muted mt-1">Đầy đủ tính năng hỗ trợ thi THPT Quốc gia tốt nhất</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {goals.map((goal, idx) => {
+                  const GoalIcon = goal.icon;
+                  return (
+                    <div key={idx} className="glass-card flex gap-3 p-4">
+                      <div className="w-9 h-9 rounded-lg bg-premium/8 text-premium flex items-center justify-center shrink-0">
+                        <GoalIcon size={18} />
+                      </div>
+                      <div>
+                        <h3 className="text-[0.9rem] font-extrabold text-primary mb-1">{goal.title}</h3>
+                        <p className="text-xs text-text-muted m-0 leading-[1.4]">{goal.desc}</p>
+                      </div>
                     </div>
-                  )}
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 4: Detailed Compare Table */}
+            <div>
+              <div className="text-center mb-5">
+                <h2 className="text-[1.3rem] font-extrabold text-primary m-0">
+                  So sánh các gói học tập
+                </h2>
+                <p className="text-[0.8rem] text-text-muted mt-1">
+                  Lựa chọn thông minh để bứt phá điểm số tối đa
+                </p>
+              </div>
+
+              <div className="glass-card overflow-x-auto">
+                <table className="w-full border-collapse text-[0.85rem] text-left">
+                  <thead>
+                    <tr>
+                      <th className="text-left py-4 px-5 font-extrabold text-primary border-b-2 border-[#f1f5f9] text-[0.9rem]">Tính năng</th>
+                      <th className="text-center py-4 px-5 font-extrabold text-primary border-b-2 border-[#f1f5f9] text-[0.9rem]">Bản Free</th>
+                      <th className="text-center py-4 px-5 font-black text-[#d97706] bg-premium/4 border-b-2 border-premium/15 text-[0.9rem]">Bản Pro</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {features.map((feat, idx) => (
+                      <tr key={idx} className="hover:bg-[#f8fafc] last:[&>td]:border-b-0">
+                        <td className="text-left py-4 px-5 border-b border-[#f1f5f9] align-middle leading-[1.5] font-bold text-primary text-[0.85rem]">{feat.name}</td>
+                        <td className="text-center py-4 px-5 border-b border-[#f1f5f9] align-middle leading-[1.5]">
+                          {feat.free === "Khóa" ? (
+                            <div className="inline-flex items-center justify-center bg-error/8 text-error w-6 h-6 rounded-full mx-auto">
+                              <X size={12} />
+                            </div>
+                          ) : (
+                            <span className="text-text-muted font-medium">{feat.free}</span>
+                          )}
+                        </td>
+                        <td className="text-center py-4 px-5 border-b border-[#f1f5f9] align-middle leading-[1.5] bg-premium/[0.015] font-bold text-primary">
+                          {feat.premium === "Mở khóa toàn bộ" || feat.premium === "Tải về chất lượng cao" ? (
+                            <div className="inline-flex items-center justify-center bg-success/8 text-success w-6 h-6 rounded-full mx-auto">
+                              <Check size={12} />
+                            </div>
+                          ) : (
+                            <span>{feat.premium}</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Section 5: Gold Card - Nâng cấp trải nghiệm học */}
+            {!isPremium && (
+              <div className="flex flex-col items-center">
+                <div className="mb-2">
+                  <span className="bg-success text-white text-[0.7rem] font-extrabold py-0.5 px-2 rounded">MỞ KHÓA NGAY</span>
                 </div>
-              );
-            })}
+
+                <div className="border-2 border-premium rounded-[20px] p-6 max-w-[400px] w-full bg-white/75 backdrop-blur-[20px] shadow-[0_10px_25px_rgba(245,158,11,0.15)]">
+                  <div className="text-center mb-4">
+                    <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-1.5" />
+                    <h3 className="text-[1.1rem] font-extrabold text-primary m-0">Premium hàng tháng</h3>
+                    <p className="text-xs text-text-muted mt-0.5 mb-0">Gói tài khoản ưu việt nhất</p>
+                    <h3 className="text-[1.8rem] font-extrabold text-premium mt-2.5 mb-0">49.000 ₫</h3>
+                    <span className="text-[0.7rem] text-text-muted font-semibold">/tháng</span>
+                  </div>
+
+                  <div className="h-px bg-[#E2E8F0] my-4" />
+
+                  <div className="flex flex-col gap-2.5 mb-5">
+                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155]">
+                      <Check size={14} className="text-success shrink-0" />
+                      <span>Tra cứu & Giải toán Finder AI không giới hạn</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155]">
+                      <Check size={14} className="text-success shrink-0" />
+                      <span>Mở khóa toàn bộ ngân hàng câu hỏi trắc nghiệm tự điền</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155]">
+                      <Check size={14} className="text-success shrink-0" />
+                      <span>Không có quảng cáo & ưu tiên máy chủ AI tốc độ cao</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155]">
+                      <Check size={14} className="text-success shrink-0" />
+                      <span>Xuất PDF/Ảnh Flashcard chất lượng cao ôn offline</span>
+                    </div>
+                  </div>
+
+                  <button
+                    className="btn btn-premium vibrate w-full h-11 text-[0.9rem] rounded-lg border-none"
+                    onClick={handleUpgrade}
+                  >
+                    <span>Mua ngay với Momo / Thẻ</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Section 6: Nhiều cách thanh toán */}
+            <div className="text-center">
+              <div className="text-xs text-text-muted font-bold uppercase tracking-[0.5px] mb-3">
+                Nhiều cách thanh toán
+              </div>
+              <div className="flex justify-center gap-6 items-center">
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-10 h-10 rounded-full bg-[#A20067] flex items-center justify-center text-white font-extrabold text-[0.7rem]">MoMo</div>
+                  <span className="text-[0.65rem] text-text-muted font-semibold">Ví MoMo</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-10 h-10 rounded-full bg-[#007DFF] flex items-center justify-center text-white font-extrabold text-[0.7rem]">Zalo</div>
+                  <span className="text-[0.65rem] text-text-muted font-semibold">ZaloPay</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <div className="w-10 h-10 rounded-full bg-[#EA2027] flex items-center justify-center text-white font-extrabold text-[0.7rem]">VN</div>
+                  <span className="text-[0.65rem] text-text-muted font-semibold">VNPay</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 7: FAQs Accordion */}
+            <div>
+              <h2 className="text-[1.15rem] font-extrabold text-primary flex items-center justify-center gap-2 mb-2">Câu hỏi thường gặp</h2>
+              <div className="flex flex-col">
+                {faqs.map((faq, idx) => {
+                  const isOpen = openFaqIdx === idx;
+                  return (
+                    <div key={idx} className="border-b border-[#E2E8F0] py-2">
+                      <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center bg-transparent border-none py-3 px-1 text-[0.85rem] font-bold text-primary cursor-pointer text-left">
+                        <span>{faq.q}</span>
+                        {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      </button>
+                      {isOpen && (
+                        <div className="py-1 px-1 pb-3 text-[0.8rem] text-[#475569] leading-[1.5]">
+                          {faq.a}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 9: Bottom CTA Banner */}
+            {!isPremium && (
+              <div className="bg-[#FFFBEB] border-[1.5px] border-premium rounded-2xl p-6 text-center flex flex-col items-center gap-3">
+                <h3 className="text-[1.1rem] font-extrabold text-primary m-0">Điểm cao không chờ đợi</h3>
+                <p className="text-[0.8rem] text-text-muted m-0 max-w-[340px] leading-[1.4]">
+                  Đăng ký ngay tài khoản Premium để đạt kết quả tốt nhất trong kỳ thi sắp tới.
+                </p>
+                <div className="flex gap-3 w-full justify-center flex-wrap mt-1">
+                  <button
+                    className="btn btn-premium vibrate h-[42px] text-[0.85rem] px-5 rounded-lg"
+                    onClick={handleUpgrade}
+                  >
+                    <span>Nâng cấp Premium</span>
+                  </button>
+                  <button
+                    className="btn btn-secondary h-[42px] text-[0.85rem] px-5 rounded-lg"
+                    onClick={() => alert("Bạn đã ở trang so sánh các gói!")}
+                  >
+                    <span>Xem so sánh</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
-
-        {/* Section 9: Bottom CTA Banner */}
-        {!isPremium && (
-          <div className="bottom-cta-banner" style={{ 
-            backgroundColor: "#FFFBEB", 
-            border: "1.5px solid #F59E0B",
-            borderRadius: "16px",
-            padding: "24px",
-            textAlign: "center",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: "12px"
-          }}>
-            <h3 style={{ fontSize: "1.1rem", fontWeight: "800", color: "#1E3A5F", margin: 0 }}>Điểm cao không chờ đợi</h3>
-            <p style={{ fontSize: "0.8rem", color: "#64748B", margin: 0, maxWidth: "340px", lineHeight: "1.4" }}>
-              Đăng ký ngay tài khoản Premium để đạt kết quả tốt nhất trong kỳ thi sắp tới.
-            </p>
-            <div style={{ display: "flex", gap: "12px", width: "100%", justifyContent: "center", flexWrap: "wrap", marginTop: "4px" }}>
-              <button 
-                className="btn btn-premium vibrate" 
-                onClick={handleUpgrade}
-                style={{ height: "42px", fontSize: "0.85rem", padding: "0 20px", borderRadius: "8px" }}
-              >
-                <span>Nâng cấp Premium</span>
-              </button>
-              <button 
-                className="btn btn-secondary"
-                onClick={() => alert("Bạn đã ở trang so sánh các gói!")}
-                style={{ height: "42px", fontSize: "0.85rem", padding: "0 20px", borderRadius: "8px" }}
-              >
-                <span>Xem so sánh</span>
-              </button>
-            </div>
-          </div>
-        )}
-
       </div>
-      </div>
-    </div>
     </div>
   );
 }
