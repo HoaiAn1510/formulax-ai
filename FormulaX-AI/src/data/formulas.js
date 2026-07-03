@@ -562,7 +562,8 @@ export const formulas = [
     example: "Mẫu số liệu ghép nhóm có 2 nhóm: nhóm 1 gồm 10 giá trị trung bình 3, nhóm 2 gồm 10 giá trị trung bình 7. Tính phương sai.\n\n**Lời giải:**\n- $\\bar{x} = \\frac{10 \\cdot 3 + 10 \\cdot 7}{20} = 5$\n- $s^2 = \\frac{1}{20}[10(3-5)^2 + 10(7-5)^2] = \\frac{1}{20}(40+40) = 4$\n- $s = \\sqrt{4} = 2$",
     tags: ["Thống kê", "Phương sai", "Độ lệch chuẩn", "Ghép nhóm"],
     difficulty: "Khó",
-    mnemonic: "Phương sai = trung bình bình phương độ lệch: lấy mỗi giá trị trừ trung bình, bình phương, nhân tần số, cộng lại chia n."
+    mnemonic: "Phương sai = trung bình bình phương độ lệch: lấy mỗi giá trị trừ trung bình, bình phương, nhân tần số, cộng lại chia n.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 10, trang 80"
   },
 
   // --- THÊM TỪ PDF: XÁC SUẤT CÓ ĐIỀU KIỆN ---
@@ -2911,5 +2912,18 @@ export const formulas = [
     difficulty: "Dễ",
     mnemonic: "Giống định lý Pythagore mở rộng sang 3 chiều: khoảng cách = căn tổng bình phương hiệu từng toạ độ tương ứng.",
     sgk_source: "Toán 12 KNTT Tập 1, Bài 8, trang 69-70"
+  },
+  {
+    id: "xs12-ghepnhom-khoangbienthien-tuphanvi",
+    name: "Khoảng biến thiên và khoảng tứ phân vị của mẫu số liệu ghép nhóm",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    latex: "R = a_{k+1} - a_1, \\qquad \\Delta_Q = Q_3 - Q_1",
+    explanation: "Cho mẫu số liệu ghép nhóm gồm $k$ nhóm $[a_1;a_2), [a_2;a_3), \\ldots, [a_k;a_{k+1})$ với tần số tương ứng $m_1,\\ldots,m_k$ ($m_1>0$, $m_k>0$) và cỡ mẫu $n=m_1+\\cdots+m_k$.\nTrong đó:\n- $R$: Khoảng biến thiên của mẫu số liệu ghép nhóm, bằng hiệu giữa đầu mút phải của nhóm cuối và đầu mút trái của nhóm đầu: $R=a_{k+1}-a_1$. $R$ xấp xỉ cho khoảng biến thiên của mẫu số liệu gốc.\n- $\\Delta_Q$: Khoảng tứ phân vị của mẫu số liệu ghép nhóm, là hiệu số giữa tứ phân vị thứ ba $Q_3$ và tứ phân vị thứ nhất $Q_1$ của mẫu số liệu ghép nhóm đó (tính theo công thức tứ phân vị của mẫu ghép nhóm đã học ở lớp 11).\nÝ nghĩa: $R$ và $\\Delta_Q$ đều dùng để đo mức độ phân tán của mẫu số liệu ghép nhóm — giá trị càng lớn thì mẫu số liệu càng phân tán. $\\Delta_Q$ chỉ phụ thuộc vào nửa giữa của mẫu số liệu nên không bị ảnh hưởng bởi các giá trị bất thường, có thể dùng để loại giá trị bất thường.",
+    example: "Thời gian sử dụng mạng xã hội trong ngày của học sinh Tổ 1: $[0;10)$: 2 hs, $[10;30)$: 4 hs, $[30;60)$: 3 hs, $[60;90)$: 1 hs. Tính khoảng biến thiên của mẫu số liệu ghép nhóm này.\n\n**Lời giải:** Nhóm đầu là $[0;10)$ nên $a_1=0$; nhóm cuối là $[60;90)$ nên $a_{k+1}=90$. Vậy khoảng biến thiên $R=90-0=90$.",
+    tags: ["Thống kê", "Khoảng biến thiên", "Khoảng tứ phân vị", "Mẫu ghép nhóm", "Độ phân tán"],
+    difficulty: "Khó",
+    mnemonic: "R = đầu mút phải nhóm cuối trừ đầu mút trái nhóm đầu (a_{k+1} - a_1). ΔQ = Q3 - Q1, dùng công thức Q1, Q3 của mẫu ghép nhóm đã học ở lớp 11 — ổn định hơn R vì chỉ dùng 50% dữ liệu giữa.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 9, trang 76-77"
   },
 ];

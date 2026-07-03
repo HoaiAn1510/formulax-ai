@@ -5461,4 +5461,94 @@ export const questionsPool = [
     explanation: "Gọi $C(x;y;z)$ là vị trí máy bay sau 5 phút tiếp theo. Vì vận tốc và hướng không đổi, thời gian bay từ $A$ đến $B$ (10 phút) gấp đôi thời gian từ $B$ đến $C$ (5 phút) nên $\\overrightarrow{BC}=\\dfrac{1}{2}\\overrightarrow{AB}=\\left(\\dfrac{940-800}{2};\\dfrac{550-500}{2};\\dfrac{8-7}{2}\\right)=(70;25;0{,}5)$. Mặt khác $\\overrightarrow{BC}=(x-940;y-550;z-8)$ nên $x=1\\,010$, $y=575$, $z=8{,}5$. Vậy toạ độ máy bay là $(1\\,010;575;8{,}5)$.",
     sgk_source: "Toán 12 KNTT Tập 1, Bài 8, trang 70 (Ví dụ 5)"
   },
+  {
+    id: "xs51",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Thời gian sử dụng mạng xã hội trong ngày của học sinh Tổ 1 lớp 12A được ghép nhóm với nhóm đầu là $[0;10)$ và nhóm cuối là $[60;90)$. Khoảng biến thiên $R_1$ của mẫu số liệu ghép nhóm này bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$90$", isCorrect: true },
+      { letter: "B", text: "$60$", isCorrect: false },
+      { letter: "C", text: "$80$", isCorrect: false },
+      { letter: "D", text: "$30$", isCorrect: false }
+    ],
+    blankAnswer: "90",
+    explanation: "Khoảng biến thiên của mẫu số liệu ghép nhóm là $R=a_{k+1}-a_1$. Nhóm đầu là $[0;10)$ nên $a_1=0$, nhóm cuối là $[60;90)$ nên $a_{k+1}=90$. Vậy $R_1=90-0=90$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 9, trang 76 (Ví dụ 1)"
+  },
+  {
+    id: "xs52",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Thời gian hoàn thành bài kiểm tra môn Toán của lớp 12C được ghép nhóm: $[25;30)$: 8 hs, $[30;35)$: 16 hs, $[35;40)$: 4 hs, $[40;45)$: 2 hs. Khoảng biến thiên $R$ của mẫu số liệu ghép nhóm này bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$20$", isCorrect: true },
+      { letter: "B", text: "$15$", isCorrect: false },
+      { letter: "C", text: "$45$", isCorrect: false },
+      { letter: "D", text: "$16$", isCorrect: false }
+    ],
+    blankAnswer: "20",
+    explanation: "Nhóm đầu là $[25;30)$ nên $a_1=25$, nhóm cuối là $[40;45)$ nên $a_{k+1}=45$. Áp dụng công thức $R=a_{k+1}-a_1=45-25=20$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 9, trang 77 (Luyện tập 1)"
+  },
+  {
+    id: "xs53",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Thời gian chờ khám bệnh (phút) của các bệnh nhân tại phòng khám X: $[0;5)$: 3, $[5;10)$: 12, $[10;15)$: 15, $[15;20)$: 8. Tứ phân vị thứ ba $Q_3$ của mẫu số liệu ghép nhóm này bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$14{,}5$", isCorrect: true },
+      { letter: "B", text: "$7{,}71$", isCorrect: false },
+      { letter: "C", text: "$15$", isCorrect: false },
+      { letter: "D", text: "$10$", isCorrect: false }
+    ],
+    blankAnswer: "14,5",
+    explanation: "Cỡ mẫu $n=3+12+15+8=38$. Tứ phân vị thứ ba của mẫu số liệu gốc là $x_{29}$, thuộc nhóm $[10;15)$ (vì $3+12=15<29\\le15+15=30$). Với $p$ ứng nhóm này: $a_p=10$, $m_p=15$, tổng tần số các nhóm trước là $15$, $a_{p+1}-a_p=5$. Áp dụng công thức: $Q_3=10+\\dfrac{\\frac{3\\cdot38}{4}-15}{15}\\cdot5=14{,}5$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 9, trang 77-78 (Ví dụ 2)"
+  },
+  {
+    id: "xs54",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Theo dõi sự thay đổi cân nặng (kg) sau ba tháng ăn kiêng của một số người nữ, thu được mẫu số liệu ghép nhóm với số trung bình $\\bar{x}_2=1{,}5$. Độ lệch chuẩn $s_2$ của mẫu số liệu này (theo Ví dụ 1, SGK Toán 12 Tập 1, Bài 10) xấp xỉ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$2{,}06$", isCorrect: true },
+      { letter: "B", text: "$1{,}21$", isCorrect: false },
+      { letter: "C", text: "$1{,}5$", isCorrect: false },
+      { letter: "D", text: "$4{,}24$", isCorrect: false }
+    ],
+    blankAnswer: "2,06",
+    explanation: "Áp dụng công thức phương sai $s_2^2=\\frac{1}{30}\\left[2\\cdot(-0{,}5)^2+7\\cdot0{,}5^2+12\\cdot1{,}5^2+7\\cdot2{,}5^2+2\\cdot3{,}5^2\\right]-1{,}5^2\\approx2{,}06^2$, suy ra độ lệch chuẩn $s_2\\approx2{,}06$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 10, trang 81 (Ví dụ 1)"
+  },
+  {
+    id: "xs55",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Anh An đầu tư số tiền bằng nhau vào hai lĩnh vực kinh doanh A, B trong 60 tháng. Số tiền trung bình thu được hằng tháng ở cả hai lĩnh vực đều là 17,5 triệu đồng. Độ lệch chuẩn số tiền thu được hằng tháng khi đầu tư vào lĩnh vực A (theo Ví dụ 2, SGK Toán 12 Tập 1, Bài 10) bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$5$", isCorrect: true },
+      { letter: "B", text: "$8{,}42$", isCorrect: false },
+      { letter: "C", text: "$17{,}5$", isCorrect: false },
+      { letter: "D", text: "$25$", isCorrect: false }
+    ],
+    blankAnswer: "5",
+    explanation: "Áp dụng công thức độ lệch chuẩn: $s_A=\\sqrt{\\frac{1}{60}\\left(5\\cdot7{,}5^2+10\\cdot12{,}5^2+30\\cdot17{,}5^2+10\\cdot22{,}5^2+5\\cdot27{,}5^2\\right)-(17{,}5)^2}=5$.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 10, trang 82 (Ví dụ 2)"
+  },
+  {
+    id: "xs56",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Lợi nhuận trung bình hằng tháng của nhà đầu tư nhỏ là 35 triệu đồng với độ lệch chuẩn $s_A\\approx10{,}95$; của nhà đầu tư lớn là 535 triệu đồng với độ lệch chuẩn $s_B\\approx13{,}78$ (theo Ví dụ 3, SGK Toán 12 Tập 1, Bài 10). Có nên dựa vào việc $s_B>s_A$ để kết luận đầu tư vào nhà đầu tư lớn rủi ro hơn không?",
+    options: [
+      { letter: "A", text: "Không, vì lợi nhuận trung bình của hai nhà đầu tư khác nhau quá nhiều nên không nên dùng độ lệch chuẩn để so sánh mức độ rủi ro", isCorrect: true },
+      { letter: "B", text: "Có, vì độ lệch chuẩn càng lớn thì luôn luôn rủi ro hơn trong mọi trường hợp", isCorrect: false },
+      { letter: "C", text: "Không, vì độ lệch chuẩn không liên quan gì đến mức độ rủi ro của khoản đầu tư", isCorrect: false },
+      { letter: "D", text: "Có, vì $s_B$ và $s_A$ luôn so sánh được bất kể lợi nhuận trung bình chênh lệch bao nhiêu", isCorrect: false }
+    ],
+    blankAnswer: "Không nên, vì lợi nhuận trung bình hai bên khác nhau quá nhiều",
+    explanation: "Lợi nhuận trung bình của nhà đầu tư nhỏ (35 triệu đồng) và nhà đầu tư lớn (535 triệu đồng) khác nhau rất nhiều, do đó không nên dùng phương sai hay độ lệch chuẩn để so sánh độ rủi ro của hai phương án đầu tư này — cần đưa cả hai về cùng một thang đo tương đối (ví dụ hệ số biến thiên) trước khi so sánh.",
+    sgk_source: "Toán 12 KNTT Tập 1, Bài 10, trang 83 (Ví dụ 3)"
+  },
 ];
