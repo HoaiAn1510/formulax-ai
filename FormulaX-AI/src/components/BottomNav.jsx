@@ -63,7 +63,7 @@ export default function BottomNav({
 
       {/* Logo header — chỉ hiện trên desktop (sidebar) */}
       <div className="hidden md:flex items-center gap-2.5 pt-[18px] pb-3.5 px-5 border-b border-[#f1f5f9] dark:border-[#334155] mb-2">
-        <img src="/favicon.svg" alt="FormulaX" className="w-8 h-8 rounded-lg object-cover shrink-0" />
+        <img src="/favicon.svg" alt="FormulaX" className="w-8 h-8 object-cover shrink-0" />
         <span className={`font-extrabold text-[1.15rem] text-primary dark:text-[#E2E8F0] tracking-[-0.5px] ${collapsibleLabel}`}>FormulaX AI</span>
       </div>
 
