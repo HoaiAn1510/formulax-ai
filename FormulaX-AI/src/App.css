@@ -2286,18 +2286,26 @@
      CSS grid nữa, xem BottomNav.jsx), nên chừa margin-left đúng bằng bề rộng sidebar lúc
      thu gọn (88px). Khi hover sidebar mở rộng ra 240px, content cũng dịch margin-left
      theo (:has() bắt trạng thái hover của <nav> — anh em trực tiếp trong .app-container)
-     để không bị che mất phần bên trái, thay vì để sidebar overlay đè lên. */
+     để không bị che mất phần bên trái, thay vì để sidebar overlay đè lên.
+     QUAN TRỌNG: width/max-width phải trừ đúng margin-left (calc(100% - ...)), không được
+     để width:100% (kế thừa từ rule mobile-first phía trên) — nếu không, box vẫn rộng bằng
+     100% .app-container (= full viewport) CỘNG THÊM margin-left, tràn ra khỏi viewport
+     đúng bằng bề rộng sidebar. Vì body có overflow-x:hidden nên phần tràn bị cắt lặng lẽ
+     (không có thanh cuộn ngang để nhận ra) — đây là bug đã xảy ra thật, không phải giả định. */
   .view-container {
     margin-left: 88px;
+    width: calc(100% - 88px);
+    max-width: calc(100% - 88px);
     height: 100vh;
     padding: var(--sp-6);
     overflow-y: auto;
-    max-width: 100%;
-    transition: margin-left 0.3s ease-in-out;
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
   }
 
   .app-container:has(nav:hover) .view-container {
     margin-left: 240px;
+    width: calc(100% - 240px);
+    max-width: calc(100% - 240px);
   }
 
   /* Grid changes */
