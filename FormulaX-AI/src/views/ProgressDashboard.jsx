@@ -1,23 +1,15 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, ChevronDown } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
-import { gradients, glow, glassCard, orbs, orbStyle, pageWrapper, contentLayer } from "../styles/theme";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function StatCard({ icon, value, label, color }) {
   return (
-    <div style={{
-      ...glassCard,
-      padding: "14px 12px",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: "4px",
-    }}>
-      <div style={{ color, marginBottom: "2px" }}>{icon}</div>
-      <div style={{ fontSize: "1.35rem", fontWeight: "800", color: "#1E3A5F", lineHeight: 1.2 }}>{value}</div>
-      <div style={{ fontSize: "0.7rem", color: "#64748B", fontWeight: "600", textAlign: "center" }}>{label}</div>
+    <div className="glass-card py-3.5 px-3 flex flex-col items-center gap-1">
+      <div style={{ color }} className="mb-0.5">{icon}</div>
+      <div className="text-[1.35rem] font-extrabold text-primary leading-[1.2]">{value}</div>
+      <div className="text-[0.7rem] text-text-muted font-semibold text-center">{label}</div>
     </div>
   );
 }
@@ -26,28 +18,21 @@ function TopicBar({ topic, rate, correct, total }) {
   const isWeak   = rate < 60;
   const isStrong = rate >= 80;
   const barColor = isWeak ? "#EF4444" : isStrong ? "#10B981" : "#F59E0B";
-  const bgColor  = isWeak ? "rgba(239,68,68,0.08)" : isStrong ? "rgba(16,185,129,0.08)" : "rgba(245,158,11,0.08)";
 
   return (
-    <div style={{ marginBottom: "14px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "6px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+    <div className="mb-3.5">
+      <div className="flex justify-between items-center mb-1.5">
+        <div className="flex items-center gap-1.5">
           {isWeak && <AlertTriangle size={13} color="#EF4444" />}
           {isStrong && <CheckCircle size={13} color="#10B981" />}
-          <span style={{ fontSize: "0.82rem", fontWeight: "700", color: "#1E3A5F" }}>{topic}</span>
+          <span className="text-[0.82rem] font-bold text-primary">{topic}</span>
         </div>
-        <span style={{ fontSize: "0.78rem", fontWeight: "700", color: barColor }}>{rate}%</span>
+        <span className="text-[0.78rem] font-bold" style={{ color: barColor }}>{rate}%</span>
       </div>
-      <div style={{ background: "#F1F5F9", borderRadius: "6px", height: "8px", overflow: "hidden" }}>
-        <div style={{
-          height: "100%",
-          width: `${rate}%`,
-          background: barColor,
-          borderRadius: "6px",
-          transition: "width 0.8s cubic-bezier(0.4,0,0.2,1)",
-        }} />
+      <div className="bg-[#F1F5F9] rounded-md h-2 overflow-hidden">
+        <div className="h-full rounded-md transition-[width] duration-[0.8s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)]" style={{ width: `${rate}%`, background: barColor }} />
       </div>
-      <div style={{ fontSize: "0.68rem", color: "#94A3B8", marginTop: "3px" }}>
+      <div className="text-[0.68rem] text-[#94A3B8] mt-1">
         {correct}/{total} câu đúng
       </div>
     </div>
@@ -58,24 +43,10 @@ function FormulaChip({ formula, onViewDetail }) {
   return (
     <button
       onClick={() => onViewDetail(formula)}
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-        background: "rgba(59,130,246,0.07)",
-        border: "1px solid rgba(59,130,246,0.18)",
-        borderRadius: "8px",
-        padding: "6px 10px",
-        fontSize: "0.75rem",
-        fontWeight: "600",
-        color: "#1E3A5F",
-        cursor: "pointer",
-        textAlign: "left",
-        maxWidth: "100%",
-      }}
+      className="inline-flex items-center gap-1.5 bg-secondary/7 border border-secondary/[0.18] rounded-lg py-1.5 px-2.5 text-xs font-semibold text-primary cursor-pointer text-left max-w-full"
     >
       <BookOpen size={12} color="#3B82F6" />
-      <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <span className="overflow-hidden text-ellipsis whitespace-nowrap">
         {formula.name}
       </span>
     </button>
@@ -104,23 +75,23 @@ function StreakChart({ activityDates, streak }) {
   }
 
   return (
-    <div style={{ ...glassCard, padding: "14px", marginBottom: "20px" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+    <div className="glass-card p-3.5 mb-5">
+      <div className="flex justify-between items-center mb-2.5">
+        <div className="flex items-center gap-1.5">
           <Flame size={16} color="#F97316" />
-          <span style={{ fontWeight: "800", color: "#1E3A5F", fontSize: "0.88rem" }}>Chuỗi học</span>
+          <span className="font-extrabold text-primary text-[0.88rem]">Chuỗi học</span>
         </div>
-        <span style={{ fontWeight: "800", color: "#F97316", fontSize: "1.1rem" }}>{streak} ngày</span>
+        <span className="font-extrabold text-[#F97316] text-[1.1rem]">{streak} ngày</span>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "3px", marginBottom: "3px" }}>
+      <div className="grid grid-cols-7 gap-[3px] mb-[3px]">
         {["T2","T3","T4","T5","T6","T7","CN"].map(d => (
-          <div key={d} style={{ textAlign: "center", fontSize: "0.58rem", color: "#94A3B8", fontWeight: "700" }}>{d}</div>
+          <div key={d} className="text-center text-[0.58rem] text-[#94A3B8] font-bold">{d}</div>
         ))}
       </div>
 
       {weeks.map((week, wi) => (
-        <div key={wi} style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "3px", marginBottom: "3px" }}>
+        <div key={wi} className="grid grid-cols-7 gap-[3px] mb-[3px]">
           {week.map(({ dateStr, day }) => {
             const active = dateSet.has(dateStr);
             const isToday = dateStr === todayStr;
@@ -129,14 +100,10 @@ function StreakChart({ activityDates, streak }) {
               <div
                 key={dateStr}
                 title={dateStr}
-                style={{
-                  aspectRatio: "1",
-                  borderRadius: "4px",
-                  backgroundColor: isFuture ? "transparent" : active ? "#3B82F6" : "#F1F5F9",
-                  border: isToday ? "2px solid #3B82F6" : "1.5px solid transparent",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "0.5rem", color: active ? "white" : "#94A3B8", fontWeight: "700",
-                }}
+                className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
+                  isFuture ? "bg-transparent" : active ? "bg-secondary text-white" : "bg-[#F1F5F9] text-[#94A3B8]"
+                }`}
+                style={{ border: isToday ? "2px solid #3B82F6" : "1.5px solid transparent" }}
               >
                 {!isFuture ? day : ""}
               </div>
@@ -145,13 +112,13 @@ function StreakChart({ activityDates, streak }) {
         </div>
       ))}
 
-      <div style={{ display: "flex", gap: "12px", marginTop: "8px", justifyContent: "flex-end" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.62rem", color: "#94A3B8" }}>
-          <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "#F1F5F9", border: "1px solid #E2E8F0" }} />
+      <div className="flex gap-3 mt-2 justify-end">
+        <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
+          <div className="w-2.5 h-2.5 rounded-sm bg-[#F1F5F9] border border-[#E2E8F0]" />
           Không học
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "4px", fontSize: "0.62rem", color: "#94A3B8" }}>
-          <div style={{ width: "10px", height: "10px", borderRadius: "2px", background: "#3B82F6" }} />
+        <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
+          <div className="w-2.5 h-2.5 rounded-sm bg-secondary" />
           Có học
         </div>
       </div>
@@ -170,36 +137,36 @@ function DayHistoryCard({ date, quizzes, flashcardIds, formulaMap }) {
   const scoreColor = (p) => p >= 80 ? "#10B981" : p >= 60 ? "#F59E0B" : "#EF4444";
 
   return (
-    <div style={{ ...glassCard, overflow: "hidden", marginBottom: "10px" }}>
+    <div className="glass-card overflow-hidden mb-2.5">
       <div
         onClick={() => setExpanded(v => !v)}
-        style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", cursor: "pointer" }}
+        className="flex justify-between items-center py-3 px-3.5 cursor-pointer"
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#3B82F6", flexShrink: 0 }} />
-          <span style={{ fontWeight: "800", color: "#1E3A5F", fontSize: "0.88rem" }}>{dateLabel}</span>
+        <div className="flex items-center gap-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
+          <span className="font-extrabold text-primary text-[0.88rem]">{dateLabel}</span>
           {date !== today && date !== yesterday && (
-            <span style={{ fontSize: "0.7rem", color: "#94A3B8" }}>{d}/{mo}/{y}</span>
+            <span className="text-[0.7rem] text-[#94A3B8]">{d}/{mo}/{y}</span>
           )}
         </div>
-        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-          {quizzes.length > 0 && <span style={{ fontSize: "0.68rem", background: "#EFF6FF", color: "#3B82F6", fontWeight: "700", borderRadius: "5px", padding: "2px 7px" }}>{quizzes.length} quiz</span>}
-          {flashcardIds.length > 0 && <span style={{ fontSize: "0.68rem", background: "#F0FDF4", color: "#10B981", fontWeight: "700", borderRadius: "5px", padding: "2px 7px" }}>{flashcardIds.length} thẻ</span>}
-          <ChevronDown size={14} color="#94A3B8" style={{ transform: expanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
+        <div className="flex gap-2 items-center">
+          {quizzes.length > 0 && <span className="text-[0.68rem] bg-[#EFF6FF] text-secondary font-bold rounded py-0.5 px-1.5">{quizzes.length} quiz</span>}
+          {flashcardIds.length > 0 && <span className="text-[0.68rem] bg-[#F0FDF4] text-success font-bold rounded py-0.5 px-1.5">{flashcardIds.length} thẻ</span>}
+          <ChevronDown size={14} color="#94A3B8" className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
         </div>
       </div>
 
       {expanded && (
-        <div style={{ borderTop: "1px solid #F1F5F9", padding: "10px 14px" }}>
+        <div className="border-t border-[#F1F5F9] py-2.5 px-3.5">
           {quizzes.length > 0 && (
             <div style={{ marginBottom: flashcardIds.length > 0 ? "10px" : 0 }}>
-              <div style={{ fontSize: "0.68rem", fontWeight: "700", color: "#94A3B8", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Quiz</div>
+              <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Quiz</div>
               {quizzes.map((q, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: i < quizzes.length - 1 ? "1px solid #F8FAFC" : "none" }}>
-                  <span style={{ fontSize: "0.8rem", color: "#1E3A5F", fontWeight: "600" }}>{q.topic}</span>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                    <span style={{ fontSize: "0.72rem", color: "#94A3B8" }}>{q.questionsCorrect}/{q.questionsTotal} câu</span>
-                    <span style={{ fontSize: "0.75rem", fontWeight: "800", color: scoreColor(q.scorePercent), minWidth: "38px", textAlign: "right" }}>{q.scorePercent}%</span>
+                <div key={i} className={`flex justify-between items-center py-1.5 ${i < quizzes.length - 1 ? "border-b border-[#F8FAFC]" : ""}`}>
+                  <span className="text-[0.8rem] text-primary font-semibold">{q.topic}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[0.72rem] text-[#94A3B8]">{q.questionsCorrect}/{q.questionsTotal} câu</span>
+                    <span className="text-[0.75rem] font-extrabold min-w-[38px] text-right" style={{ color: scoreColor(q.scorePercent) }}>{q.scorePercent}%</span>
                   </div>
                 </div>
               ))}
@@ -208,15 +175,15 @@ function DayHistoryCard({ date, quizzes, flashcardIds, formulaMap }) {
 
           {flashcardIds.length > 0 && (
             <div>
-              <div style={{ fontSize: "0.68rem", fontWeight: "700", color: "#94A3B8", marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.06em" }}>Flashcard</div>
+              <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Flashcard</div>
               {flashcardIds.slice(0, SHOW_MAX).map(id => (
-                <div key={id} style={{ display: "flex", alignItems: "center", gap: "6px", padding: "3px 0" }}>
-                  <BookOpen size={11} color="#10B981" style={{ flexShrink: 0 }} />
-                  <span style={{ fontSize: "0.78rem", color: "#475569" }}>{formulaMap[id]?.name || id}</span>
+                <div key={id} className="flex items-center gap-1.5 py-0.5">
+                  <BookOpen size={11} color="#10B981" className="shrink-0" />
+                  <span className="text-[0.78rem] text-[#475569]">{formulaMap[id]?.name || id}</span>
                 </div>
               ))}
               {flashcardIds.length > SHOW_MAX && (
-                <div style={{ fontSize: "0.72rem", color: "#94A3B8", fontWeight: "600", marginTop: "4px", paddingLeft: "17px" }}>
+                <div className="text-[0.72rem] text-[#94A3B8] font-semibold mt-1 pl-[17px]">
                   +{flashcardIds.length - SHOW_MAX} công thức khác
                 </div>
               )}
@@ -230,14 +197,11 @@ function DayHistoryCard({ date, quizzes, flashcardIds, formulaMap }) {
 
 function EmptyState({ message, ctaLabel, onCta }) {
   return (
-    <div style={{ textAlign: "center", padding: "28px 16px" }}>
-      <BarChart2 size={36} color="#CBD5E1" style={{ margin: "0 auto 10px" }} />
-      <p style={{ fontSize: "0.85rem", color: "#94A3B8", fontWeight: "500", margin: "0 0 12px" }}>{message}</p>
+    <div className="text-center py-7 px-4">
+      <BarChart2 size={36} color="#CBD5E1" className="mx-auto mb-2.5" />
+      <p className="text-[0.85rem] text-[#94A3B8] font-medium m-0 mb-3">{message}</p>
       {onCta && (
-        <button onClick={onCta} style={{
-          background: "#3B82F6", color: "white", border: "none", borderRadius: "10px",
-          padding: "8px 18px", fontSize: "0.8rem", fontWeight: "700", cursor: "pointer",
-        }}>
+        <button onClick={onCta} className="bg-secondary text-white border-none rounded-[10px] py-2 px-[18px] text-[0.8rem] font-bold cursor-pointer">
           {ctaLabel}
         </button>
       )}
@@ -297,257 +261,216 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
   return (
     <div className="view-container">
-    <div style={pageWrapper}>
-      {orbs.map((orb, idx) => (
-        <div key={idx} style={orbStyle(orb)} />
-      ))}
-      <div style={contentLayer}>
-      {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
-        <button
-          onClick={() => setActiveTab("dashboard")}
-          style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            width: "34px", height: "34px", borderRadius: "10px",
-            background: "#F1F5F9", border: "none", cursor: "pointer", color: "#1E3A5F",
-          }}
-        >
-          <ArrowLeft size={18} />
-        </button>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "1.15rem", fontWeight: "800", color: "#1E3A5F" }}>
-            Tiến độ học tập
-          </h1>
-          <p style={{ margin: 0, fontSize: "0.72rem", color: "#64748B" }}>
-            Phân tích từ lịch sử quiz & flashcard
-          </p>
-        </div>
-      </div>
+      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
+        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
+        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+        <div className="relative z-[1]">
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-5">
+            <button
+              onClick={() => setActiveTab("dashboard")}
+              className="flex items-center justify-center w-[34px] h-[34px] rounded-[10px] bg-[#F1F5F9] border-none cursor-pointer text-primary"
+            >
+              <ArrowLeft size={18} />
+            </button>
+            <div>
+              <h1 className="m-0 text-[1.15rem] font-extrabold text-primary">
+                Tiến độ học tập
+              </h1>
+              <p className="m-0 text-[0.72rem] text-text-muted">
+                Phân tích từ lịch sử quiz & flashcard
+              </p>
+            </div>
+          </div>
 
-      {/* Premium gate */}
-      {!isPremium && (
-        <div style={{
-          background: gradients.purpleBanner,
-          borderRadius: "18px", padding: "20px", color: "white",
-          textAlign: "center", marginBottom: "20px",
-          boxShadow: glow.purple,
-        }}>
-          <Crown size={28} fill="#F59E0B" color="#F59E0B" style={{ margin: "0 auto 10px" }} />
-          <h3 style={{ margin: "0 0 6px", fontSize: "1rem", fontWeight: "800" }}>Tính năng Premium</h3>
-          <p style={{ margin: "0 0 14px", fontSize: "0.8rem", opacity: 0.85 }}>
-            Phân tích tiến độ chi tiết theo chủ đề, phát hiện điểm yếu và nhận gợi ý ôn tập cá nhân hóa.
-          </p>
-          <button
-            onClick={() => setActiveTab("premium")}
-            style={{
-              background: "#F59E0B", color: "#1E3A5F", border: "none",
-              borderRadius: "10px", padding: "10px 24px",
-              fontSize: "0.85rem", fontWeight: "800", cursor: "pointer",
-              display: "inline-flex", alignItems: "center", gap: "6px",
-            }}
+          {/* Premium gate */}
+          {!isPremium && (
+            <div className="bg-banner-purple rounded-[18px] p-5 text-white text-center mb-5 shadow-glow-purple">
+              <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-2.5" />
+              <h3 className="m-0 mb-1.5 text-base font-extrabold">Tính năng Premium</h3>
+              <p className="m-0 mb-3.5 text-[0.8rem] opacity-85">
+                Phân tích tiến độ chi tiết theo chủ đề, phát hiện điểm yếu và nhận gợi ý ôn tập cá nhân hóa.
+              </p>
+              <button
+                onClick={() => setActiveTab("premium")}
+                className="bg-premium text-primary border-none rounded-[10px] py-2.5 px-6 text-[0.85rem] font-extrabold cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <Crown size={14} fill="#1E3A5F" color="#1E3A5F" />
+                Nâng cấp Premium để mở khóa
+              </button>
+            </div>
+          )}
+
+          {/* Stat cards: 2-column row */}
+          <div className="grid grid-cols-2 gap-2.5 mb-3">
+            <StatCard icon={<ClipboardList size={20} />} value={stats.quizzesCompleted}  label="Quiz đã làm" color="#3B82F6" />
+            <StatCard icon={<Layers size={20} />}        value={stats.flashcardsStudied} label="Thẻ đã ôn"   color="#10B981" />
+          </div>
+
+          {/* Streak activity chart */}
+          <StreakChart activityDates={activityDates} streak={streak} />
+
+          {/* Daily history */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <BarChart2 size={15} color="#3B82F6" />
+              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary">Lịch sử hoạt động</h2>
+            </div>
+            {loading ? (
+              <div className="text-center py-5 text-[#94A3B8] text-[0.82rem]">Đang tải...</div>
+            ) : dailyHistory.length === 0 ? (
+              <EmptyState
+                message="Chưa có hoạt động nào. Làm quiz hoặc ôn flashcard để bắt đầu!"
+                ctaLabel="Bắt đầu quiz"
+                onCta={() => setActiveTab("quiz")}
+              />
+            ) : (
+              dailyHistory.map(day => (
+                <DayHistoryCard
+                  key={day.date}
+                  date={day.date}
+                  quizzes={day.quizzes}
+                  flashcardIds={day.flashcardIds}
+                  formulaMap={formulaMap}
+                />
+              ))
+            )}
+          </div>
+
+          {/* Topic performance */}
+          <div className="glass-card p-4 mb-4 relative overflow-hidden">
+            <div className="flex items-center gap-2 mb-4">
+              <BarChart2 size={16} color="#3B82F6" />
+              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary">
+                Hiệu suất theo chủ đề
+              </h2>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-5 text-[#94A3B8] text-[0.82rem]">
+                Đang tải...
+              </div>
+            ) : !isPremium ? (
+              <>
+                {/* Blurred placeholder bars for non-premium — fixed widths to avoid re-render flicker */}
+                {[["Giải tích","72%"],["Đại số","45%"],["Hình học","61%"],["Lượng giác","55%"],["Xác suất & Thống kê","38%"],["Mở rộng","30%"]].map(([t, w]) => (
+                  <div key={t} className="mb-3.5 blur-[4px] pointer-events-none select-none">
+                    <div className="flex justify-between mb-1.5">
+                      <span className="text-[0.82rem] font-bold">{t}</span>
+                      <span className="text-[0.78rem] font-bold">??%</span>
+                    </div>
+                    <div className="bg-[#F1F5F9] rounded-md h-2">
+                      <div className="h-full rounded-md bg-[#94A3B8]" style={{ width: w }} />
+                    </div>
+                  </div>
+                ))}
+                <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+                  <div className="text-center">
+                    <Lock size={22} color="#3B82F6" className="mx-auto mb-1.5" />
+                    <div className="text-[0.8rem] font-bold text-primary">Cần Premium để xem</div>
+                  </div>
+                </div>
+              </>
+            ) : hasQuizData ? (
+              filteredTopicPerf.map(t => <TopicBar key={t.topic} {...t} />)
+            ) : (
+              <EmptyState
+                message="Chưa có dữ liệu quiz. Làm ít nhất 1 bài quiz để xem phân tích!"
+                ctaLabel="Làm quiz ngay"
+                onCta={() => setActiveTab("quiz")}
+              />
+            )}
+          </div>
+
+          {/* AI Coach suggestions */}
+          <div className="bg-[linear-gradient(135deg,rgba(239,246,255,0.75)_0%,rgba(240,253,244,0.75)_100%)] backdrop-blur-[20px] rounded-[18px] p-4 border border-white/60 mb-4 shadow-[0_8px_32px_rgba(31,38,135,0.10)]">
+            <div className="flex items-center gap-2 mb-3.5">
+              <Target size={16} color="#10B981" />
+              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary">
+                Coach gợi ý ôn tập
+              </h2>
+            </div>
+
+            {loading ? (
+              <div className="text-center py-4 text-[#94A3B8] text-[0.82rem]">Đang tải...</div>
+            ) : !isPremium ? (
+              <EmptyState
+                message="Nâng cấp Premium để nhận gợi ý ôn tập cá nhân hóa theo điểm yếu của bạn."
+                ctaLabel="Nâng cấp Premium"
+                onCta={() => setActiveTab("premium")}
+              />
+            ) : weakTopics.length === 0 && hasQuizData ? (
+              <div className="text-center py-3">
+                <CheckCircle size={28} color="#10B981" className="mx-auto mb-2 block" />
+                <p className="m-0 text-[0.82rem] text-success font-semibold">
+                  Tốt lắm! Bạn đang học đều tất cả chủ đề.
+                </p>
+              </div>
+            ) : weakTopics.length === 0 ? (
+              <EmptyState
+                message="Làm quiz để nhận gợi ý ôn tập phù hợp với điểm yếu của bạn."
+                ctaLabel="Bắt đầu quiz"
+                onCta={() => setActiveTab("quiz")}
+              />
+            ) : (
+              weakTopics.map(t => {
+                const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
+                return (
+                  <div key={t.topic} className="mb-3.5">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <AlertTriangle size={13} color="#F97316" />
+                      <span className="text-[0.8rem] font-bold text-primary">
+                        {t.topic}
+                      </span>
+                      <span className="text-[0.68rem] font-bold text-white bg-error rounded py-px px-1.5">
+                        {t.rate}% đúng
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5 pl-[19px]">
+                      {suggested.map(f => (
+                        <FormulaChip key={f.id} formula={f} onViewDetail={onViewDetail} />
+                      ))}
+                      {suggested.length === 0 && (
+                        <span className="text-xs text-[#94A3B8]">Chưa có công thức cho chủ đề này.</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* Strong topics callout */}
+          {strongTopics.length > 0 && (
+            <div className="bg-success/6 rounded-xl py-3 px-3.5 border border-success/[0.18] mb-4 flex items-start gap-2.5">
+              <CheckCircle size={16} color="#10B981" className="mt-px shrink-0" />
+              <div>
+                <div className="text-[0.8rem] font-bold text-primary mb-1">
+                  Điểm mạnh của bạn
+                </div>
+                <div className="text-[0.75rem] text-[#475569]">
+                  {strongTopics.map(t => `${t.topic} (${t.rate}%)`).join(" · ")}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* CTA: flashcard practice */}
+          <div
+            onClick={() => setActiveTab("flashcard")}
+            className="flex items-center justify-between bg-banner-purple rounded-[18px] py-3.5 px-4 cursor-pointer text-white mb-2 shadow-glow-purple"
           >
-            <Crown size={14} fill="#1E3A5F" color="#1E3A5F" />
-            Nâng cấp Premium để mở khóa
-          </button>
-        </div>
-      )}
-
-      {/* Stat cards: 2-column row */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "12px" }}>
-        <StatCard icon={<ClipboardList size={20} />} value={stats.quizzesCompleted}  label="Quiz đã làm" color="#3B82F6" />
-        <StatCard icon={<Layers size={20} />}        value={stats.flashcardsStudied} label="Thẻ đã ôn"   color="#10B981" />
-      </div>
-
-      {/* Streak activity chart */}
-      <StreakChart activityDates={activityDates} streak={streak} />
-
-      {/* Daily history */}
-      <div style={{ marginBottom: "16px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-          <BarChart2 size={15} color="#3B82F6" />
-          <h2 style={{ margin: 0, fontSize: "0.92rem", fontWeight: "800", color: "#1E3A5F" }}>Lịch sử hoạt động</h2>
-        </div>
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "20px", color: "#94A3B8", fontSize: "0.82rem" }}>Đang tải...</div>
-        ) : dailyHistory.length === 0 ? (
-          <EmptyState
-            message="Chưa có hoạt động nào. Làm quiz hoặc ôn flashcard để bắt đầu!"
-            ctaLabel="Bắt đầu quiz"
-            onCta={() => setActiveTab("quiz")}
-          />
-        ) : (
-          dailyHistory.map(day => (
-            <DayHistoryCard
-              key={day.date}
-              date={day.date}
-              quizzes={day.quizzes}
-              flashcardIds={day.flashcardIds}
-              formulaMap={formulaMap}
-            />
-          ))
-        )}
-      </div>
-
-      {/* Topic performance */}
-      <div style={{
-        ...glassCard,
-        padding: "16px", marginBottom: "16px",
-        position: "relative", overflow: "hidden",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-          <BarChart2 size={16} color="#3B82F6" />
-          <h2 style={{ margin: 0, fontSize: "0.92rem", fontWeight: "800", color: "#1E3A5F" }}>
-            Hiệu suất theo chủ đề
-          </h2>
-        </div>
-
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "20px", color: "#94A3B8", fontSize: "0.82rem" }}>
-            Đang tải...
-          </div>
-        ) : !isPremium ? (
-          <>
-            {/* Blurred placeholder bars for non-premium — fixed widths to avoid re-render flicker */}
-            {[["Giải tích","72%"],["Đại số","45%"],["Hình học","61%"],["Lượng giác","55%"],["Xác suất & Thống kê","38%"],["Mở rộng","30%"]].map(([t, w]) => (
-              <div key={t} style={{ marginBottom: "14px", filter: "blur(4px)", pointerEvents: "none", userSelect: "none" }}>
-                <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
-                  <span style={{ fontSize:"0.82rem", fontWeight:"700" }}>{t}</span>
-                  <span style={{ fontSize:"0.78rem", fontWeight:"700" }}>??%</span>
-                </div>
-                <div style={{ background:"#F1F5F9", borderRadius:"6px", height:"8px" }}>
-                  <div style={{ height:"100%", width: w, background:"#94A3B8", borderRadius:"6px" }} />
-                </div>
-              </div>
-            ))}
-            <div style={{ position:"absolute", inset:0, display:"flex", alignItems:"center", justifyContent:"center", background:"rgba(255,255,255,0.6)" }}>
-              <div style={{ textAlign:"center" }}>
-                <Lock size={22} color="#3B82F6" style={{ margin:"0 auto 6px" }} />
-                <div style={{ fontSize:"0.8rem", fontWeight:"700", color:"#1E3A5F" }}>Cần Premium để xem</div>
+            <div>
+              <div className="text-[0.88rem] font-bold">Ôn tập ngay với Flashcard</div>
+              <div className="text-[0.72rem] opacity-75 mt-0.5">
+                Tạo bộ thẻ theo chủ đề yếu để cải thiện điểm số
               </div>
             </div>
-          </>
-        ) : hasQuizData ? (
-          filteredTopicPerf.map(t => <TopicBar key={t.topic} {...t} />)
-        ) : (
-          <EmptyState
-            message="Chưa có dữ liệu quiz. Làm ít nhất 1 bài quiz để xem phân tích!"
-            ctaLabel="Làm quiz ngay"
-            onCta={() => setActiveTab("quiz")}
-          />
-        )}
-      </div>
-
-      {/* AI Coach suggestions */}
-      <div style={{
-        background: "linear-gradient(135deg, rgba(239,246,255,0.75) 0%, rgba(240,253,244,0.75) 100%)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderRadius: "18px", padding: "16px",
-        border: "1px solid rgba(255,255,255,0.6)", marginBottom: "16px",
-        boxShadow: "0 8px 32px rgba(31, 38, 135, 0.10)",
-      }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
-          <Target size={16} color="#10B981" />
-          <h2 style={{ margin: 0, fontSize: "0.92rem", fontWeight: "800", color: "#1E3A5F" }}>
-            Coach gợi ý ôn tập
-          </h2>
-        </div>
-
-        {loading ? (
-          <div style={{ textAlign: "center", padding: "16px", color: "#94A3B8", fontSize: "0.82rem" }}>Đang tải...</div>
-        ) : !isPremium ? (
-          <EmptyState
-            message="Nâng cấp Premium để nhận gợi ý ôn tập cá nhân hóa theo điểm yếu của bạn."
-            ctaLabel="Nâng cấp Premium"
-            onCta={() => setActiveTab("premium")}
-          />
-        ) : weakTopics.length === 0 && hasQuizData ? (
-          <div style={{ textAlign: "center", padding: "12px" }}>
-            <CheckCircle size={28} color="#10B981" style={{ margin: "0 auto 8px", display: "block" }} />
-            <p style={{ margin: 0, fontSize: "0.82rem", color: "#10B981", fontWeight: "600" }}>
-              Tốt lắm! Bạn đang học đều tất cả chủ đề.
-            </p>
-          </div>
-        ) : weakTopics.length === 0 ? (
-          <EmptyState
-            message="Làm quiz để nhận gợi ý ôn tập phù hợp với điểm yếu của bạn."
-            ctaLabel="Bắt đầu quiz"
-            onCta={() => setActiveTab("quiz")}
-          />
-        ) : (
-          weakTopics.map(t => {
-            const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
-            return (
-              <div key={t.topic} style={{ marginBottom: "14px" }}>
-                <div style={{
-                  display: "flex", alignItems: "center", gap: "6px",
-                  marginBottom: "8px",
-                }}>
-                  <AlertTriangle size={13} color="#F97316" />
-                  <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#1E3A5F" }}>
-                    {t.topic}
-                  </span>
-                  <span style={{
-                    fontSize: "0.68rem", fontWeight: "700", color: "white",
-                    background: "#EF4444", borderRadius: "5px", padding: "1px 6px",
-                  }}>
-                    {t.rate}% đúng
-                  </span>
-                </div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", paddingLeft: "19px" }}>
-                  {suggested.map(f => (
-                    <FormulaChip key={f.id} formula={f} onViewDetail={onViewDetail} />
-                  ))}
-                  {suggested.length === 0 && (
-                    <span style={{ fontSize: "0.75rem", color: "#94A3B8" }}>Chưa có công thức cho chủ đề này.</span>
-                  )}
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-
-      {/* Strong topics callout */}
-      {strongTopics.length > 0 && (
-        <div style={{
-          background: "rgba(16,185,129,0.06)", borderRadius: "12px", padding: "12px 14px",
-          border: "1px solid rgba(16,185,129,0.18)", marginBottom: "16px",
-          display: "flex", alignItems: "flex-start", gap: "10px",
-        }}>
-          <CheckCircle size={16} color="#10B981" style={{ marginTop: "1px", flexShrink: 0 }} />
-          <div>
-            <div style={{ fontSize: "0.8rem", fontWeight: "700", color: "#1E3A5F", marginBottom: "3px" }}>
-              Điểm mạnh của bạn
-            </div>
-            <div style={{ fontSize: "0.75rem", color: "#475569" }}>
-              {strongTopics.map(t => `${t.topic} (${t.rate}%)`).join(" · ")}
-            </div>
+            <Layers size={22} className="opacity-90 shrink-0" />
           </div>
         </div>
-      )}
-
-      {/* CTA: flashcard practice */}
-      <div
-        onClick={() => setActiveTab("flashcard")}
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          background: gradients.purpleBanner,
-          borderRadius: "18px", padding: "14px 16px", cursor: "pointer",
-          color: "white", marginBottom: "8px",
-          boxShadow: glow.purple,
-        }}
-      >
-        <div>
-          <div style={{ fontSize: "0.88rem", fontWeight: "700" }}>Ôn tập ngay với Flashcard</div>
-          <div style={{ fontSize: "0.72rem", opacity: 0.75, marginTop: "2px" }}>
-            Tạo bộ thẻ theo chủ đề yếu để cải thiện điểm số
-          </div>
-        </div>
-        <Layers size={22} style={{ opacity: 0.9, flexShrink: 0 }} />
       </div>
-      </div>
-    </div>
     </div>
   );
 }
