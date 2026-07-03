@@ -33,46 +33,43 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
   ];
 
   return (
-    <header className="main-header">
+    <header className="sticky md:relative md:col-[2/3] md:row-[1/2] top-0 z-[100] flex justify-between items-center py-3 px-4 bg-white dark:bg-[#1E293B] border-b border-[rgba(30,58,95,0.07)] dark:border-[#334155] shadow-[0_2px_10px_rgba(0,0,0,0.01)] md:shadow-none">
       {/* Logo — chỉ hiện trên mobile */}
-      <div className="logo-section">
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <img src="/favicon.svg" alt="FormulaX" style={{ width: "30px", height: "30px", borderRadius: "7px" }} />
-          <span style={{ fontWeight: "800", fontSize: "1.15rem", letterSpacing: "-0.5px" }}>FormulaX AI</span>
-        </div>
+      <div className="flex md:hidden items-center gap-2 text-primary dark:text-[#E2E8F0] whitespace-nowrap">
+        <img src="/favicon.svg" alt="FormulaX" className="w-[30px] h-[30px] rounded-[7px]" />
+        <span className="font-extrabold text-[1.15rem] tracking-[-0.5px]">FormulaX AI</span>
       </div>
 
-      <div className="header-actions">
+      <div className="flex md:hidden items-center gap-3">
 
         {/* Bell */}
-        <div ref={notifRef} style={{ position: "relative" }}>
-          <button className="notification-btn"
+        <div ref={notifRef} className="relative">
+          <button
+            className="relative w-10 h-10 flex items-center justify-center rounded-full text-primary dark:text-[#E2E8F0] cursor-pointer transition duration-200 hover:bg-[rgba(30,58,95,0.04)]"
             onClick={() => { setShowNotifications(p => !p); setDropdownOpen(false); }}
             title="Thông báo"
           >
             <Bell size={20} />
-            <span className="notification-dot"></span>
+            <span className="absolute top-[9px] right-[9px] w-2 h-2 rounded-full bg-error border-2 border-white" />
           </button>
 
           {showNotifications && (
-            <div style={{ position: "fixed", top: "68px", right: "12px", width: "min(260px, calc(100vw - 24px))", padding: "10px", zIndex: 1000, maxHeight: "260px", overflowY: "auto", background: "white", borderRadius: "14px", boxShadow: "0 8px 28px rgba(0,0,0,0.14)", border: "1px solid #E2E8F0" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", paddingBottom: "6px", borderBottom: "1px solid #f1f5f9" }}>
-                <span style={{ fontSize: "0.8rem", fontWeight: "700", color: "#1E3A5F" }}>Thông báo</span>
+            <div
+              className="fixed top-[68px] right-3 p-2.5 z-[1000] max-h-[260px] overflow-y-auto bg-white rounded-2xl shadow-[0_8px_28px_rgba(0,0,0,0.14)] border border-[#E2E8F0]"
+              style={{ width: "min(260px, calc(100vw - 24px))" }}
+            >
+              <div className="flex justify-between items-center mb-2 pb-1.5 border-b border-[#f1f5f9]">
+                <span className="text-[0.8rem] font-bold text-[#1E3A5F]">Thông báo</span>
                 <button onClick={() => setShowNotifications(false)}
-                  style={{ background: "none", border: "none", fontSize: "0.7rem", color: "#2E86DE", cursor: "pointer", fontWeight: "600" }}>
+                  className="bg-transparent border-none text-[0.7rem] text-[#2E86DE] cursor-pointer font-semibold">
                   Đóng
                 </button>
               </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div className="flex flex-col gap-2">
                 {notificationList.map((n) => (
-                  <div key={n.id} style={{
-                    padding: "6px 8px", borderRadius: "6px",
-                    backgroundColor: n.unread ? "rgba(46,134,222,0.05)" : "transparent",
-                    fontSize: "0.75rem", lineHeight: "1.3",
-                    borderLeft: n.unread ? "3px solid #2E86DE" : "3px solid transparent"
-                  }}>
-                    <div style={{ color: "#1E3A5F", fontWeight: n.unread ? "600" : "400" }}>{n.text}</div>
-                    <div style={{ color: "#94A3B8", fontSize: "0.65rem", marginTop: "2px" }}>{n.time}</div>
+                  <div key={n.id} className={`px-2 py-1.5 rounded-md text-[0.75rem] leading-[1.3] border-l-[3px] ${n.unread ? "bg-[rgba(46,134,222,0.05)] border-l-[#2E86DE]" : "bg-transparent border-l-transparent"}`}>
+                    <div className={`text-[#1E3A5F] ${n.unread ? "font-semibold" : "font-normal"}`}>{n.text}</div>
+                    <div className="text-[#94A3B8] text-[0.65rem] mt-0.5">{n.time}</div>
                   </div>
                 ))}
               </div>
@@ -81,44 +78,42 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
         </div>
 
         {/* Account */}
-        <div ref={dropdownRef} style={{ position: "relative" }}>
-          <button className="btn-header-login"
+        <div ref={dropdownRef} className="relative">
+          <button
+            className="bg-primary dark:bg-[#334155] text-white dark:text-[#E2E8F0] border-none rounded-full font-bold text-[0.8rem] py-1.5 px-4 inline-flex items-center gap-1.5 cursor-pointer transition duration-200 min-h-9 hover:-translate-y-px hover:bg-[#11223b] dark:hover:bg-[#334155]"
             onClick={() => { setDropdownOpen(p => !p); setShowNotifications(false); }}
           >
             {isLoggedIn && user?.picture ? (
-              <img src={user.picture} alt="" referrerPolicy="no-referrer"
-                style={{ width: "18px", height: "18px", borderRadius: "50%", objectFit: "cover" }} />
+              <img src={user.picture} alt="" referrerPolicy="no-referrer" className="w-[18px] h-[18px] rounded-full object-cover" />
             ) : (
               <LogIn size={14} />
             )}
             <span>{isLoggedIn ? "Tài khoản" : "Đăng nhập"}</span>
             {isPremium && (
-              <span style={{ fontSize: "0.6rem", background: "var(--premium-grad)", color: "white", padding: "1px 4px", borderRadius: "3px", fontWeight: "bold" }}>PRO</span>
+              <span className="text-[0.6rem] bg-[linear-gradient(135deg,#F59E0B_0%,#D97706_100%)] text-white py-px px-1 rounded-[3px] font-bold">PRO</span>
             )}
           </button>
 
           {dropdownOpen && (
-            <div style={{ position: "fixed", top: "68px", right: "12px", width: "min(230px, calc(100vw - 24px))", padding: "0", zIndex: 1000, overflow: "hidden", background: "white", borderRadius: "16px", boxShadow: "0 8px 28px rgba(0,0,0,0.14)", border: "1px solid #E2E8F0" }}>
+            <div
+              className="fixed top-[68px] right-3 p-0 z-[1000] overflow-hidden bg-white rounded-2xl shadow-[0_8px_28px_rgba(0,0,0,0.14)] border border-[#E2E8F0]"
+              style={{ width: "min(230px, calc(100vw - 24px))" }}
+            >
 
               {/* Header card */}
-              <div style={{
-                padding: "14px 16px",
-                background: "linear-gradient(135deg, #1E3A5F 0%, #2563EB 100%)",
-                display: "flex", alignItems: "center", gap: "12px"
-              }}>
+              <div className="py-3.5 px-4 bg-[linear-gradient(135deg,#1E3A5F_0%,#2563EB_100%)] flex items-center gap-3">
                 {user?.picture ? (
-                  <img src={user.picture} alt="" referrerPolicy="no-referrer"
-                    style={{ width: "42px", height: "42px", borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(255,255,255,0.35)", flexShrink: 0 }} />
+                  <img src={user.picture} alt="" referrerPolicy="no-referrer" className="w-[42px] h-[42px] rounded-full object-cover border-2 border-white/35 shrink-0" />
                 ) : (
-                  <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.2rem", fontWeight: "800", color: "white", flexShrink: 0 }}>
+                  <div className="w-[42px] h-[42px] rounded-full bg-white/20 flex items-center justify-center text-[1.2rem] font-extrabold text-white shrink-0">
                     {(user?.name || "U")[0].toUpperCase()}
                   </div>
                 )}
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: "0.82rem", fontWeight: "800", color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                <div className="min-w-0">
+                  <div className="text-[0.82rem] font-extrabold text-white truncate">
                     {displayName || user?.name || "Người dùng"}
                   </div>
-                  <div style={{ fontSize: "0.66rem", color: "rgba(255,255,255,0.6)", marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <div className="text-[0.66rem] text-white/60 mt-0.5 truncate">
                     {user?.email || ""}
                   </div>
                 </div>
@@ -128,12 +123,12 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
               {isLoggedIn && (
                 <button
                   onClick={() => setDarkMode?.(!darkMode)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", background: "none", border: "none", borderBottom: "1px solid #f1f5f9", cursor: "pointer", textAlign: "left" }}
+                  className="w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-none border-b border-[#f1f5f9] cursor-pointer text-left"
                 >
                   {darkMode ? <Sun size={15} color="#64748B" /> : <Moon size={15} color="#64748B" />}
-                  <span style={{ flex: 1, fontSize: "0.82rem", color: "#1E3A5F", fontWeight: "600" }}>{darkMode ? "Giao diện sáng" : "Giao diện tối"}</span>
-                  <div style={{ width: "28px", height: "16px", borderRadius: "8px", background: darkMode ? "#3B82F6" : "#CBD5E1", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
-                    <div style={{ width: "12px", height: "12px", borderRadius: "50%", background: "white", position: "absolute", top: "2px", left: darkMode ? "14px" : "2px", transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.2)" }} />
+                  <span className="flex-1 text-[0.82rem] text-[#1E3A5F] font-semibold">{darkMode ? "Giao diện sáng" : "Giao diện tối"}</span>
+                  <div className={`w-7 h-4 rounded-lg relative transition-colors duration-200 shrink-0 ${darkMode ? "bg-secondary" : "bg-[#CBD5E1]"}`}>
+                    <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-[left] duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.2)] ${darkMode ? "left-3.5" : "left-0.5"}`} />
                   </div>
                 </button>
               )}
@@ -141,25 +136,25 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
               {/* Edit display name */}
               {isLoggedIn && (
                 editingName ? (
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", padding: "8px 14px", borderBottom: "1px solid #f1f5f9" }}>
+                  <div className="flex items-center gap-1.5 py-2 px-3.5 border-b border-[#f1f5f9]">
                     <input
                       value={nameInput}
                       onChange={e => setNameInput(e.target.value)}
                       onKeyDown={e => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
                       placeholder="Nhập tên hiển thị..."
                       autoFocus
-                      style={{ flex: 1, padding: "5px 8px", borderRadius: "6px", border: "1.5px solid #3B82F6", fontSize: "0.8rem", outline: "none", minWidth: 0 }}
+                      className="flex-1 py-1 px-2 rounded-md border-[1.5px] border-secondary text-[0.8rem] outline-none min-w-0"
                     />
-                    <button onClick={handleSaveName} style={{ background: "#10B981", color: "white", border: "none", borderRadius: "5px", padding: "5px 7px", cursor: "pointer", display: "flex" }}><Check size={12} /></button>
-                    <button onClick={() => setEditingName(false)} style={{ background: "#F1F5F9", color: "#64748B", border: "none", borderRadius: "5px", padding: "5px 7px", cursor: "pointer", display: "flex" }}><X size={12} /></button>
+                    <button onClick={handleSaveName} className="bg-success text-white border-none rounded-[5px] py-1 px-1.5 cursor-pointer flex"><Check size={12} /></button>
+                    <button onClick={() => setEditingName(false)} className="bg-[#F1F5F9] text-text-muted border-none rounded-[5px] py-1 px-1.5 cursor-pointer flex"><X size={12} /></button>
                   </div>
                 ) : (
                   <button
                     onClick={() => { setNameInput(displayName || ""); setEditingName(true); }}
-                    style={{ width: "100%", display: "flex", alignItems: "center", gap: "10px", padding: "10px 14px", background: "none", border: "none", borderBottom: "1px solid #f1f5f9", cursor: "pointer", textAlign: "left" }}
+                    className="w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-none border-b border-[#f1f5f9] cursor-pointer text-left"
                   >
                     <Pencil size={14} color="#64748B" />
-                    <span style={{ fontSize: "0.82rem", color: "#1E3A5F", fontWeight: "600" }}>
+                    <span className="text-[0.82rem] text-[#1E3A5F] font-semibold">
                       {displayName ? `Tên: ${displayName}` : "Đổi tên hiển thị"}
                     </span>
                   </button>
@@ -167,17 +162,10 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
               )}
 
               {/* Logout button */}
-              <div style={{ padding: "10px" }}>
+              <div className="p-2.5">
                 <button
                   onClick={() => { setDropdownOpen(false); isLoggedIn ? onLogout() : onLogin?.(); }}
-                  style={{
-                    width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                    padding: "10px 16px",
-                    background: "linear-gradient(135deg, #EF4444, #DC2626)",
-                    color: "white", border: "none", borderRadius: "9px",
-                    cursor: "pointer", fontSize: "0.83rem", fontWeight: "700",
-                    boxShadow: "0 2px 8px rgba(239,68,68,0.2)"
-                  }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-[linear-gradient(135deg,#EF4444,#DC2626)] text-white border-none rounded-[9px] cursor-pointer text-[0.83rem] font-bold shadow-[0_2px_8px_rgba(239,68,68,0.2)]"
                 >
                   <LogOut size={14} />
                   <span>{isLoggedIn ? "Đăng xuất" : "Đăng nhập"}</span>
