@@ -49,7 +49,8 @@ export const formulas = [
     example: "Tìm nguyên hàm của hàm số $f(x) = x^2$.\n\n**Lời giải:**\nÁp dụng công thức với $n = 2$:\n$$\\int x^2 \\, dx = \\frac{x^{2+1}}{2+1} + C = \\frac{x^3}{3} + C$$",
     tags: ["Nguyên hàm", "Tích phân"],
     difficulty: "Dễ",
-    mnemonic: "Ngược với đạo hàm: tăng số mũ lên 1 đơn vị rồi chia cho chính số mũ mới đó (nhớ cộng thêm hằng số C)."
+    mnemonic: "Ngược với đạo hàm: tăng số mũ lên 1 đơn vị rồi chia cho chính số mũ mới đó (nhớ cộng thêm hằng số C).",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 8"
   },
   {
     id: "gt12-tichphan-thetich",
@@ -61,7 +62,8 @@ export const formulas = [
     example: "Tính thể tích khối tròn xoay sinh ra khi quay hình phẳng giới hạn bởi $y = \\sqrt{x}$, trục hoành và hai đường $x=0$, $x=4$ quanh trục $Ox$.\n\n**Lời giải:**\nBán kính lát cắt tại $x$ là $r = \\sqrt{x}$.\n$$V = \\pi \\int_{0}^{4} (\\sqrt{x})^2\\,dx = \\pi \\int_{0}^{4} x\\,dx = \\pi \\left[\\frac{x^2}{2}\\right]_0^4 = \\pi \\cdot \\frac{16}{2} = 8\\pi$$\n\n**Kiểm tra chiều:** Đây là một nửa parabol xoay, thể tích $8\\pi \\approx 25.1$ đơn vị khối — hợp lý.",
     tags: ["Tích phân", "Ứng dụng hình học", "Tròn xoay"],
     difficulty: "Khó",
-    mnemonic: "Hình tròn xoay = vô số lát mỏng hình tròn bán kính f(x), diện tích πr². Tổng các lát cho V = π∫f²dx. Nhớ: có π vì mỗi lát là hình tròn. Không quên bình phương f(x)!"
+    mnemonic: "Hình tròn xoay = vô số lát mỏng hình tròn bán kính f(x), diện tích πr². Tổng các lát cho V = π∫f²dx. Nhớ: có π vì mỗi lát là hình tròn. Không quên bình phương f(x)!",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 13, trang 24"
   },
   // --- HÌNH HỌC LỚP 12 ---
   {
@@ -461,7 +463,8 @@ export const formulas = [
     example: "Tính $\\int \\left(e^x + 3\\cos x - \\dfrac{2}{x}\\right) dx$.\n\n**Lời giải:**\n$$= \\int e^x\\,dx + 3\\int \\cos x\\,dx - 2\\int \\frac{1}{x}\\,dx = e^x + 3\\sin x - 2\\ln|x| + C$$\n\n**Lưu ý:** Kiểm tra lại bằng cách lấy đạo hàm kết quả: $(e^x + 3\\sin x - 2\\ln|x| + C)' = e^x + 3\\cos x - \\dfrac{2}{x}$ ✓",
     tags: ["Nguyên hàm", "Bảng công thức", "Tích phân"],
     difficulty: "Trung bình",
-    mnemonic: "Nguyên hàm ngược đạo hàm: e^x → e^x, sin → -cos, cos → sin, 1/x → ln|x|, a^x → a^x/ln(a). Luôn thêm +C vì mọi hằng số mất đi khi lấy đạo hàm, nên nguyên hàm có vô số đáp án lệch nhau 1 hằng số."
+    mnemonic: "Nguyên hàm ngược đạo hàm: e^x → e^x, sin → -cos, cos → sin, 1/x → ln|x|, a^x → a^x/ln(a). Luôn thêm +C vì mọi hằng số mất đi khi lấy đạo hàm, nên nguyên hàm có vô số đáp án lệch nhau 1 hằng số.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 10"
   },
   {
     id: "gt12-nguyenham-morong",
@@ -485,7 +488,8 @@ export const formulas = [
     example: "Tính $\\int_{0}^{2} (3x^2 - 2x)\\,dx$.\n\n**Lời giải:**\n- Nguyên hàm: $F(x) = x^3 - x^2$.\n- Áp dụng Newton–Leibniz:\n$$\\int_{0}^{2}(3x^2 - 2x)\\,dx = \\Big[x^3 - x^2\\Big]_{0}^{2} = (8 - 4) - (0 - 0) = 4$$",
     tags: ["Tích phân xác định", "Newton-Leibniz", "Cơ bản"],
     difficulty: "Trung bình",
-    mnemonic: "Tích phân xác định = Thay cận trên vào F trừ thay cận dưới vào F: [F(x)] từ a đến b là F(b) - F(a)."
+    mnemonic: "Tích phân xác định = Thay cận trên vào F trừ thay cận dưới vào F: [F(x)] từ a đến b là F(b) - F(a).",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 12, trang 14"
   },
   {
     id: "gt12-tichphan-dientich",
@@ -497,7 +501,8 @@ export const formulas = [
     example: "Tính diện tích hình phẳng giới hạn bởi $y = x^2$ và $y = x$.\n\n**Lời giải:**\n- Giao điểm: $x^2 = x \\Rightarrow x = 0$ hoặc $x = 1$.\n- Trên $[0;1]$: $x \\geq x^2$ nên $|x - x^2| = x - x^2$.\n$$S = \\int_0^1(x - x^2)\\,dx = \\Big[\\frac{x^2}{2} - \\frac{x^3}{3}\\Big]_0^1 = \\frac{1}{2} - \\frac{1}{3} = \\frac{1}{6}$$",
     tags: ["Tích phân", "Diện tích", "Ứng dụng"],
     difficulty: "Khó",
-    mnemonic: "Diện tích = tích phân giá trị tuyệt đối hiệu hai hàm. Tích phân hàm trên trừ hàm dưới, cộng từng đoạn nếu chúng giao nhau."
+    mnemonic: "Diện tích = tích phân giá trị tuyệt đối hiệu hai hàm. Tích phân hàm trên trừ hàm dưới, cộng từng đoạn nếu chúng giao nhau.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 13, trang 19-21"
   },
 
   // --- THÊM TỪ PDF: VECTƠ VÀ TỌA ĐỘ KHÔNG GIAN ---
@@ -2925,5 +2930,70 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "R = đầu mút phải nhóm cuối trừ đầu mút trái nhóm đầu (a_{k+1} - a_1). ΔQ = Q3 - Q1, dùng công thức Q1, Q3 của mẫu ghép nhóm đã học ở lớp 11 — ổn định hơn R vì chỉ dùng 50% dữ liệu giữa.",
     sgk_source: "Toán 12 KNTT Tập 1, Bài 9, trang 76-77"
+  },
+  {
+    id: "gt12-nguyenham-dinhnghia",
+    name: "Định nghĩa nguyên hàm và họ nguyên hàm",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "F'(x) = f(x),\\ \\forall x \\in K \\quad \\Rightarrow \\quad \\int f(x)\\,dx = F(x) + C",
+    explanation: "Cho hàm số $f(x)$ xác định trên một khoảng $K$ (hoặc một đoạn, hoặc một nửa khoảng).\nTrong đó:\n- $F(x)$: được gọi là một nguyên hàm của $f(x)$ trên $K$ nếu $F'(x)=f(x)$ với mọi $x$ thuộc $K$.\n- Nếu $F(x)$ là một nguyên hàm của $f(x)$ trên $K$ thì với mỗi hằng số $C$, hàm số $F(x)+C$ cũng là một nguyên hàm của $f(x)$ trên $K$; ngược lại, mọi nguyên hàm của $f(x)$ trên $K$ đều có dạng $F(x)+C$.\n- $F(x)+C$ ($C\\in\\mathbb R$) được gọi là họ các nguyên hàm của $f(x)$ trên $K$, kí hiệu $\\int f(x)\\,dx$.\n- Nếu $f(x)$ liên tục trên khoảng $K$ thì $f(x)$ có nguyên hàm trên khoảng đó.",
+    example: "Cho hai hàm số $f(x)=x^2+1$ và $F(x)=\\dfrac{1}{3}x^3+x$, với $x\\in\\mathbb R$. Chứng tỏ $F(x)$ là một nguyên hàm của $f(x)$ trên $\\mathbb R$.\n\n**Lời giải:** Ta có $F'(x)=x^2+1=f(x)$ với mọi $x\\in\\mathbb R$, do đó $F(x)$ là một nguyên hàm của $f(x)$ trên $\\mathbb R$.",
+    tags: ["Nguyên hàm", "Họ nguyên hàm", "Định nghĩa"],
+    difficulty: "Dễ",
+    mnemonic: "Nguyên hàm = hàm 'đi ngược' đạo hàm: F là nguyên hàm của f nếu F'=f. Họ nguyên hàm = tất cả nguyên hàm, chỉ khác nhau hằng số C.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 5"
+  },
+  {
+    id: "gt12-nguyenham-tinhchat",
+    name: "Tính chất cơ bản của nguyên hàm",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "\\int kf(x)\\,dx = k\\int f(x)\\,dx\\ (k\\neq0); \\qquad \\int[f(x)\\pm g(x)]\\,dx = \\int f(x)\\,dx \\pm \\int g(x)\\,dx",
+    explanation: "Cho $f(x), g(x)$ là các hàm số liên tục trên $K$, $k$ là hằng số khác $0$.\nTrong đó:\n- $\\int kf(x)\\,dx=k\\int f(x)\\,dx$: nguyên hàm của tích một hằng số khác 0 với một hàm số.\n- $\\int[f(x)+g(x)]\\,dx=\\int f(x)\\,dx+\\int g(x)\\,dx$: nguyên hàm của một tổng.\n- $\\int[f(x)-g(x)]\\,dx=\\int f(x)\\,dx-\\int g(x)\\,dx$: nguyên hàm của một hiệu.",
+    example: "Tìm $\\int(4x^3-3x^2)\\,dx$.\n\n**Lời giải:** $\\int(4x^3-3x^2)\\,dx=4\\int x^3\\,dx-3\\int x^2\\,dx=4\\cdot\\dfrac{x^4}{4}-3\\cdot\\dfrac{x^3}{3}+C=x^4-x^3+C$.",
+    tags: ["Nguyên hàm", "Tính chất", "Tuyến tính"],
+    difficulty: "Dễ",
+    mnemonic: "Nguyên hàm 'phân phối' được qua cộng/trừ và đưa hằng số ra ngoài — giống tính chất tuyến tính của đạo hàm.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 6-7"
+  },
+  {
+    id: "gt12-tichphan-tinhchat",
+    name: "Tính chất của tích phân",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "\\int_a^b kf(x)\\,dx=k\\int_a^bf(x)\\,dx;\\quad \\int_a^b[f(x)\\pm g(x)]\\,dx=\\int_a^bf(x)\\,dx\\pm\\int_a^bg(x)\\,dx;\\quad \\int_a^bf(x)\\,dx=\\int_a^cf(x)\\,dx+\\int_c^bf(x)\\,dx",
+    explanation: "Cho $f(x), g(x)$ là các hàm số liên tục trên đoạn $[a;b]$, $k$ là hằng số. Khi đó:\n- $\\displaystyle\\int_a^b kf(x)\\,dx=k\\int_a^bf(x)\\,dx$.\n- $\\displaystyle\\int_a^b[f(x)+g(x)]\\,dx=\\int_a^bf(x)\\,dx+\\int_a^bg(x)\\,dx$.\n- $\\displaystyle\\int_a^b[f(x)-g(x)]\\,dx=\\int_a^bf(x)\\,dx-\\int_a^bg(x)\\,dx$.\n- $\\displaystyle\\int_a^bf(x)\\,dx=\\int_a^cf(x)\\,dx+\\int_c^bf(x)\\,dx$ với $a<c<b$.\nQuy ước: $\\displaystyle\\int_a^af(x)\\,dx=0$ và $\\displaystyle\\int_a^bf(x)\\,dx=-\\int_b^af(x)\\,dx$.",
+    example: "Cho $\\displaystyle\\int_0^3f(x)\\,dx=5$ và $\\displaystyle\\int_0^3g(x)\\,dx=2$. Tính $\\displaystyle\\int_0^3[2f(x)-3g(x)]\\,dx$.\n\n**Lời giải:** $\\displaystyle\\int_0^3[2f(x)-3g(x)]\\,dx=2\\int_0^3f(x)\\,dx-3\\int_0^3g(x)\\,dx=2\\cdot5-3\\cdot2=4$.",
+    tags: ["Tích phân", "Tính chất", "Tuyến tính"],
+    difficulty: "Trung bình",
+    mnemonic: "Giống tính chất nguyên hàm (đưa hằng số ra, phân phối qua tổng/hiệu), thêm tính chất 'tách đoạn' tại điểm c nằm giữa a và b.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 12, trang 16"
+  },
+  {
+    id: "gt12-tichphan-giatritrungbinh",
+    name: "Giá trị trung bình của hàm số",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "\\bar f = \\frac{1}{b-a}\\int_a^b f(x)\\,dx",
+    explanation: "Trong đó:\n- $f(x)$: hàm số liên tục trên đoạn $[a;b]$.\n- $\\bar f$: giá trị trung bình của $f(x)$ trên đoạn $[a;b]$.\n- Ý nghĩa: xấp xỉ mức \"trung bình\" của hàm số trên cả đoạn, thường dùng để mô hình hoá các đại lượng biến thiên liên tục theo thời gian (nhiệt độ, vận tốc,...).",
+    example: "Nhiệt độ (°C) tại thời điểm $t$ giờ (từ 6 giờ đến 12 giờ) được mô hình hoá bởi $T(t)=20+1{,}5(t-6)$, $6\\le t\\le12$. Tìm nhiệt độ trung bình trong khoảng thời gian này.\n\n**Lời giải:** $\\bar T=\\dfrac{1}{12-6}\\displaystyle\\int_6^{12}\\left[20+1{,}5(t-6)\\right]dt=\\dfrac{1}{6}\\left[20t+0{,}75(t-6)^2\\right]_6^{12}=\\dfrac{1}{6}(120+27)=\\dfrac{147}{6}=24{,}5\\ (^\\circ C)$.",
+    tags: ["Tích phân", "Giá trị trung bình", "Ứng dụng thực tế"],
+    difficulty: "Trung bình",
+    mnemonic: "Giá trị trung bình = tích phân trên đoạn, chia cho độ dài đoạn — giống trung bình cộng nhưng cho hàm liên tục.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 12, trang 17 (Vận dụng 2)"
+  },
+  {
+    id: "gt12-tichphan-thetichvatthe",
+    name: "Công thức tính thể tích vật thể qua diện tích thiết diện",
+    topic: "Giải tích",
+    grade: 12,
+    latex: "V = \\int_a^b S(x)\\,dx",
+    explanation: "Cho một vật thể $\\mathcal B$ trong không gian $Oxyz$, giới hạn bởi hai mặt phẳng vuông góc với trục $Ox$ tại các điểm có hoành độ $x=a$, $x=b$.\nTrong đó:\n- $S(x)$: diện tích của thiết diện tạo bởi mặt phẳng vuông góc với trục $Ox$ tại điểm có hoành độ $x$ cắt vật thể $\\mathcal B$; $S(x)$ là hàm số liên tục trên đoạn $[a;b]$.\n- $V$: thể tích của phần vật thể $\\mathcal B$.\nCông thức này là cơ sở để suy ra công thức thể tích khối lăng trụ ($V=Sh$), khối chóp ($V=\\dfrac{1}{3}Sh$) và khối tròn xoay ($V=\\pi\\displaystyle\\int_a^b[f(x)]^2\\,dx$).",
+    example: "Tính thể tích của khối chóp có đáy là hình vuông cạnh $L$ và chiều cao $h$, biết mặt cắt vuông góc với trục $Ox$ tại hoành độ $x$ ($0\\le x\\le h$, gốc $O$ tại đỉnh chóp) là hình vuông cạnh $a=\\dfrac{L}{h}x$.\n\n**Lời giải:** $S(x)=a^2=\\dfrac{L^2}{h^2}x^2$. Do đó $V=\\displaystyle\\int_0^h\\dfrac{L^2}{h^2}x^2\\,dx=\\dfrac{L^2}{h^2}\\cdot\\dfrac{x^3}{3}\\Big|_0^h=\\dfrac{1}{3}L^2h$.",
+    tags: ["Tích phân", "Thể tích", "Thiết diện", "Ứng dụng hình học"],
+    difficulty: "Khó",
+    mnemonic: "Thể tích = tích phân của diện tích thiết diện S(x) theo x — cắt vật thể thành vô số lát mỏng diện tích S(x), 'cộng dồn' bằng tích phân.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 13, trang 22-23"
   },
 ];

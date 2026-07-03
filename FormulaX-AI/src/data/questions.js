@@ -5551,4 +5551,139 @@ export const questionsPool = [
     explanation: "Lợi nhuận trung bình của nhà đầu tư nhỏ (35 triệu đồng) và nhà đầu tư lớn (535 triệu đồng) khác nhau rất nhiều, do đó không nên dùng phương sai hay độ lệch chuẩn để so sánh độ rủi ro của hai phương án đầu tư này — cần đưa cả hai về cùng một thang đo tương đối (ví dụ hệ số biến thiên) trước khi so sánh.",
     sgk_source: "Toán 12 KNTT Tập 1, Bài 10, trang 83 (Ví dụ 3)"
   },
+  {
+    id: "gt54",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Cho hàm số $f(x)=x^2-2x$. Trong hai hàm số $F(x)=\\dfrac{x^3}{3}-x^2$ và $G(x)=\\dfrac{x^3}{3}+x^2$, hàm số nào là một nguyên hàm của $f(x)$ trên $\\mathbb{R}$?",
+    options: [
+      { letter: "A", text: "$F(x)=\\dfrac{x^3}{3}-x^2$", isCorrect: true },
+      { letter: "B", text: "$G(x)=\\dfrac{x^3}{3}+x^2$", isCorrect: false },
+      { letter: "C", text: "Cả hai đều là nguyên hàm của $f(x)$", isCorrect: false },
+      { letter: "D", text: "Không hàm nào là nguyên hàm của $f(x)$", isCorrect: false }
+    ],
+    blankAnswer: "F(x) = x^3/3 - x^2",
+    explanation: "Ta có $F'(x)=x^2-2x=f(x)$ với mọi $x\\in\\mathbb R$ nên $F(x)$ là một nguyên hàm của $f(x)$ trên $\\mathbb R$. Trong khi đó $G'(x)=x^2+2x$; tại $x=1$, $G'(1)=3\\neq-1=f(1)$ nên $G(x)$ không là nguyên hàm của $f(x)$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 5 (Ví dụ 1)"
+  },
+  {
+    id: "gt55",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Với $x>0$, $\\displaystyle\\int \\sqrt{x}\\,dx$ bằng biểu thức nào sau đây?",
+    options: [
+      { letter: "A", text: "$\\dfrac{2}{3}x\\sqrt{x}+C$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{1}{2}x\\sqrt{x}+C$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{2}{3}\\sqrt{x}+C$", isCorrect: false },
+      { letter: "D", text: "$x\\sqrt{x}+C$", isCorrect: false }
+    ],
+    blankAnswer: "(2/3)x\\sqrt{x} + C",
+    explanation: "$\\displaystyle\\int\\sqrt{x}\\,dx=\\int x^{\\frac12}\\,dx=\\dfrac{x^{\\frac32}}{\\frac32}+C=\\dfrac{2}{3}x^{\\frac32}+C=\\dfrac{2}{3}x\\sqrt{x}+C$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 8 (Ví dụ 6a)"
+  },
+  {
+    id: "gt56",
+    topic: "Giải tích",
+    grade: 12,
+    text: "$\\displaystyle\\int (2e^x - 5^x)\\,dx$ bằng biểu thức nào sau đây?",
+    options: [
+      { letter: "A", text: "$2e^x - \\dfrac{5^x}{\\ln 5} + C$", isCorrect: true },
+      { letter: "B", text: "$2e^x - 5^x\\ln 5 + C$", isCorrect: false },
+      { letter: "C", text: "$e^x - \\dfrac{5^x}{\\ln 5} + C$", isCorrect: false },
+      { letter: "D", text: "$2e^x - \\dfrac{5^x}{5} + C$", isCorrect: false }
+    ],
+    blankAnswer: "2e^x - 5^x/ln5 + C",
+    explanation: "$\\displaystyle\\int(2e^x-5^x)\\,dx=2\\int e^x\\,dx-\\int5^x\\,dx=2e^x-\\dfrac{5^x}{\\ln5}+C$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 10 (Ví dụ 8c)"
+  },
+  {
+    id: "gt57",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tích phân $\\displaystyle\\int_{-1}^{3} x^2\\,dx$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\dfrac{28}{3}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{26}{3}$", isCorrect: false },
+      { letter: "C", text: "$8$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{28}{3}$ có dấu âm", isCorrect: false }
+    ],
+    blankAnswer: "28/3",
+    explanation: "$\\displaystyle\\int_{-1}^{3}x^2\\,dx=\\dfrac{x^3}{3}\\Big|_{-1}^{3}=\\dfrac{1}{3}\\left[3^3-(-1)^3\\right]=\\dfrac{28}{3}$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 12, trang 15 (Ví dụ 3a)"
+  },
+  {
+    id: "gt58",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Tích phân $\\displaystyle\\int_{0}^{3} |x-2|\\,dx$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\dfrac{5}{2}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{3}{2}$", isCorrect: false },
+      { letter: "C", text: "$1$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{9}{2}$", isCorrect: false }
+    ],
+    blankAnswer: "5/2",
+    explanation: "$\\displaystyle\\int_0^3|x-2|\\,dx=\\int_0^2(2-x)\\,dx+\\int_2^3(x-2)\\,dx=\\left(2x-\\dfrac{x^2}{2}\\right)\\Big|_0^2+\\left(\\dfrac{x^2}{2}-2x\\right)\\Big|_2^3=2+\\dfrac{1}{2}=\\dfrac{5}{2}$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 12, trang 17 (Ví dụ 6)"
+  },
+  {
+    id: "gt59",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Diện tích hình phẳng giới hạn bởi đồ thị hàm số $y=x^3$, trục hoành và hai đường thẳng $x=0$, $x=2$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$4$", isCorrect: true },
+      { letter: "B", text: "$8$", isCorrect: false },
+      { letter: "C", text: "$16$", isCorrect: false },
+      { letter: "D", text: "$2$", isCorrect: false }
+    ],
+    blankAnswer: "4",
+    explanation: "$S=\\displaystyle\\int_0^2|x^3|\\,dx=\\int_0^2x^3\\,dx=\\dfrac{x^4}{4}\\Big|_0^2=4-0=4$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 13, trang 20 (Ví dụ 1)"
+  },
+  {
+    id: "gt60",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Diện tích hình phẳng giới hạn bởi hai parabol $y=4-x^2$, $y=x^2$ và hai đường thẳng $x=-1$, $x=1$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\dfrac{20}{3}$", isCorrect: true },
+      { letter: "B", text: "$\\dfrac{16}{3}$", isCorrect: false },
+      { letter: "C", text: "$8$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{10}{3}$", isCorrect: false }
+    ],
+    blankAnswer: "20/3",
+    explanation: "$S=\\displaystyle\\int_{-1}^{1}\\left|(4-x^2)-x^2\\right|dx=\\int_{-1}^{1}|4-2x^2|\\,dx=\\int_{-1}^{1}(4-2x^2)\\,dx=\\left(4x-\\dfrac{2}{3}x^3\\right)\\Big|_{-1}^{1}=\\dfrac{20}{3}$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 13, trang 21 (Ví dụ 3)"
+  },
+  {
+    id: "gt61",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Thể tích khối tròn xoay sinh ra khi quay quanh trục $Ox$ hình phẳng giới hạn bởi đồ thị hàm số $y=\\sqrt{x}$, trục hoành và hai đường thẳng $x=0$, $x=1$ bằng bao nhiêu?",
+    options: [
+      { letter: "A", text: "$\\dfrac{\\pi}{2}$", isCorrect: true },
+      { letter: "B", text: "$\\pi$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{\\pi}{3}$", isCorrect: false },
+      { letter: "D", text: "$2\\pi$", isCorrect: false }
+    ],
+    blankAnswer: "pi/2",
+    explanation: "$V=\\pi\\displaystyle\\int_0^1f^2(x)\\,dx=\\pi\\int_0^1(\\sqrt{x})^2\\,dx=\\pi\\int_0^1x\\,dx=\\pi\\cdot\\dfrac{x^2}{2}\\Big|_0^1=\\dfrac{\\pi}{2}$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 13, trang 24 (Ví dụ 7)"
+  },
+  {
+    id: "gt62",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Một máy bay di chuyển ra đường băng và bắt đầu chạy đà để cất cánh. Vận tốc của máy bay khi chạy đà được cho bởi $v(t)=5+3t$ (m/s), với $t$ là thời gian (giây) kể từ khi máy bay bắt đầu chạy đà. Sau 30 giây thì máy bay cất cánh rời đường băng. Quãng đường máy bay đã di chuyển từ khi bắt đầu chạy đà đến khi rời đường băng là bao nhiêu mét?",
+    options: [
+      { letter: "A", text: "$1\\,500$ m", isCorrect: true },
+      { letter: "B", text: "$1\\,350$ m", isCorrect: false },
+      { letter: "C", text: "$900$ m", isCorrect: false },
+      { letter: "D", text: "$150$ m", isCorrect: false }
+    ],
+    blankAnswer: "1500",
+    explanation: "Gọi $S(t)$ là quãng đường đi được sau $t$ giây; $S(t)$ là nguyên hàm của $v(t)$: $S(t)=\\displaystyle\\int v(t)\\,dt=\\int(5+3t)\\,dt=5t+\\dfrac{3}{2}t^2+C$. Vì $S(0)=0$ nên $C=0$, suy ra $S(t)=\\dfrac{3}{2}t^2+5t$. Khi $t=30$: $S(30)=\\dfrac{3}{2}\\cdot30^2+5\\cdot30=1\\,350+150=1\\,500$ (m).",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 7 (Ví dụ 5)"
+  },
 ];
