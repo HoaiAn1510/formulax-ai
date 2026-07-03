@@ -5941,4 +5941,139 @@ export const questionsPool = [
     explanation: "Theo công thức nhân xác suất: $P(AB) = P(A)\\cdot P(B|A) = 0{,}2\\cdot0{,}8=0{,}16$. Theo định nghĩa xác suất có điều kiện: $P(A|B) = \\dfrac{P(AB)}{P(B)} = \\dfrac{0{,}16}{0{,}51} \\approx 0{,}3137$.",
     sgk_source: "Toán 12 KNTT Tập 2, Bài 18, Bài tập 6.2, trang 70"
   },
+  {
+    id: "xs65",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Giả sử số vụ vi phạm Luật Giao thông đường bộ trên một đoạn đường vào tối thứ Bảy là một biến ngẫu nhiên rời rạc $X$ với bảng phân bố xác suất:\n\n| $X$ | 0 | 1 | 2 | 3 | 4 | 5 |\n|---|---|---|---|---|---|---|\n| $P$ | $0{,}1$ | $0{,}2$ | $0{,}3$ | $0{,}2$ | $0{,}15$ | $0{,}05$ |\n\nTính xác suất để tối thứ Bảy xảy ra nhiều nhất 1 vụ vi phạm Luật Giao thông đường bộ.",
+    options: [
+      { letter: "A", text: "$0{,}1$", isCorrect: false },
+      { letter: "B", text: "$0{,}2$", isCorrect: false },
+      { letter: "C", text: "$0{,}3$", isCorrect: true },
+      { letter: "D", text: "$0{,}7$", isCorrect: false }
+    ],
+    blankAnswer: "0,3",
+    explanation: "Gọi $A$ là biến cố \"Xảy ra nhiều nhất 1 vụ vi phạm\". $A=\\{X=0\\}\\cup\\{X=1\\}$, hai biến cố xung khắc. Theo quy tắc cộng xác suất: $P(A)=P(X=0)+P(X=1)=0{,}1+0{,}2=0{,}3$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 1, Ví dụ 3, trang 7-8"
+  },
+  {
+    id: "xs66",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Một túi đựng 6 viên bi đỏ và 4 viên bi xanh, các viên bi có cùng kích thước và khối lượng. Lấy ngẫu nhiên đồng thời 3 viên bi từ trong túi. Gọi $X$ là số viên bi xanh trong 3 viên bi lấy ra. Tính $P(X=2)$.",
+    options: [
+      { letter: "A", text: "$\\dfrac{1}{6}$", isCorrect: false },
+      { letter: "B", text: "$\\dfrac{1}{2}$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{3}{10}$", isCorrect: true },
+      { letter: "D", text: "$\\dfrac{1}{30}$", isCorrect: false }
+    ],
+    blankAnswer: "\\dfrac{3}{10}",
+    explanation: "Số kết quả có thể: $C_{10}^3=120$. Biến cố $\\{X=2\\}$: \"Lấy được 2 viên bi xanh và 1 viên bi đỏ\", số kết quả thuận lợi $C_4^2\\cdot C_6^1=6\\cdot6=36$. Vậy $P(X=2)=\\dfrac{36}{120}=\\dfrac{3}{10}$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 1, Ví dụ 4, trang 8-9"
+  },
+  {
+    id: "xs67",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Trong mỗi buổi ông An đi câu cá, ông có thể câu được 0; 1; 2; 3; 4 con cá với các xác suất tương ứng là $0{,}16$; $0{,}18$; $0{,}25$; $0{,}28$ và $0{,}13$. Hỏi trung bình ông An câu được bao nhiêu con cá trong một buổi đi câu?",
+    options: [
+      { letter: "A", text: "$2$", isCorrect: false },
+      { letter: "B", text: "$2{,}04$", isCorrect: true },
+      { letter: "C", text: "$2{,}5$", isCorrect: false },
+      { letter: "D", text: "$1{,}84$", isCorrect: false }
+    ],
+    blankAnswer: "2,04",
+    explanation: "Gọi $X$ là số con cá câu được. $E(X)=0\\cdot0{,}16+1\\cdot0{,}18+2\\cdot0{,}25+3\\cdot0{,}28+4\\cdot0{,}13=2{,}04$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 1, Ví dụ 5, trang 10"
+  },
+  {
+    id: "xs68",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Trong một trò chơi, ở vòng 1 người chơi được chọn một trong hai loại câu hỏi: loại I (trả lời đúng được 20 điểm, sai 0 điểm), loại II (trả lời đúng được 80 điểm, sai 0 điểm). Nếu trả lời đúng câu hỏi vòng 1 thì được bước vào vòng 2, bốc ngẫu nhiên 1 câu hỏi thuộc loại còn lại; trả lời đúng hay sai ở vòng 2 cuộc chơi cũng kết thúc. Biết xác suất bạn Minh trả lời đúng câu hỏi loại I là $0{,}8$, xác suất trả lời đúng câu hỏi loại II là $0{,}6$; việc trả lời đúng câu hỏi vòng 1 không ảnh hưởng đến xác suất trả lời đúng câu hỏi vòng 2. Giả sử ở vòng 1 Minh bốc ngẫu nhiên một câu hỏi loại I. Hỏi trung bình Minh nhận được bao nhiêu điểm?",
+    options: [
+      { letter: "A", text: "$20$", isCorrect: false },
+      { letter: "B", text: "$48$", isCorrect: false },
+      { letter: "C", text: "$54{,}4$", isCorrect: true },
+      { letter: "D", text: "$100$", isCorrect: false }
+    ],
+    blankAnswer: "54,4",
+    explanation: "Gọi $X$ là số điểm Minh nhận được, $A$: \"Minh trả lời đúng câu hỏi loại I\", $B$: \"Minh trả lời đúng câu hỏi loại II\", $P(A)=0{,}8$, $P(B)=0{,}6$. Bảng phân bố xác suất của $X$: $P(X=0)=P(\\overline A)=0{,}2$; $P(X=20)=P(A)\\cdot P(\\overline B)=0{,}8\\cdot0{,}4=0{,}32$; $P(X=100)=P(A)\\cdot P(B)=0{,}8\\cdot0{,}6=0{,}48$. Vậy $E(X)=0\\cdot0{,}2+20\\cdot0{,}32+100\\cdot0{,}48=54{,}4$ (điểm).",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 1, Ví dụ 6, trang 10, 12"
+  },
+  {
+    id: "xs69",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Cho biến ngẫu nhiên rời rạc $X$ với bảng phân bố xác suất:\n\n| $X$ | 0 | 1 | 2 | 3 | 4 | 5 |\n|---|---|---|---|---|---|---|\n| $P$ | $0{,}1$ | $0{,}2$ | $0{,}3$ | $0{,}2$ | $0{,}1$ | $0{,}1$ |\n\nTính phương sai $V(X)$.",
+    options: [
+      { letter: "A", text: "$2{,}3$", isCorrect: false },
+      { letter: "B", text: "$2{,}01$", isCorrect: true },
+      { letter: "C", text: "$1{,}418$", isCorrect: false },
+      { letter: "D", text: "$4{,}04$", isCorrect: false }
+    ],
+    blankAnswer: "2,01",
+    explanation: "$E(X)=0\\cdot0{,}1+1\\cdot0{,}2+2\\cdot0{,}3+3\\cdot0{,}2+4\\cdot0{,}1+5\\cdot0{,}1=2{,}3$. $V(X)=(0-2{,}3)^2\\cdot0{,}1+(1-2{,}3)^2\\cdot0{,}2+(2-2{,}3)^2\\cdot0{,}3+(3-2{,}3)^2\\cdot0{,}2+(4-2{,}3)^2\\cdot0{,}1+(5-2{,}3)^2\\cdot0{,}1=2{,}01$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 1, Ví dụ 7, trang 12"
+  },
+  {
+    id: "xs70",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Xác suất thành công khi làm một thí nghiệm $T$ là $0{,}4$. Một nhóm gồm 9 học sinh độc lập với nhau tiến hành thí nghiệm $T$. Tính xác suất để có đúng 6 học sinh thực hiện thí nghiệm thành công.",
+    options: [
+      { letter: "A", text: "$0{,}0743$", isCorrect: true },
+      { letter: "B", text: "$0{,}9899$", isCorrect: false },
+      { letter: "C", text: "$0{,}9962$", isCorrect: false },
+      { letter: "D", text: "$0{,}4^6$", isCorrect: false }
+    ],
+    blankAnswer: "0,0743",
+    explanation: "Gọi $E$: \"Thí nghiệm $T$ thành công\", $P(E)=0{,}4$, $n=9$. Theo công thức Bernoulli: $P(E_6)=C_9^6\\cdot0{,}4^6\\cdot0{,}6^3=84\\cdot0{,}4^6\\cdot0{,}6^3\\approx0{,}0743$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 2, Ví dụ 1, trang 16"
+  },
+  {
+    id: "xs71",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Người chơi gieo một xúc xắc cân đối, đồng chất một cách độc lập liên tiếp 12 lần. Người chơi thắng nếu có ít nhất hai lần xúc xắc xuất hiện mặt 6 chấm. Tính xác suất thắng của người chơi (kết quả gần đúng).",
+    options: [
+      { letter: "A", text: "$\\approx0{,}618667$", isCorrect: true },
+      { letter: "B", text: "$\\approx0{,}381333$", isCorrect: false },
+      { letter: "C", text: "$\\approx0{,}1122$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{1}{6}$", isCorrect: false }
+    ],
+    blankAnswer: "\\approx0,618667",
+    explanation: "Xét phép thử lặp $T$ với $n=12$, $p=P(E)=\\dfrac{1}{6}$ ($E$: \"xuất hiện mặt 6 chấm\"). Gọi $B$: \"Người chơi thắng\" $=\\{E$ xuất hiện ít nhất 2 lần$\\}$. Biến cố đối $\\overline B=E_0\\cup E_1$: $P(\\overline B)=\\left(\\dfrac{5}{6}\\right)^{12}+C_{12}^1\\cdot\\dfrac{1}{6}\\cdot\\left(\\dfrac{5}{6}\\right)^{11}$. Suy ra $P(B)=1-P(\\overline B)\\approx0{,}618667$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 2, Ví dụ 2, trang 16-17"
+  },
+  {
+    id: "xs72",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Trong một trò chơi, người chơi gieo một xúc xắc cân đối, đồng chất liên tiếp 18 lần một cách độc lập. Gọi $X$ là số lần xúc xắc xuất hiện mặt 6 chấm. Tính phương sai $V(X)$.",
+    options: [
+      { letter: "A", text: "$3$", isCorrect: false },
+      { letter: "B", text: "$2{,}5$", isCorrect: true },
+      { letter: "C", text: "$\\sqrt{2{,}5}$", isCorrect: false },
+      { letter: "D", text: "$18$", isCorrect: false }
+    ],
+    blankAnswer: "2,5",
+    explanation: "$X$ là biến ngẫu nhiên có phân bố nhị thức với $n=18$, $p=\\dfrac{1}{6}$. Áp dụng công thức: $V(X)=np(1-p)=18\\cdot\\dfrac{1}{6}\\cdot\\dfrac{5}{6}=2{,}5$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 2, Ví dụ 4, trang 19"
+  },
+  {
+    id: "xs73",
+    topic: "Xác suất & Thống kê",
+    grade: 12,
+    text: "Một bài thi trắc nghiệm gồm 10 câu hỏi, mỗi câu có 4 phương án trả lời, trong đó chỉ có một phương án đúng. Bạn An làm bài bằng cách ở mỗi câu chọn ngẫu nhiên một phương án trả lời. Gọi $X$ là số câu trả lời đúng của An. Tính $E(X)$.",
+    options: [
+      { letter: "A", text: "$2{,}5$", isCorrect: true },
+      { letter: "B", text: "$10$", isCorrect: false },
+      { letter: "C", text: "$0{,}25$", isCorrect: false },
+      { letter: "D", text: "$5$", isCorrect: false }
+    ],
+    blankAnswer: "2,5",
+    explanation: "$X$ là biến ngẫu nhiên có phân bố nhị thức với tham số $n=10$, $p=\\dfrac{1}{4}$. Số điểm trung bình là $E(X)=np=10\\cdot\\dfrac{1}{4}=2{,}5$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 2, Vận dụng, trang 20"
+  },
 ];
