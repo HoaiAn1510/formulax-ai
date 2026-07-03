@@ -150,7 +150,8 @@ export const formulas = [
     example: "Tính khoảng cách từ điểm $M(1, 2, -1)$ đến mặt phẳng $(P): 2x - 2y + z - 3 = 0$.\n\n**Lời giải:**\nÁp dụng công thức:\n$$d = \\frac{|2(1) - 2(2) + 1(-1) - 3|}{\\sqrt{2^2 + (-2)^2 + 1^2}} = \\frac{|2 - 4 - 1 - 3|}{\\sqrt{9}} = \\frac{|-6|}{3} = 2$$",
     tags: ["Oxyz", "Khoảng cách", "Tọa độ không gian"],
     difficulty: "Trung bình",
-    mnemonic: "Thay tọa độ điểm vào phương trình mặt phẳng lấy trị tuyệt đối (tử số), chia cho độ dài vectơ pháp tuyến (mẫu số)."
+    mnemonic: "Thay tọa độ điểm vào phương trình mặt phẳng lấy trị tuyệt đối (tử số), chia cho độ dài vectơ pháp tuyến (mẫu số).",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, trang 38"
   },
   // --- LỚP 11 ---
   {
@@ -395,7 +396,8 @@ export const formulas = [
     example: "Tìm tâm và bán kính của mặt cầu $(S): x^2 + y^2 + z^2 - 2x + 4y - 6z - 2 = 0$.\n\n**Lời giải:**\n- Xác định các hệ số: $a = 1, b = -2, c = 3, d = -2$.\n- Tâm $I(1, -2, 3)$.\n- Bán kính $R = \\sqrt{1^2 + (-2)^2 + 3^2 - (-2)} = \\sqrt{16} = 4$.",
     tags: ["Oxyz", "Mặt cầu", "Tọa độ không gian"],
     difficulty: "Trung bình",
-    mnemonic: "Bình phương khoảng cách từ điểm bất kỳ trong không gian đến tâm bằng bình phương bán kính."
+    mnemonic: "Bình phương khoảng cách từ điểm bất kỳ trong không gian đến tâm bằng bình phương bán kính.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 17, trang 54, 56"
   },
 
   // --- THÊM TỪ PDF: ĐẠO HÀM MỞ RỘNG ---
@@ -529,7 +531,8 @@ export const formulas = [
     example: "Viết phương trình mặt phẳng đi qua $M(1, 2, 3)$ và nhận $\\vec{n} = (2, -1, 4)$ làm pháp tuyến.\n\n**Lời giải:**\nThay vào công thức điểm-pháp tuyến:\n$$2(x-1) - 1(y-2) + 4(z-3) = 0$$\n$$2x - 2 - y + 2 + 4z - 12 = 0$$\n$$\\boxed{2x - y + 4z - 12 = 0}$$\n\n**Kiểm tra:** Thay $M(1,2,3)$ vào: $2(1) - 2 + 4(3) - 12 = 2 - 2 + 12 - 12 = 0$ ✓\nPháp tuyến $(2,-1,4)$ trùng với hệ số $(A,B,C)$ của phương trình ✓",
     tags: ["Mặt phẳng", "Oxyz", "Pháp tuyến", "Tọa độ không gian"],
     difficulty: "Trung bình",
-    mnemonic: "Nhân từng tọa độ pháp tuyến (A,B,C) với hiệu tọa độ: A(x-x₀)+B(y-y₀)+C(z-z₀)=0. Khai triển ra dạng tổng quát Ax+By+Cz+D=0. Kiểm tra: thay điểm gốc vào phải ra 0."
+    mnemonic: "Nhân từng tọa độ pháp tuyến (A,B,C) với hiệu tọa độ: A(x-x₀)+B(y-y₀)+C(z-z₀)=0. Khai triển ra dạng tổng quát Ax+By+Cz+D=0. Kiểm tra: thay điểm gốc vào phải ra 0.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, trang 32-34"
   },
   {
     id: "hh12-oxyz-duongthang",
@@ -541,7 +544,8 @@ export const formulas = [
     example: "Viết phương trình đường thẳng đi qua $A(1, -2, 3)$ và $B(3, 0, -1)$.\n\n**Lời giải:**\n- Vectơ chỉ phương: $\\vec{AB} = (3-1,\\; 0-(-2),\\; -1-3) = (2, 2, -4)$, giản ước: $\\vec{u} = (1, 1, -2)$.\n\n**Phương trình tham số** (qua điểm $A$):\n$$\\begin{cases} x = 1 + t \\\\ y = -2 + t \\\\ z = 3 - 2t \\end{cases} \\quad (t \\in \\mathbb{R})$$\n\n**Phương trình chính tắc:**\n$$\\dfrac{x-1}{1} = \\dfrac{y+2}{1} = \\dfrac{z-3}{-2}$$\n\n**Kiểm tra:** Khi $t=0$: điểm $(1,-2,3) = A$ ✓. Khi $t=2$: điểm $(3,0,-1) = B$ ✓.",
     tags: ["Đường thẳng", "Oxyz", "Vectơ chỉ phương", "Tọa độ không gian"],
     difficulty: "Trung bình",
-    mnemonic: "Đường thẳng = 1 điểm + 1 vectơ chỉ phương (a,b,c). Tham số: x=x₀+at, y=y₀+bt, z=z₀+ct. Chính tắc: (x-x₀)/a=(y-y₀)/b=(z-z₀)/c. Hai cách viết tương đương nhau."
+    mnemonic: "Đường thẳng = 1 điểm + 1 vectơ chỉ phương (a,b,c). Tham số: x=x₀+at, y=y₀+bt, z=z₀+ct. Chính tắc: (x-x₀)/a=(y-y₀)/b=(z-z₀)/c. Hai cách viết tương đương nhau.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 15, trang 42-43; góc giữa hai đường thẳng: Bài 16, trang 50"
   },
   {
     id: "hh12-oxyz-goc-hai-matphang",
@@ -553,7 +557,9 @@ export const formulas = [
     example: "**Ví dụ 1 — Góc:** Tìm góc giữa $(P): 2x - y + 2z - 1 = 0$ và $(Q): x + 2y - 2z + 3 = 0$.\n\n**Lời giải:**\n- $\\vec{n_1} = (2,-1,2)$, $|\\vec{n_1}| = 3$; $\\vec{n_2} = (1,2,-2)$, $|\\vec{n_2}| = 3$.\n- $\\vec{n_1}\\cdot\\vec{n_2} = 2(1)+(-1)(2)+2(-2) = 2-2-4 = -4$.\n$$\\cos\\varphi = \\frac{|-4|}{3 \\cdot 3} = \\frac{4}{9} \\Rightarrow \\varphi = \\arccos\\frac{4}{9} \\approx 63.6°$$\n\n**Ví dụ 2 — Khoảng cách:** Tính khoảng cách giữa $2x-y+2z-1=0$ và $2x-y+2z+5=0$.\n$$d = \\frac{|5-(-1)|}{\\sqrt{4+1+4}} = \\frac{6}{3} = 2$$",
     tags: ["Mặt phẳng", "Góc", "Oxyz", "Quan hệ", "Khoảng cách"],
     difficulty: "Khó",
-    mnemonic: "Góc hai mặt phẳng = góc pháp tuyến (lấy trị tuyệt đối để ra góc nhọn). Vuông góc khi tích vô hướng pháp tuyến = 0. Song song khi pháp tuyến tỉ lệ nhưng D khác. Khoảng cách hai mp song song = |chênh D| / độ dài pháp tuyến."
+    mnemonic: "Góc hai mặt phẳng = góc pháp tuyến (lấy trị tuyệt đối để ra góc nhọn). Vuông góc khi tích vô hướng pháp tuyến = 0. Song song khi pháp tuyến tỉ lệ nhưng D khác. Khoảng cách hai mp song song = |chênh D| / độ dài pháp tuyến.",
+    needs_review: true,
+    sgk_source: "Phần góc giữa hai mặt phẳng: Toán 12 KNTT Tập 2, Bài 16, trang 52. Phần khoảng cách hai mặt phẳng song song chưa xác định được là công thức đóng khung trong SGK (Bài 14 chỉ nêu phương pháp quy về khoảng cách điểm-mặt phẳng ở Luyện tập 11, trang 39) — cần người dùng xác nhận thêm."
   },
 
   // --- THÊM TỪ PDF: THỐNG KÊ ---
@@ -2995,5 +3001,58 @@ export const formulas = [
     difficulty: "Khó",
     mnemonic: "Thể tích = tích phân của diện tích thiết diện S(x) theo x — cắt vật thể thành vô số lát mỏng diện tích S(x), 'cộng dồn' bằng tích phân.",
     sgk_source: "Toán 12 KNTT Tập 2, Bài 13, trang 22-23"
+  },
+  {
+    id: "hh12-oxyz-tichcohuong",
+    name: "Tích có hướng của hai vectơ trong không gian",
+    topic: "Hình học",
+    grade: 12,
+    latex: "[\\vec{u}, \\vec{v}] = \\left( \\begin{vmatrix} b & c \\\\ b' & c' \\end{vmatrix}; \\begin{vmatrix} c & a \\\\ c' & a' \\end{vmatrix}; \\begin{vmatrix} a & b \\\\ a' & b' \\end{vmatrix} \\right)",
+    explanation: "Trong không gian $Oxyz$, cho hai vectơ $\\vec{u} = (a; b; c)$ và $\\vec{v} = (a'; b'; c')$.\nTrong đó:\n- $\\begin{vmatrix} x & y \\\\ x' & y' \\end{vmatrix} = xy' - x'y$: kí hiệu định thức cấp hai.\n- $[\\vec{u}, \\vec{v}]$: tích có hướng (tích vectơ) của $\\vec{u}$ và $\\vec{v}$, là một vectơ luôn vuông góc với cả $\\vec{u}$ và $\\vec{v}$.\n- $[\\vec{u}, \\vec{v}] = \\vec{0}$ khi và chỉ khi $\\vec{u}, \\vec{v}$ cùng phương.\nNếu $\\vec{u}, \\vec{v}$ là cặp vectơ chỉ phương của mặt phẳng $(P)$ (không cùng phương, có giá nằm trong hoặc song song với $(P)$) thì $[\\vec{u}, \\vec{v}]$ là một vectơ pháp tuyến của $(P)$.",
+    example: "Trong không gian $Oxyz$, cho $\\vec{u} = (1; -2; 0)$ và $\\vec{v} = (3; 1; -4)$. Tính $[\\vec{u}, \\vec{v}]$.\n\n**Lời giải:**\n$[\\vec{u}, \\vec{v}] = \\left( \\begin{vmatrix} -2 & 0 \\\\ 1 & -4 \\end{vmatrix}; \\begin{vmatrix} 0 & 1 \\\\ -4 & 3 \\end{vmatrix}; \\begin{vmatrix} 1 & -2 \\\\ 3 & 1 \\end{vmatrix} \\right) = (8; 4; 7).$",
+    tags: ["Oxyz", "Tích có hướng", "Vectơ pháp tuyến", "Tọa độ không gian"],
+    difficulty: "Khó",
+    mnemonic: "Xoay vòng x→y→z→x: mỗi tọa độ = định thức 2x2 của hai tọa độ còn lại (bỏ chính nó), tọa độ giữa lấy theo thứ tự (c,a) chứ không phải (a,c).",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, trang 30-31"
+  },
+  {
+    id: "hh12-oxyz-vitrituongdoi-duongthang",
+    name: "Vị trí tương đối giữa hai đường thẳng trong không gian",
+    topic: "Hình học",
+    grade: 12,
+    latex: "\\Delta_1 \\text{ và } \\Delta_2 \\text{ chéo nhau} \\Leftrightarrow \\overrightarrow{A_1A_2} \\cdot [\\vec{u_1}, \\vec{u_2}] \\neq 0",
+    explanation: "Cho hai đường thẳng $\\Delta_1, \\Delta_2$ lần lượt đi qua $A_1(x_1;y_1;z_1)$, $A_2(x_2;y_2;z_2)$ và có vectơ chỉ phương $\\vec{u_1} = (a_1;b_1;c_1)$, $\\vec{u_2} = (a_2;b_2;c_2)$.\nTrong đó:\n- $[\\vec{u_1}, \\vec{u_2}]$: tích có hướng của hai vectơ chỉ phương.\n- $\\overrightarrow{A_1A_2} \\cdot [\\vec{u_1}, \\vec{u_2}]$: tích vô hướng giữa $\\overrightarrow{A_1A_2}$ và $[\\vec{u_1}, \\vec{u_2}]$.\nKhi đó:\n- $\\Delta_1 \\parallel \\Delta_2 \\Leftrightarrow \\vec{u_1}$ cùng phương $\\vec{u_2}$ và $A_1 \\notin \\Delta_2$.\n- $\\Delta_1 \\equiv \\Delta_2 \\Leftrightarrow \\vec{u_1}$ cùng phương $\\vec{u_2}$ và $A_1 \\in \\Delta_2$.\n- $\\Delta_1$ và $\\Delta_2$ cắt nhau $\\Leftrightarrow [\\vec{u_1},\\vec{u_2}] \\neq \\vec{0}$ và $\\overrightarrow{A_1A_2} \\cdot [\\vec{u_1},\\vec{u_2}] = 0$.\n- $\\Delta_1$ và $\\Delta_2$ chéo nhau $\\Leftrightarrow \\overrightarrow{A_1A_2} \\cdot [\\vec{u_1},\\vec{u_2}] \\neq 0$.",
+    example: "Trong không gian $Oxyz$, xét vị trí tương đối của $\\Delta_1: \\begin{cases} x=1+t \\\\ y=2-t \\\\ z=-1+2t \\end{cases}$ và $\\Delta_2: \\dfrac{x-4}{3} = \\dfrac{y+1}{1} = \\dfrac{z}{-1}$.\n\n**Lời giải:**\n$\\Delta_1$ đi qua $A_1(1;2;-1)$, $\\vec{u_1}=(1;-1;2)$. $\\Delta_2$ đi qua $A_2(4;-1;0)$, $\\vec{u_2}=(3;1;-1)$.\n$\\overrightarrow{A_1A_2} = (3;-3;1)$ và $[\\vec{u_1},\\vec{u_2}] = (-1;7;4)$.\nTa có $\\overrightarrow{A_1A_2} \\cdot [\\vec{u_1},\\vec{u_2}] = 3\\cdot(-1)+(-3)\\cdot7+1\\cdot4 = -20 \\neq 0$ nên $\\Delta_1$ và $\\Delta_2$ chéo nhau.",
+    tags: ["Oxyz", "Đường thẳng", "Vị trí tương đối", "Chéo nhau", "Cắt nhau"],
+    difficulty: "Khó",
+    mnemonic: "Tính [u1,u2] trước: nếu bằng 0 (song song/cùng phương) thì xét điểm chung; nếu khác 0 thì tính tiếp A1A2·[u1,u2] — bằng 0 là cắt nhau, khác 0 là chéo nhau.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 15, trang 46-47"
+  },
+  {
+    id: "hh12-oxyz-matphang-doanchan",
+    name: "Phương trình mặt phẳng theo đoạn chắn",
+    topic: "Hình học",
+    grade: 12,
+    latex: "\\frac{x}{a} + \\frac{y}{b} + \\frac{z}{c} = 1",
+    explanation: "Trong không gian $Oxyz$, mặt phẳng $(\\alpha)$ không đi qua gốc toạ độ và cắt ba trục $Ox, Oy, Oz$ lần lượt tại $A(a;0;0)$, $B(0;b;0)$, $C(0;0;c)$ ($a,b,c \\neq 0$) có phương trình theo đoạn chắn như trên.\nTrong đó:\n- $a, b, c$: hoành độ, tung độ, cao độ của giao điểm mặt phẳng với ba trục toạ độ tương ứng.",
+    example: "Viết phương trình mặt phẳng $(\\alpha)$ cắt trục $Ox$ tại $A(2;0;0)$, cắt trục $Oy$ tại $B(0;3;0)$, cắt trục $Oz$ tại $C(0;0;4)$.\n\n**Lời giải:**\nÁp dụng phương trình mặt phẳng theo đoạn chắn:\n$\\frac{x}{2} + \\frac{y}{3} + \\frac{z}{4} = 1.$",
+    tags: ["Oxyz", "Mặt phẳng", "Đoạn chắn"],
+    difficulty: "Trung bình",
+    mnemonic: "Mỗi trục toạ độ một mẫu số: x/a + y/b + z/c = 1, với a,b,c là giao điểm trên Ox,Oy,Oz.",
+    needs_review: true,
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, Luyện tập 8, trang 35"
+  },
+  {
+    id: "hh12-oxyz-toado-viido-kinhdo",
+    name: "Toạ độ điểm trên mặt cầu theo vĩ độ và kinh độ",
+    topic: "Hình học",
+    grade: 12,
+    latex: "P(\\cos\\alpha^\\circ\\cos\\beta^\\circ;\\ \\cos\\alpha^\\circ\\sin\\beta^\\circ;\\ \\sin\\alpha^\\circ)",
+    explanation: "Xét mô hình bề mặt Trái Đất là mặt cầu bán kính 1 (đơn vị dài trong $Oxyz$ tương ứng 6371 km), tâm $O$, tia $Ox$ qua giao điểm kinh tuyến gốc và xích đạo, tia $Oz$ qua cực Bắc $N$.\nTrong đó:\n- Vị trí $P$ có vĩ độ $\\alpha^\\circ N$, kinh độ $\\beta^\\circ E$ ($0<\\alpha<90$, $0<\\beta<180$) có toạ độ $P(\\cos\\alpha^\\circ\\cos\\beta^\\circ;\\cos\\alpha^\\circ\\sin\\beta^\\circ;\\sin\\alpha^\\circ)$.\n- Vị trí $Q$ có vĩ độ $\\alpha^\\circ N$, kinh độ $\\beta^\\circ W$ có toạ độ $Q(\\cos\\alpha^\\circ\\cos\\beta^\\circ;-\\cos\\alpha^\\circ\\sin\\beta^\\circ;\\sin\\alpha^\\circ)$ (tung độ đổi dấu vì thuộc bán cầu Tây).\nTừ toạ độ hai điểm, tính góc ở tâm $\\widehat{POQ}$ bằng công thức tích vô hướng rồi suy ra độ dài cung nhỏ $PQ$ để tính khoảng cách thực tế trên mặt đất.",
+    example: "Tính khoảng cách trên mặt đất từ vị trí $P: 10°N, 15°E$ đến vị trí $Q: 80°N, 70°E$.\n\n**Lời giải:**\n$P(\\cos10°\\cos15°;\\cos10°\\sin15°;\\sin10°)$, $Q(\\cos80°\\cos70°;\\cos80°\\sin70°;\\sin80°)$.\n$\\overrightarrow{OP}\\cdot\\overrightarrow{OQ} \\approx 0{,}2691$ và $|\\overrightarrow{OP}|=|\\overrightarrow{OQ}|=1$ nên $\\cos\\widehat{POQ}\\approx0{,}2691 \\Rightarrow \\widehat{POQ}\\approx74{,}3893°$.\nĐường tròn tâm $O$ bán kính $1$ có chu vi $2\\pi\\approx6{,}2832$, nên cung nhỏ $PQ \\approx \\dfrac{74{,}3893}{360}\\cdot6{,}2832\\approx1{,}2983$.\nDo $1$ đơn vị dài tương ứng $6371$ km, khoảng cách trên mặt đất giữa $P,Q$ xấp xỉ $1{,}2983 \\times 6371 \\approx 8271{,}4693$ km.",
+    tags: ["Oxyz", "Mặt cầu", "Vĩ độ", "Kinh độ", "Ứng dụng thực tiễn"],
+    difficulty: "Khó",
+    mnemonic: "Vĩ độ α quyết định cao độ z=sinα; kinh độ β xoay quanh trục z: x=cosα·cosβ, y=cosα·sinβ (Đông dương, Tây âm).",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 17, trang 57-58"
   },
 ];

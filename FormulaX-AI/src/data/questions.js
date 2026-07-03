@@ -5686,4 +5686,139 @@ export const questionsPool = [
     explanation: "Gọi $S(t)$ là quãng đường đi được sau $t$ giây; $S(t)$ là nguyên hàm của $v(t)$: $S(t)=\\displaystyle\\int v(t)\\,dt=\\int(5+3t)\\,dt=5t+\\dfrac{3}{2}t^2+C$. Vì $S(0)=0$ nên $C=0$, suy ra $S(t)=\\dfrac{3}{2}t^2+5t$. Khi $t=30$: $S(30)=\\dfrac{3}{2}\\cdot30^2+5\\cdot30=1\\,350+150=1\\,500$ (m).",
     sgk_source: "Toán 12 KNTT Tập 2, Bài 11, trang 7 (Ví dụ 5)"
   },
+  {
+    id: "hh87",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho $\\vec{u} = (1; -2; 0)$ và $\\vec{v} = (3; 1; -4)$. Tích có hướng $[\\vec{u}, \\vec{v}]$ bằng:",
+    options: [
+      { letter: "A", text: "$(8; 4; 7)$", isCorrect: true },
+      { letter: "B", text: "$(-8; 4; 7)$", isCorrect: false },
+      { letter: "C", text: "$(8; 4; -7)$", isCorrect: false },
+      { letter: "D", text: "$(8; -4; 7)$", isCorrect: false }
+    ],
+    blankAnswer: "(8; 4; 7)",
+    explanation: "$[\\vec{u}, \\vec{v}] = \\left( \\begin{vmatrix} -2 & 0 \\\\ 1 & -4 \\end{vmatrix}; \\begin{vmatrix} 0 & 1 \\\\ -4 & 3 \\end{vmatrix}; \\begin{vmatrix} 1 & -2 \\\\ 3 & 1 \\end{vmatrix} \\right) = ((-2)(-4)-0\\cdot1;\\ 0\\cdot3-(-4)\\cdot1;\\ 1\\cdot1-3\\cdot(-2)) = (8;4;7)$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, Ví dụ 2, trang 30"
+  },
+  {
+    id: "hh88",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho hai mặt phẳng $(\\alpha): x - 3y + 2z + 1 = 0$ và $(\\beta): 5x + y - z + 2 = 0$. Khẳng định nào sau đây đúng?",
+    options: [
+      { letter: "A", text: "$(\\alpha) \\perp (\\beta)$", isCorrect: true },
+      { letter: "B", text: "$(\\alpha) \\parallel (\\beta)$", isCorrect: false },
+      { letter: "C", text: "$(\\alpha) \\equiv (\\beta)$", isCorrect: false },
+      { letter: "D", text: "$(\\alpha)$ và $(\\beta)$ cắt nhau nhưng không vuông góc", isCorrect: false }
+    ],
+    blankAnswer: "(\\alpha) \\perp (\\beta)",
+    explanation: "$\\vec{n}=(1;-3;2)$, $\\vec{n'}=(5;1;-1)$. Ta có $\\vec{n}\\cdot\\vec{n'} = 1\\cdot5+(-3)\\cdot1+2\\cdot(-1) = 5-3-2=0$ nên $\\vec{n}\\perp\\vec{n'}$, do đó $(\\alpha)\\perp(\\beta)$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, Ví dụ 9, trang 36"
+  },
+  {
+    id: "hh89",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, khoảng cách từ điểm $M(1;2;-1)$ đến mặt phẳng $(P): x+2y-2z+5=0$ bằng:",
+    options: [
+      { letter: "A", text: "$4$", isCorrect: true },
+      { letter: "B", text: "$12$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{8}{3}$", isCorrect: false },
+      { letter: "D", text: "$6$", isCorrect: false }
+    ],
+    blankAnswer: "4",
+    explanation: "$d(M,(P)) = \\dfrac{|1\\cdot1+2\\cdot2-2\\cdot(-1)+5|}{\\sqrt{1^2+2^2+(-2)^2}} = \\dfrac{|1+4+2+5|}{\\sqrt{9}} = \\dfrac{12}{3} = 4$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, Ví dụ 12, trang 38"
+  },
+  {
+    id: "hh90",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho hai đường thẳng $\\Delta_1: \\begin{cases}x=1-t\\\\y=2+t\\\\z=-1+2t\\end{cases}$ và $\\Delta_2: \\begin{cases}x=-6+s\\\\y=5+s\\\\z=5+2s\\end{cases}$. Hai đường thẳng này:",
+    options: [
+      { letter: "A", text: "Cắt nhau", isCorrect: true },
+      { letter: "B", text: "Song song", isCorrect: false },
+      { letter: "C", text: "Trùng nhau", isCorrect: false },
+      { letter: "D", text: "Chéo nhau", isCorrect: false }
+    ],
+    blankAnswer: "Cắt nhau",
+    explanation: "$A_1(1;2;-1)$, $\\vec{u_1}=(-1;1;2)$; $A_2(-6;5;5)$, $\\vec{u_2}=(1;1;2)$. $\\overrightarrow{A_1A_2}=(-7;3;6)$, $[\\vec{u_1},\\vec{u_2}]=(0;4;-2) \\neq \\vec{0}$. Do $\\overrightarrow{A_1A_2}\\cdot[\\vec{u_1},\\vec{u_2}] = (-7)\\cdot0+3\\cdot4+6\\cdot(-2)=0$ nên $\\Delta_1$ và $\\Delta_2$ cắt nhau.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 15, Ví dụ 9, trang 47"
+  },
+  {
+    id: "hh91",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, góc giữa hai đường thẳng $\\Delta: \\begin{cases}x=1+t\\\\y=-1+t\\\\z=3\\end{cases}$ và $\\Delta': \\begin{cases}x=1+2s\\\\y=-2+2s\\\\z=4+s\\end{cases}$ xấp xỉ bằng:",
+    options: [
+      { letter: "A", text: "$19{,}5°$", isCorrect: true },
+      { letter: "B", text: "$45°$", isCorrect: false },
+      { letter: "C", text: "$70{,}5°$", isCorrect: false },
+      { letter: "D", text: "$60°$", isCorrect: false }
+    ],
+    blankAnswer: "19,5°",
+    explanation: "$\\vec{u}=(1;1;0)$, $\\vec{u'}=(2;2;1)$. $\\cos(\\Delta,\\Delta') = \\dfrac{|1\\cdot2+1\\cdot2+0\\cdot1|}{\\sqrt{1^2+1^2}\\cdot\\sqrt{2^2+2^2+1^2}} = \\dfrac{4}{\\sqrt{2}\\cdot3} = \\dfrac{2\\sqrt{2}}{3} \\Rightarrow (\\Delta,\\Delta') \\approx 19{,}5°$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 16, Ví dụ 1, trang 51"
+  },
+  {
+    id: "hh92",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, góc giữa hai mặt phẳng $(P): x+2y+2z-1=0$ và $(Q): x+y-z+1=0$ xấp xỉ bằng:",
+    options: [
+      { letter: "A", text: "$78{,}9°$", isCorrect: true },
+      { letter: "B", text: "$11{,}1°$", isCorrect: false },
+      { letter: "C", text: "$45°$", isCorrect: false },
+      { letter: "D", text: "$101{,}1°$", isCorrect: false }
+    ],
+    blankAnswer: "78,9°",
+    explanation: "$\\vec{n}=(1;2;2)$, $\\vec{n'}=(1;1;-1)$. $\\cos((P),(Q)) = \\dfrac{|1\\cdot1+2\\cdot1+2\\cdot(-1)|}{\\sqrt{1^2+2^2+2^2}\\cdot\\sqrt{1^2+1^2+(-1)^2}} = \\dfrac{1}{3\\sqrt{3}} = \\dfrac{\\sqrt{3}}{9} \\Rightarrow ((P),(Q)) \\approx 78{,}9°$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 16, Ví dụ 3, trang 52"
+  },
+  {
+    id: "hh93",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, mặt cầu $(S): x^2+y^2+z^2-4x+5y-2z-\\dfrac{3}{4}=0$ có tâm và bán kính lần lượt là:",
+    options: [
+      { letter: "A", text: "$I\\left(2;-\\dfrac{5}{2};1\\right)$, $R=2\\sqrt{3}$", isCorrect: true },
+      { letter: "B", text: "$I\\left(-2;\\dfrac{5}{2};-1\\right)$, $R=2\\sqrt{3}$", isCorrect: false },
+      { letter: "C", text: "$I\\left(2;-\\dfrac{5}{2};1\\right)$, $R=12$", isCorrect: false },
+      { letter: "D", text: "$I(4;-5;2)$, $R=2\\sqrt{3}$", isCorrect: false }
+    ],
+    blankAnswer: "I(2; -5/2; 1), R = 2√3",
+    explanation: "Với $a=2, b=-\\dfrac{5}{2}, c=1, d=-\\dfrac{3}{4}$: $a^2+b^2+c^2-d = 4+\\dfrac{25}{4}+1+\\dfrac{3}{4}=12>0$. Vậy $(S)$ là mặt cầu tâm $I\\left(2;-\\dfrac{5}{2};1\\right)$, bán kính $R=\\sqrt{12}=2\\sqrt{3}$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 17, Ví dụ 4, trang 56"
+  },
+  {
+    id: "hh94",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong không gian $Oxyz$, cho ba điểm $A(2;1;-1)$, $B(3;2;1)$, $C(3;1;4)$. Phương trình mặt phẳng $(ABC)$ là:",
+    options: [
+      { letter: "A", text: "$5x-3y-z-8=0$", isCorrect: true },
+      { letter: "B", text: "$5x-3y-z+8=0$", isCorrect: false },
+      { letter: "C", text: "$5x+3y-z-8=0$", isCorrect: false },
+      { letter: "D", text: "$-5x+3y+z+8=0$", isCorrect: false }
+    ],
+    blankAnswer: "5x-3y-z-8=0",
+    explanation: "$\\overrightarrow{AB}=(1;1;2)$, $\\overrightarrow{AC}=(1;0;5)$. Vectơ pháp tuyến $\\vec{n}=[\\overrightarrow{AB},\\overrightarrow{AC}]=(5;-3;-1)$. Mặt phẳng qua $A(2;1;-1)$: $5(x-2)-3(y-1)-1(z+1)=0 \\Leftrightarrow 5x-3y-z-8=0$.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 14, Ví dụ 8, trang 34"
+  },
+  {
+    id: "hh95",
+    topic: "Hình học",
+    grade: 12,
+    text: "Trong mô hình Trái Đất là mặt cầu bán kính $6371$ km, khoảng cách trên mặt đất từ vị trí $P: 10°N, 15°E$ đến vị trí $Q: 80°N, 70°E$ xấp xỉ bằng:",
+    options: [
+      { letter: "A", text: "$8271{,}4693$ km", isCorrect: true },
+      { letter: "B", text: "$6371$ km", isCorrect: false },
+      { letter: "C", text: "$1{,}2983$ km", isCorrect: false },
+      { letter: "D", text: "$74{,}3893$ km", isCorrect: false }
+    ],
+    blankAnswer: "8271,4693 km",
+    explanation: "$P(\\cos10°\\cos15°;\\cos10°\\sin15°;\\sin10°)$, $Q(\\cos80°\\cos70°;\\cos80°\\sin70°;\\sin80°)$. $\\overrightarrow{OP}\\cdot\\overrightarrow{OQ}\\approx0{,}2691 \\Rightarrow \\widehat{POQ}\\approx74{,}3893°$. Cung nhỏ $PQ \\approx \\dfrac{74{,}3893}{360}\\cdot2\\pi\\approx1{,}2983$ (đơn vị bán kính 1). Nhân với $6371$ km: khoảng cách $\\approx8271{,}4693$ km.",
+    sgk_source: "Toán 12 KNTT Tập 2, Bài 17, Ví dụ 5, trang 58"
+  },
 ];
