@@ -6076,4 +6076,124 @@ export const questionsPool = [
     explanation: "$X$ là biến ngẫu nhiên có phân bố nhị thức với tham số $n=10$, $p=\\dfrac{1}{4}$. Số điểm trung bình là $E(X)=np=10\\cdot\\dfrac{1}{4}=2{,}5$.",
     sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 2, Vận dụng, trang 20"
   },
+  {
+    id: "ds100",
+    topic: "Đại số",
+    grade: 12,
+    text: "Một công ty sản xuất hai loại thực phẩm X, Y. Nguyên liệu để sản xuất gồm ba loại là bột, đường và dầu thực vật, với lượng dự trữ tương ứng là 15 tấn, 12 tấn, 10 tấn. Để sản xuất 1 tấn thực phẩm X cần 0,5 tấn bột, 0,5 tấn đường, 0,2 tấn dầu thực vật; 1 tấn thực phẩm Y cần 0,6 tấn bột, 0,3 tấn đường, 0,5 tấn dầu thực vật. Giá bán một tấn thực phẩm X là 100 triệu đồng, giá bán một tấn thực phẩm Y là 112 triệu đồng. Doanh thu lớn nhất công ty có thể đạt được là bao nhiêu triệu đồng?",
+    options: [
+      { letter: "A", text: "$2240$", isCorrect: false },
+      { letter: "B", text: "$2920$", isCorrect: true },
+      { letter: "C", text: "$2400$", isCorrect: false },
+      { letter: "D", text: "$\\dfrac{37400}{13}$", isCorrect: false }
+    ],
+    blankAnswer: "2920",
+    explanation: "Gọi $x$, $y$ lần lượt là số tấn thực phẩm X, Y cần sản xuất. Hàm mục tiêu $F(x;y)=100x+112y$ với các ràng buộc $0{,}5x+0{,}6y\\le15$; $0{,}5x+0{,}3y\\le12$; $0{,}2x+0{,}5y\\le10$; $x\\ge0,y\\ge0$. Miền nghiệm là ngũ giác với các đỉnh $O(0;0)$, $A(0;20)$, $B\\left(\\frac{150}{13};\\frac{200}{13}\\right)$, $C(18;10)$, $D(24;0)$. Tính $F$ tại các đỉnh, lớn nhất là $F(18;10)=2920$. Vậy doanh thu lớn nhất là 2920 triệu đồng, đạt khi sản xuất 18 tấn thực phẩm X và 10 tấn thực phẩm Y.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 3, Ví dụ 1, trang 24-25"
+  },
+  {
+    id: "ds101",
+    topic: "Đại số",
+    grade: 12,
+    text: "Một chuyên gia dinh dưỡng làm thực đơn gồm hai loại thực phẩm chính X và Y. Cứ 100 gam thực phẩm X chứa 2 đơn vị chất béo, 1 đơn vị carbohydrate và 4 đơn vị protein; cứ 100 gam thực phẩm Y chứa 3 đơn vị chất béo, 3 đơn vị carbohydrate và 3 đơn vị protein. Thức ăn cần cung cấp ít nhất 18 đơn vị chất béo, 12 đơn vị carbohydrate và 24 đơn vị protein. Biết 100 gam thực phẩm X giá 20 nghìn đồng, 100 gam thực phẩm Y giá 25 nghìn đồng. Chi phí mua nguyên liệu rẻ nhất là bao nhiêu nghìn đồng?",
+    options: [
+      { letter: "A", text: "$160$", isCorrect: true },
+      { letter: "B", text: "$170$", isCorrect: false },
+      { letter: "C", text: "$200$", isCorrect: false },
+      { letter: "D", text: "$240$", isCorrect: false }
+    ],
+    blankAnswer: "160",
+    explanation: "Gọi $x$, $y$ lần lượt là số trăm gam thực phẩm X, Y. Hàm mục tiêu $F(x;y)=20x+25y$ với ràng buộc $2x+3y\\ge18$; $x+3y\\ge12$; $4x+3y\\ge24$; $x,y\\ge0$. Các điểm cực biên: $A(0;8)$, $B(3;4)$, $C(6;2)$, $D(12;0)$. Tính $F$: $F(0;8)=200$; $F(3;4)=160$; $F(6;2)=170$; $F(12;0)=240$. Giá trị nhỏ nhất là 160 tại $B(3;4)$, tức cần mua 300 gam thực phẩm X và 400 gam thực phẩm Y.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 3, Ví dụ 3, trang 27-28"
+  },
+  {
+    id: "ds102",
+    topic: "Đại số",
+    grade: 12,
+    text: "Một công ty sơn sản xuất hai loại sơn: sơn nội thất ($x$ tấn) và sơn ngoài trời ($y$ tấn), thỏa mãn hệ ràng buộc $\\begin{cases}0\\le x\\le2\\\\y\\ge0\\\\2x+y\\le6\\\\x+2y\\le8\\\\x\\le y+1\\end{cases}$. Giá bán một tấn sơn nội thất là 60 triệu đồng, một tấn sơn ngoài trời là 30 triệu đồng. Doanh thu lớn nhất công ty có thể đạt được là bao nhiêu triệu đồng?",
+    options: [
+      { letter: "A", text: "$150$", isCorrect: false },
+      { letter: "B", text: "$180$", isCorrect: true },
+      { letter: "C", text: "$120$", isCorrect: false },
+      { letter: "D", text: "$60$", isCorrect: false }
+    ],
+    blankAnswer: "180",
+    explanation: "Hàm mục tiêu $F(x;y)=60x+30y$. Miền nghiệm là lục giác $OABCDE$ với các đỉnh $O(0;0)$, $A(1;0)$, $B(2;1)$, $C(2;2)$, $D\\left(\\frac{4}{3};\\frac{10}{3}\\right)$, $E(0;4)$. Tính $F$ tại các đỉnh, lớn nhất là $F(2;2)=F\\left(\\frac{4}{3};\\frac{10}{3}\\right)=180$. Vì $C$, $D$ cùng nằm trên đường thẳng $2x+y=6$ nên $F(x;y)=30(2x+y)=180$ tại mọi điểm thuộc đoạn $CD$ — bài toán có vô số phương án tối ưu, doanh thu lớn nhất là 180 triệu đồng.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 3, Ví dụ 4, trang 28-29"
+  },
+  {
+    id: "ds103",
+    topic: "Đại số",
+    grade: 12,
+    text: "Xét hệ bất phương trình bậc nhất hai ẩn $\\begin{cases}x+y\\ge3\\\\2x-y\\ge1\\\\x-2y\\ge-4\\\\y\\ge0\\end{cases}$. Tìm giá trị nhỏ nhất của $F(x;y)=2x+3y$ trên miền nghiệm của hệ (nếu có).",
+    options: [
+      { letter: "A", text: "$6$, đạt tại $(3;0)$", isCorrect: true },
+      { letter: "B", text: "$13$, đạt tại $(2;3)$", isCorrect: false },
+      { letter: "C", text: "$\\dfrac{23}{3}$", isCorrect: false },
+      { letter: "D", text: "Không tồn tại GTNN", isCorrect: false }
+    ],
+    blankAnswer: "6",
+    explanation: "Miền nghiệm không là miền đa giác (không giới nội), có ba điểm cực biên $A(2;3)$, $B\\left(\\frac{4}{3};\\frac{5}{3}\\right)$, $C(3;0)$. Vì $F(x;y)=2x+3y$ có hệ số dương và ràng buộc có $y\\ge0$ nên $F$ có GTNN mà không có GTLN trên miền này. Tính $F$ tại các điểm cực biên: $F(2;3)=13$; $F\\left(\\frac{4}{3};\\frac{5}{3}\\right)=\\frac{23}{3}$; $F(3;0)=6$. Vậy GTNN của $F(x;y)$ là 6, đạt tại $C(3;0)$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 3, Ví dụ 6, trang 31"
+  },
+  {
+    id: "gt63",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Một người đánh cá đang ở trên thuyền cách bờ biển (điểm $P$) 2 km về phía đông. Nhà anh ấy cách $P$ 6 km về phía bắc dọc bờ biển. Anh ấy chèo thuyền với vận tốc 3 km/h đến điểm $Q$ trên bờ biển (cách $P$ về phía bắc $x$ km, $0\\le x\\le6$), rồi đi bộ quãng đường còn lại với vận tốc 5 km/h. Tổng thời gian là $T(x)=\\dfrac{\\sqrt{4+x^2}}{3}+\\dfrac{6-x}{5}$ (giờ). Để về nhà trong thời gian ngắn nhất, anh ấy nên chèo thuyền đến điểm $Q$ cách $P$ bao xa?",
+    options: [
+      { letter: "A", text: "$1$ km", isCorrect: false },
+      { letter: "B", text: "$1{,}5$ km", isCorrect: true },
+      { letter: "C", text: "$2$ km", isCorrect: false },
+      { letter: "D", text: "$6$ km", isCorrect: false }
+    ],
+    blankAnswer: "1,5",
+    explanation: "$T'(x)=\\dfrac{x}{3\\sqrt{4+x^2}}-\\dfrac{1}{5}$. Giải $T'(x)=0 \\Leftrightarrow 3\\sqrt{4+x^2}=5x \\Rightarrow 9(4+x^2)=25x^2 \\Rightarrow 16x^2=36 \\Rightarrow x=\\dfrac{3}{2}$. So sánh $T(0)=\\dfrac{28}{15}$, $T(6)=\\dfrac{\\sqrt{40}}{3}$, $T\\left(\\dfrac{3}{2}\\right)=\\dfrac{26}{15}$ — giá trị nhỏ nhất là $T\\left(\\dfrac{3}{2}\\right)$. Vậy nên chèo thuyền đến điểm cách $P$ 1,5 km.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 4, Ví dụ 1, trang 36"
+  },
+  {
+    id: "gt64",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Một cửa hàng bán được 200 máy sấy tóc mỗi tháng với giá 150 nghìn đồng/máy. Khảo sát thị trường cho thấy cứ giảm giá 5 nghìn đồng thì số lượng bán tăng thêm 20 chiếc mỗi tháng. Cửa hàng nên giảm giá bao nhiêu để doanh thu lớn nhất?",
+    options: [
+      { letter: "A", text: "$20$ nghìn đồng", isCorrect: false },
+      { letter: "B", text: "$50$ nghìn đồng", isCorrect: true },
+      { letter: "C", text: "$100$ nghìn đồng", isCorrect: false },
+      { letter: "D", text: "$150$ nghìn đồng", isCorrect: false }
+    ],
+    blankAnswer: "50",
+    explanation: "Gọi $x$ là số lượng máy bán ra ($x\\ge200$). Hàm cầu $p(x)=200-\\dfrac{1}{4}x$ (nghìn đồng), hàm doanh thu $R(x)=x\\cdot p(x)=200x-\\dfrac{1}{4}x^2$. $R'(x)=200-\\dfrac{1}{2}x=0 \\Leftrightarrow x=400$. $R(400)=40000$ nghìn đồng là giá trị lớn nhất. Khi đó giá bán $p(400)=100$ nghìn đồng, tức giảm $150-100=50$ nghìn đồng so với giá ban đầu.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 4, Ví dụ 3, trang 39-40"
+  },
+  {
+    id: "gt65",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Một câu lạc bộ mua thiệp với giá 8 nghìn đồng/tấm, bán với giá 20 nghìn đồng/tấm thì bán được 500 tấm. Cứ giảm giá bán 1 nghìn đồng/tấm thì số lượng bán tăng thêm 50 tấm. Lợi nhuận lớn nhất câu lạc bộ có thể thu được là bao nhiêu nghìn đồng?",
+    options: [
+      { letter: "A", text: "$6000$", isCorrect: false },
+      { letter: "B", text: "$6050$", isCorrect: true },
+      { letter: "C", text: "$6100$", isCorrect: false },
+      { letter: "D", text: "$5950$", isCorrect: false }
+    ],
+    blankAnswer: "6050",
+    explanation: "Gọi $x$ (nghìn đồng, $0\\le x\\le20$) là số tiền giảm giá mỗi tấm. Số thiệp bán ra: $500+50x$. Lợi nhuận $P(x)=(20-x)(500+50x)-8(500+50x)=(12-x)(500+50x)=6000+100x-50x^2$. $P'(x)=100-100x=0 \\Leftrightarrow x=1$. $P(1)=6050$ nghìn đồng là giá trị lớn nhất, đạt khi giảm giá 1 nghìn đồng/tấm (giá bán mới 19 nghìn đồng).",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 4, Ví dụ 4, trang 40"
+  },
+  {
+    id: "gt66",
+    topic: "Giải tích",
+    grade: 12,
+    text: "Cho hàm chi phí sản xuất $x$ đơn vị hàng hóa là $C(x)=3400+6x+0{,}02x^2$ (nghìn đồng). Mức sản xuất nào (là số nguyên dương) làm chi phí trung bình nhỏ nhất?",
+    options: [
+      { letter: "A", text: "$170000$", isCorrect: false },
+      { letter: "B", text: "$400$", isCorrect: false },
+      { letter: "C", text: "$412$", isCorrect: true },
+      { letter: "D", text: "$413$", isCorrect: false }
+    ],
+    blankAnswer: "412",
+    explanation: "Chi phí trung bình $c(x)=\\dfrac{C(x)}{x}=\\dfrac{3400}{x}+6+0{,}02x$. $c'(x)=-\\dfrac{3400}{x^2}+0{,}02=0 \\Leftrightarrow x^2=170000 \\Rightarrow x=100\\sqrt{17}\\approx412{,}3$. Vì $x$ phải nguyên dương và $c(412)<c(413)$, chi phí trung bình nhỏ nhất khi mức sản xuất là 412 đơn vị hàng hóa.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 4, Ví dụ 5, trang 41-43"
+  },
 ];

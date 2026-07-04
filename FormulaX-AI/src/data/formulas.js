@@ -3136,4 +3136,30 @@ export const formulas = [
     mnemonic: "Với X~B(n,p): E(X)=np (trung bình n phép thử Bernoulli), V(X)=np(1-p)=np·q.",
     sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 2, trang 19 (mục Chú ý)"
   },
+  {
+    id: "ds12-qhtt-khonggioinoi",
+    name: "Quy hoạch tuyến tính với miền chấp nhận được không giới nội",
+    topic: "Đại số",
+    grade: 12,
+    latex: "F(x;y)=Ax+By,\\ A>0,\\ B>0,\\ \\text{ràng buộc có } x\\ge0,\\ y\\ge0,\\ S \\text{ không giới nội} \\Rightarrow \\exists \\min F,\\ \\nexists \\max F",
+    explanation: "Trong đó:\n- $F(x;y)=Ax+By$: hàm mục tiêu của bài toán quy hoạch tuyến tính, với $A>0$, $B>0$.\n- $S$: miền chấp nhận được (miền nghiệm của hệ bất phương trình ràng buộc), có chứa ràng buộc $x\\ge0$, $y\\ge0$.\n- $S$ không giới nội: miền không phải là một đa giác khép kín mà mở rộng vô hạn về một phía.\n\nKhi đó $F(x;y)$ vẫn có giá trị nhỏ nhất trên $S$ (đạt tại một điểm cực biên), nhưng **không có giá trị lớn nhất** vì $F(x;y)$ có thể lớn tùy ý khi $x$, $y$ đủ lớn. Đây là điểm khác biệt so với trường hợp miền chấp nhận được là một đa giác bị chặn, khi đó cả GTLN và GTNN của $F$ đều tồn tại và đạt tại các đỉnh của đa giác.",
+    example: "Xét hệ bất phương trình bậc nhất hai ẩn $\\begin{cases}x+y\\ge3\\\\2x-y\\ge1\\\\x-2y\\ge-4\\\\y\\ge0\\end{cases}$. Tìm GTLN và GTNN (nếu có) của $F(x;y)=2x+3y$ trên miền nghiệm.\n\n**Lời giải:**\nMiền nghiệm $S$ không là miền đa giác (không giới nội), có ba điểm cực biên $A(2;3)$, $B\\left(\\dfrac{4}{3};\\dfrac{5}{3}\\right)$, $C(3;0)$. Vì $F$ có hệ số $A=2>0$, $B=3>0$ và ràng buộc có $y\\ge0$ nên $F(x;y)$ có GTNN mà không có GTLN.\n\nTính $F$ tại các điểm cực biên: $F(2;3)=13$; $F\\left(\\dfrac{4}{3};\\dfrac{5}{3}\\right)=\\dfrac{23}{3}$; $F(3;0)=6$.\n\nVậy GTNN của $F(x;y)$ bằng $6$, đạt tại $C(3;0)$; $F(x;y)$ không có GTLN vì có thể lớn tùy ý khi $x,y$ đủ lớn.",
+    tags: ["quy hoạch tuyến tính", "miền không giới nội", "GTLN GTNN", "hàm mục tiêu", "chuyên đề 12"],
+    difficulty: "Khó",
+    mnemonic: "Miền chấp nhận được không giới nội (kéo dài ra vô cực) + hàm mục tiêu hệ số dương + có ràng buộc x,y≥0 → chỉ có GTNN, không có GTLN vì F lớn tùy ý được.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 3, trang 29-31 (Nhận xét + Ví dụ 6)"
+  },
+  {
+    id: "mr-chiphi-trungbinh",
+    name: "Chi phí trung bình và tối ưu hóa chi phí sản xuất",
+    topic: "Mở rộng",
+    grade: 12,
+    latex: "c(x) = \\dfrac{C(x)}{x}",
+    explanation: "Trong đó:\n- $C(x)$: hàm chi phí — tổng chi phí sản xuất $x$ đơn vị hàng hóa.\n- $c(x)$: chi phí trung bình cho mỗi đơn vị hàng hóa khi sản xuất $x$ đơn vị.\n- Về mặt hình học, $c(x)$ chính là hệ số góc của đường thẳng nối gốc tọa độ $O$ với điểm $A(x;C(x))$ trên đồ thị hàm chi phí.\n\nĐể tìm mức sản xuất $x$ sao cho chi phí trung bình nhỏ nhất, giải phương trình $c'(x)=0$ rồi xét dấu $c'(x)$ (hoặc lập bảng biến thiên) để xác định điểm cực tiểu. Do $x$ (số đơn vị hàng hóa) phải là số nguyên dương, nếu nghiệm của $c'(x)=0$ không nguyên thì so sánh giá trị $c(x)$ tại hai số nguyên gần nghiệm nhất để chọn mức sản xuất tối ưu thực tế.",
+    example: "Cho hàm chi phí $C(x) = 3400+6x+0{,}02x^2$ (nghìn đồng). Xác định mức sản xuất để chi phí trung bình nhỏ nhất.\n\n**Lời giải:**\nChi phí trung bình: $c(x)=\\dfrac{C(x)}{x}=\\dfrac{3400}{x}+6+0{,}02x$.\n\nĐạo hàm: $c'(x)=-\\dfrac{3400}{x^2}+0{,}02$. Giải $c'(x)=0 \\Leftrightarrow x^2=\\dfrac{3400}{0{,}02}=170000 \\Rightarrow x=100\\sqrt{17}\\approx412{,}3$.\n\nVì $x$ phải nguyên dương và $c(412)<c(413)$, chi phí trung bình nhỏ nhất khi mức sản xuất $x=412$ đơn vị hàng hóa.",
+    tags: ["chi phí trung bình", "hàm chi phí", "đạo hàm", "tối ưu kinh tế", "chuyên đề 12"],
+    difficulty: "Khó",
+    mnemonic: "Chi phí trung bình c(x)=C(x)/x là 'chi phí chia đều' cho từng đơn vị — muốn nhỏ nhất thì giải c'(x)=0, chú ý x phải nguyên dương nên so sánh 2 giá trị nguyên gần nghiệm nhất.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 4, Ví dụ 5, trang 41-43"
+  },
 ];
