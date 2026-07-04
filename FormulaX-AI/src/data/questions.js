@@ -6196,4 +6196,131 @@ export const questionsPool = [
     explanation: "Chi phí trung bình $c(x)=\\dfrac{C(x)}{x}=\\dfrac{3400}{x}+6+0{,}02x$. $c'(x)=-\\dfrac{3400}{x^2}+0{,}02=0 \\Leftrightarrow x^2=170000 \\Rightarrow x=100\\sqrt{17}\\approx412{,}3$. Vì $x$ phải nguyên dương và $c(412)<c(413)$, chi phí trung bình nhỏ nhất khi mức sản xuất là 412 đơn vị hàng hóa.",
     sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 4, Ví dụ 5, trang 41-43"
   },
+  {
+    id: "mr32",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Bác Hoa gửi tiết kiệm 100 triệu đồng theo thể thức lãi đơn với lãi suất $10\\%$/năm trong $9$ tháng. Tính số tiền bác Hoa nhận được cả gốc lẫn lãi.",
+    options: [
+      { letter: "A", text: "$107{,}5$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$110$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$100{,}75$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$109$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "107,5 triệu đồng",
+    explanation: "$I = Prt = 100 \\times 0{,}1 \\times \\dfrac{9}{12} = 7{,}5$ triệu đồng. $A = P + I = 100 + 7{,}5 = 107{,}5$ triệu đồng.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 5, Ví dụ 1, trang 49"
+  },
+
+  {
+    id: "mr33",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Anh Bình vay 100 triệu đồng theo thể thức lãi kép, kì hạn 1 năm, lãi suất $12\\%$/năm trong $2$ năm. Số tiền anh Bình phải trả (cả gốc lẫn lãi) là bao nhiêu?",
+    options: [
+      { letter: "A", text: "$125{,}44$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$124$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$112$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$126{,}2477$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "125,44 triệu đồng",
+    explanation: "$A = P(1+r)^t = 100(1+0{,}12)^2 = 100 \\times 1{,}2544 = 125{,}44$ triệu đồng.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 6, Ví dụ 3, trang 57"
+  },
+
+  {
+    id: "mr34",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Giả sử tỉ lệ lạm phát trung bình là $4\\%$/năm. Sức mua của $1$ triệu đồng sau $3$ năm còn lại bao nhiêu (theo công thức $A = P(1-g)^n$)?",
+    options: [
+      { letter: "A", text: "$\\approx 0{,}884736$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$\\approx 1{,}124864$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$0{,}88$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$\\approx 0{,}849346$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "≈0,884736 triệu đồng",
+    explanation: "$A = P(1-g)^n = 1\\times(1-0{,}04)^3 = 0{,}96^3 \\approx 0{,}884736$ triệu đồng.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 5, Ví dụ 3, trang 51"
+  },
+
+  {
+    id: "mr35",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Anh Nam gửi tiết kiệm với lãi suất danh nghĩa $r = 9\\%$/năm, trong khi tỉ lệ lạm phát $g = 4\\%$/năm. Tính lãi suất thực $r_{thực}$ theo công thức $r_{thực} = \\dfrac{r-g}{1+g}$.",
+    options: [
+      { letter: "A", text: "$\\approx 4{,}8\\%$", isCorrect: true },
+      { letter: "B", text: "$5\\%$", isCorrect: false },
+      { letter: "C", text: "$\\approx 4{,}33\\%$", isCorrect: false },
+      { letter: "D", text: "$13\\%$", isCorrect: false }
+    ],
+    blankAnswer: "≈4,8%",
+    explanation: "$r_{thực} = \\dfrac{r-g}{1+g} = \\dfrac{0{,}09-0{,}04}{1{,}04} \\approx 0{,}048 = 4{,}8\\%$.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 5, Ví dụ 4, trang 52"
+  },
+
+  {
+    id: "mr36",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Anh Dũng vay $100$ triệu đồng, trả góp hằng tháng với lãi suất $i = 0{,}75\\%$/tháng trong $n=24$ tháng. Áp dụng công thức $P = V\\cdot\\dfrac{i}{1-(1+i)^{-n}}$, tính số tiền phải trả mỗi tháng.",
+    options: [
+      { letter: "A", text: "$\\approx 4{,}569$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$\\approx 4{,}167$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$\\approx 4{,}75$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$\\approx 3{,}180$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "≈4,569 triệu đồng",
+    explanation: "$P = V\\cdot\\dfrac{i}{1-(1+i)^{-n}} = 100 \\times \\dfrac{0{,}0075}{1-(1{,}0075)^{-24}} \\approx 4{,}569$ triệu đồng/tháng.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 6, Ví dụ 4, trang 58"
+  },
+
+  {
+    id: "mr37",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Cô Lan gửi đều đặn $1$ triệu đồng mỗi tháng vào tài khoản tích lũy với lãi suất $i=0{,}5\\%$/tháng. Số tiền cô Lan tích lũy được ngay sau lần gửi thứ $180$ là bao nhiêu (dùng $A = P\\cdot\\dfrac{(1+i)^n-1}{i}$)?",
+    options: [
+      { letter: "A", text: "$\\approx 290{,}819$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$180$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$\\approx 245{,}5$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$\\approx 300$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "≈290,819 triệu đồng",
+    explanation: "$A = P\\cdot\\dfrac{(1+i)^n - 1}{i} = 1\\times\\dfrac{(1{,}005)^{180}-1}{0{,}005}\\approx 290{,}819$ triệu đồng.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 7, Ví dụ 6, trang 66"
+  },
+
+  {
+    id: "mr38",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Chị Hương cần rút $5$ triệu đồng mỗi tháng trong $10$ tháng từ một quỹ trả lãi kép $0{,}75\\%$/tháng. Hỏi bây giờ chị Hương cần gửi vào quỹ bao nhiêu tiền, theo công thức $V = P\\cdot\\dfrac{1-(1+i)^{-n}}{i}$?",
+    options: [
+      { letter: "A", text: "$\\approx 47{,}998$ triệu đồng", isCorrect: true },
+      { letter: "B", text: "$50$ triệu đồng", isCorrect: false },
+      { letter: "C", text: "$\\approx 53{,}5$ triệu đồng", isCorrect: false },
+      { letter: "D", text: "$\\approx 46$ triệu đồng", isCorrect: false }
+    ],
+    blankAnswer: "≈47,998 triệu đồng",
+    explanation: "$V = P\\cdot\\dfrac{1-(1+i)^{-n}}{i} = 5\\times\\dfrac{1-(1{,}0075)^{-10}}{0{,}0075}\\approx 47{,}998$ triệu đồng.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 7, Ví dụ 7, trang 66"
+  },
+
+  {
+    id: "mr39",
+    topic: "Mở rộng",
+    grade: 12,
+    text: "Với lãi suất kép $10\\%$/năm, tính lãi hằng năm, cần bao lâu để một khoản đầu tư tăng gấp đôi giá trị (dùng $N = \\log_{1+r} 2$)?",
+    options: [
+      { letter: "A", text: "$\\approx 7{,}27$ năm, làm tròn thành $8$ năm", isCorrect: true },
+      { letter: "B", text: "$10$ năm", isCorrect: false },
+      { letter: "C", text: "$\\approx 7$ năm", isCorrect: false },
+      { letter: "D", text: "$\\approx 6{,}93$ năm", isCorrect: false }
+    ],
+    blankAnswer: "≈7,27 năm, làm tròn thành 8 năm",
+    explanation: "$N = \\log_{1+r}\\dfrac{A}{P} = \\log_{1{,}1}2 \\approx 7{,}27$. Vì $N$ phải là số tự nhiên (số kì hạn), chọn $N=8$ năm.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 7, Ví dụ 2, trang 62"
+  },
 ];

@@ -3162,4 +3162,73 @@ export const formulas = [
     mnemonic: "Chi phí trung bình c(x)=C(x)/x là 'chi phí chia đều' cho từng đơn vị — muốn nhỏ nhất thì giải c'(x)=0, chú ý x phải nguyên dương nên so sánh 2 giá trị nguyên gần nghiệm nhất.",
     sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 4, Ví dụ 5, trang 41-43"
   },
+  {
+    id: "mr-taichinh-laidon",
+    name: "Lãi đơn (Simple Interest)",
+    topic: "Mở rộng",
+    grade: 12,
+    latex: "I = Prt, \\qquad A = P + I = P(1+rt)",
+    explanation: "Trong đó:\n- $P$: số tiền vốn ban đầu (tiền gốc)\n- $r$: lãi suất mỗi năm (dạng thập phân)\n- $t$: thời gian gửi/vay, tính theo năm\n- $I$: số tiền lãi nhận được (hoặc phải trả)\n- $A$: tổng số tiền nhận được (hoặc phải trả) cả gốc lẫn lãi\n\nLãi đơn là hình thức tính lãi chỉ dựa trên số tiền gốc ban đầu, không cộng dồn lãi vào gốc để tính lãi các kỳ sau. Khi thời gian tính theo ngày (thay vì năm), công thức trở thành $I = \\dfrac{Prt}{365}$, với $t$ là số ngày.",
+    example: "Bác Hoa gửi tiết kiệm 100 triệu đồng theo thể thức lãi đơn, lãi suất 10%/năm, trong 9 tháng. Tính số tiền lãi và tổng số tiền bác Hoa nhận được.\n\n**Lời giải:**\n$I = Prt = 100 \\times 0{,}1 \\times \\dfrac{9}{12} = 7{,}5$ triệu đồng.\n\n$A = P + I = 100 + 7{,}5 = 107{,}5$ triệu đồng.",
+    tags: ["lãi đơn", "tài chính", "gửi tiết kiệm", "vay nợ", "chuyên đề 12"],
+    difficulty: "Dễ",
+    mnemonic: "Lãi đơn: lãi chỉ tính trên gốc P, không cộng dồn — I=Prt (giống công thức quãng đường s=v.t nhưng với 'lãi suất' thay 'vận tốc').",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 5, trang 47-49"
+  },
+
+  {
+    id: "mr-taichinh-lamphat",
+    name: "Lạm phát, sức mua và lãi suất thực",
+    topic: "Mở rộng",
+    grade: 12,
+    latex: "A = P(1-g)^n, \\qquad r_{thực} = \\dfrac{1+r}{1+g} - 1 = \\dfrac{r-g}{1+g}",
+    explanation: "Trong đó:\n- $P$: sức mua (hoặc số tiền) ban đầu\n- $g$: tỉ lệ lạm phát mỗi năm (dạng thập phân)\n- $n$: số năm\n- $A$: sức mua còn lại sau $n$ năm lạm phát\n- $r$: lãi suất danh nghĩa (lãi suất ngân hàng công bố)\n- $r_{thực}$: lãi suất thực (đã loại trừ ảnh hưởng của lạm phát)\n\nLạm phát làm giảm sức mua của tiền theo thời gian. Khi $g$ nhỏ (thường $\\le 5\\%$), có thể dùng công thức gần đúng $r_{thực} \\approx r - g$. Chỉ số giá tiêu dùng CPI cũng biến động theo lạm phát: $CPI = CPI_0(1+g)^n$.",
+    example: "a) Tỉ lệ lạm phát trung bình là 4%/năm. Sức mua của 1 triệu đồng sau 3 năm còn lại bao nhiêu?\n\n**Lời giải:** $A = P(1-g)^n = 1\\times(1-0{,}04)^3 = 0{,}96^3 \\approx 0{,}884736$ triệu đồng.\n\nb) Anh Nam gửi tiết kiệm với lãi suất danh nghĩa $r=9\\%$/năm, trong khi lạm phát $g=4\\%$/năm. Tính lãi suất thực.\n\n**Lời giải:** $r_{thực} = \\dfrac{r-g}{1+g} = \\dfrac{0{,}09-0{,}04}{1{,}04} \\approx 0{,}048 = 4{,}8\\%$.",
+    tags: ["lạm phát", "sức mua", "lãi suất thực", "CPI", "tài chính", "chuyên đề 12"],
+    difficulty: "Trung bình",
+    mnemonic: "Sức mua giảm dần theo (1-g)^n (giống lãi kép nhưng trừ thay vì cộng). Lãi suất thực = lãi suất danh nghĩa 'trừ bớt' phần bị lạm phát ăn mòn: r_thực≈r-g khi g nhỏ.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 5, trang 51-53 (Ví dụ 3, Ví dụ 4, Bài tập 3.6)"
+  },
+
+  {
+    id: "gt11-vaytragop",
+    name: "Vay trả góp (mua trả góp)",
+    topic: "Đại số",
+    grade: 11,
+    latex: "P = V\\cdot\\dfrac{i}{1-(1+i)^{-n}}",
+    explanation: "Trong đó:\n- $V$: số tiền vay ban đầu\n- $i$: lãi suất mỗi kì thanh toán (dạng thập phân)\n- $n$: số kì thanh toán\n- $P$: số tiền phải trả đều đặn mỗi kì (gồm cả gốc lẫn lãi)\n\nĐây là công thức tính khoản thanh toán cố định cần thiết mỗi kì để trả hết một khoản vay $V$ sau $n$ kì, khi lãi suất mỗi kì là $i$ — áp dụng cho mua trả góp, vay ngân hàng trả góp hằng tháng.",
+    example: "Anh Dũng vay 100 triệu đồng, lãi suất 9%/năm ($i = 0{,}75\\%$/tháng), trả góp đều hằng tháng trong 2 năm ($n=24$). Tính số tiền phải trả mỗi tháng.\n\n**Lời giải:**\n$P = V\\cdot\\dfrac{i}{1-(1+i)^{-n}} = 100\\times\\dfrac{0{,}0075}{1-(1{,}0075)^{-24}} \\approx 4{,}569$ triệu đồng/tháng.",
+    tags: ["vay trả góp", "mua trả góp", "niên kim", "tài chính", "chuyên đề 12"],
+    difficulty: "Khó",
+    mnemonic: "Trả góp: chia khoản vay V thành các kỳ thanh toán bằng nhau P, với hệ số i/(1-(1+i)^-n) — đây chính là nghịch đảo của công thức giá trị hiện tại niên kim V=P·(1-(1+i)^-n)/i.",
+    sgk_source: "SGK Toán 11 KNTT Tập 1, trang 127 (công thức mua trả góp); được nhắc lại và vận dụng trong Chuyên đề học tập Toán 12 (KNTT), Bài 6, Ví dụ 4, trang 58"
+  },
+
+  {
+    id: "gt11-nienkim",
+    name: "Niên kim: số tiền tích lũy và giá trị hiện tại",
+    topic: "Đại số",
+    grade: 11,
+    latex: "A = P\\cdot\\dfrac{(1+i)^n - 1}{i}, \\qquad V = P\\cdot\\dfrac{1-(1+i)^{-n}}{i}",
+    explanation: "Trong đó:\n- $P$: khoản tiền gửi (hoặc rút) bằng nhau ở mỗi kì\n- $i$: lãi suất mỗi kì thanh toán (dạng thập phân)\n- $n$: số kì gửi (hoặc rút)\n- $A$: số tiền của niên kim — tổng các khoản gửi cộng lãi tích lũy sau $n$ kì\n- $V$: giá trị hiện tại của niên kim — số tiền cần có bây giờ để có thể rút đều $P$ mỗi kì trong $n$ kì\n\nNiên kim là một dãy các khoản tiền bằng nhau, gửi (hoặc rút) định kì — ví dụ tiền gửi tiết kiệm tích lũy hằng tháng, tiền trả góp mua nhà, tiền bảo hiểm nhân thọ.",
+    example: "a) Cô Lan gửi 1 triệu đồng mỗi tháng vào tài khoản tích lũy, lãi suất $i=0{,}5\\%$/tháng. Tính số tiền tích lũy được ngay sau lần gửi thứ 180.\n\n**Lời giải:** $A = P\\cdot\\dfrac{(1+i)^n-1}{i} = 1\\times\\dfrac{(1{,}005)^{180}-1}{0{,}005}\\approx 290{,}819$ triệu đồng.\n\nb) Chị Hương cần rút 5 triệu đồng mỗi tháng trong 10 tháng từ quỹ trả lãi kép $0{,}75\\%$/tháng. Hỏi bây giờ cần gửi vào quỹ bao nhiêu?\n\n**Lời giải:** $V = P\\cdot\\dfrac{1-(1+i)^{-n}}{i} = 5\\times\\dfrac{1-(1{,}0075)^{-10}}{0{,}0075}\\approx 47{,}998$ triệu đồng.",
+    tags: ["niên kim", "giá trị hiện tại", "tích lũy", "tài chính", "chuyên đề 12"],
+    difficulty: "Khó",
+    mnemonic: "A (tương lai): tổng cấp số nhân của các khoản gửi cộng lãi — hệ số ((1+i)^n-1)/i. V (hiện tại): chiết khấu ngược lại — hệ số (1-(1+i)^-n)/i. Vay trả góp chính là bài toán ngược của V.",
+    sgk_source: "SGK Toán 11 KNTT Tập 1 (kiến thức về niên kim); được nhắc lại và vận dụng trong Chuyên đề học tập Toán 12 (KNTT), Bài 7, Ví dụ 6-7, trang 65-67"
+  },
+
+  {
+    id: "mr-taichinh-dautu",
+    name: "Xác định lãi suất, thời gian và giá trị hiện tại của khoản đầu tư lãi kép",
+    topic: "Mở rộng",
+    grade: 12,
+    latex: "r = n\\left(\\sqrt[N]{\\dfrac{A}{P}} - 1\\right), \\qquad N = \\log_{1+\\frac{r}{n}}\\dfrac{A}{P}, \\qquad P = A\\left(1+\\dfrac{r}{n}\\right)^{-nt}",
+    explanation: "Trong đó $P$ là vốn ban đầu, $A$ là số tiền mong muốn nhận được, $r$ là lãi suất năm, $n$ là số kì tính lãi trong một năm, $N$ là số kì hạn (tổng số kì gửi), $t$ là số năm đầu tư.\n\nĐây là các biến đổi ngược của công thức lãi kép $A = P\\left(1+\\dfrac{r}{n}\\right)^{N}$ (xem thêm công thức lãi kép cơ bản): thay vì tính $A$, ta giải ngược để tìm lãi suất cần thiết $r$, số kì hạn cần thiết $N$, hoặc giá trị hiện tại $P$ cần đầu tư để đạt được $A$ mong muốn.",
+    example: "Với lãi suất kép 10%/năm, tính lãi hằng năm ($n=1$), cần bao lâu để một khoản đầu tư tăng gấp đôi giá trị?\n\n**Lời giải:**\n$N = \\log_{1+r} 2 = \\log_{1{,}1} 2 \\approx 7{,}27$. Vì $N$ phải là số tự nhiên nên chọn $N=8$ năm.",
+    tags: ["lãi kép", "đầu tư", "giá trị hiện tại", "logarit", "tài chính", "chuyên đề 12"],
+    difficulty: "Khó",
+    mnemonic: "Cùng một công thức lãi kép A=P(1+r/n)^N, chỉ đổi biến cần tìm: tìm r thì khai căn bậc N, tìm N thì lấy log cơ số (1+r/n), tìm P thì đổi số mũ thành âm.",
+    sgk_source: "Chuyên đề học tập Toán 12 (KNTT), Bài 7, trang 60-63 (Ví dụ 1-4)"
+  },
 ];
