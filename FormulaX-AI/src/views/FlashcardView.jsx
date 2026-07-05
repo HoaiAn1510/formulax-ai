@@ -84,7 +84,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
 
   const chipClass = (active) =>
     `py-1.5 px-3.5 rounded-[20px] text-[0.8rem] font-semibold cursor-pointer transition-all duration-150 border-[1.5px] ${
-      active ? "border-secondary bg-[#EFF6FF] text-secondary" : "border-[#E2E8F0] bg-white text-text-muted"
+      active ? "border-accent bg-[#FEF3C7] text-accent" : "border-[#E2E8F0] bg-white text-text-muted"
     }`;
 
   return (
@@ -151,7 +151,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
             onClick={handleCreate}
             disabled={matched.length === 0}
             className={`flex-[2] py-2.5 rounded-[10px] text-[0.875rem] font-bold border-none transition-all duration-150 ${
-              matched.length === 0 ? "bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed" : "bg-secondary text-white cursor-pointer"
+              matched.length === 0 ? "bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed" : "bg-accent text-white cursor-pointer"
             }`}
           >
             Tạo bộ
@@ -435,10 +435,7 @@ export default function FlashcardView({
 
     return (
       <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-          <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-          <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
           <div className="relative z-[1]">
             {/* Header */}
             <div className="flex justify-between items-center mb-2">
@@ -449,10 +446,10 @@ export default function FlashcardView({
             </div>
 
             <div className="mb-5">
-              <h2 className="text-[1.6rem] font-extrabold text-primary tracking-[-0.5px]">
+              <h2 className="text-[1.6rem] font-extrabold text-primary dark:text-[#E2E8F0] tracking-[-0.5px]">
                 Flashcard
               </h2>
-              <p className="text-[0.85rem] text-text-muted font-medium mt-1">
+              <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] font-medium mt-1">
                 Học công thức qua thẻ ghi nhớ
               </p>
             </div>
@@ -463,8 +460,8 @@ export default function FlashcardView({
                 <div className="w-20 h-20 rounded-full bg-secondary/8 flex items-center justify-center mb-2">
                   <Layers size={36} color="#3B82F6" />
                 </div>
-                <h3 className="text-[1.15rem] font-extrabold text-primary m-0">Chưa có bộ thẻ nào</h3>
-                <p className="text-[0.85rem] text-text-muted max-w-[280px] leading-[1.5] m-0">
+                <h3 className="text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Chưa có bộ thẻ nào</h3>
+                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] max-w-[280px] leading-[1.5] m-0">
                   Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức.
                 </p>
                 <div className="flex flex-col gap-2.5 w-full max-w-[300px] mt-2">
@@ -566,7 +563,7 @@ export default function FlashcardView({
                                   onKeyDown={handleRenameKeyDown}
                                   onBlur={handleConfirmRename}
                                   onClick={e => e.stopPropagation()}
-                                  className="text-[0.9rem] font-bold text-[#1E3A5F] border-[1.5px] border-secondary rounded-md py-0.5 px-2 w-full outline-none bg-white"
+                                  className="text-[0.9rem] font-bold text-[#1E3A5F] border-[1.5px] border-accent rounded-md py-0.5 px-2 w-full outline-none bg-white"
                                 />
                               ) : (
                                 <h3 className="deck-card-name">{deck.name}</h3>
@@ -640,10 +637,7 @@ export default function FlashcardView({
     if (cards.length === 0) {
       return (
         <div className="view-container">
-          <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-            <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-            <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-            <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+          <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
             <div className="relative z-[1]">
               <div className="summary-card !bg-white/72 !border !border-white/60 !rounded-[20px] !shadow-[0_8px_32px_rgba(31,38,135,0.10)] !backdrop-blur-[20px]">
                 <HelpCircle size={32} />
@@ -663,10 +657,7 @@ export default function FlashcardView({
 
     return (
       <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-          <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-          <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
           <div className="relative z-[1]">
             <div className="flex flex-col items-center w-full max-w-[500px] mx-auto gap-4 [animation:fadeIn_0.3s_ease-out]">
               <div className="flex justify-between items-center w-full mb-2">
@@ -768,10 +759,7 @@ export default function FlashcardView({
   if (view === "summary") {
     return (
       <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-          <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-          <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
           <div className="relative z-[1]">
             <div className="summary-card">
               <div className="summary-icon">

@@ -396,7 +396,7 @@ export default function FormulaFinder({
   // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="view-container !p-[10px] h-[calc(100vh-124px)] flex flex-col bg-page-gradient">
+    <div className="view-container !p-[10px] h-[calc(100vh-124px)] flex flex-col bg-page-gradient dark:bg-[#0F172A]">
 
       {/* Top action row */}
       <div className="flex justify-between items-center mb-2">
@@ -406,7 +406,7 @@ export default function FormulaFinder({
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-[5px] py-1 px-2.5 rounded-[20px] bg-[rgba(16,185,129,0.08)] border border-[rgba(16,185,129,0.2)] text-[0.7rem] font-bold text-[#059669]">
+          <div className="flex items-center gap-[5px] py-1 px-2.5 rounded-[20px] bg-[rgba(16,185,129,0.08)] dark:bg-[rgba(16,185,129,0.12)] border border-[rgba(16,185,129,0.2)] dark:border-[rgba(16,185,129,0.3)] text-[0.7rem] font-bold text-[#059669] dark:text-[#34D399]">
             <div className="w-1.5 h-1.5 rounded-full bg-success" />
             GPT-OSS 20B (Groq)
           </div>
@@ -460,7 +460,7 @@ export default function FormulaFinder({
               <div
                 key={session.id}
                 className={`mb-1.5 rounded-[10px] overflow-hidden border-[1.5px] ${
-                  currentSessionId === session.id ? "border-secondary bg-secondary/5" : "border-[#E2E8F0] bg-white"
+                  currentSessionId === session.id ? "border-accent bg-accent/5" : "border-[#E2E8F0] bg-white"
                 }`}
               >
                 {/* Rename mode */}
@@ -474,7 +474,7 @@ export default function FormulaFinder({
                         if (e.key === "Enter") confirmRename();
                         if (e.key === "Escape") setRenamingId(null);
                       }}
-                      className="flex-1 border-[1.5px] border-secondary rounded-md py-1 px-2 text-[0.78rem] outline-none"
+                      className="flex-1 border-[1.5px] border-accent rounded-md py-1 px-2 text-[0.78rem] outline-none"
                     />
                     <button onClick={confirmRename} className="bg-success border-none rounded-md py-1 px-1.5 cursor-pointer text-white flex items-center">
                       <Check size={12} />
@@ -550,10 +550,10 @@ export default function FormulaFinder({
                 <div className="w-[68px] h-[68px] rounded-full bg-secondary/8 text-secondary flex items-center justify-center">
                   <MessageSquare size={32} fill="rgba(59,130,246,0.1)" />
                 </div>
-                <h2 className="text-[1.35rem] font-extrabold text-[#1E3A5F]">
+                <h2 className="text-[1.35rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">
                   Xin chào! Mình là FormulaX AI
                 </h2>
-                <p className="text-[0.85rem] text-[#64748B] leading-[1.5]">
+                <p className="text-[0.85rem] text-[#64748B] dark:text-[#94A3B8] leading-[1.5]">
                   Được hỗ trợ bởi <strong>GPT-OSS 20B · Groq</strong>. Hỏi bất kỳ bài toán nào,
                   mình sẽ giải từng bước và gợi ý công thức phù hợp.
                 </p>
@@ -576,14 +576,14 @@ export default function FormulaFinder({
                     : (msg.isImage || msg.isFile)
                       ? "p-2 bg-white border border-[#E2E8F0] text-[#1E3A5F]"
                       : isUser
-                        ? "bg-secondary text-white"
-                        : "bg-white/72 backdrop-blur-[14px] text-primary dark:text-[#E2E8F0]";
+                        ? "bg-accent text-white"
+                        : "bg-white text-primary dark:text-[#E2E8F0]";
                 return (
                   <div
                     key={msg.id}
                     className={`max-w-[85%] ${!isUser ? "md:max-w-[92%]" : ""} py-3 px-4 rounded-xl text-[0.85rem] leading-[1.5] break-words ${
                       isUser
-                        ? "self-end rounded-br-[2px] shadow-[0_4px_10px_rgba(59,130,246,0.15)]"
+                        ? "self-end rounded-br-[2px] shadow-[0_4px_10px_rgba(217,119,6,0.15)]"
                         : "self-start rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] dark:bg-[#1E293B]"
                     } ${bubbleStateClass}`}
                   >
@@ -643,7 +643,7 @@ export default function FormulaFinder({
 
                     {/* Formula card */}
                     {msg.sender === "bot" && msg.aiResult && (
-                      <div className="mt-3.5 bg-[linear-gradient(135deg,#ffffff_0%,#fcfdff_100%)] border-[1.5px] border-[#e2e8f0] border-l-4 border-l-secondary rounded-xl p-4 flex flex-col gap-3 shadow-[0_10px_25px_-5px_rgba(30,58,95,0.04),0_8px_16px_-6px_rgba(30,58,95,0.02)]">
+                      <div className="mt-3.5 bg-white border-[1.5px] border-[#e2e8f0] border-l-4 border-l-accent rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
                         <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5 before:content-['✨'] before:text-[0.95rem]">{msg.aiResult.name}</div>
                         <div className="bg-[#f8fafc] border border-secondary/15 rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)]">
                           <MathElement math={msg.aiResult.latex} block={true} />
@@ -687,11 +687,11 @@ export default function FormulaFinder({
             )}
 
             {isAnalyzing && (
-              <div className="self-start max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white/72 backdrop-blur-[14px] dark:bg-[#1E293B]">
+              <div className="self-start max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white dark:bg-[#1E293B]">
                 <div className="flex items-center gap-2 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8]">
-                  <div className="w-2 h-2 rounded-full bg-secondary animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
-                  <div className="w-2 h-2 rounded-full bg-secondary animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
-                  <div className="w-2 h-2 rounded-full bg-secondary animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
+                  <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
+                  <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
+                  <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
                   <span>AI đang phân tích...</span>
                 </div>
               </div>
@@ -751,7 +751,7 @@ export default function FormulaFinder({
                 type="button"
                 className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition duration-200 shrink-0 ${
                   query.trim() && (isPremium || aiQueriesLeft > 0)
-                    ? "bg-[linear-gradient(135deg,#1E3A5F_0%,#3B82F6_100%)] text-white"
+                    ? "bg-accent text-white"
                     : "bg-[#f1f5f9] text-text-muted"
                 }`}
                 disabled={isAnalyzing || !query.trim() || (!isPremium && aiQueriesLeft === 0)}
@@ -829,10 +829,10 @@ export default function FormulaFinder({
             <div className="flex flex-col items-center gap-2 mt-1">
               <button
                 onClick={handleCapturePhoto}
-                className="w-14 h-14 rounded-full bg-white border-4 border-secondary p-1 cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(59,130,246,0.3)]"
+                className="w-14 h-14 rounded-full bg-white border-4 border-accent p-1 cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(217,119,6,0.3)]"
                 title="Chụp ngay"
               >
-                <div className="w-full h-full rounded-full bg-secondary" />
+                <div className="w-full h-full rounded-full bg-accent" />
               </button>
               <span className="text-xs text-text-muted font-bold">Nhấn nút để quét công thức</span>
             </div>

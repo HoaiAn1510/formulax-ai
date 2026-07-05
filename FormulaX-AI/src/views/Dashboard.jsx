@@ -23,16 +23,13 @@ export default function Dashboard({
 
   return (
     <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
         <div className="relative z-[1]">
           {/* Greeting Header */}
           <div className="mb-6">
-            <h1 className="flex items-baseline gap-2 flex-wrap text-[1.45rem] font-extrabold text-primary tracking-[-0.5px] m-0">
+            <h1 className="flex items-baseline gap-2 flex-wrap text-[1.45rem] font-extrabold text-primary dark:text-[#E2E8F0] tracking-[-0.5px] m-0">
               <span>Xin chào {firstName}!</span>
-              <span className="text-text-muted font-medium text-[0.95rem]">Hôm nay ôn gì?</span>
+              <span className="text-text-muted dark:text-[#94A3B8] font-medium text-[0.95rem]">Hôm nay ôn gì?</span>
             </h1>
           </div>
 
@@ -86,7 +83,7 @@ export default function Dashboard({
           {/* Analytics CTA Banner */}
           <div
             onClick={() => setActiveTab("progress")}
-            className="flex items-center justify-between bg-banner-purple rounded-[18px] px-4 py-[13px] cursor-pointer text-white mb-4 shadow-glow-purple"
+            className="flex items-center justify-between bg-banner-purple rounded-2xl px-4 py-[13px] cursor-pointer text-white mb-4 shadow-[0_2px_6px_rgba(15,23,42,0.05)]"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-[10px] bg-white/15 flex items-center justify-center shrink-0">
@@ -104,7 +101,7 @@ export default function Dashboard({
 
           {/* Stats Section: Tiến độ học tập */}
           <div className="flex justify-between items-center mb-[10px]">
-            <h2 className="text-base font-extrabold text-primary m-0 flex items-center gap-2">Hôm nay</h2>
+            <h2 className="text-base font-extrabold text-primary dark:text-[#E2E8F0] m-0 flex items-center gap-2">Hôm nay</h2>
           </div>
           <div className="glass-card grid grid-cols-3 py-4 mb-6 md:mb-8 dark:bg-[#1E293B] dark:border-[#334155]">
             <div className="text-center py-2 border-r border-[#f1f5f9]">
@@ -123,8 +120,8 @@ export default function Dashboard({
 
           {/* Gợi ý hôm nay Section */}
           <div className="flex justify-between items-baseline mb-3">
-            <h2 className="text-base font-extrabold text-primary m-0 flex items-center gap-2">Gợi ý hôm nay</h2>
-            <span className="text-xs text-text-muted font-semibold">Dựa trên lịch sử học</span>
+            <h2 className="text-base font-extrabold text-primary dark:text-[#E2E8F0] m-0 flex items-center gap-2">Gợi ý hôm nay</h2>
+            <span className="text-xs text-text-muted dark:text-[#94A3B8] font-semibold">Dựa trên lịch sử học</span>
           </div>
 
           <div className="flex flex-col gap-2 mb-6 md:mb-8">
@@ -157,14 +154,14 @@ export default function Dashboard({
               </div>
             </div>
 
-            <div className="w-full h-2 bg-[#e2e8f0] rounded-full overflow-hidden">
+            <div className="w-full h-2 bg-[#E5E7EB] rounded-full overflow-hidden">
               <div className="h-full rounded-full bg-progress-premium" style={{ width: isPremium ? "100%" : `${(remainingQuizzes / 10) * 100}%` }} />
             </div>
 
-            {/* Inner gold banner */}
+            {/* Inner amber banner */}
             <div
               onClick={() => setActiveTab("premium")}
-              className="bg-banner-orange border-none px-4 py-3 rounded-[14px] flex justify-between items-center cursor-pointer text-[0.85rem] font-bold text-white shadow-glow-orange transition duration-200"
+              className="bg-banner-orange border-none px-4 py-3 rounded-2xl flex justify-between items-center cursor-pointer text-[0.85rem] font-bold text-white shadow-[0_2px_6px_rgba(15,23,42,0.05)] transition duration-200 hover:-translate-y-0.5"
             >
               <div className="flex items-center gap-2">
                 <Gem size={14} className="text-white" />

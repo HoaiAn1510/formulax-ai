@@ -473,9 +473,6 @@ export default function App() {
 
   return (
     <div className="app-container">
-      <div className="glow-bg-1"></div>
-      <div className="glow-bg-2"></div>
-
       <Header
         user={user}
         isPremium={isPremium}

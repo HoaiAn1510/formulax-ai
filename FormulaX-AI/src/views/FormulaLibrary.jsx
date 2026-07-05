@@ -131,10 +131,7 @@ export default function FormulaLibrary({
 
   return (
     <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
         <div className="relative z-[1]">
           {/* Breadcrumb Back */}
           <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer mb-3 transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0]" onClick={() => setActiveTab("dashboard")}>
@@ -144,10 +141,10 @@ export default function FormulaLibrary({
 
           {/* Page Title & Subtitle */}
           <div className="mb-5">
-            <h2 className="text-[1.6rem] font-extrabold text-primary tracking-[-0.5px]">
+            <h2 className="text-[1.6rem] font-extrabold text-primary dark:text-[#E2E8F0] tracking-[-0.5px]">
               Thư viện công thức
             </h2>
-            <p className="text-[0.85rem] text-text-muted font-medium mt-1">
+            <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] font-medium mt-1">
               {topicMode === "saved"
                 ? `${filteredFormulas.length} công thức yêu thích`
                 : `Khám phá ${filteredFormulas.length} công thức Toán THPT`}
@@ -223,7 +220,7 @@ export default function FormulaLibrary({
 
             {/* Grade filters matching Screenshot 2 */}
             <div className="flex items-center gap-3 mt-2">
-              <span className="text-[0.85rem] font-extrabold text-primary">Lớp:</span>
+              <span className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0]">Lớp:</span>
               <div className="flex gap-2">
                 {["Tất cả", "10", "11", "12"].map((grade) => {
                   const isActive = grade === "Tất cả"
@@ -240,8 +237,8 @@ export default function FormulaLibrary({
                         padding: isAll ? "0 14px" : "0",
                         borderRadius: isAll ? "18px" : "50%",
                         border: "1px solid #cbd5e1",
-                        backgroundColor: isActive ? "#3B82F6" : "white",
-                        color: isActive ? "white" : "#1E3A5F",
+                        backgroundColor: isActive ? "#D97706" : "white",
+                        color: isActive ? "white" : "#0F172A",
                         fontWeight: "800",
                         fontSize: "0.85rem",
                         whiteSpace: "nowrap",
@@ -250,7 +247,7 @@ export default function FormulaLibrary({
                         alignItems: "center",
                         justifyContent: "center",
                         transition: "all 0.2s ease",
-                        boxShadow: isActive ? "0 2px 6px rgba(59,130,246,0.3)" : "none"
+                        boxShadow: isActive ? "0 2px 6px rgba(217,119,6,0.3)" : "none"
                       }}
                     >
                       {grade}
@@ -267,10 +264,10 @@ export default function FormulaLibrary({
               filteredFormulas.map((formula) => {
                 const isBookmarked = bookmarkedIds.includes(formula.id);
                 return (
-                  <div key={formula.id} className="glass-card p-4 flex flex-col gap-3 relative">
+                  <div key={formula.id} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 flex flex-col gap-3 relative">
                     {/* Header: Title and Heart */}
                     <div className="flex justify-between items-start">
-                      <h3 className="text-[1.05rem] font-extrabold text-primary">{formula.name}</h3>
+                      <h3 className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0]">{formula.name}</h3>
                       <button
                         className={`w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors duration-150 shrink-0 hover:bg-error/8 hover:text-error ${isBookmarked ? "text-error" : "text-[#94A3B8]"}`}
                         onClick={() => onToggleBookmark(formula.id)}
@@ -285,7 +282,7 @@ export default function FormulaLibrary({
                       <span className="text-[0.75rem] font-bold text-secondary">
                         {formula.topic}
                       </span>
-                      <span className="text-[0.75rem] font-bold text-text-muted">
+                      <span className="text-[0.75rem] font-bold text-text-muted dark:text-[#94A3B8]">
                         Lớp {formula.grade}
                       </span>
                     </div>
@@ -313,8 +310,8 @@ export default function FormulaLibrary({
             ) : (
               <div className="flex flex-col items-center justify-center text-center gap-2 py-12 px-4 col-[1/-1]">
                 <HelpCircle size={48} className="text-[#cbd5e1] mb-2" />
-                <h3 className="text-base font-extrabold text-primary">Không tìm thấy công thức</h3>
-                <p className="text-[0.8rem] text-text-muted mt-1">
+                <h3 className="text-base font-extrabold text-primary dark:text-[#E2E8F0]">Không tìm thấy công thức</h3>
+                <p className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] mt-1">
                   Hãy thử tìm kiếm với các từ khóa khác hoặc thay đổi bộ lọc.
                 </p>
               </div>

@@ -266,10 +266,7 @@ export default function QuizView({
 
   return (
     <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
         <div className="relative z-[1]">
 
           {/* Modal hết quota */}
@@ -329,13 +326,13 @@ export default function QuizView({
 
               {/* Centered Document Icon & Header */}
               <div className="flex flex-col items-center gap-2.5 mb-6">
-                <div className="w-12 h-12 rounded-full bg-secondary/8 text-secondary flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-accent/8 text-accent flex items-center justify-center">
                   <Clipboard size={22} />
                 </div>
-                <h2 className="text-[1.45rem] font-extrabold text-primary m-0 tracking-[-0.5px]">
+                <h2 className="text-[1.45rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0 tracking-[-0.5px]">
                   Làm bài kiểm tra
                 </h2>
-                <p className="text-[0.85rem] text-text-muted font-medium m-0">
+                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] font-medium m-0">
                   Tùy chỉnh bài kiểm tra theo ý muốn
                 </p>
               </div>
@@ -346,10 +343,10 @@ export default function QuizView({
                 {/* Section 1: Chọn chủ đề */}
                 <div>
                   <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
-                    <BookOpen size={15} className="text-secondary" />
+                    <BookOpen size={15} className="text-accent" />
                     <span>Chọn chủ đề</span>
                     {!allMode && selectedTopics.length > 0 && (
-                      <span className="text-[0.7rem] font-semibold text-secondary bg-secondary/8 rounded-[10px] py-0.5 px-2">
+                      <span className="text-[0.7rem] font-semibold text-accent bg-accent/8 rounded-[10px] py-0.5 px-2">
                         {selectedTopics.length} đã chọn
                       </span>
                     )}
@@ -372,7 +369,7 @@ export default function QuizView({
                           key={t}
                           onClick={() => handleTopicClick(t)}
                           className={`py-2 px-4 rounded-[20px] text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border-[1.5px] ${
-                            isActive ? "border-secondary bg-secondary text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
+                            isActive ? "border-accent bg-accent text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
                           }`}
                         >
                           {t}
@@ -390,10 +387,10 @@ export default function QuizView({
                 {/* Section 1b: Chọn lớp */}
                 <div>
                   <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
-                    <GraduationCap size={15} className="text-secondary" />
+                    <GraduationCap size={15} className="text-accent" />
                     <span>Chọn lớp</span>
                     {!allGradeMode && selectedGrades.length > 0 && (
-                      <span className="text-[0.7rem] font-semibold text-secondary bg-secondary/8 rounded-[10px] py-0.5 px-2">
+                      <span className="text-[0.7rem] font-semibold text-accent bg-accent/8 rounded-[10px] py-0.5 px-2">
                         {selectedGrades.length} đã chọn
                       </span>
                     )}
@@ -414,7 +411,7 @@ export default function QuizView({
                           key={g}
                           onClick={() => handleGradeClick(g)}
                           className={`py-2 px-4 rounded-[20px] text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border-[1.5px] ${
-                            isActive ? "border-secondary bg-secondary text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
+                            isActive ? "border-accent bg-accent text-white" : "border-[#E2E8F0] bg-[#F8FAFC] text-[#475569]"
                           }`}
                         >
                           Lớp {g}
@@ -432,7 +429,7 @@ export default function QuizView({
                 {/* Section 2: Số câu hỏi */}
                 <div>
                   <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
-                    <BarChart2 size={15} className="text-secondary" />
+                    <BarChart2 size={15} className="text-accent" />
                     <span>Số câu hỏi</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -448,7 +445,7 @@ export default function QuizView({
                         else if (n > maxQuestions) setQuestionCountInput(String(maxQuestions));
                         else setQuestionCountInput(String(n));
                       }}
-                      className="w-[90px] h-[42px] text-center text-[1.05rem] font-extrabold text-[#1E3A5F] border-[1.5px] border-secondary rounded-[10px] outline-none bg-[#F8FAFF]"
+                      className="w-[90px] h-[42px] text-center text-[1.05rem] font-extrabold text-[#1E3A5F] border-[1.5px] border-accent rounded-[10px] outline-none bg-[#F8FAFF]"
                     />
                     <span className="text-[0.82rem] text-text-muted font-semibold">
                       câu <span className="text-[#94A3B8]">(tối đa {maxQuestions} câu)</span>
@@ -459,14 +456,14 @@ export default function QuizView({
                 {/* Section 3: Loại câu hỏi */}
                 <div>
                   <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
-                    <Layers size={15} className="text-secondary" />
+                    <Layers size={15} className="text-accent" />
                     <span>Loại câu hỏi</span>
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     {/* Option 1: Trắc nghiệm */}
                     <div
                       className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
-                        quizType === "multiple-choice" ? "border-secondary bg-secondary/5 text-secondary" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                        quizType === "multiple-choice" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
                       }`}
                       onClick={() => setQuizType("multiple-choice")}
                     >
@@ -477,7 +474,7 @@ export default function QuizView({
                     {/* Option 2: Điền đáp án */}
                     <div
                       className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
-                        quizType === "fill-in" ? "border-secondary bg-secondary/5 text-secondary" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                        quizType === "fill-in" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
                       }`}
                       onClick={() => {
                         if (!isPremium) {
@@ -498,7 +495,7 @@ export default function QuizView({
                     {/* Option 3: Kết hợp */}
                     <div
                       className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
-                        quizType === "hybrid" ? "border-secondary bg-secondary/5 text-secondary" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                        quizType === "hybrid" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
                       }`}
                       onClick={() => {
                         if (!isPremium) {
@@ -521,7 +518,7 @@ export default function QuizView({
                 {/* Section 4: Giới hạn thời gian */}
                 <div>
                   <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
-                    <Timer size={15} className="text-secondary" />
+                    <Timer size={15} className="text-accent" />
                     <span>Giới hạn thời gian</span>
                   </div>
                   <div className="flex items-center gap-3">
@@ -535,7 +532,7 @@ export default function QuizView({
                         if (isNaN(n) || n < 0) setTimeLimitInput("0");
                         else setTimeLimitInput(String(n));
                       }}
-                      className="w-[90px] h-[42px] text-center text-[1.05rem] font-extrabold text-[#1E3A5F] border-[1.5px] border-secondary rounded-[10px] outline-none bg-[#F8FAFF]"
+                      className="w-[90px] h-[42px] text-center text-[1.05rem] font-extrabold text-[#1E3A5F] border-[1.5px] border-accent rounded-[10px] outline-none bg-[#F8FAFF]"
                     />
                     <span className="text-[0.82rem] text-text-muted font-semibold">
                       phút{" "}
@@ -581,8 +578,8 @@ export default function QuizView({
               <div className="bg-white/95 dark:bg-[rgba(30,41,59,0.95)] border border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-2xl py-4 px-5 shadow-[0_4px_20px_rgba(30,58,95,0.04)] mb-4 flex flex-col gap-3 backdrop-blur-[10px]">
                 <div className="flex justify-between items-center text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-0.5">
                   <span>Chủ đề: {currentQ.topic} • Lớp {currentQ.grade}</span>
-                  <div className={`flex items-center gap-1.5 py-1.5 px-3.5 rounded-full font-mono text-[0.9rem] font-extrabold transition-all duration-300 shadow-[0_2px_8px_rgba(59,130,246,0.04)] ${
-                    timeLeft < 60 && timerActive ? "bg-error/10 text-error [animation:pulse-timer_1s_infinite_alternate]" : "bg-secondary/8 text-secondary"
+                  <div className={`flex items-center gap-1.5 py-1.5 px-3.5 rounded-full font-mono text-[0.9rem] font-extrabold transition-all duration-300 shadow-[0_2px_8px_rgba(217,119,6,0.04)] ${
+                    timeLeft < 60 && timerActive ? "bg-error/10 text-error [animation:pulse-timer_1s_infinite_alternate]" : "bg-accent/8 text-accent"
                   }`}>
                     <Timer size={14} />
                     <span>{formatTime(timeLeft)}</span>
@@ -591,7 +588,7 @@ export default function QuizView({
 
                 <div className="w-full h-2 bg-[#f1f5f9] rounded-full overflow-hidden relative border border-[rgba(30,58,95,0.02)]">
                   <div
-                    className="h-full rounded-full bg-[linear-gradient(90deg,#3B82F6_0%,#10B981_100%)] shadow-[0_0_8px_rgba(59,130,246,0.3)] transition-[width] duration-[0.4s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)]"
+                    className="h-full rounded-full bg-[linear-gradient(90deg,#D97706_0%,#10B981_100%)] shadow-[0_0_8px_rgba(217,119,6,0.3)] transition-[width] duration-[0.4s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)]"
                     style={{ width: `${((currentQIdx + 1) / questions.length) * 100}%` }}
                   />
                 </div>
@@ -619,7 +616,7 @@ export default function QuizView({
                       onChange={e => setFillInputs(prev => ({ ...prev, [currentQIdx]: e.target.value }))}
                       onKeyDown={e => { if (e.key === "Enter" && currentQIdx + 1 < questions.length) setCurrentQIdx(p => p + 1); }}
                       placeholder="Nhập đáp án..."
-                      className="w-full py-3 px-3.5 text-[0.95rem] rounded-[10px] border-2 border-secondary outline-none font-semibold text-[#1E3A5F] bg-[#F8FAFF] box-border"
+                      className="w-full py-3 px-3.5 text-[0.95rem] rounded-[10px] border-2 border-accent outline-none font-semibold text-[#1E3A5F] bg-[#F8FAFF] box-border"
                       autoFocus
                     />
                     <div className="text-[0.72rem] text-[#94A3B8] mt-1.5">
@@ -635,13 +632,13 @@ export default function QuizView({
                           key={option.letter}
                           className={`flex items-center w-full min-h-[56px] py-3 px-4 rounded-xl text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 gap-3 border-[1.5px] text-primary dark:text-[#E2E8F0] ${
                             isSelected
-                              ? "border-secondary bg-secondary/5 shadow-[0_4px_12px_rgba(59,130,246,0.1)]"
-                              : "border-[rgba(30,58,95,0.07)] bg-white shadow-[0_4px_20px_rgba(30,58,95,0.04)] hover:border-secondary hover:bg-secondary/[0.02] hover:shadow-[0_4px_12px_rgba(59,130,246,0.08)] hover:-translate-y-px"
+                              ? "border-accent bg-accent/5 shadow-[0_4px_12px_rgba(217,119,6,0.1)]"
+                              : "border-[rgba(30,58,95,0.07)] bg-white shadow-[0_4px_20px_rgba(30,58,95,0.04)] hover:border-accent hover:bg-accent/[0.02] hover:shadow-[0_4px_12px_rgba(217,119,6,0.08)] hover:-translate-y-px"
                           }`}
                           onClick={() => handleSelectOption(option)}
                         >
                           <div className={`flex items-center justify-center w-7 h-7 rounded-full text-[0.85rem] font-extrabold shrink-0 transition-all duration-200 ${
-                            isSelected ? "bg-secondary border-secondary text-white" : "bg-[#f1f5f9] border border-[#cbd5e1] text-text-muted"
+                            isSelected ? "bg-accent border-accent text-white" : "bg-[#f1f5f9] border border-[#cbd5e1] text-text-muted"
                           }`}>{option.letter}</div>
                           <div className="flex-1"><RichTextRenderer text={option.text} /></div>
                         </button>
@@ -726,7 +723,7 @@ export default function QuizView({
                             style={{ border: `1.5px solid ${cardBorderColor}`, backgroundColor: cardBgColor, borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}
                           >
                             <div className="flex justify-between items-center text-[0.75rem] font-bold">
-                              <span className="text-[#64748B]">Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span className="bg-secondary/10 text-secondary rounded ml-1" style={{ padding: "1px 5px" }}>Điền đáp án</span></span>
+                              <span className="text-[#64748B]">Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span className="bg-accent/10 text-accent rounded ml-1" style={{ padding: "1px 5px" }}>Điền đáp án</span></span>
                               <span style={{ color: statusColor, background: `${statusColor}15`, padding: "4px 8px", borderRadius: "4px" }}>{statusLabel}</span>
                             </div>
                             <div className="text-[0.9rem] font-bold text-[#1E3A5F]">

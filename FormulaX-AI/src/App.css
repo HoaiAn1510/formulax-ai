@@ -1,27 +1,33 @@
 /* ==========================================
-   FORMULAX AI - GLASSMORPHISM PREMIUM SYSTEM
+   FORMULAX AI - NAVY + AMBER PREMIUM SAAS SYSTEM
    ========================================== */
 
 :root {
   /* Colors */
-  --primary: #1E3A5F;       /* Dark Navy */
-  --primary-rgb: 30, 58, 95;
-  --secondary: #3B82F6;     /* Modern Electric Blue */
-  --secondary-rgb: 59, 130, 246;
-  --bg-main: #F4F6F9;       /* Soft light gray background */
-  --bg-card: rgba(255, 255, 255, 0.95); /* Glass card bg */
-  --success: #10B981;       /* Emerald Green */
-  --error: #EF4444;         /* Rose Red */
-  --text-muted: #64748B;     /* Slate Muted */
-  --border-light: rgba(255, 255, 255, 0.7);
-  --border-slate: rgba(30, 58, 95, 0.07);
-  --premium: #F59E0B;       /* Amber Gold */
-  
-  --premium-grad: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-  --primary-grad: linear-gradient(135deg, #1E3A5F 0%, #3B82F6 100%);
-  --glow-blue: 0 8px 20px -4px rgba(59, 130, 246, 0.25);
-  --glow-gold: 0 8px 20px -4px rgba(245, 158, 11, 0.3);
-  --glow-slate: 0 4px 20px rgba(30, 58, 95, 0.04);
+  --primary: #0F172A;       /* Primary Navy / Text Primary */
+  --primary-rgb: 15, 23, 42;
+  --navy-secondary: #1E293B;
+  --sidebar: #16243A;       /* Sidebar — cố định, không đổi theo dark mode toggle */
+  --secondary: #2563EB;     /* Info — dùng hiếm, không còn là màu nhấn chính */
+  --secondary-rgb: 37, 99, 235;
+  --bg-main: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --success: #10B981;
+  --error: #EF4444;
+  --text-muted: #64748B;    /* Text Secondary */
+  --border-light: #E5E7EB;
+  --border-slate: #E5E7EB;
+  --premium: #F59E0B;       /* trùng Warning */
+  --accent: #D97706;        /* Amber Accent — màu nhấn hành động chính */
+  --accent-hover: #B45309;  /* Amber Hover */
+  --accent-light: #FEF3C7;  /* Amber Light */
+
+  --premium-grad: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+  --primary-grad: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+  --glow-blue: 0 2px 6px rgba(15, 23, 42, 0.05);
+  --glow-gold: 0 2px 6px rgba(15, 23, 42, 0.05);
+  --glow-slate: 0 2px 6px rgba(15, 23, 42, 0.05);
+  --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.05); /* trước đây bị thiếu định nghĩa — mọi box-shadow:var(--shadow-sm) render "none" */
 
   /* Layout Spacing */
   --sp-1: 4px;
@@ -33,39 +39,14 @@
   --sp-12: 48px;
 
   /* Borders & Radius */
-  --radius-sm: 8px;
+  --radius-sm: 12px;
   --radius-md: 12px;
-  --radius-lg: 16px; /* Match Figma soft roundings */
+  --radius-lg: 16px;
   --radius-full: 9999px;
-  
+
   /* Transitions */
-  --trans-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --trans-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Floating Radial Glow Elements in Background */
-.glow-bg-1 {
-  position: fixed;
-  top: -10%;
-  left: -10%;
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
-  filter: blur(80px);
-  z-index: -1;
-  pointer-events: none;
-}
-
-.glow-bg-2 {
-  position: fixed;
-  bottom: 10%;
-  right: -10%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.07) 0%, transparent 70%);
-  filter: blur(90px);
-  z-index: -1;
-  pointer-events: none;
+  --trans-fast: 0.2s ease;
+  --trans-normal: 0.2s ease;
 }
 
 /* Base App Layout */
@@ -322,36 +303,36 @@
 }
 
 .btn-primary {
-  background: var(--secondary);
+  background: var(--accent);
   color: white;
-  box-shadow: var(--glow-blue);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:hover {
-  filter: brightness(1.05);
+  background: var(--accent-hover);
   transform: translateY(-1px);
 }
 
 .btn-secondary {
   background: white;
   color: var(--primary);
-  border: 1px solid var(--border-slate);
+  border: 1px solid #CBD5E1;
   box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
-  background: #f8fafc;
+  background: #F8FAFC;
   border-color: #cbd5e1;
 }
 
 .btn-premium {
   background: var(--premium-grad);
   color: white;
-  box-shadow: var(--glow-gold);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-premium:hover {
-  filter: brightness(1.05);
+  background: linear-gradient(135deg, #B45309 0%, #D97706 100%);
   transform: translateY(-1px);
 }
 
@@ -1971,7 +1952,7 @@
 
 .premium-banner {
   background: var(--premium-grad);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   padding: var(--sp-4);
   color: white;
   display: flex;
@@ -2541,16 +2522,16 @@
 }
 
 .arrow-btn:hover:not(:disabled) {
-  background-color: var(--secondary);
-  border-color: var(--secondary);
+  background-color: var(--accent);
+  border-color: var(--accent);
   color: white;
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(59, 130, 246, 0.25);
+  box-shadow: 0 6px 14px rgba(217, 119, 6, 0.25);
 }
 
 .arrow-btn:active:not(:disabled) {
   transform: translateY(0);
-  box-shadow: 0 3px 8px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 3px 8px rgba(217, 119, 6, 0.2);
 }
 
 .arrow-btn:disabled {
@@ -2888,6 +2869,8 @@
 .dark-mode .rec-list-item { background: #1E293B !important; border-color: #334155 !important; }
 .dark-mode .quota-progress-card { background: #1E293B !important; border-color: #334155 !important; }
 .dark-mode .deck-list-card-figma { background: #1E293B !important; border-color: #334155 !important; }
+.dark-mode .btn-secondary { background: #1E293B !important; border-color: #334155 !important; }
+.dark-mode .btn-secondary:hover { background: #334155 !important; }
 .dark-mode .chat-window { background: #0F172A !important; }
 .dark-mode .chat-messages { background: #0F172A !important; }
 .dark-mode .history-sidebar { background: #1E293B !important; border-right-color: #334155 !important; }
