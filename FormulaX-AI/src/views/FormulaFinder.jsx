@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, Search, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown } from "lucide-react";
+import { Send, ArrowLeft, History, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB } from "../lib/supabase";
@@ -203,13 +203,6 @@ export default function FormulaFinder({
     }
   }, [messages, sessionsKey]);
 
-  const suggestionsList = [
-    { text: "Tính diện tích hình tròn bán kính 5cm", query: "hình tròn bán kính 5cm" },
-    { text: "Giải phương trình bậc 2: x²-5x+6=0", query: "phương trình bậc 2 x^2-5x+6=0" },
-    { text: "Tính đạo hàm y = x³ - 2x² + 5", query: "đạo hàm y = x^3 - 2x^2 + 5" },
-    { text: "Tìm cực trị hàm số y = x³ - 3x", query: "cực trị y = x^3 - 3x" }
-  ];
-
   const findRelatedFormulas = (formulaId, targetFormula) => {
     if (!targetFormula) return [];
     return formulas
@@ -406,11 +399,6 @@ export default function FormulaFinder({
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="flex items-center gap-[5px] py-1 px-2.5 rounded-[20px] bg-[rgba(16,185,129,0.08)] dark:bg-[rgba(16,185,129,0.12)] border border-[rgba(16,185,129,0.2)] dark:border-[rgba(16,185,129,0.3)] text-[0.7rem] font-bold text-[#059669] dark:text-[#34D399]">
-            <div className="w-1.5 h-1.5 rounded-full bg-success" />
-            GPT-OSS 20B (Groq)
-          </div>
-
           <button
             className="md:hidden relative inline-flex items-center gap-1.5 bg-white border border-[#E2E8F0] rounded-full px-3 py-2 text-[0.75rem] font-bold text-primary cursor-pointer transition duration-200 hover:bg-[#f8fafc] hover:border-[#cbd5e1] mb-0"
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -553,18 +541,6 @@ export default function FormulaFinder({
                 <h2 className="text-[1.35rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">
                   Xin chào! Mình là FormulaX AI
                 </h2>
-                <p className="text-[0.85rem] text-[#64748B] dark:text-[#94A3B8] leading-[1.5]">
-                  Được hỗ trợ bởi <strong>GPT-OSS 20B · Groq</strong>. Hỏi bất kỳ bài toán nào,
-                  mình sẽ giải từng bước và gợi ý công thức phù hợp.
-                </p>
-                <div className="grid grid-cols-1 gap-3 w-full">
-                  {suggestionsList.map((item, idx) => (
-                    <div key={idx} className="glass-card-sm flex items-center gap-3 py-3 px-4 cursor-pointer text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] transition duration-200 hover:-translate-y-px text-left" onClick={() => handleSend(item.query)}>
-                      <Search size={14} className="text-secondary shrink-0" />
-                      <span>{item.text}</span>
-                    </div>
-                  ))}
-                </div>
               </div>
             ) : (
               messages.map((msg) => {
