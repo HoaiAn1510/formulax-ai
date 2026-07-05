@@ -6,10 +6,10 @@ import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 
 function StatCard({ icon, value, label, color }) {
   return (
-    <div className="glass-card py-3.5 px-3 flex flex-col items-center gap-1">
+    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] py-3.5 px-3 flex flex-col items-center gap-1">
       <div style={{ color }} className="mb-0.5">{icon}</div>
-      <div className="text-[1.35rem] font-extrabold text-primary leading-[1.2]">{value}</div>
-      <div className="text-[0.7rem] text-text-muted font-semibold text-center">{label}</div>
+      <div className="text-[1.35rem] font-extrabold text-primary dark:text-[#E2E8F0] leading-[1.2]">{value}</div>
+      <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold text-center">{label}</div>
     </div>
   );
 }
@@ -25,11 +25,11 @@ function TopicBar({ topic, rate, correct, total }) {
         <div className="flex items-center gap-1.5">
           {isWeak && <AlertTriangle size={13} color="#EF4444" />}
           {isStrong && <CheckCircle size={13} color="#10B981" />}
-          <span className="text-[0.82rem] font-bold text-primary">{topic}</span>
+          <span className="text-[0.82rem] font-bold text-primary dark:text-[#E2E8F0]">{topic}</span>
         </div>
         <span className="text-[0.78rem] font-bold" style={{ color: barColor }}>{rate}%</span>
       </div>
-      <div className="bg-[#F1F5F9] rounded-md h-2 overflow-hidden">
+      <div className="bg-[#F1F5F9] dark:bg-[#334155] rounded-md h-2 overflow-hidden">
         <div className="h-full rounded-md transition-[width] duration-[0.8s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)]" style={{ width: `${rate}%`, background: barColor }} />
       </div>
       <div className="text-[0.68rem] text-[#94A3B8] mt-1">
@@ -43,9 +43,9 @@ function FormulaChip({ formula, onViewDetail }) {
   return (
     <button
       onClick={() => onViewDetail(formula)}
-      className="inline-flex items-center gap-1.5 bg-secondary/7 border border-secondary/[0.18] rounded-lg py-1.5 px-2.5 text-xs font-semibold text-primary cursor-pointer text-left max-w-full"
+      className="inline-flex items-center gap-1.5 bg-accent/7 border border-accent/[0.18] rounded-lg py-1.5 px-2.5 text-xs font-semibold text-primary dark:text-[#E2E8F0] cursor-pointer text-left max-w-full"
     >
-      <BookOpen size={12} color="#3B82F6" />
+      <BookOpen size={12} color="#D97706" />
       <span className="overflow-hidden text-ellipsis whitespace-nowrap">
         {formula.name}
       </span>
@@ -75,11 +75,11 @@ function StreakChart({ activityDates, streak }) {
   }
 
   return (
-    <div className="glass-card p-3.5 mb-5">
+    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-3.5 mb-5">
       <div className="flex justify-between items-center mb-2.5">
         <div className="flex items-center gap-1.5">
           <Flame size={16} color="#F97316" />
-          <span className="font-extrabold text-primary text-[0.88rem]">Chuỗi học</span>
+          <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.88rem]">Chuỗi học</span>
         </div>
         <span className="font-extrabold text-[#F97316] text-[1.1rem]">{streak} ngày</span>
       </div>
@@ -101,9 +101,9 @@ function StreakChart({ activityDates, streak }) {
                 key={dateStr}
                 title={dateStr}
                 className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
-                  isFuture ? "bg-transparent" : active ? "bg-secondary text-white" : "bg-[#F1F5F9] text-[#94A3B8]"
+                  isFuture ? "bg-transparent" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
                 }`}
-                style={{ border: isToday ? "2px solid #3B82F6" : "1.5px solid transparent" }}
+                style={{ border: isToday ? "2px solid #D97706" : "1.5px solid transparent" }}
               >
                 {!isFuture ? day : ""}
               </div>
@@ -114,11 +114,11 @@ function StreakChart({ activityDates, streak }) {
 
       <div className="flex gap-3 mt-2 justify-end">
         <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
-          <div className="w-2.5 h-2.5 rounded-sm bg-[#F1F5F9] border border-[#E2E8F0]" />
+          <div className="w-2.5 h-2.5 rounded-sm bg-[#F1F5F9] dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#475569]" />
           Không học
         </div>
         <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
-          <div className="w-2.5 h-2.5 rounded-sm bg-secondary" />
+          <div className="w-2.5 h-2.5 rounded-sm bg-accent" />
           Có học
         </div>
       </div>
@@ -137,33 +137,33 @@ function DayHistoryCard({ date, quizzes, flashcardIds, formulaMap }) {
   const scoreColor = (p) => p >= 80 ? "#10B981" : p >= 60 ? "#F59E0B" : "#EF4444";
 
   return (
-    <div className="glass-card overflow-hidden mb-2.5">
+    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] overflow-hidden mb-2.5">
       <div
         onClick={() => setExpanded(v => !v)}
         className="flex justify-between items-center py-3 px-3.5 cursor-pointer"
       >
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0" />
-          <span className="font-extrabold text-primary text-[0.88rem]">{dateLabel}</span>
+          <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+          <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.88rem]">{dateLabel}</span>
           {date !== today && date !== yesterday && (
             <span className="text-[0.7rem] text-[#94A3B8]">{d}/{mo}/{y}</span>
           )}
         </div>
         <div className="flex gap-2 items-center">
-          {quizzes.length > 0 && <span className="text-[0.68rem] bg-[#EFF6FF] text-secondary font-bold rounded py-0.5 px-1.5">{quizzes.length} quiz</span>}
-          {flashcardIds.length > 0 && <span className="text-[0.68rem] bg-[#F0FDF4] text-success font-bold rounded py-0.5 px-1.5">{flashcardIds.length} thẻ</span>}
+          {quizzes.length > 0 && <span className="text-[0.68rem] bg-[#EFF6FF] dark:bg-secondary/15 text-secondary font-bold rounded py-0.5 px-1.5">{quizzes.length} quiz</span>}
+          {flashcardIds.length > 0 && <span className="text-[0.68rem] bg-[#F0FDF4] dark:bg-success/15 text-success font-bold rounded py-0.5 px-1.5">{flashcardIds.length} thẻ</span>}
           <ChevronDown size={14} color="#94A3B8" className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
         </div>
       </div>
 
       {expanded && (
-        <div className="border-t border-[#F1F5F9] py-2.5 px-3.5">
+        <div className="border-t border-[#F1F5F9] dark:border-[#334155] py-2.5 px-3.5">
           {quizzes.length > 0 && (
             <div style={{ marginBottom: flashcardIds.length > 0 ? "10px" : 0 }}>
               <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Quiz</div>
               {quizzes.map((q, i) => (
-                <div key={i} className={`flex justify-between items-center py-1.5 ${i < quizzes.length - 1 ? "border-b border-[#F8FAFC]" : ""}`}>
-                  <span className="text-[0.8rem] text-primary font-semibold">{q.topic}</span>
+                <div key={i} className={`flex justify-between items-center py-1.5 ${i < quizzes.length - 1 ? "border-b border-[#F8FAFC] dark:border-[#334155]" : ""}`}>
+                  <span className="text-[0.8rem] text-primary dark:text-[#E2E8F0] font-semibold">{q.topic}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-[0.72rem] text-[#94A3B8]">{q.questionsCorrect}/{q.questionsTotal} câu</span>
                     <span className="text-[0.75rem] font-extrabold min-w-[38px] text-right" style={{ color: scoreColor(q.scorePercent) }}>{q.scorePercent}%</span>
@@ -201,7 +201,7 @@ function EmptyState({ message, ctaLabel, onCta }) {
       <BarChart2 size={36} color="#CBD5E1" className="mx-auto mb-2.5" />
       <p className="text-[0.85rem] text-[#94A3B8] font-medium m-0 mb-3">{message}</p>
       {onCta && (
-        <button onClick={onCta} className="bg-secondary text-white border-none rounded-[10px] py-2 px-[18px] text-[0.8rem] font-bold cursor-pointer">
+        <button onClick={onCta} className="bg-accent text-white border-none rounded-[10px] py-2 px-[18px] text-[0.8rem] font-bold cursor-pointer">
           {ctaLabel}
         </button>
       )}
@@ -261,24 +261,21 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
   return (
     <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient -mt-6 md:-mt-8 -mx-4 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="absolute -top-[8%] -left-[6%] w-[260px] h-[260px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(196,132,252,0.45)_0%,transparent_70%)]" />
-        <div className="absolute top-[6%] -right-[10%] w-[300px] h-[300px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(251,207,232,0.55)_0%,transparent_70%)]" />
-        <div className="absolute -bottom-[12%] left-[18%] w-[320px] h-[320px] rounded-full pointer-events-none z-0 blur-[50px] bg-[radial-gradient(circle,rgba(147,197,253,0.45)_0%,transparent_70%)]" />
+      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
         <div className="relative z-[1]">
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className="flex items-center justify-center w-[34px] h-[34px] rounded-[10px] bg-[#F1F5F9] border-none cursor-pointer text-primary"
+              className="flex items-center justify-center w-[34px] h-[34px] rounded-[10px] bg-[#F1F5F9] dark:bg-[#334155] border-none cursor-pointer text-primary dark:text-[#E2E8F0]"
             >
               <ArrowLeft size={18} />
             </button>
             <div>
-              <h1 className="m-0 text-[1.15rem] font-extrabold text-primary">
+              <h1 className="m-0 text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0]">
                 Tiến độ học tập
               </h1>
-              <p className="m-0 text-[0.72rem] text-text-muted">
+              <p className="m-0 text-[0.72rem] text-text-muted dark:text-[#94A3B8]">
                 Phân tích từ lịch sử quiz & flashcard
               </p>
             </div>
@@ -286,7 +283,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
 
           {/* Premium gate */}
           {!isPremium && (
-            <div className="bg-banner-purple rounded-[18px] p-5 text-white text-center mb-5 shadow-glow-purple">
+            <div className="bg-banner-purple rounded-2xl p-5 text-white text-center mb-5 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
               <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-2.5" />
               <h3 className="m-0 mb-1.5 text-base font-extrabold">Tính năng Premium</h3>
               <p className="m-0 mb-3.5 text-[0.8rem] opacity-85">
@@ -314,8 +311,8 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
           {/* Daily history */}
           <div className="mb-4">
             <div className="flex items-center gap-2 mb-3">
-              <BarChart2 size={15} color="#3B82F6" />
-              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary">Lịch sử hoạt động</h2>
+              <BarChart2 size={15} color="#D97706" />
+              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">Lịch sử hoạt động</h2>
             </div>
             {loading ? (
               <div className="text-center py-5 text-[#94A3B8] text-[0.82rem]">Đang tải...</div>
@@ -339,10 +336,10 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
           </div>
 
           {/* Topic performance */}
-          <div className="glass-card p-4 mb-4 relative overflow-hidden">
+          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4 relative overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
-              <BarChart2 size={16} color="#3B82F6" />
-              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary">
+              <BarChart2 size={16} color="#D97706" />
+              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
                 Hiệu suất theo chủ đề
               </h2>
             </div>
@@ -365,10 +362,10 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
                     </div>
                   </div>
                 ))}
-                <div className="absolute inset-0 flex items-center justify-center bg-white/60">
+                <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-[#1E293B]/70">
                   <div className="text-center">
-                    <Lock size={22} color="#3B82F6" className="mx-auto mb-1.5" />
-                    <div className="text-[0.8rem] font-bold text-primary">Cần Premium để xem</div>
+                    <Lock size={22} color="#D97706" className="mx-auto mb-1.5" />
+                    <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">Cần Premium để xem</div>
                   </div>
                 </div>
               </>
@@ -384,10 +381,10 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
           </div>
 
           {/* AI Coach suggestions */}
-          <div className="bg-[linear-gradient(135deg,rgba(239,246,255,0.75)_0%,rgba(240,253,244,0.75)_100%)] backdrop-blur-[20px] rounded-[18px] p-4 border border-white/60 mb-4 shadow-[0_8px_32px_rgba(31,38,135,0.10)]">
+          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
             <div className="flex items-center gap-2 mb-3.5">
               <Target size={16} color="#10B981" />
-              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary">
+              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
                 Coach gợi ý ôn tập
               </h2>
             </div>
@@ -420,7 +417,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
                   <div key={t.topic} className="mb-3.5">
                     <div className="flex items-center gap-1.5 mb-2">
                       <AlertTriangle size={13} color="#F97316" />
-                      <span className="text-[0.8rem] font-bold text-primary">
+                      <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">
                         {t.topic}
                       </span>
                       <span className="text-[0.68rem] font-bold text-white bg-error rounded py-px px-1.5">
@@ -446,10 +443,10 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
             <div className="bg-success/6 rounded-xl py-3 px-3.5 border border-success/[0.18] mb-4 flex items-start gap-2.5">
               <CheckCircle size={16} color="#10B981" className="mt-px shrink-0" />
               <div>
-                <div className="text-[0.8rem] font-bold text-primary mb-1">
+                <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0] mb-1">
                   Điểm mạnh của bạn
                 </div>
-                <div className="text-[0.75rem] text-[#475569]">
+                <div className="text-[0.75rem] text-[#475569] dark:text-[#94A3B8]">
                   {strongTopics.map(t => `${t.topic} (${t.rate}%)`).join(" · ")}
                 </div>
               </div>
@@ -459,7 +456,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
           {/* CTA: flashcard practice */}
           <div
             onClick={() => setActiveTab("flashcard")}
-            className="flex items-center justify-between bg-banner-purple rounded-[18px] py-3.5 px-4 cursor-pointer text-white mb-2 shadow-glow-purple"
+            className="flex items-center justify-between bg-banner-purple rounded-2xl py-3.5 px-4 cursor-pointer text-white mb-2 shadow-[0_2px_6px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 transition duration-200"
           >
             <div>
               <div className="text-[0.88rem] font-bold">Ôn tập ngay với Flashcard</div>
