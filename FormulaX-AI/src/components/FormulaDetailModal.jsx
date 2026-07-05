@@ -77,7 +77,7 @@ export default function FormulaDetailModal({
     return (
       <div>
         {parsed.intro && (
-          <div className="mb-3 font-semibold text-[0.85rem] text-[#475569]">
+          <div className="mb-3 font-semibold text-[0.85rem] text-[#475569] dark:text-[#94A3B8]">
             <RichTextRenderer text={parsed.intro} />
           </div>
         )}
@@ -106,7 +106,7 @@ export default function FormulaDetailModal({
         </div>
 
         {parsed.footer && (
-          <div className="mt-2.5 text-[0.8rem] text-[#64748B] italic leading-[1.4]">
+          <div className="mt-2.5 text-[0.8rem] text-[#64748B] dark:text-[#94A3B8] italic leading-[1.4]">
             <RichTextRenderer text={parsed.footer} />
           </div>
         )}
@@ -117,7 +117,7 @@ export default function FormulaDetailModal({
   return (
     <div className="fixed inset-0 bg-[rgba(15,23,42,0.35)] backdrop-blur-[8px] z-[1000] flex items-end md:items-center justify-center [animation:fadeIn_0.25s_ease-out]" onClick={onClose}>
       <div
-        className="bg-white w-full max-w-[600px] rounded-t-2xl md:rounded-2xl py-6 px-4 max-h-[85vh] md:max-h-[80vh] overflow-y-auto shadow-[0_-8px_32px_rgba(15,23,42,0.08)] [animation:slideUp_0.35s_cubic-bezier(0.16,1,0.3,1)] relative border border-[rgba(30,58,95,0.07)] dark:border-[#334155]"
+        className="bg-white dark:bg-[#1E293B] w-full max-w-[600px] rounded-t-2xl md:rounded-2xl py-6 px-4 max-h-[85vh] md:max-h-[80vh] overflow-y-auto shadow-[0_-8px_32px_rgba(15,23,42,0.08)] [animation:slideUp_0.35s_cubic-bezier(0.16,1,0.3,1)] relative border border-[rgba(30,58,95,0.07)] dark:border-[#334155]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-10 h-1 bg-[#e2e8f0] rounded-full mx-auto mb-4 md:hidden" />
@@ -131,7 +131,7 @@ export default function FormulaDetailModal({
           <span className="text-[0.75rem] font-bold uppercase text-secondary bg-secondary/6 py-1 px-2.5 rounded-lg inline-block">
             Lớp {formula.grade} • {formula.topic}
           </span>
-          <h2 className="text-[1.35rem] font-extrabold text-[#1E3A5F] mt-1.5 flex items-center gap-2">
+          <h2 className="text-[1.35rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] mt-1.5 flex items-center gap-2">
             {formula.name}
           </h2>
         </div>
@@ -171,12 +171,12 @@ export default function FormulaDetailModal({
           <div className="mt-2">
             <h4 className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] uppercase tracking-[0.5px] mb-3 flex items-center justify-between gap-1.5">
               <span>Ghi chú của bạn</span>
-              <span className="text-[0.7rem] text-[#666] normal-case font-medium flex items-center gap-0.5">
+              <span className="text-[0.7rem] text-[#666] dark:text-[#94A3B8] normal-case font-medium flex items-center gap-0.5">
                 <Edit3 size={10} /> Tự động lưu khi nhấn Lưu
               </span>
             </h4>
             <textarea
-              className="w-full min-h-[100px] bg-[#f8fafc] border-[1.5px] border-[#e2e8f0] rounded-xl p-3 text-[0.85rem] font-medium text-primary dark:text-[#E2E8F0] resize-y transition duration-200 focus:border-secondary focus:bg-white focus:shadow-[0_0_0_3px_rgba(59,130,246,0.1)]"
+              className="w-full min-h-[100px] bg-[#f8fafc] border-[1.5px] border-[#e2e8f0] rounded-xl p-3 text-[0.85rem] font-medium text-primary dark:text-[#E2E8F0] resize-y transition duration-200 focus:border-accent focus:bg-white focus:shadow-[0_0_0_3px_rgba(217,119,6,0.1)]"
               placeholder="Nhập ghi chú cá nhân của bạn về công thức này (ví dụ: mẹo nhớ nhanh, các lỗi sai cần tránh...)"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}

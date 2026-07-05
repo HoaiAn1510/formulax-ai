@@ -73,7 +73,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
           {STEPS.map((_, i) => (
             <div key={i} style={{
               height: "4px", flex: 1, borderRadius: "2px",
-              background: i <= step ? "#3B82F6" : "#E2E8F0",
+              background: i <= step ? "#D97706" : "#E2E8F0",
               transition: "background 0.3s",
             }} />
           ))}
@@ -102,10 +102,10 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
             {[10, 11, 12].map((g) => (
               <button key={g} onClick={() => setSelectedGrade(g)} style={{
                 flex: 1, padding: "14px 8px", borderRadius: "12px", cursor: "pointer",
-                border: `2px solid ${selectedGrade === g ? "#3B82F6" : "#E2E8F0"}`,
-                background: selectedGrade === g ? "rgba(59,130,246,0.06)" : "white",
+                border: `2px solid ${selectedGrade === g ? "#D97706" : "#E2E8F0"}`,
+                background: selectedGrade === g ? "rgba(217,119,6,0.06)" : "white",
                 fontWeight: "800", fontSize: "1.05rem",
-                color: selectedGrade === g ? "#3B82F6" : "#64748B",
+                color: selectedGrade === g ? "#D97706" : "#64748B",
                 transition: "all 0.15s",
                 position: "relative",
               }}>
@@ -114,7 +114,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
                   <span style={{
                     position: "absolute", top: "6px", right: "6px",
                     width: "14px", height: "14px", borderRadius: "50%",
-                    background: "#3B82F6", display: "flex", alignItems: "center", justifyContent: "center",
+                    background: "#D97706", display: "flex", alignItems: "center", justifyContent: "center",
                   }}>
                     <Check size={9} color="white" />
                   </span>
@@ -149,7 +149,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
             cursor: step === 0 && !selectedGrade ? "not-allowed" : "pointer",
             background: step === 0 && !selectedGrade
               ? "#E2E8F0"
-              : "linear-gradient(135deg, #1E3A5F 0%, #3B82F6 100%)",
+              : "#D97706",
             color: step === 0 && !selectedGrade ? "#94A3B8" : "white",
             fontWeight: "800", fontSize: "0.9rem",
             display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
