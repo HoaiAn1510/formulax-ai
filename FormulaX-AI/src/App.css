@@ -25,7 +25,7 @@
   --premium-grad: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
   --primary-grad: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
   --glow-blue: 0 2px 6px rgba(15, 23, 42, 0.05);
-  --glow-gold: 0 2px 6px rgba(15, 23, 42, 0.05);
+  --glow-gold: 0 6px 16px rgba(217, 119, 6, 0.28);  /* amber glow — dùng cho hover nút primary/premium */
   --glow-slate: 0 2px 6px rgba(15, 23, 42, 0.05);
   --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.05); /* trước đây bị thiếu định nghĩa — mọi box-shadow:var(--shadow-sm) render "none" */
 
@@ -302,6 +302,10 @@
   transition: var(--trans-fast);
 }
 
+.btn:active {
+  transform: scale(0.98);
+}
+
 .btn-primary {
   background: var(--accent);
   color: white;
@@ -311,6 +315,7 @@
 .btn-primary:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
+  box-shadow: var(--glow-gold);
 }
 
 .btn-secondary {
@@ -334,6 +339,7 @@
 .btn-premium:hover {
   background: linear-gradient(135deg, #B45309 0%, #D97706 100%);
   transform: translateY(-1px);
+  box-shadow: var(--glow-gold);
 }
 
 .btn-premium.vibrate {
