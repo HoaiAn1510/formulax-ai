@@ -192,15 +192,15 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
       </div>
 
       <div className="md:flex md:gap-5 md:items-start">
-        <div className="md:flex-1 md:max-w-[380px]">
-          <div className="grid grid-cols-7 gap-[3px] mb-[3px]">
+        <div className="md:flex-1 md:max-w-[520px]">
+          <div className="grid grid-cols-7 gap-1 md:gap-1.5 mb-1">
             {["T2","T3","T4","T5","T6","T7","CN"].map(d => (
-              <div key={d} className="text-center text-[0.58rem] text-[#94A3B8] font-bold">{d}</div>
+              <div key={d} className="text-center text-[0.62rem] md:text-[0.72rem] text-[#94A3B8] font-bold">{d}</div>
             ))}
           </div>
 
           {weeks.map((week, wi) => (
-            <div key={wi} className="grid grid-cols-7 gap-[3px] mb-[3px]">
+            <div key={wi} className="grid grid-cols-7 gap-1 md:gap-1.5 mb-1">
               {week.map(({ dateStr, day }) => {
                 const active = dateSet.has(dateStr);
                 const isSelected = dateStr === selectedDate;
@@ -210,7 +210,7 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
                     key={dateStr}
                     title={dateStr}
                     onClick={() => !isFuture && onSelectDate(dateStr)}
-                    className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
+                    className={`aspect-square rounded flex items-center justify-center text-[0.62rem] md:text-[0.85rem] font-bold ${
                       isFuture ? "bg-transparent" : "cursor-pointer hover:opacity-80"
                     } ${
                       isFuture ? "" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
