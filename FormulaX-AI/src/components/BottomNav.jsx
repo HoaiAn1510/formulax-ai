@@ -58,7 +58,10 @@ export default function BottomNav({
   };
 
   return (
-    <nav className="group/sidebar fixed bottom-0 left-0 right-0 md:right-auto md:bottom-auto md:top-0 h-[72px] md:h-screen md:w-[88px] md:hover:w-60 bg-white/95 max-md:dark:bg-[#1E293B] md:!bg-[#16243A] backdrop-blur-[20px] md:backdrop-blur-none border-t md:border-t-0 md:border-r border-[rgba(30,58,95,0.07)] max-md:dark:border-[#334155] md:!border-[#0F172A] shadow-[0_-4px_20px_rgba(0,0,0,0.02)] md:shadow-none flex md:flex-col justify-around md:justify-start items-center md:items-stretch px-2 md:px-0 md:pt-4 md:overflow-y-auto md:overflow-x-hidden z-[100] md:transition-[width] md:duration-300 md:ease-in-out">
+    <nav
+      onMouseLeave={() => { setNotifOpen(false); setAccountOpen(false); }}
+      className="group/sidebar fixed bottom-0 left-0 right-0 md:right-auto md:bottom-auto md:top-0 h-[72px] md:h-screen md:w-[88px] md:hover:w-60 bg-white/95 max-md:dark:bg-[#1E293B] md:!bg-[#16243A] backdrop-blur-[20px] md:backdrop-blur-none border-t md:border-t-0 md:border-r border-[rgba(30,58,95,0.07)] max-md:dark:border-[#334155] md:!border-[#0F172A] shadow-[0_-4px_20px_rgba(0,0,0,0.02)] md:shadow-none flex md:flex-col justify-around md:justify-start items-center md:items-stretch px-2 md:px-0 md:pt-4 md:overflow-y-auto md:overflow-x-hidden z-[100] md:transition-[width] md:duration-300 md:ease-in-out"
+    >
 
       {/* Logo header — chỉ hiện trên desktop (sidebar), luôn nền navy bất kể toggle dark mode */}
       <div className="hidden md:flex items-center gap-2.5 pt-[18px] pb-3.5 px-5 border-b border-[#f1f5f9] max-md:dark:border-[#334155] md:!border-[#0F172A] mb-2">
