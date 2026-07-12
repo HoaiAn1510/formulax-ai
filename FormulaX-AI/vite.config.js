@@ -10,6 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
+      injectRegister: false, // đăng ký thủ công qua virtual:pwa-register trong main.jsx để có logic tự reload khi có bản mới
       includeAssets: ['favicon.svg', 'icons.svg'],
       manifest: {
         name: 'FormulaX AI - Ôn thi Công thức Toán THPT',
