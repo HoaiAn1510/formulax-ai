@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, BarChart2 } from "lucide-react";
+import CountUp from "../components/CountUp";
 
 // Số ngẫu nhiên có seed (từ chuỗi ngày hôm nay) — cùng 1 ngày luôn ra cùng thứ tự,
 // sang ngày khác thì đổi. Dùng để: (1) phá đồng hạng ổn định trong ngày, (2) cho user
@@ -142,15 +143,15 @@ export default function Dashboard({
           </div>
           <div className="glass-card grid grid-cols-3 py-4 mb-6 md:mb-8 dark:bg-[#1E293B] dark:border-[#334155]">
             <div className="text-center py-2 border-r border-[#f1f5f9]">
-              <div className="text-[1.7rem] font-extrabold text-secondary">{todayStats?.formulasViewed ?? 0}</div>
+              <div className="text-[1.7rem] font-extrabold text-secondary"><CountUp value={todayStats?.formulasViewed ?? 0} /></div>
               <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Công thức xem</div>
             </div>
             <div className="text-center py-2 border-r border-[#f1f5f9]">
-              <div className="text-[1.7rem] font-extrabold text-success">{todayStats?.flashcardsStudied ?? 0}</div>
+              <div className="text-[1.7rem] font-extrabold text-success"><CountUp value={todayStats?.flashcardsStudied ?? 0} /></div>
               <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Flashcard đã ôn</div>
             </div>
             <div className="text-center py-2">
-              <div className="text-[1.7rem] font-extrabold text-premium">{todayStats?.quizzesCompleted ?? 0}</div>
+              <div className="text-[1.7rem] font-extrabold text-premium"><CountUp value={todayStats?.quizzesCompleted ?? 0} /></div>
               <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Quiz hôm nay</div>
             </div>
           </div>

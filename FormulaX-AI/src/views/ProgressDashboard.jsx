@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
+import CountUp from "../components/CountUp";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -91,13 +92,13 @@ function getLongestStreak(activityDates) {
   return longest;
 }
 
-function StreakStat({ icon, label, value }) {
+function StreakStat({ icon, label, value, unit }) {
   return (
     <div className="flex-1 md:flex-none bg-[#F8FAFC] dark:bg-[#0F172A]/40 border border-[#F1F5F9] dark:border-[#334155] rounded-xl p-3 flex flex-col items-center md:items-start gap-1">
       <div className="flex items-center gap-1.5 text-[#94A3B8] text-[0.62rem] font-bold uppercase tracking-wide">
         {icon} {label}
       </div>
-      <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0]">{value}</div>
+      <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0]"><CountUp value={value} /> {unit}</div>
     </div>
   );
 }
@@ -189,7 +190,7 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
           <Flame size={16} color="#F97316" />
           <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.88rem]">Chuỗi học</span>
         </div>
-        <span className="font-extrabold text-[#F97316] text-[1.1rem]">{streak} ngày</span>
+        <span className="font-extrabold text-[#F97316] text-[1.1rem]"><CountUp value={streak} /> ngày</span>
       </div>
 
       <div className="md:flex md:gap-5 md:items-start">
@@ -238,8 +239,8 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
         </div>
 
         <div className="flex gap-2 md:flex-col md:gap-3 mt-3 md:mt-0 md:w-40 md:shrink-0">
-          <StreakStat icon={<Flame size={12} color="#F97316" />} label="Streak dài nhất" value={`${longestStreak} ngày`} />
-          <StreakStat icon={<BarChart2 size={12} color="#D97706" />} label="Đã học tháng này" value={`${daysThisMonth} ngày`} />
+          <StreakStat icon={<Flame size={12} color="#F97316" />} label="Streak dài nhất" value={longestStreak} unit="ngày" />
+          <StreakStat icon={<BarChart2 size={12} color="#D97706" />} label="Đã học tháng này" value={daysThisMonth} unit="ngày" />
         </div>
       </div>
 
