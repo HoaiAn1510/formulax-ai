@@ -337,6 +337,31 @@ export default function FlashcardView({
     }
   };
 
+  // Phím tắt lúc học: Space lật thẻ; ← → chuyển thẻ khi chưa lật, chấm điểm khi đã lật
+  // (trái = Cần ôn thêm, phải = Nhớ rồi — đúng vị trí 2 nút chấm điểm trên màn hình).
+  useEffect(() => {
+    if (view !== "study") return;
+    const handleKeyDown = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        setIsFlipped(prev => !prev);
+        return;
+      }
+      if (e.key === "ArrowLeft") {
+        if (isFlipped) handleGrade(false); else handlePrev();
+        return;
+      }
+      if (e.key === "ArrowRight") {
+        if (isFlipped) handleGrade(true); else handleNext();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [view, isFlipped, currentIndex, cards.length]);
+
   const handleRestartDeck = () => {
     setCurrentIndex(0);
     setIsFlipped(false);
@@ -770,6 +795,10 @@ export default function FlashcardView({
                 <button className="arrow-btn !text-[#1E3A5F]" onClick={handleNext} disabled={currentIndex === cards.length - 1}>
                   <ArrowRight size={18} />
                 </button>
+              </div>
+
+              <div className="hidden md:block text-[0.72rem] text-[#94A3B8] font-semibold -mt-1">
+                Phím tắt: <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">Space</kbd> lật thẻ, <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển thẻ / chấm điểm
               </div>
 
               {/* Grading panel */}

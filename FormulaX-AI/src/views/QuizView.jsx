@@ -3,6 +3,7 @@ import { GraduationCap, Timer, CheckCircle, XCircle, Award, Crown, Lock, ArrowLe
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { questionsPool as pool } from "../data/questions";
 import { saveQuizResult } from "../lib/supabase";
+import Confetti from "../components/Confetti";
 
 export default function QuizView({
   setActiveTab,
@@ -31,6 +32,16 @@ export default function QuizView({
   const [fillInputs, setFillInputs] = useState({});
   const [score, setScore] = useState(0);
   const [failedQuestions, setFailedQuestions] = useState([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  // Bung confetti khi vừa nộp bài và đạt từ 80% trở lên — chỉ 1 lần mỗi lần chuyển sang màn kết quả
+  useEffect(() => {
+    if (quizState === "result" && questions.length > 0 && score / questions.length >= 0.8) {
+      setShowConfetti(true);
+    } else {
+      setShowConfetti(false);
+    }
+  }, [quizState, questions.length, score]);
 
   // Timer state
   const [timeLeft, setTimeLeft] = useState(600);
@@ -222,6 +233,25 @@ export default function QuizView({
   const specificTopics = ["Đại số", "Hình học", "Giải tích", "Lượng giác", "Xác suất & Thống kê", "Mở rộng"];
   const filteredQuestions = getFilteredQuestions();
   const maxQuestions = filteredQuestions.length;
+
+  // Phím tắt lúc làm bài: 1-4 chọn đáp án (trắc nghiệm), ← → chuyển câu.
+  // Bỏ qua khi đang gõ vào ô điền đáp án (fill-in) để không phá thao tác gõ chữ/số bình thường.
+  useEffect(() => {
+    if (quizState !== "active") return;
+    const handleKeyDown = (e) => {
+      const tag = document.activeElement?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft") { handlePrevQuestion(); return; }
+      if (e.key === "ArrowRight") { handleNextQuestion(); return; }
+      if (!isFillQuestion(currentQIdx) && ["1", "2", "3", "4"].includes(e.key)) {
+        const option = currentQ?.options?.[Number(e.key) - 1];
+        if (option) handleSelectOption(option);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [quizState, currentQIdx, currentQ, quizType]);
 
   const handleTopicClick = (t) => {
     if (t === "Tất cả chủ đề") {
@@ -597,6 +627,12 @@ export default function QuizView({
                   <span>Câu hỏi {currentQIdx + 1} / {questions.length}</span>
                   <span>Đã trả lời: {questions.filter((_, i) => isFillQuestion(i) ? !!fillInputs[i]?.trim() : !!userAnswers[i]).length} / {questions.length}</span>
                 </div>
+
+                {!isFillQuestion(currentQIdx) && (
+                  <div className="hidden md:block text-[0.72rem] text-[#94A3B8] font-semibold">
+                    Phím tắt: <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">1</kbd>-<kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">4</kbd> chọn đáp án, <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển câu
+                  </div>
+                )}
               </div>
 
               <div className="bg-white/95 dark:bg-[rgba(30,41,59,0.95)] border border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-2xl p-6 shadow-[0_4px_20px_rgba(30,58,95,0.04)] mb-6 backdrop-blur-[10px] flex flex-col gap-6 [animation:fadeIn_0.4s_ease-out]">
@@ -683,6 +719,7 @@ export default function QuizView({
           {/* Quiz Results Screen */}
           {quizState === "result" && (
             <div className="quiz-results-container">
+              <Confetti active={showConfetti} />
               <div className="summary-card !mt-0">
                 <div className="summary-icon" style={{ backgroundColor: "rgba(30, 58, 95, 0.05)", color: "#1E3A5F" }}>
                   <Award size={32} />
