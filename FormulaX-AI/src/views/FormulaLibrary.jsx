@@ -204,8 +204,8 @@ export default function FormulaLibrary({
                     key={topic}
                     className={`whitespace-nowrap px-4 py-2 rounded-full border-[1.5px] text-[0.8rem] font-bold cursor-pointer transition duration-200 ${
                       isActive
-                        ? "bg-primary border-primary text-white"
-                        : "bg-white border-[#E2E8F0] text-[#475569] hover:border-[#cbd5e1] hover:bg-[#f8fafc]"
+                        ? "bg-primary border-primary text-white dark:bg-accent dark:border-accent"
+                        : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#475569] dark:text-[#94A3B8] hover:border-[#cbd5e1] hover:bg-[#f8fafc] dark:hover:bg-[#334155]"
                     }`}
                     onClick={() => handleTopicClick(topic)}
                     style={topic === "Yêu thích" && !isActive ? {
