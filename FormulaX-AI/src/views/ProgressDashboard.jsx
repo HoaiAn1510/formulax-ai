@@ -4,12 +4,13 @@ import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StatCard({ icon, value, label, color }) {
+function StatCard({ icon, value, label, sublabel, color }) {
   return (
     <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] py-3.5 px-3 flex flex-col items-center gap-1">
       <div style={{ color }} className="mb-0.5">{icon}</div>
       <div className="text-[1.35rem] font-extrabold text-primary dark:text-[#E2E8F0] leading-[1.2]">{value}</div>
       <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold text-center">{label}</div>
+      {sublabel && <div className="text-[0.62rem] text-[#94A3B8] text-center">{sublabel}</div>}
     </div>
   );
 }
@@ -282,7 +283,7 @@ function getFormulasForQuizTopic(quizTopic, formulas) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ProgressDashboard({ user, stats, formulas, setActiveTab, onViewDetail, isPremium }) {
+export default function ProgressDashboard({ user, formulas, setActiveTab, onViewDetail, isPremium }) {
   const [selectedDate, setSelectedDate]   = useState(new Date().toISOString().slice(0, 10));
   const [streak, setStreak]               = useState(0);
   const [activityDates, setActivityDates] = useState([]);
@@ -365,10 +366,10 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
             </div>
           )}
 
-          {/* Stat cards: 2-column row */}
+          {/* Stat cards: 2-column row — scoped to the day selected on the calendar below */}
           <div className="grid grid-cols-2 gap-2.5 mb-3">
-            <StatCard icon={<ClipboardList size={20} />} value={stats.quizzesCompleted}  label="Quiz đã làm" color="#3B82F6" />
-            <StatCard icon={<Layers size={20} />}        value={stats.flashcardsStudied} label="Thẻ đã ôn"   color="#10B981" />
+            <StatCard icon={<ClipboardList size={20} />} value={selectedDayData.quizzes.length}      label="Quiz đã làm" sublabel={selectedDateLabel} color="#3B82F6" />
+            <StatCard icon={<Layers size={20} />}        value={selectedDayData.flashcardIds.length} label="Thẻ đã ôn"   sublabel={selectedDateLabel} color="#10B981" />
           </div>
 
           {/* Streak calendar + Topic performance: side-by-side columns on wide desktop screens */}

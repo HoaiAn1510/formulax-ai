@@ -439,7 +439,6 @@ export default function App() {
         return (
           <ProgressDashboard
             user={user}
-            stats={stats}
             formulas={formulas}
             setActiveTab={setActiveTab}
             onViewDetail={handleViewDetail}
