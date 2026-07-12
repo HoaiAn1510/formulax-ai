@@ -17,9 +17,16 @@ function navItemClass(active) {
 }
 
 function navIconClass(active) {
-  const base = "flex items-center justify-center relative w-9 h-9 md:w-auto md:h-auto rounded-xl transition duration-200 shrink-0";
+  const base = "flex items-center justify-center relative w-9 h-9 md:w-auto md:h-auto rounded-xl transition duration-200 shrink-0 group-hover:scale-110";
   if (active) return `${base} bg-secondary text-white shadow-[0_4px_10px_rgba(59,130,246,0.2)] md:bg-transparent md:text-white md:shadow-none`;
   return `${base} md:text-inherit`;
+}
+
+// Vạch amber mảnh bên trái item active trên sidebar desktop — điểm nhấn hổ phách
+// trên nền pill xanh navy có sẵn, vẫn thấy được khi sidebar thu gọn (chỉ còn icon).
+function ActiveAccentBar({ show }) {
+  if (!show) return null;
+  return <span className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-accent rounded-r-full" />;
 }
 
 // Chữ nhãn cạnh icon — trên desktop mặc định thu về 0 (ẩn), chỉ hiện khi rê chuột vào
@@ -80,6 +87,7 @@ export default function BottomNav({
             onClick={() => setActiveTab(tab.id)}
             title={tab.label}
           >
+            <ActiveAccentBar show={active} />
             <div className={navIconClass(active)}><Icon size={20} /></div>
             <span className={collapsibleLabel}>{tab.label}</span>
           </button>
@@ -96,6 +104,7 @@ export default function BottomNav({
           onClick={() => setActiveTab("settings")}
           title="Cài đặt"
         >
+          <ActiveAccentBar show={activeTab === "settings"} />
           <div className={navIconClass(activeTab === "settings")}><Settings size={18} /></div>
           <span className={collapsibleLabel}>Cài đặt</span>
         </button>
@@ -106,9 +115,10 @@ export default function BottomNav({
           onClick={toggleNotif}
           title="Thông báo"
         >
+          <ActiveAccentBar show={notifOpen} />
           <div className={`${navIconClass(notifOpen)} relative`}>
             <Bell size={18} />
-            {hasUnread && <span className="absolute -top-[3px] -right-[3px] w-[7px] h-[7px] rounded-full bg-error border-[1.5px] border-white max-md:dark:border-[#1E293B] md:!border-[#16243A]" />}
+            {hasUnread && <span className="absolute -top-[3px] -right-[3px] w-[7px] h-[7px] rounded-full bg-error border-[1.5px] border-white max-md:dark:border-[#1E293B] md:!border-[#16243A] animate-pulse" />}
           </div>
           <span className={collapsibleLabel}>Thông báo</span>
           <ChevronDown size={14} className={`hidden md:group-hover/sidebar:block md:ml-auto transition-transform duration-200 text-[#94A3B8] shrink-0 ${notifOpen ? "rotate-180" : "rotate-0"}`} />
@@ -133,6 +143,7 @@ export default function BottomNav({
           onClick={toggleAccount}
           title="Tài khoản"
         >
+          <ActiveAccentBar show={accountOpen} />
           <div className={navIconClass(accountOpen)}>
             {isLoggedIn && user?.picture ? (
               <img src={user.picture} referrerPolicy="no-referrer" alt=""
