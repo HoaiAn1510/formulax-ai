@@ -24,6 +24,7 @@ import BottomNav from "./components/BottomNav";
 import FormulaDetailModal from "./components/FormulaDetailModal";
 import OnboardingModal from "./components/OnboardingModal";
 import { ToastContainer, showToast } from "./components/Toast";
+import { ConfirmDialogHost } from "./components/ConfirmDialog";
 
 import Dashboard from "./views/Dashboard";
 import FormulaLibrary from "./views/FormulaLibrary";
@@ -609,6 +610,7 @@ export default function App() {
       )}
 
       <ToastContainer />
+      <ConfirmDialogHost />
     </div>
   );
 }

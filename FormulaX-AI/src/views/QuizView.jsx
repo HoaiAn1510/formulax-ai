@@ -4,6 +4,8 @@ import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { questionsPool as pool } from "../data/questions";
 import { saveQuizResult } from "../lib/supabase";
 import Confetti from "../components/Confetti";
+import { showConfirm } from "../components/ConfirmDialog";
+import { showToast } from "../components/Toast";
 
 export default function QuizView({
   setActiveTab,
@@ -211,13 +213,16 @@ export default function QuizView({
     }
   };
 
-  const handleSubmitQuiz = () => {
+  const handleSubmitQuiz = async () => {
     const unansweredCount = questions.filter((_, idx) =>
       isFillQuestion(idx) ? !fillInputs[idx]?.trim() : !userAnswers[idx]
     ).length;
     if (unansweredCount > 0) {
-      const confirmSubmit = window.confirm(`Bạn còn ${unansweredCount} câu hỏi chưa trả lời. Bạn có chắc chắn muốn nộp bài?`);
-      if (!confirmSubmit) return;
+      const confirmed = await showConfirm(
+        `Bạn còn ${unansweredCount} câu hỏi chưa trả lời. Bạn có chắc chắn muốn nộp bài?`,
+        { confirmLabel: "Nộp bài", cancelLabel: "Làm tiếp" }
+      );
+      if (!confirmed) return;
     }
     handleSubmitQuizAuto();
   };
@@ -508,7 +513,7 @@ export default function QuizView({
                       }`}
                       onClick={() => {
                         if (!isPremium) {
-                          alert("Phương thức Điền đáp án yêu cầu gói Premium!");
+                          showToast("Phương thức Điền đáp án yêu cầu gói Premium!", "info");
                           setActiveTab("premium");
                         } else {
                           setQuizType("fill-in");
@@ -529,7 +534,7 @@ export default function QuizView({
                       }`}
                       onClick={() => {
                         if (!isPremium) {
-                          alert("Phương thức Kết hợp yêu cầu gói Premium!");
+                          showToast("Phương thức Kết hợp yêu cầu gói Premium!", "info");
                           setActiveTab("premium");
                         } else {
                           setQuizType("hybrid");

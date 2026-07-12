@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
+import { showToast } from "../components/Toast";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -61,7 +62,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
   const handleUpgrade = async (plan = "monthly") => {
     if (!user?.googleId) {
-      alert("Vui lòng đăng nhập trước khi nâng cấp Premium.");
+      showToast("Vui lòng đăng nhập trước khi nâng cấp Premium.", "error");
       return;
     }
     setIsProcessing(true);
@@ -86,7 +87,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
   const handleDowngrade = () => {
     setIsPremium(false);
-    alert("Đã chuyển tài khoản về phiên bản Free (thao tác cục bộ, không ảnh hưởng trạng thái thanh toán thật).");
+    showToast("Đã chuyển tài khoản về phiên bản Free (thao tác cục bộ, không ảnh hưởng trạng thái thanh toán thật).", "info");
   };
 
   const toggleFaq = (idx) => {
@@ -380,7 +381,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 </button>
                 <button
                   type="button"
-                  onClick={() => alert("ZaloPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.")}
+                  onClick={() => showToast("ZaloPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.", "info")}
                   className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer opacity-50"
                 >
                   <div className="w-10 h-10 rounded-full bg-[#007DFF] flex items-center justify-center text-white font-extrabold text-[0.7rem]">Zalo</div>
@@ -388,7 +389,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 </button>
                 <button
                   type="button"
-                  onClick={() => alert("VNPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.")}
+                  onClick={() => showToast("VNPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.", "info")}
                   className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer opacity-50"
                 >
                   <div className="w-10 h-10 rounded-full bg-[#EA2027] flex items-center justify-center text-white font-extrabold text-[0.7rem]">VN</div>
@@ -437,7 +438,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                   </button>
                   <button
                     className="btn btn-secondary h-[42px] text-[0.85rem] px-5 rounded-lg"
-                    onClick={() => alert("Bạn đã ở trang so sánh các gói!")}
+                    onClick={() => showToast("Bạn đã ở trang so sánh các gói!", "info")}
                   >
                     <span>Xem so sánh</span>
                   </button>
