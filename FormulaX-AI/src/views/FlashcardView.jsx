@@ -1,11 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   Layers, ArrowLeft, ArrowRight, RotateCw, CheckCircle, AlertTriangle,
   Plus, FileDown, Lock, ChevronRight, Book, HelpCircle, BarChart3, Clock,
-  Eye, Heart, Pencil, Trash2, X, Check, BookOpen, Star,
+  Eye, Heart, Pencil, Trash2, X, Check, BookOpen, Star, Sparkles,
 } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { saveFlashcardActivity } from "../lib/supabase";
+import { sortFormulaIdsByDue, getDueReviewQueue } from "../utils/spacedRepetition";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -176,10 +177,15 @@ export default function FlashcardView({
   onDeleteDeck,
   onRenameDeck,
   onRemoveFormula,
+  progress = {},
+  onGradeCard,
 }) {
   // view: "list" | "study" | "summary"
   const [view, setView] = useState("list");
   const [activeDeckId, setActiveDeckId] = useState(null);
+  // Phiên "Ôn tập hôm nay" — gộp thẻ đến hạn/mới từ mọi bộ thẻ, không gắn với 1 deck cụ thể
+  const [isDueReviewSession, setIsDueReviewSession] = useState(false);
+  const [dueReviewFormulaIds, setDueReviewFormulaIds] = useState([]);
 
   // Study session state
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -204,19 +210,41 @@ export default function FlashcardView({
 
   const activeDeck = decks.find(d => d.id === activeDeckId) || null;
 
-  // Cards for the active deck
-  const cards = activeDeck
-    ? activeDeck.formulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean)
-    : [];
+  // Cards for the active deck — quá hạn/đến hạn lên đầu, thẻ mới tiếp theo, chưa đến hạn cuối cùng
+  const cards = isDueReviewSession
+    ? dueReviewFormulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean)
+    : activeDeck
+      ? sortFormulaIdsByDue(activeDeck.formulaIds, progress).map(id => formulas.find(f => f.id === id)).filter(Boolean)
+      : [];
 
   const currentCard = cards[currentIndex] || null;
+
+  // Số thẻ đến hạn/mới gộp từ mọi bộ thẻ hiện có — dùng cho entry point "Ôn tập hôm nay"
+  const dueReviewPreviewIds = useMemo(() => {
+    const allIds = new Set();
+    decks.forEach(d => d.formulaIds.forEach(id => allIds.add(id)));
+    return getDueReviewQueue(Array.from(allIds), progress);
+  }, [decks, progress]);
 
   // ─── Handlers: deck list ──────────────────────────────────────────────────
 
   const handleStartDeck = (deckId) => {
     const deck = decks.find(d => d.id === deckId);
     if (!deck) return;
+    setIsDueReviewSession(false);
     setActiveDeckId(deckId);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setRememberedCount(0);
+    setReviewCount(0);
+    setView("study");
+  };
+
+  const handleStartDueReview = () => {
+    if (dueReviewPreviewIds.length === 0) return;
+    setIsDueReviewSession(true);
+    setDueReviewFormulaIds(dueReviewPreviewIds);
+    setActiveDeckId(null);
     setCurrentIndex(0);
     setIsFlipped(false);
     setRememberedCount(0);
@@ -279,6 +307,8 @@ export default function FlashcardView({
         grade: currentCard.grade,
       }).catch(console.error);
     }
+
+    if (currentCard) onGradeCard?.(currentCard.id, remembered);
 
     setIsFlipped(false);
 
@@ -362,7 +392,7 @@ export default function FlashcardView({
       return parts.join("");
     };
 
-    const deckName = activeDeck?.name || "Flashcard";
+    const deckName = isDueReviewSession ? "Ôn tập hôm nay" : (activeDeck?.name || "Flashcard");
     const exportDate = new Date().toLocaleDateString("vi-VN");
 
     const cardRows = cards.map((card, i) => `
@@ -453,6 +483,27 @@ export default function FlashcardView({
                 Học công thức qua thẻ ghi nhớ
               </p>
             </div>
+
+            {/* Ôn tập hôm nay — gộp thẻ đến hạn/mới từ mọi bộ thẻ theo lịch spaced-repetition */}
+            {hasDecks && dueReviewPreviewIds.length > 0 && (
+              <div
+                onClick={handleStartDueReview}
+                className="flex items-center justify-between bg-banner-orange rounded-2xl px-4 py-[13px] cursor-pointer text-white mb-5 shadow-[0_2px_6px_rgba(15,23,42,0.05)]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-[10px] bg-white/15 flex items-center justify-center shrink-0">
+                    <Sparkles size={18} />
+                  </div>
+                  <div>
+                    <div className="text-[0.88rem] font-bold">Ôn tập hôm nay</div>
+                    <div className="text-[0.7rem] opacity-75 mt-[1px]">
+                      {dueReviewPreviewIds.length} thẻ đến hạn ôn lại
+                    </div>
+                  </div>
+                </div>
+                <ChevronRight size={18} className="opacity-70 shrink-0" />
+              </div>
+            )}
 
             {/* EMPTY STATE */}
             {!hasDecks && (
@@ -767,7 +818,7 @@ export default function FlashcardView({
               </div>
               <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F]">Hoàn thành bộ thẻ!</h2>
               <p className="text-[0.85rem] text-[#64748B]">
-                Bạn đã ôn tập xong bộ thẻ <strong>{activeDeck?.name}</strong>.
+                Bạn đã ôn tập xong <strong>{isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}</strong>.
               </p>
 
               <div className="summary-stats-grid">

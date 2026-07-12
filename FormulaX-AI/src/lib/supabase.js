@@ -220,6 +220,42 @@ export async function deleteFlashcardDeck(googleId, deckId) {
   if (error) console.error("[Supabase] deleteFlashcardDeck:", error);
 }
 
+// ─── Flashcard Spaced Repetition Progress ─────────────────────────────────────
+
+export async function loadFlashcardProgress(googleId) {
+  const { data, error } = await supabase
+    .from("flashcard_progress")
+    .select("*")
+    .eq("google_id", googleId);
+  if (error) { console.error("[Supabase] loadFlashcardProgress:", error); return {}; }
+  const map = {};
+  (data || []).forEach(row => {
+    map[row.formula_id] = {
+      repetitions: row.repetitions,
+      intervalDays: Number(row.interval_days),
+      easeFactor: Number(row.ease_factor),
+      nextReviewAt: row.next_review_at,
+      lastReviewedAt: row.last_reviewed_at,
+    };
+  });
+  return map;
+}
+
+export async function upsertFlashcardProgress(googleId, formulaId, progress) {
+  if (!googleId) return;
+  const { error } = await supabase.from("flashcard_progress").upsert({
+    google_id: googleId,
+    formula_id: formulaId,
+    repetitions: progress.repetitions,
+    interval_days: progress.intervalDays,
+    ease_factor: progress.easeFactor,
+    next_review_at: progress.nextReviewAt,
+    last_reviewed_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "google_id,formula_id" });
+  if (error) console.error("[Supabase] upsertFlashcardProgress:", error);
+}
+
 // ─── Quiz Results ─────────────────────────────────────────────────────────────
 
 export async function saveQuizResult(googleId, { topic, questionsTotal, questionsCorrect }) {

@@ -13,9 +13,11 @@ import {
   saveQuizDaily,
   saveDisplayName,
   loadFlashcardDecks, upsertFlashcardDeck, deleteFlashcardDeck as deleteFlashcardDeckDB,
+  loadFlashcardProgress, upsertFlashcardProgress,
   checkAndGenerateNotifications, getNotifications, markAllNotificationsRead,
   getRecommendationContext,
 } from "./lib/supabase";
+import { computeNextReview } from "./utils/spacedRepetition";
 
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
@@ -93,6 +95,7 @@ export default function App() {
   const [searchHistory, setSearchHistory]     = useState([]);
   const [viewedFormulaIds, setViewedFormulaIds] = useState([]);
   const [flashcardDecks, setFlashcardDecks] = useState([]);
+  const [flashcardProgress, setFlashcardProgress] = useState({});
   const [addFormulaModal, setAddFormulaModal] = useState(null); // { formula } | null
   const [notifications, setNotifications] = useState([]);
   const [recommendationContext, setRecommendationContext] = useState({ weakTopics: [], recentTopic: null });
@@ -109,6 +112,7 @@ export default function App() {
       setViewedFormulaIds([]);
       setNotifications([]);
       setRecommendationContext({ weakTopics: [], recentTopic: null });
+      setFlashcardProgress({});
       return;
     }
     dataLoadedRef.current = false; // chặn save trong khi đang load
@@ -139,6 +143,8 @@ export default function App() {
         loadFlashcardDecks(user.googleId).then(cloudDecks => {
           if (cloudDecks !== null) setFlashcardDecks(cloudDecks);
         });
+        // Load lịch spaced-repetition của flashcard
+        loadFlashcardProgress(user.googleId).then(setFlashcardProgress);
         // Sinh thông báo mới (nếu có) rồi tải danh sách thông báo hiện tại
         checkAndGenerateNotifications(user.googleId, notifPrefs)
           .then(() => getNotifications(user.googleId))
@@ -356,6 +362,12 @@ export default function App() {
     });
   };
 
+  const handleGradeCard = (formulaId, remembered) => {
+    const next = computeNextReview(flashcardProgress[formulaId], remembered);
+    setFlashcardProgress(prev => ({ ...prev, [formulaId]: next }));
+    if (user?.googleId) upsertFlashcardProgress(user.googleId, formulaId, next).catch(console.error);
+  };
+
   // ─── Onboarding ───────────────────────────────────────────────────────────
   const handleOnboardingFinish = (grade) => {
     setShowOnboarding(false);
@@ -451,6 +463,8 @@ export default function App() {
             onDeleteDeck={handleDeleteFlashcardDeck}
             onRenameDeck={handleRenameFlashcardDeck}
             onRemoveFormula={handleRemoveFormulaFromDeck}
+            progress={flashcardProgress}
+            onGradeCard={handleGradeCard}
           />
         );
       case "quiz":
