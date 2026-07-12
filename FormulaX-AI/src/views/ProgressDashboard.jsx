@@ -182,7 +182,7 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
   const daysThisMonth = activityDates.filter(d => d.startsWith(monthPrefix)).length;
 
   return (
-    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-3.5 mb-5">
+    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-3.5 h-full">
       <div className="flex justify-between items-center mb-2.5">
         <div className="flex items-center gap-1.5">
           <Flame size={16} color="#F97316" />
@@ -371,60 +371,63 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
             <StatCard icon={<Layers size={20} />}        value={stats.flashcardsStudied} label="Thẻ đã ôn"   color="#10B981" />
           </div>
 
-          {/* Streak activity chart — click a day to see what was studied that day */}
-          <StreakChart
-            activityDates={activityDates}
-            streak={streak}
-            selectedDate={selectedDate}
-            onSelectDate={setSelectedDate}
-            selectedDayData={selectedDayData}
-            formulaMap={formulaMap}
-          />
+          {/* Streak calendar + Topic performance: side-by-side columns on wide desktop screens */}
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-stretch mb-4">
+            {/* Streak activity chart — click a day to see what was studied that day */}
+            <StreakChart
+              activityDates={activityDates}
+              streak={streak}
+              selectedDate={selectedDate}
+              onSelectDate={setSelectedDate}
+              selectedDayData={selectedDayData}
+              formulaMap={formulaMap}
+            />
 
-          {/* Topic performance — scoped to the day selected on the calendar above */}
-          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4 relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <BarChart2 size={16} color="#D97706" />
-              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
-                Hiệu suất theo chủ đề
-              </h2>
-              <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
-            </div>
-
-            {loading ? (
-              <div className="text-center py-5 text-[#94A3B8] text-[0.82rem]">
-                Đang tải...
+            {/* Topic performance — scoped to the day selected on the calendar above */}
+            <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 relative overflow-hidden">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart2 size={16} color="#D97706" />
+                <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
+                  Hiệu suất theo chủ đề
+                </h2>
+                <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
               </div>
-            ) : !isPremium ? (
-              <>
-                {/* Blurred placeholder bars for non-premium — fixed widths to avoid re-render flicker */}
-                {[["Giải tích","72%"],["Đại số","45%"],["Hình học","61%"],["Lượng giác","55%"],["Xác suất & Thống kê","38%"],["Mở rộng","30%"]].map(([t, w]) => (
-                  <div key={t} className="mb-3.5 blur-[4px] pointer-events-none select-none">
-                    <div className="flex justify-between mb-1.5">
-                      <span className="text-[0.82rem] font-bold">{t}</span>
-                      <span className="text-[0.78rem] font-bold">??%</span>
-                    </div>
-                    <div className="bg-[#F1F5F9] rounded-md h-2">
-                      <div className="h-full rounded-md bg-[#94A3B8]" style={{ width: w }} />
-                    </div>
-                  </div>
-                ))}
-                <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-[#1E293B]/70">
-                  <div className="text-center">
-                    <Lock size={22} color="#D97706" className="mx-auto mb-1.5" />
-                    <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">Cần Premium để xem</div>
-                  </div>
+
+              {loading ? (
+                <div className="text-center py-5 text-[#94A3B8] text-[0.82rem]">
+                  Đang tải...
                 </div>
-              </>
-            ) : hasQuizData ? (
-              filteredTopicPerf.map(t => <TopicBar key={t.topic} {...t} />)
-            ) : (
-              <EmptyState
-                message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
-                ctaLabel="Làm quiz ngay"
-                onCta={() => setActiveTab("quiz")}
-              />
-            )}
+              ) : !isPremium ? (
+                <>
+                  {/* Blurred placeholder bars for non-premium — fixed widths to avoid re-render flicker */}
+                  {[["Giải tích","72%"],["Đại số","45%"],["Hình học","61%"],["Lượng giác","55%"],["Xác suất & Thống kê","38%"],["Mở rộng","30%"]].map(([t, w]) => (
+                    <div key={t} className="mb-3.5 blur-[4px] pointer-events-none select-none">
+                      <div className="flex justify-between mb-1.5">
+                        <span className="text-[0.82rem] font-bold">{t}</span>
+                        <span className="text-[0.78rem] font-bold">??%</span>
+                      </div>
+                      <div className="bg-[#F1F5F9] rounded-md h-2">
+                        <div className="h-full rounded-md bg-[#94A3B8]" style={{ width: w }} />
+                      </div>
+                    </div>
+                  ))}
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-[#1E293B]/70">
+                    <div className="text-center">
+                      <Lock size={22} color="#D97706" className="mx-auto mb-1.5" />
+                      <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">Cần Premium để xem</div>
+                    </div>
+                  </div>
+                </>
+              ) : hasQuizData ? (
+                filteredTopicPerf.map(t => <TopicBar key={t.topic} {...t} />)
+              ) : (
+                <EmptyState
+                  message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
+                  ctaLabel="Làm quiz ngay"
+                  onCta={() => setActiveTab("quiz")}
+                />
+              )}
+            </div>
           </div>
 
           {/* AI Coach suggestions — scoped to the same selected day */}
