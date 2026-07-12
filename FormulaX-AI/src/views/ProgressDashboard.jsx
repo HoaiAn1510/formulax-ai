@@ -84,33 +84,35 @@ function StreakChart({ activityDates, streak }) {
         <span className="font-extrabold text-[#F97316] text-[1.1rem]">{streak} ngày</span>
       </div>
 
-      <div className="grid grid-cols-7 gap-[3px] mb-[3px]">
-        {["T2","T3","T4","T5","T6","T7","CN"].map(d => (
-          <div key={d} className="text-center text-[0.58rem] text-[#94A3B8] font-bold">{d}</div>
+      <div className="md:max-w-md md:mx-auto">
+        <div className="grid grid-cols-7 gap-[3px] mb-[3px]">
+          {["T2","T3","T4","T5","T6","T7","CN"].map(d => (
+            <div key={d} className="text-center text-[0.58rem] text-[#94A3B8] font-bold">{d}</div>
+          ))}
+        </div>
+
+        {weeks.map((week, wi) => (
+          <div key={wi} className="grid grid-cols-7 gap-[3px] mb-[3px]">
+            {week.map(({ dateStr, day }) => {
+              const active = dateSet.has(dateStr);
+              const isToday = dateStr === todayStr;
+              const isFuture = dateStr > todayStr;
+              return (
+                <div
+                  key={dateStr}
+                  title={dateStr}
+                  className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
+                    isFuture ? "bg-transparent" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
+                  }`}
+                  style={{ border: isToday ? "2px solid #D97706" : "1.5px solid transparent" }}
+                >
+                  {!isFuture ? day : ""}
+                </div>
+              );
+            })}
+          </div>
         ))}
       </div>
-
-      {weeks.map((week, wi) => (
-        <div key={wi} className="grid grid-cols-7 gap-[3px] mb-[3px]">
-          {week.map(({ dateStr, day }) => {
-            const active = dateSet.has(dateStr);
-            const isToday = dateStr === todayStr;
-            const isFuture = dateStr > todayStr;
-            return (
-              <div
-                key={dateStr}
-                title={dateStr}
-                className={`h-6 md:h-8 rounded flex items-center justify-center text-[0.5rem] font-bold ${
-                  isFuture ? "bg-transparent" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
-                }`}
-                style={{ border: isToday ? "2px solid #D97706" : "1.5px solid transparent" }}
-              >
-                {!isFuture ? day : ""}
-              </div>
-            );
-          })}
-        </div>
-      ))}
 
       <div className="flex gap-3 mt-2 justify-end">
         <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
@@ -262,7 +264,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
   return (
     <div className="view-container">
       <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1] md:max-w-2xl md:mx-auto">
+        <div className="relative z-[1]">
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
             <button
