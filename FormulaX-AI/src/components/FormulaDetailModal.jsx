@@ -122,7 +122,7 @@ export default function FormulaDetailModal({
       >
         <div className="w-10 h-1 bg-[#e2e8f0] rounded-full mx-auto mb-4 md:hidden" />
 
-        <button className="absolute top-4 right-4 bg-[#f1f5f9] hover:bg-[#e2e8f0] border-none w-9 h-9 rounded-full flex items-center justify-center cursor-pointer text-primary dark:text-[#E2E8F0] transition duration-200" onClick={onClose} title="Đóng">
+        <button className="absolute top-4 right-4 bg-[#f1f5f9] hover:bg-[#e2e8f0] dark:bg-[#334155] dark:hover:bg-[#475569] border-none w-9 h-9 rounded-full flex items-center justify-center cursor-pointer text-primary dark:text-[#E2E8F0] transition duration-200" onClick={onClose} title="Đóng">
           <X size={20} />
         </button>
 
