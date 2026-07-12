@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Search, Heart, HelpCircle, XCircle, ArrowLeft, BookOpen, Layers } from "lucide-react";
+import { normalizeVi } from "../utils/textSearch";
 
 export default function FormulaLibrary({
   formulas,
@@ -9,6 +10,15 @@ export default function FormulaLibrary({
   onViewDetail,
   setActiveTab
 }) {
+  // Precompute bản không dấu 1 lần cho mỗi công thức thay vì normalize lại toàn bộ danh sách mỗi lần gõ phím
+  const searchIndex = useMemo(() => formulas.map(f => ({
+    formula: f,
+    name: normalizeVi(f.name),
+    topic: normalizeVi(f.topic),
+    explanation: normalizeVi(f.explanation),
+    tags: f.tags.map(normalizeVi),
+  })), [formulas]);
+
   const [searchQuery, setSearchQuery] = useState("");
   // topicMode: "all" | "saved" | "custom" (custom uses selectedTopics array, multi-select)
   const [topicMode, setTopicMode] = useState("all");
@@ -88,11 +98,12 @@ export default function FormulaLibrary({
     setSearchQuery(value);
 
     if (value.trim().length > 0) {
-      const filtered = formulas.filter(f =>
-        f.name.toLowerCase().includes(value.toLowerCase()) ||
-        f.topic.toLowerCase().includes(value.toLowerCase()) ||
-        f.tags.some(tag => tag.toLowerCase().includes(value.toLowerCase()))
-      ).slice(0, 5);
+      const query = normalizeVi(value);
+      const filtered = searchIndex.filter(entry =>
+        entry.name.includes(query) ||
+        entry.topic.includes(query) ||
+        entry.tags.some(tag => tag.includes(query))
+      ).slice(0, 5).map(entry => entry.formula);
 
       setSuggestions(filtered);
       setShowSuggestions(true);
@@ -108,7 +119,9 @@ export default function FormulaLibrary({
   };
 
   // Filter formulas
-  const filteredFormulas = formulas.filter(f => {
+  const normalizedQuery = normalizeVi(searchQuery);
+  const filteredFormulas = searchIndex.filter(entry => {
+    const f = entry.formula;
     const matchesTopic = topicMode === "all"
       ? true
       : topicMode === "saved"
@@ -116,12 +129,12 @@ export default function FormulaLibrary({
         : selectedTopics.includes(f.topic);
     const matchesGrade = gradeMode === "all" || selectedGrades.includes(f.grade.toString());
     const matchesSearch = searchQuery.trim() === "" ||
-      f.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.explanation.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      f.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      entry.name.includes(normalizedQuery) ||
+      entry.explanation.includes(normalizedQuery) ||
+      entry.tags.some(tag => tag.includes(normalizedQuery));
 
     return matchesTopic && matchesGrade && matchesSearch;
-  }).sort((a, b) => {
+  }).map(entry => entry.formula).sort((a, b) => {
     const aBookmarked = bookmarkedIds.includes(a.id);
     const bBookmarked = bookmarkedIds.includes(b.id);
     if (aBookmarked && !bBookmarked) return -1;
