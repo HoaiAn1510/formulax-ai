@@ -384,7 +384,6 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
               formulaMap={formulaMap}
             />
 
-            <div className="flex flex-col gap-4">
             {/* Topic performance — scoped to the day selected on the calendar above */}
             <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 relative overflow-hidden">
               <div className="flex items-center gap-2 mb-4">
@@ -430,9 +429,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                 />
               )}
             </div>
+          </div>
 
-            {/* AI Coach suggestions — scoped to the same selected day */}
-            <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4">
+          {/* AI Coach suggestions — scoped to the same selected day, full width below the grid */}
+          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
             <div className="flex items-center gap-2 mb-3.5">
               <Target size={16} color="#10B981" />
               <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
@@ -488,8 +488,6 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                 );
               })
             )}
-            </div>
-            </div>
           </div>
 
           {/* Strong topics callout */}

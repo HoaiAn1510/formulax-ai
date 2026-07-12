@@ -52,7 +52,7 @@ export default function SettingsView({
   return (
     <div className="view-container">
       <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1] md:max-w-2xl">
+        <div className="relative z-[1] md:max-w-2xl md:mx-auto">
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
             <button
