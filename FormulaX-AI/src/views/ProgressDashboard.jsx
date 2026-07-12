@@ -183,7 +183,7 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
   const daysThisMonth = activityDates.filter(d => d.startsWith(monthPrefix)).length;
 
   return (
-    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-3.5">
+    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-3.5 h-full">
       <div className="flex justify-between items-center mb-2.5">
         <div className="flex items-center gap-1.5">
           <Flame size={16} color="#F97316" />
@@ -373,7 +373,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
           </div>
 
           {/* Streak calendar (left column) + Topic performance & Coach (right column) on wide desktop screens */}
-          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-start mb-4">
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-stretch mb-4">
             {/* Streak activity chart — click a day to see what was studied that day */}
             <StreakChart
               activityDates={activityDates}
