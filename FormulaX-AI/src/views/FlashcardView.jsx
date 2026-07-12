@@ -522,7 +522,7 @@ export default function FlashcardView({
                             <button
                               onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
                               title="Xoá bộ thẻ"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#CBD5E1] rounded-md flex items-center"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
                             >
                               <Trash2 size={15} />
                             </button>
@@ -577,14 +577,14 @@ export default function FlashcardView({
                             <button
                               onClick={e => { e.stopPropagation(); handleStartRename(deck); }}
                               title="Đổi tên"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#CBD5E1] rounded-md flex items-center"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
                             >
                               <Pencil size={15} />
                             </button>
                             <button
                               onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
                               title="Xoá bộ thẻ"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#CBD5E1] rounded-md flex items-center"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
                             >
                               <Trash2 size={15} />
                             </button>
