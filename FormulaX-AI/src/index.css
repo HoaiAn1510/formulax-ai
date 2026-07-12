@@ -56,6 +56,13 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Viền hổ phách nhạt + shadow đậm hơn lúc hover — không đụng transform để không xung đột
+   với hover:-translate-y-* đã gắn riêng ở từng nơi dùng glass-card/glass-card-sm. */
+.glass-card:hover, .glass-card-sm:hover {
+  border-color: rgba(217, 119, 6, 0.35);
+  box-shadow: var(--shadow-glass-card-hover);
+}
+
 /* Đưa vào @layer base để Tailwind utilities (mb-*, p-*, px-*, py-*...) vẫn override
    được như bình thường — rule nằm ngoài mọi @layer sẽ luôn thắng rule có layer,
    bất kể thứ tự hay độ đặc hiệu, nên để reset trần ở đây sẽ đè chết toàn bộ margin/padding utility. */
