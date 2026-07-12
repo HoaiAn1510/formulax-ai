@@ -478,3 +478,25 @@ export async function markAllNotificationsRead(googleId) {
   const { error } = await supabase.from("notifications").update({ read: true }).eq("google_id", googleId).eq("read", false);
   if (error) console.error("[Supabase] markAllNotificationsRead:", error);
 }
+
+// ─── Gợi ý công thức (Dashboard) ────────────────────────────────────────────
+// Dữ liệu để tính "Gợi ý hôm nay": chủ đề đang yếu (giống trang Tiến độ học tập)
+// và chủ đề vừa học gần đây nhất (quiz hoặc flashcard, lấy theo timestamp mới nhất).
+
+export async function getRecommendationContext(googleId) {
+  const [topicPerf, recentQuizRes, recentFlashRes] = await Promise.all([
+    getTopicPerformance(googleId),
+    supabase.from("quiz_results").select("topic, created_at").eq("google_id", googleId)
+      .order("created_at", { ascending: false }).limit(1),
+    supabase.from("flashcard_activity").select("topic, created_at").eq("google_id", googleId)
+      .neq("formula_id", "sys_streak").order("created_at", { ascending: false }).limit(1),
+  ]);
+
+  const weakTopics = topicPerf.filter(t => t.topic !== "Đề thi THPT" && t.rate < 60).map(t => t.topic);
+
+  const recentCandidates = [...(recentQuizRes.data || []), ...(recentFlashRes.data || [])]
+    .filter(r => r.topic)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  return { weakTopics, recentTopic: recentCandidates[0]?.topic || null };
+}

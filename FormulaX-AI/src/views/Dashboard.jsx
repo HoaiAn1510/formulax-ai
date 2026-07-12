@@ -1,6 +1,41 @@
-import React from "react";
+import { useMemo } from "react";
 import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, BarChart2 } from "lucide-react";
-import { MathElement } from "../utils/katexHelper";
+
+// Số ngẫu nhiên có seed (từ chuỗi ngày hôm nay) — cùng 1 ngày luôn ra cùng thứ tự,
+// sang ngày khác thì đổi. Dùng để: (1) phá đồng hạng ổn định trong ngày, (2) cho user
+// mới (chưa có điểm ưu tiên nào) vẫn thấy gợi ý xoay vòng mỗi ngày thay vì đứng yên mãi.
+function seededRandom(seedStr) {
+  let h = 0;
+  for (let i = 0; i < seedStr.length; i++) h = (Math.imul(h, 31) + seedStr.charCodeAt(i)) | 0;
+  return () => {
+    h = (Math.imul(h, 1103515245) + 12345) | 0;
+    return ((h >>> 0) % 1000000) / 1000000;
+  };
+}
+
+function getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, viewedFormulaIds }, count = 3) {
+  const viewedSet = new Set(viewedFormulaIds || []);
+  const weakSet = new Set(weakTopics || []);
+
+  const scored = formulas.map(f => {
+    let score = 0;
+    if (weakSet.has(f.topic)) score += 5;       // ưu tiên cao nhất: chủ đề đang yếu
+    if (recentTopic && f.topic === recentTopic) score += 2; // củng cố chủ đề vừa học
+    if (userGrade && f.grade === userGrade) score += 2;     // đúng lớp đang học
+    if (!viewedSet.has(f.id)) score += 1;        // ưu tiên nhẹ công thức chưa xem
+    return { formula: f, score };
+  });
+
+  const today = new Date().toISOString().slice(0, 10);
+  const rand = seededRandom(today);
+  for (let i = scored.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [scored[i], scored[j]] = [scored[j], scored[i]];
+  }
+  scored.sort((a, b) => b.score - a.score);
+
+  return scored.slice(0, count).map(s => s.formula);
+}
 
 export default function Dashboard({
   user,
@@ -12,13 +47,15 @@ export default function Dashboard({
   remainingQuizzes,
   stats,
   todayStats,
+  userGrade,
+  weakTopics,
+  recentTopic,
+  viewedFormulaIds,
 }) {
   const firstName = displayName || user?.name?.split(" ").slice(-1)[0] || "bạn";
-  // Recommend 3 math formulas based on ID
-  const recommendedFormulas = formulas.filter(f =>
-    f.id === "gt12-daoham-mu" ||
-    f.id === "xs11-xacsuat" ||
-    f.id === "ds10-phuongtrinh-bac2"
+  const recommendedFormulas = useMemo(
+    () => getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, viewedFormulaIds }, 3),
+    [formulas, userGrade, weakTopics, recentTopic, viewedFormulaIds]
   );
 
   return (

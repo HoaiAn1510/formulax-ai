@@ -14,6 +14,7 @@ import {
   saveDisplayName,
   loadFlashcardDecks, upsertFlashcardDeck, deleteFlashcardDeck as deleteFlashcardDeckDB,
   checkAndGenerateNotifications, getNotifications, markAllNotificationsRead,
+  getRecommendationContext,
 } from "./lib/supabase";
 
 import Header from "./components/Header";
@@ -94,6 +95,7 @@ export default function App() {
   const [flashcardDecks, setFlashcardDecks] = useState([]);
   const [addFormulaModal, setAddFormulaModal] = useState(null); // { formula } | null
   const [notifications, setNotifications] = useState([]);
+  const [recommendationContext, setRecommendationContext] = useState({ weakTopics: [], recentTopic: null });
 
   // Dùng ref để debounce save stats và track trạng thái đã load xong chưa
   const statsTimer     = useRef(null);
@@ -106,6 +108,7 @@ export default function App() {
       dataLoadedRef.current = false; // reset khi logout
       setViewedFormulaIds([]);
       setNotifications([]);
+      setRecommendationContext({ weakTopics: [], recentTopic: null });
       return;
     }
     dataLoadedRef.current = false; // chặn save trong khi đang load
@@ -141,6 +144,8 @@ export default function App() {
           .then(() => getNotifications(user.googleId))
           .then(setNotifications)
           .catch(console.error);
+        // Dữ liệu để tính "Gợi ý hôm nay" trên Dashboard (chủ đề yếu + chủ đề vừa học)
+        getRecommendationContext(user.googleId).then(setRecommendationContext).catch(console.error);
         // Sync display name: ưu tiên Supabase, fallback localStorage (user-specific → shared)
         const nameFromDB = data.displayName;
         const nameFromLocal =
@@ -401,6 +406,10 @@ export default function App() {
             remainingQuizzes={remainingQuizzes}
             stats={stats}
             todayStats={todayStats}
+            userGrade={userGrade}
+            weakTopics={recommendationContext.weakTopics}
+            recentTopic={recommendationContext.recentTopic}
+            viewedFormulaIds={viewedFormulaIds}
           />
         );
       case "library":
@@ -502,6 +511,10 @@ export default function App() {
             remainingQuizzes={remainingQuizzes}
             stats={stats}
             todayStats={todayStats}
+            userGrade={userGrade}
+            weakTopics={recommendationContext.weakTopics}
+            recentTopic={recommendationContext.recentTopic}
+            viewedFormulaIds={viewedFormulaIds}
           />
         );
     }
