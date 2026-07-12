@@ -86,17 +86,17 @@ export default function FormulaDetailModal({
           <table className="w-full border-collapse text-[0.85rem] text-left">
             <thead>
               <tr>
-                <th className="w-[30%] bg-[#f8fafc] border-b-[1.5px] border-[#e2e8f0] py-2.5 px-3.5 font-extrabold text-primary dark:text-[#E2E8F0]">Ký hiệu</th>
-                <th className="bg-[#f8fafc] border-b-[1.5px] border-[#e2e8f0] py-2.5 px-3.5 font-extrabold text-primary dark:text-[#E2E8F0]">Ý nghĩa chi tiết</th>
+                <th className="w-[30%] bg-[#f8fafc] border-b-[1.5px] border-[#e2e8f0] py-2.5 px-3.5 font-extrabold text-primary">Ký hiệu</th>
+                <th className="bg-[#f8fafc] border-b-[1.5px] border-[#e2e8f0] py-2.5 px-3.5 font-extrabold text-primary">Ý nghĩa chi tiết</th>
               </tr>
             </thead>
             <tbody>
               {parsed.rows.map((row, idx) => (
                 <tr key={idx} className="border-b border-[#f1f5f9] transition duration-200 hover:bg-secondary/1 last:border-b-0">
-                  <td className="py-3 px-3.5 leading-[1.5] font-bold text-primary dark:text-[#E2E8F0] bg-[#fafbfc] border-r border-[#f1f5f9]">
+                  <td className="py-3 px-3.5 leading-[1.5] font-bold text-primary bg-[#fafbfc] border-r border-[#f1f5f9]">
                     {row.symbol ? <RichTextRenderer text={row.symbol} /> : "—"}
                   </td>
-                  <td className="py-3 px-3.5 leading-[1.5] text-[#475569]">
+                  <td className="py-3 px-3.5 leading-[1.5] text-[#475569] bg-[#fafbfc]">
                     <RichTextRenderer text={row.description} />
                   </td>
                 </tr>
