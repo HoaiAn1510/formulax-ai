@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, ChevronDown } from "lucide-react";
+import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -53,6 +53,30 @@ function FormulaChip({ formula, onViewDetail }) {
   );
 }
 
+function formatDateLabel(date) {
+  const today     = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  if (date === today) return "Hôm nay";
+  if (date === yesterday) return "Hôm qua";
+  const [y, mo, d] = date.split("-");
+  return `${d}/${mo}/${y}`;
+}
+
+function computeTopicPerf(quizzes) {
+  const byTopic = {};
+  quizzes.forEach(q => {
+    if (!byTopic[q.topic]) byTopic[q.topic] = { correct: 0, total: 0 };
+    byTopic[q.topic].correct += q.questionsCorrect;
+    byTopic[q.topic].total += q.questionsTotal;
+  });
+  return Object.entries(byTopic).map(([topic, { correct, total }]) => ({
+    topic,
+    correct,
+    total,
+    rate: total > 0 ? Math.round((correct / total) * 100) : 0,
+  }));
+}
+
 function getLongestStreak(activityDates) {
   if (!activityDates.length) return 0;
   const sorted = [...new Set(activityDates)].sort();
@@ -77,7 +101,62 @@ function StreakStat({ icon, label, value }) {
   );
 }
 
-function StreakChart({ activityDates, streak }) {
+function DayDetail({ date, quizzes, flashcardIds, formulaMap }) {
+  const SHOW_MAX = 4;
+  const scoreColor = (p) => p >= 80 ? "#10B981" : p >= 60 ? "#F59E0B" : "#EF4444";
+  const hasActivity = quizzes.length > 0 || flashcardIds.length > 0;
+
+  return (
+    <div className="border-t border-[#F1F5F9] dark:border-[#334155] mt-4 pt-3.5">
+      <div className="flex items-center gap-2 mb-2.5">
+        <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
+        <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.85rem]">{formatDateLabel(date)}</span>
+        {quizzes.length > 0 && <span className="text-[0.68rem] bg-[#EFF6FF] dark:bg-secondary/15 text-secondary font-bold rounded py-0.5 px-1.5">{quizzes.length} quiz</span>}
+        {flashcardIds.length > 0 && <span className="text-[0.68rem] bg-[#F0FDF4] dark:bg-success/15 text-success font-bold rounded py-0.5 px-1.5">{flashcardIds.length} thẻ</span>}
+      </div>
+
+      {!hasActivity ? (
+        <p className="text-[0.78rem] text-[#94A3B8] m-0">Không có hoạt động học tập trong ngày này.</p>
+      ) : (
+        <>
+          {quizzes.length > 0 && (
+            <div style={{ marginBottom: flashcardIds.length > 0 ? "10px" : 0 }}>
+              <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Quiz</div>
+              {quizzes.map((q, i) => (
+                <div key={i} className={`flex justify-between items-center py-1.5 ${i < quizzes.length - 1 ? "border-b border-[#F8FAFC] dark:border-[#334155]" : ""}`}>
+                  <span className="text-[0.8rem] text-primary dark:text-[#E2E8F0] font-semibold">{q.topic}</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[0.72rem] text-[#94A3B8]">{q.questionsCorrect}/{q.questionsTotal} câu</span>
+                    <span className="text-[0.75rem] font-extrabold min-w-[38px] text-right" style={{ color: scoreColor(q.scorePercent) }}>{q.scorePercent}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {flashcardIds.length > 0 && (
+            <div>
+              <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Flashcard</div>
+              {flashcardIds.slice(0, SHOW_MAX).map(id => (
+                <div key={id} className="flex items-center gap-1.5 py-0.5">
+                  <BookOpen size={11} color="#10B981" className="shrink-0" />
+                  <span className="text-[0.78rem] text-[#475569]">{formulaMap[id]?.name || id}</span>
+                </div>
+              ))}
+              {flashcardIds.length > SHOW_MAX && (
+                <div className="text-[0.72rem] text-[#94A3B8] font-semibold mt-1 pl-[17px]">
+                  +{flashcardIds.length - SHOW_MAX} công thức khác
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function StreakChart({ activityDates, streak, selectedDate, onSelectDate, selectedDayData, formulaMap }) {
   const todayStr = new Date().toISOString().slice(0, 10);
   const dateSet = new Set(activityDates);
 
@@ -124,16 +203,19 @@ function StreakChart({ activityDates, streak }) {
             <div key={wi} className="grid grid-cols-7 gap-[3px] mb-[3px]">
               {week.map(({ dateStr, day }) => {
                 const active = dateSet.has(dateStr);
-                const isToday = dateStr === todayStr;
+                const isSelected = dateStr === selectedDate;
                 const isFuture = dateStr > todayStr;
                 return (
                   <div
                     key={dateStr}
                     title={dateStr}
+                    onClick={() => !isFuture && onSelectDate(dateStr)}
                     className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
-                      isFuture ? "bg-transparent" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
+                      isFuture ? "bg-transparent" : "cursor-pointer hover:opacity-80"
+                    } ${
+                      isFuture ? "" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
                     }`}
-                    style={{ border: isToday ? "2px solid #D97706" : "1.5px solid transparent" }}
+                    style={{ border: isSelected ? "2px solid #D97706" : "1.5px solid transparent" }}
                   >
                     {!isFuture ? day : ""}
                   </div>
@@ -159,75 +241,13 @@ function StreakChart({ activityDates, streak }) {
           <StreakStat icon={<BarChart2 size={12} color="#D97706" />} label="Đã học tháng này" value={`${daysThisMonth} ngày`} />
         </div>
       </div>
-    </div>
-  );
-}
 
-function DayHistoryCard({ date, quizzes, flashcardIds, formulaMap }) {
-  const [expanded, setExpanded] = useState(true);
-  const today     = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
-  const [y, mo, d] = date.split("-");
-  const dateLabel = date === today ? "Hôm nay" : date === yesterday ? "Hôm qua" : `${d}/${mo}/${y}`;
-  const SHOW_MAX = 4;
-
-  const scoreColor = (p) => p >= 80 ? "#10B981" : p >= 60 ? "#F59E0B" : "#EF4444";
-
-  return (
-    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] overflow-hidden mb-2.5">
-      <div
-        onClick={() => setExpanded(v => !v)}
-        className="flex justify-between items-center py-3 px-3.5 cursor-pointer"
-      >
-        <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-          <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.88rem]">{dateLabel}</span>
-          {date !== today && date !== yesterday && (
-            <span className="text-[0.7rem] text-[#94A3B8]">{d}/{mo}/{y}</span>
-          )}
-        </div>
-        <div className="flex gap-2 items-center">
-          {quizzes.length > 0 && <span className="text-[0.68rem] bg-[#EFF6FF] dark:bg-secondary/15 text-secondary font-bold rounded py-0.5 px-1.5">{quizzes.length} quiz</span>}
-          {flashcardIds.length > 0 && <span className="text-[0.68rem] bg-[#F0FDF4] dark:bg-success/15 text-success font-bold rounded py-0.5 px-1.5">{flashcardIds.length} thẻ</span>}
-          <ChevronDown size={14} color="#94A3B8" className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
-        </div>
-      </div>
-
-      {expanded && (
-        <div className="border-t border-[#F1F5F9] dark:border-[#334155] py-2.5 px-3.5">
-          {quizzes.length > 0 && (
-            <div style={{ marginBottom: flashcardIds.length > 0 ? "10px" : 0 }}>
-              <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Quiz</div>
-              {quizzes.map((q, i) => (
-                <div key={i} className={`flex justify-between items-center py-1.5 ${i < quizzes.length - 1 ? "border-b border-[#F8FAFC] dark:border-[#334155]" : ""}`}>
-                  <span className="text-[0.8rem] text-primary dark:text-[#E2E8F0] font-semibold">{q.topic}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[0.72rem] text-[#94A3B8]">{q.questionsCorrect}/{q.questionsTotal} câu</span>
-                    <span className="text-[0.75rem] font-extrabold min-w-[38px] text-right" style={{ color: scoreColor(q.scorePercent) }}>{q.scorePercent}%</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {flashcardIds.length > 0 && (
-            <div>
-              <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Flashcard</div>
-              {flashcardIds.slice(0, SHOW_MAX).map(id => (
-                <div key={id} className="flex items-center gap-1.5 py-0.5">
-                  <BookOpen size={11} color="#10B981" className="shrink-0" />
-                  <span className="text-[0.78rem] text-[#475569]">{formulaMap[id]?.name || id}</span>
-                </div>
-              ))}
-              {flashcardIds.length > SHOW_MAX && (
-                <div className="text-[0.72rem] text-[#94A3B8] font-semibold mt-1 pl-[17px]">
-                  +{flashcardIds.length - SHOW_MAX} công thức khác
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      <DayDetail
+        date={selectedDate}
+        quizzes={selectedDayData.quizzes}
+        flashcardIds={selectedDayData.flashcardIds}
+        formulaMap={formulaMap}
+      />
     </div>
   );
 }
@@ -263,7 +283,7 @@ function getFormulasForQuizTopic(quizTopic, formulas) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ProgressDashboard({ user, stats, formulas, setActiveTab, onViewDetail, isPremium }) {
-  const [topicPerf, setTopicPerf]         = useState([]);
+  const [selectedDate, setSelectedDate]   = useState(new Date().toISOString().slice(0, 10));
   const [streak, setStreak]               = useState(0);
   const [activityDates, setActivityDates] = useState([]);
   const [dailyHistory, setDailyHistory]   = useState([]);
@@ -281,8 +301,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
       getAnalyticsSummary(user.googleId),
       getDailyHistory(user.googleId),
     ])
-      .then(([{ topicPerformance, streak: s, activityDates: dates }, history]) => {
-        setTopicPerf(topicPerformance);
+      .then(([{ streak: s, activityDates: dates }, history]) => {
         setStreak(s);
         setActivityDates(dates || []);
         setDailyHistory(history || []);
@@ -291,10 +310,20 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
       .finally(() => setLoading(false));
   }, [user?.googleId]);
 
-  const filteredTopicPerf = topicPerf.filter(t => t.topic !== "Đề thi THPT");
+  const dailyHistoryMap = useMemo(() => {
+    const m = {};
+    dailyHistory.forEach(day => { m[day.date] = { quizzes: day.quizzes, flashcardIds: day.flashcardIds }; });
+    return m;
+  }, [dailyHistory]);
+
+  const selectedDayData = dailyHistoryMap[selectedDate] || { quizzes: [], flashcardIds: [] };
+  const dayTopicPerf = useMemo(() => computeTopicPerf(selectedDayData.quizzes), [selectedDayData]);
+
+  const filteredTopicPerf = dayTopicPerf.filter(t => t.topic !== "Đề thi THPT");
   const hasQuizData = filteredTopicPerf.length > 0;
   const weakTopics   = filteredTopicPerf.filter(t => t.rate < 60);
   const strongTopics = filteredTopicPerf.filter(t => t.rate >= 80);
+  const selectedDateLabel = formatDateLabel(selectedDate);
 
   return (
     <div className="view-container">
@@ -342,43 +371,24 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
             <StatCard icon={<Layers size={20} />}        value={stats.flashcardsStudied} label="Thẻ đã ôn"   color="#10B981" />
           </div>
 
-          {/* Streak activity chart */}
-          <StreakChart activityDates={activityDates} streak={streak} />
+          {/* Streak activity chart — click a day to see what was studied that day */}
+          <StreakChart
+            activityDates={activityDates}
+            streak={streak}
+            selectedDate={selectedDate}
+            onSelectDate={setSelectedDate}
+            selectedDayData={selectedDayData}
+            formulaMap={formulaMap}
+          />
 
-          {/* Daily history */}
-          <div className="mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <BarChart2 size={15} color="#D97706" />
-              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">Lịch sử hoạt động</h2>
-            </div>
-            {loading ? (
-              <div className="text-center py-5 text-[#94A3B8] text-[0.82rem]">Đang tải...</div>
-            ) : dailyHistory.length === 0 ? (
-              <EmptyState
-                message="Chưa có hoạt động nào. Làm quiz hoặc ôn flashcard để bắt đầu!"
-                ctaLabel="Bắt đầu quiz"
-                onCta={() => setActiveTab("quiz")}
-              />
-            ) : (
-              dailyHistory.map(day => (
-                <DayHistoryCard
-                  key={day.date}
-                  date={day.date}
-                  quizzes={day.quizzes}
-                  flashcardIds={day.flashcardIds}
-                  formulaMap={formulaMap}
-                />
-              ))
-            )}
-          </div>
-
-          {/* Topic performance */}
+          {/* Topic performance — scoped to the day selected on the calendar above */}
           <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4 relative overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
               <BarChart2 size={16} color="#D97706" />
               <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
                 Hiệu suất theo chủ đề
               </h2>
+              <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
             </div>
 
             {loading ? (
@@ -410,20 +420,21 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
               filteredTopicPerf.map(t => <TopicBar key={t.topic} {...t} />)
             ) : (
               <EmptyState
-                message="Chưa có dữ liệu quiz. Làm ít nhất 1 bài quiz để xem phân tích!"
+                message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
                 ctaLabel="Làm quiz ngay"
                 onCta={() => setActiveTab("quiz")}
               />
             )}
           </div>
 
-          {/* AI Coach suggestions */}
+          {/* AI Coach suggestions — scoped to the same selected day */}
           <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
             <div className="flex items-center gap-2 mb-3.5">
               <Target size={16} color="#10B981" />
               <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
                 Coach gợi ý ôn tập
               </h2>
+              <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
             </div>
 
             {loading ? (
@@ -438,12 +449,12 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
               <div className="text-center py-3">
                 <CheckCircle size={28} color="#10B981" className="mx-auto mb-2 block" />
                 <p className="m-0 text-[0.82rem] text-success font-semibold">
-                  Tốt lắm! Bạn đang học đều tất cả chủ đề.
+                  Tốt lắm! Bạn học đều tất cả chủ đề trong ngày {selectedDateLabel}.
                 </p>
               </div>
             ) : weakTopics.length === 0 ? (
               <EmptyState
-                message="Làm quiz để nhận gợi ý ôn tập phù hợp với điểm yếu của bạn."
+                message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
                 ctaLabel="Bắt đầu quiz"
                 onCta={() => setActiveTab("quiz")}
               />
