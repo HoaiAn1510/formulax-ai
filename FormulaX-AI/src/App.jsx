@@ -13,6 +13,7 @@ import {
   saveQuizDaily,
   saveDisplayName,
   loadFlashcardDecks, upsertFlashcardDeck, deleteFlashcardDeck as deleteFlashcardDeckDB,
+  checkAndGenerateNotifications, getNotifications, markAllNotificationsRead,
 } from "./lib/supabase";
 
 import Header from "./components/Header";
@@ -92,6 +93,7 @@ export default function App() {
   const [viewedFormulaIds, setViewedFormulaIds] = useState([]);
   const [flashcardDecks, setFlashcardDecks] = useState([]);
   const [addFormulaModal, setAddFormulaModal] = useState(null); // { formula } | null
+  const [notifications, setNotifications] = useState([]);
 
   // Dùng ref để debounce save stats và track trạng thái đã load xong chưa
   const statsTimer     = useRef(null);
@@ -103,6 +105,7 @@ export default function App() {
     if (!user?.googleId) {
       dataLoadedRef.current = false; // reset khi logout
       setViewedFormulaIds([]);
+      setNotifications([]);
       return;
     }
     dataLoadedRef.current = false; // chặn save trong khi đang load
@@ -133,6 +136,11 @@ export default function App() {
         loadFlashcardDecks(user.googleId).then(cloudDecks => {
           if (cloudDecks !== null) setFlashcardDecks(cloudDecks);
         });
+        // Sinh thông báo mới (nếu có) rồi tải danh sách thông báo hiện tại
+        checkAndGenerateNotifications(user.googleId, notifPrefs)
+          .then(() => getNotifications(user.googleId))
+          .then(setNotifications)
+          .catch(console.error);
         // Sync display name: ưu tiên Supabase, fallback localStorage (user-specific → shared)
         const nameFromDB = data.displayName;
         const nameFromLocal =
@@ -275,6 +283,12 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("formulax_premium", isPremium);
   }, [isPremium]);
+
+  const handleMarkNotificationsRead = () => {
+    if (!notifications.some(n => n.unread)) return;
+    setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
+    if (user?.googleId) markAllNotificationsRead(user.googleId).catch(console.error);
+  };
 
   // Flush stats ngay lập tức rồi mới logout — tránh debounce bị cancel
   const handleLogout = async () => {
@@ -493,6 +507,9 @@ export default function App() {
     }
   };
 
+  // Ẩn ngay những loại thông báo người dùng vừa tắt trong Cài đặt, không cần đợi lần tải kế tiếp
+  const visibleNotifications = notifications.filter(n => notifPrefs?.[n.category] !== false);
+
   return (
     <div className="app-container">
       <Header
@@ -502,7 +519,8 @@ export default function App() {
         isLoggedIn={isLoggedIn}
         displayName={displayName}
         setActiveTab={setActiveTab}
-        notifPrefs={notifPrefs}
+        notifications={visibleNotifications}
+        onOpenNotifications={handleMarkNotificationsRead}
       />
 
       {renderView()}
@@ -515,7 +533,8 @@ export default function App() {
         user={user}
         isLoggedIn={isLoggedIn}
         isPremium={isPremium}
-        notifPrefs={notifPrefs}
+        notifications={visibleNotifications}
+        onOpenNotifications={handleMarkNotificationsRead}
       />
 
       {showOnboarding && (

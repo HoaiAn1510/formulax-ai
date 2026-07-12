@@ -4,12 +4,6 @@ import {
   LogOut, Bell, ChevronDown, User, Settings,
 } from "lucide-react";
 
-const NOTIFS = [
-  { id: 1, category: "aiSuggest", text: "AI gợi ý hôm nay: 3 công thức ôn tập Giải tích 12.", time: "5 phút trước", unread: true },
-  { id: 2, category: "streak", text: "Bạn đã hoàn thành 80% mục tiêu học tập tuần này!", time: "2 giờ trước", unread: false },
-  { id: 3, category: "featureUpdate", text: "Tính năng Finder AI vừa cập nhật thêm dạng bài tập.", time: "1 ngày trước", unread: false },
-];
-
 // Class dùng chung cho mọi nav-item (5 tab chính + Cài đặt/Thông báo/Tài khoản + Đăng xuất).
 // Mobile: giữ nguyên pill xanh như cũ (không đổi). Desktop: sidebar luôn nền navy #16243A bất kể
 // toggle dark mode — item mặc định chữ #CBD5E1, hover nền trắng mờ (rgba(255,255,255,.08)), active
@@ -37,7 +31,7 @@ export default function BottomNav({
   displayName,
   onLogout,
   user, isLoggedIn, isPremium,
-  notifPrefs,
+  notifications, onOpenNotifications,
 }) {
   const [accountOpen, setAccountOpen] = useState(false);
   const [notifOpen, setNotifOpen]     = useState(false);
@@ -50,10 +44,18 @@ export default function BottomNav({
     { id: "quiz",      label: "Luyện đề",   icon: GraduationCap },
   ];
 
-  const visibleNotifs = NOTIFS.filter(n => notifPrefs?.[n.category] !== false);
+  const notifList = notifications || [];
+  const hasUnread = notifList.some(n => n.unread);
 
   const toggleAccount = () => { setAccountOpen(p => !p); setNotifOpen(false); };
-  const toggleNotif   = () => { setNotifOpen(p => !p);   setAccountOpen(false); };
+  const toggleNotif   = () => {
+    setNotifOpen(p => {
+      const next = !p;
+      if (next) onOpenNotifications?.();
+      return next;
+    });
+    setAccountOpen(false);
+  };
 
   return (
     <nav className="group/sidebar fixed bottom-0 left-0 right-0 md:right-auto md:bottom-auto md:top-0 h-[72px] md:h-screen md:w-[88px] md:hover:w-60 bg-white/95 max-md:dark:bg-[#1E293B] md:!bg-[#16243A] backdrop-blur-[20px] md:backdrop-blur-none border-t md:border-t-0 md:border-r border-[rgba(30,58,95,0.07)] max-md:dark:border-[#334155] md:!border-[#0F172A] shadow-[0_-4px_20px_rgba(0,0,0,0.02)] md:shadow-none flex md:flex-col justify-around md:justify-start items-center md:items-stretch px-2 md:px-0 md:pt-4 md:overflow-y-auto md:overflow-x-hidden z-[100] md:transition-[width] md:duration-300 md:ease-in-out">
@@ -103,7 +105,7 @@ export default function BottomNav({
         >
           <div className={`${navIconClass(notifOpen)} relative`}>
             <Bell size={18} />
-            <span className="absolute -top-[3px] -right-[3px] w-[7px] h-[7px] rounded-full bg-error border-[1.5px] border-white max-md:dark:border-[#1E293B] md:!border-[#16243A]" />
+            {hasUnread && <span className="absolute -top-[3px] -right-[3px] w-[7px] h-[7px] rounded-full bg-error border-[1.5px] border-white max-md:dark:border-[#1E293B] md:!border-[#16243A]" />}
           </div>
           <span className={collapsibleLabel}>Thông báo</span>
           <ChevronDown size={14} className={`hidden md:group-hover/sidebar:block md:ml-auto transition-transform duration-200 text-[#94A3B8] shrink-0 ${notifOpen ? "rotate-180" : "rotate-0"}`} />
@@ -111,9 +113,9 @@ export default function BottomNav({
 
         {notifOpen && (
           <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] border border-[#EEF2FF] max-md:dark:border-[#334155] md:!border-[#0F172A] p-2 bg-white max-md:dark:bg-[#1E293B] md:!bg-[#0F172A] flex flex-col gap-1.5 max-h-[160px] overflow-y-auto">
-            {visibleNotifs.length === 0 ? (
-              <p className="text-[0.72rem] text-[#94A3B8] text-center py-1.5 m-0">Bạn đã tắt hết thông báo trong Cài đặt.</p>
-            ) : visibleNotifs.map(n => (
+            {notifList.length === 0 ? (
+              <p className="text-[0.72rem] text-[#94A3B8] text-center py-1.5 m-0">Chưa có thông báo nào.</p>
+            ) : notifList.map(n => (
               <div key={n.id} className={`px-2 py-1.5 rounded-md text-[0.72rem] leading-[1.35] border-l-[3px] ${n.unread ? "bg-[rgba(46,134,222,0.05)] border-l-[#2E86DE]" : "bg-transparent border-l-transparent"}`}>
                 <div className={`text-[#1E3A5F] md:!text-[#E2E8F0] ${n.unread ? "font-semibold" : "font-normal"}`}>{n.text}</div>
                 <div className="text-[#94A3B8] text-[0.62rem] mt-0.5">{n.time}</div>
@@ -161,15 +163,6 @@ export default function BottomNav({
                 <div className="text-[0.63rem] text-white/60 truncate">{user?.email || ""}</div>
               </div>
             </div>
-
-            {/* Shortcut to Cài đặt */}
-            <button
-              className={`${navItemClass(false)} !mx-0 !w-full !rounded-none border-t border-[#f1f5f9] max-md:dark:border-[#334155] md:!border-[#0F172A]`}
-              onClick={() => { setAccountOpen(false); setActiveTab("settings"); }}
-            >
-              <div className={navIconClass(false)}><Settings size={16} /></div>
-              <span className={`text-[0.8rem] ${collapsibleLabel}`}>Đi tới Cài đặt</span>
-            </button>
           </div>
         )}
 

@@ -382,3 +382,99 @@ export async function getDailyHistory(googleId) {
     .map(([date, data]) => ({ date, ...data }))
     .sort((a, b) => b.date.localeCompare(a.date));
 }
+
+// ─── Notifications ──────────────────────────────────────────────────────────
+// Thông báo thật, tính từ dữ liệu học tập đã có (streak, chủ đề yếu, mốc thành tích) —
+// không phải dữ liệu admin gửi. Sinh ra 1 lần mỗi khi app tải xong dữ liệu người dùng,
+// chặn trùng qua dedupe_key (unique theo google_id + dedupe_key).
+
+const STREAK_MILESTONES = [3, 7, 14, 30, 60, 100];
+
+function formatRelativeTime(isoString) {
+  const mins = Math.floor((Date.now() - new Date(isoString).getTime()) / 60000);
+  if (mins < 1) return "Vừa xong";
+  if (mins < 60) return `${mins} phút trước`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} giờ trước`;
+  return `${Math.floor(hours / 24)} ngày trước`;
+}
+
+export async function checkAndGenerateNotifications(googleId, notifPrefs = {}) {
+  if (!googleId) return;
+  const today = new Date().toISOString().slice(0, 10);
+
+  const [{ topicPerformance, streak, activityDates }, existingRes, quizCountRes] = await Promise.all([
+    getAnalyticsSummary(googleId),
+    supabase.from("notifications").select("dedupe_key").eq("google_id", googleId).gte("created_at", today),
+    supabase.from("quiz_results").select("*", { count: "exact", head: true }).eq("google_id", googleId),
+  ]);
+
+  const existingKeys = new Set((existingRes.data || []).map(r => r.dedupe_key));
+  const toInsert = [];
+
+  // 1. Nhắc giữ chuỗi học — còn chuỗi sống nhưng hôm nay chưa học
+  if (notifPrefs.streak !== false && streak > 0 && !activityDates.includes(today)) {
+    const key = `streak_${today}`;
+    if (!existingKeys.has(key)) {
+      toInsert.push({ google_id: googleId, category: "streak", dedupe_key: key,
+        message: `Đừng để mất chuỗi ${streak} ngày! Học hoặc ôn 1 thẻ hôm nay để giữ chuỗi.` });
+    }
+  }
+
+  // 2. Gợi ý ôn chủ đề yếu nhất (loại "Đề thi THPT" giống trang Tiến độ học tập)
+  if (notifPrefs.weakTopic !== false) {
+    const weakest = topicPerformance.find(t => t.topic !== "Đề thi THPT" && t.rate < 60);
+    if (weakest) {
+      const key = `weak_topic_${weakest.topic}_${today}`;
+      if (!existingKeys.has(key)) {
+        toInsert.push({ google_id: googleId, category: "weakTopic", dedupe_key: key,
+          message: `Chủ đề ${weakest.topic} đang yếu (${weakest.rate}% đúng) — ôn lại ngay?` });
+      }
+    }
+  }
+
+  // 3. Chào mừng / mốc thành tích — mốc streak hoặc quiz đầu tiên
+  if (notifPrefs.milestone !== false) {
+    if (STREAK_MILESTONES.includes(streak)) {
+      const key = `milestone_streak_${streak}_${today}`;
+      if (!existingKeys.has(key)) {
+        toInsert.push({ google_id: googleId, category: "milestone", dedupe_key: key,
+          message: `Chúc mừng! Bạn đã duy trì chuỗi học ${streak} ngày liên tiếp 🎉` });
+      }
+    }
+    if ((quizCountRes.count || 0) === 1) {
+      const key = "milestone_first_quiz";
+      if (!existingKeys.has(key)) {
+        toInsert.push({ google_id: googleId, category: "milestone", dedupe_key: key,
+          message: "Chúc mừng bạn đã hoàn thành bài quiz đầu tiên trên FormulaX! 🎉" });
+      }
+    }
+  }
+
+  if (toInsert.length > 0) {
+    const { error } = await supabase.from("notifications").insert(toInsert);
+    if (error) console.error("[Supabase] checkAndGenerateNotifications:", error);
+  }
+}
+
+export async function getNotifications(googleId, limit = 20) {
+  const { data, error } = await supabase
+    .from("notifications")
+    .select("*")
+    .eq("google_id", googleId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) { console.error("[Supabase] getNotifications:", error); return []; }
+  return data.map(n => ({
+    id: n.id,
+    category: n.category,
+    text: n.message,
+    unread: !n.read,
+    time: formatRelativeTime(n.created_at),
+  }));
+}
+
+export async function markAllNotificationsRead(googleId) {
+  const { error } = await supabase.from("notifications").update({ read: true }).eq("google_id", googleId).eq("read", false);
+  if (error) console.error("[Supabase] markAllNotificationsRead:", error);
+}

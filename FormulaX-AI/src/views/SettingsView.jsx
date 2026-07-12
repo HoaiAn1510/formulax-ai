@@ -184,21 +184,21 @@ export default function SettingsView({
             <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Thông báo</h2>
             <SettingRow
               icon={<Bell size={16} />}
-              label="Gợi ý AI hằng ngày"
-              description="Thông báo khi có công thức AI gợi ý ôn tập"
-              control={<ToggleSwitch on={notifPrefs?.aiSuggest !== false} onClick={() => toggleNotifPref("aiSuggest")} />}
-            />
-            <SettingRow
-              icon={<Bell size={16} />}
-              label="Nhắc nhở học tập"
-              description="Thông báo tiến độ và nhắc duy trì chuỗi học"
+              label="Nhắc giữ chuỗi học"
+              description="Nhắc khi còn chuỗi học nhưng hôm nay chưa ôn gì"
               control={<ToggleSwitch on={notifPrefs?.streak !== false} onClick={() => toggleNotifPref("streak")} />}
             />
             <SettingRow
               icon={<Bell size={16} />}
-              label="Cập nhật tính năng"
-              description="Thông báo khi FormulaX có tính năng mới"
-              control={<ToggleSwitch on={notifPrefs?.featureUpdate !== false} onClick={() => toggleNotifPref("featureUpdate")} />}
+              label="Gợi ý ôn chủ đề yếu"
+              description="Thông báo khi có chủ đề quiz đang dưới 60% đúng"
+              control={<ToggleSwitch on={notifPrefs?.weakTopic !== false} onClick={() => toggleNotifPref("weakTopic")} />}
+            />
+            <SettingRow
+              icon={<Bell size={16} />}
+              label="Chào mừng / thành tích mới"
+              description="Thông báo khi đạt mốc streak hoặc hoàn thành quiz đầu tiên"
+              control={<ToggleSwitch on={notifPrefs?.milestone !== false} onClick={() => toggleNotifPref("milestone")} />}
             />
           </div>
         </div>

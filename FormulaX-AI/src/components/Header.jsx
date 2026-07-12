@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Bell, LogOut, LogIn, Settings } from "lucide-react";
 
-export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn, displayName, setActiveTab, notifPrefs }) {
+export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn, displayName, setActiveTab, notifications, onOpenNotifications }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
 
@@ -17,11 +17,8 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const notificationList = [
-    { id: 1, category: "aiSuggest", text: "AI gợi ý hôm nay: 3 công thức ôn tập Giải tích 12.", time: "5 phút trước", unread: true },
-    { id: 2, category: "streak", text: "Bạn đã hoàn thành 80% mục tiêu học tập tuần này!", time: "2 giờ trước", unread: false },
-    { id: 3, category: "featureUpdate", text: "Tính năng Finder AI vừa cập nhật thêm dạng bài tập.", time: "1 ngày trước", unread: false },
-  ].filter(n => notifPrefs?.[n.category] !== false);
+  const notificationList = notifications || [];
+  const hasUnread = notificationList.some(n => n.unread);
 
   return (
     <header className="sticky md:hidden top-0 z-[100] flex justify-between items-center py-3 px-4 bg-white dark:bg-[#1E293B] border-b border-[rgba(30,58,95,0.07)] dark:border-[#334155] shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
@@ -37,11 +34,15 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
         <div ref={notifRef} className="relative">
           <button
             className="relative w-10 h-10 flex items-center justify-center rounded-full text-primary dark:text-[#E2E8F0] cursor-pointer transition duration-200 hover:bg-[rgba(30,58,95,0.04)]"
-            onClick={() => { setShowNotifications(p => !p); setDropdownOpen(false); }}
+            onClick={() => {
+              setShowNotifications(p => !p);
+              setDropdownOpen(false);
+              if (!showNotifications) onOpenNotifications?.();
+            }}
             title="Thông báo"
           >
             <Bell size={20} />
-            <span className="absolute top-[9px] right-[9px] w-2 h-2 rounded-full bg-error border-2 border-white" />
+            {hasUnread && <span className="absolute top-[9px] right-[9px] w-2 h-2 rounded-full bg-error border-2 border-white" />}
           </button>
 
           {showNotifications && (
@@ -58,7 +59,7 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
               </div>
               <div className="flex flex-col gap-2">
                 {notificationList.length === 0 ? (
-                  <p className="text-[0.75rem] text-[#94A3B8] text-center py-2 m-0">Bạn đã tắt hết thông báo trong Cài đặt.</p>
+                  <p className="text-[0.75rem] text-[#94A3B8] text-center py-2 m-0">Chưa có thông báo nào.</p>
                 ) : notificationList.map((n) => (
                   <div key={n.id} className={`px-2 py-1.5 rounded-md text-[0.75rem] leading-[1.3] border-l-[3px] ${n.unread ? "bg-[rgba(46,134,222,0.05)] border-l-[#2E86DE]" : "bg-transparent border-l-transparent"}`}>
                     <div className={`text-[#1E3A5F] ${n.unread ? "font-semibold" : "font-normal"}`}>{n.text}</div>
