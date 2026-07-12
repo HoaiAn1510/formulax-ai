@@ -7,6 +7,7 @@ import {
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { saveFlashcardActivity } from "../lib/supabase";
 import { sortFormulaIdsByDue, getDueReviewQueue } from "../utils/spacedRepetition";
+import { showToast } from "../components/Toast";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -384,9 +385,21 @@ export default function FlashcardView({
     // currentIndex stays the same — new card at same index will appear
   };
 
-  const handlePdfExport = () => {
+  // deckOverride: { name, cards } — cho phép gọi xuất PDF thẳng từ danh sách bộ thẻ,
+  // không cần học xong hết cả bộ mới thấy nút xuất (mặc định dùng phiên học đang mở nếu không truyền).
+  const handlePdfExport = (deckOverride) => {
     if (!isPremium) {
       setActiveTab("premium");
+      return;
+    }
+
+    const exportDeckName = deckOverride
+      ? deckOverride.name
+      : (isDueReviewSession ? "Ôn tập hôm nay" : (activeDeck?.name || "Flashcard"));
+    const exportCards = deckOverride ? deckOverride.cards : cards;
+
+    if (exportCards.length === 0) {
+      showToast("Bộ thẻ chưa có công thức nào để xuất.", "info");
       return;
     }
 
@@ -417,10 +430,9 @@ export default function FlashcardView({
       return parts.join("");
     };
 
-    const deckName = isDueReviewSession ? "Ôn tập hôm nay" : (activeDeck?.name || "Flashcard");
     const exportDate = new Date().toLocaleDateString("vi-VN");
 
-    const cardRows = cards.map((card, i) => `
+    const cardRows = exportCards.map((card, i) => `
       <div class="card">
         <div class="card-num">${i + 1}</div>
         <div class="card-body">
@@ -435,7 +447,7 @@ export default function FlashcardView({
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>FormulaX – ${esc(deckName)}</title>
+  <title>FormulaX – ${esc(exportDeckName)}</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"
@@ -460,8 +472,8 @@ export default function FlashcardView({
   </style>
 </head>
 <body>
-  <h1>Bộ thẻ: ${esc(deckName)}</h1>
-  <p class="sub">Xuất từ FormulaX AI · ${exportDate} · ${cards.length} công thức</p>
+  <h1>Bộ thẻ: ${esc(exportDeckName)}</h1>
+  <p class="sub">Xuất từ FormulaX AI · ${exportDate} · ${exportCards.length} công thức</p>
   ${cardRows}
   <div class="no-print" style="text-align:center;margin-top:28px">
     <button onclick="window.print()" style="padding:10px 28px;background:#1E3A5F;color:white;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">
@@ -473,7 +485,7 @@ export default function FlashcardView({
 
     const win = window.open("", "_blank");
     if (!win) {
-      alert("Trình duyệt đã chặn popup. Vui lòng cho phép popup cho trang này và thử lại.");
+      showToast("Trình duyệt đã chặn popup. Vui lòng cho phép popup cho trang này và thử lại.", "error");
       return;
     }
     win.document.write(html);
@@ -596,6 +608,13 @@ export default function FlashcardView({
                               <span className="tag text-[0.7rem] py-0.5 px-2 bg-[#F1F5F9] !text-[#475569]">Lớp {deck.grade}</span>
                             )}
                             <button
+                              onClick={e => { e.stopPropagation(); handlePdfExport({ name: deck.name, cards: deck.formulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean) }); }}
+                              title="Xuất PDF"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
+                            >
+                              <FileDown size={15} />
+                            </button>
+                            <button
                               onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
                               title="Xoá bộ thẻ"
                               className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
@@ -656,6 +675,13 @@ export default function FlashcardView({
                               className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
                             >
                               <Pencil size={15} />
+                            </button>
+                            <button
+                              onClick={e => { e.stopPropagation(); handlePdfExport({ name: deck.name, cards: deck.formulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean) }); }}
+                              title="Xuất PDF"
+                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
+                            >
+                              <FileDown size={15} />
                             </button>
                             <button
                               onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
@@ -869,7 +895,7 @@ export default function FlashcardView({
                 <div className="relative">
                   <button
                     className={`btn ${isPremium ? "btn-primary" : "btn-secondary"} w-full`}
-                    onClick={handlePdfExport}
+                    onClick={() => handlePdfExport()}
                   >
                     <FileDown size={16} />
                     <span>Xuất tài liệu ôn tập PDF/Ảnh</span>
