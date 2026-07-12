@@ -1,36 +1,27 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Bell, LogOut, LogIn, Moon, Sun, Pencil, Check, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Bell, LogOut, LogIn, Settings } from "lucide-react";
 
-export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn, darkMode, setDarkMode, displayName, onSetDisplayName }) {
+export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn, displayName, setActiveTab, notifPrefs }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [editingName, setEditingName] = useState(false);
-  const [nameInput, setNameInput] = useState(displayName || "");
 
   const dropdownRef = useRef(null);
   const notifRef = useRef(null);
 
-  useEffect(() => { setNameInput(displayName || ""); }, [displayName]);
-
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) { setDropdownOpen(false); setEditingName(false); }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setDropdownOpen(false);
       if (notifRef.current && !notifRef.current.contains(e.target)) setShowNotifications(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSaveName = () => {
-    onSetDisplayName?.(nameInput.trim());
-    setEditingName(false);
-  };
-
   const notificationList = [
-    { id: 1, text: "AI gợi ý hôm nay: 3 công thức ôn tập Giải tích 12.", time: "5 phút trước", unread: true },
-    { id: 2, text: "Bạn đã hoàn thành 80% mục tiêu học tập tuần này!", time: "2 giờ trước", unread: false },
-    { id: 3, text: "Tính năng Finder AI vừa cập nhật thêm dạng bài tập.", time: "1 ngày trước", unread: false }
-  ];
+    { id: 1, category: "aiSuggest", text: "AI gợi ý hôm nay: 3 công thức ôn tập Giải tích 12.", time: "5 phút trước", unread: true },
+    { id: 2, category: "streak", text: "Bạn đã hoàn thành 80% mục tiêu học tập tuần này!", time: "2 giờ trước", unread: false },
+    { id: 3, category: "featureUpdate", text: "Tính năng Finder AI vừa cập nhật thêm dạng bài tập.", time: "1 ngày trước", unread: false },
+  ].filter(n => notifPrefs?.[n.category] !== false);
 
   return (
     <header className="sticky md:hidden top-0 z-[100] flex justify-between items-center py-3 px-4 bg-white dark:bg-[#1E293B] border-b border-[rgba(30,58,95,0.07)] dark:border-[#334155] shadow-[0_2px_10px_rgba(0,0,0,0.01)]">
@@ -66,7 +57,9 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
                 </button>
               </div>
               <div className="flex flex-col gap-2">
-                {notificationList.map((n) => (
+                {notificationList.length === 0 ? (
+                  <p className="text-[0.75rem] text-[#94A3B8] text-center py-2 m-0">Bạn đã tắt hết thông báo trong Cài đặt.</p>
+                ) : notificationList.map((n) => (
                   <div key={n.id} className={`px-2 py-1.5 rounded-md text-[0.75rem] leading-[1.3] border-l-[3px] ${n.unread ? "bg-[rgba(46,134,222,0.05)] border-l-[#2E86DE]" : "bg-transparent border-l-transparent"}`}>
                     <div className={`text-[#1E3A5F] ${n.unread ? "font-semibold" : "font-normal"}`}>{n.text}</div>
                     <div className="text-[#94A3B8] text-[0.65rem] mt-0.5">{n.time}</div>
@@ -119,46 +112,15 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
                 </div>
               </div>
 
-              {/* Dark mode toggle */}
+              {/* Cài đặt */}
               {isLoggedIn && (
                 <button
-                  onClick={() => setDarkMode?.(!darkMode)}
+                  onClick={() => { setDropdownOpen(false); setActiveTab?.("settings"); }}
                   className="w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-none border-b border-[#f1f5f9] cursor-pointer text-left"
                 >
-                  {darkMode ? <Sun size={15} color="#64748B" /> : <Moon size={15} color="#64748B" />}
-                  <span className="flex-1 text-[0.82rem] text-[#1E3A5F] font-semibold">{darkMode ? "Giao diện sáng" : "Giao diện tối"}</span>
-                  <div className={`w-7 h-4 rounded-lg relative transition-colors duration-200 shrink-0 ${darkMode ? "bg-secondary" : "bg-[#CBD5E1]"}`}>
-                    <div className={`w-3 h-3 rounded-full bg-white absolute top-0.5 transition-[left] duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.2)] ${darkMode ? "left-3.5" : "left-0.5"}`} />
-                  </div>
+                  <Settings size={15} color="#64748B" />
+                  <span className="text-[0.82rem] text-[#1E3A5F] font-semibold">Cài đặt</span>
                 </button>
-              )}
-
-              {/* Edit display name */}
-              {isLoggedIn && (
-                editingName ? (
-                  <div className="flex items-center gap-1.5 py-2 px-3.5 border-b border-[#f1f5f9]">
-                    <input
-                      value={nameInput}
-                      onChange={e => setNameInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
-                      placeholder="Nhập tên hiển thị..."
-                      autoFocus
-                      className="flex-1 py-1 px-2 rounded-md border-[1.5px] border-secondary text-[0.8rem] outline-none min-w-0"
-                    />
-                    <button onClick={handleSaveName} className="bg-success text-white border-none rounded-[5px] py-1 px-1.5 cursor-pointer flex"><Check size={12} /></button>
-                    <button onClick={() => setEditingName(false)} className="bg-[#F1F5F9] text-text-muted border-none rounded-[5px] py-1 px-1.5 cursor-pointer flex"><X size={12} /></button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => { setNameInput(displayName || ""); setEditingName(true); }}
-                    className="w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-none border-b border-[#f1f5f9] cursor-pointer text-left"
-                  >
-                    <Pencil size={14} color="#64748B" />
-                    <span className="text-[0.82rem] text-[#1E3A5F] font-semibold">
-                      {displayName ? `Tên: ${displayName}` : "Đổi tên hiển thị"}
-                    </span>
-                  </button>
-                )
               )}
 
               {/* Logout button */}

@@ -9,12 +9,10 @@ import {
   addBookmark, removeBookmark,
   saveNote,
   saveStats,
-  resetStats,
   addSearchHistoryEntry,
   saveQuizDaily,
   saveDisplayName,
   loadFlashcardDecks, upsertFlashcardDeck, deleteFlashcardDeck as deleteFlashcardDeckDB,
-  deleteUserAnalytics,
 } from "./lib/supabase";
 
 import Header from "./components/Header";
@@ -30,6 +28,7 @@ import QuizView from "./views/QuizView";
 import PremiumUpgrade from "./views/PremiumUpgrade";
 import LoginView from "./views/LoginView";
 import ProgressDashboard from "./views/ProgressDashboard";
+import SettingsView from "./views/SettingsView";
 
 export default function App() {
   const { user, logout, isLoggedIn } = useAuth();
@@ -49,12 +48,32 @@ export default function App() {
       || "";
   });
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [userGrade, setUserGrade] = useState(() => {
+    const saved = localStorage.getItem("formulax_user");
+    const gId = saved ? JSON.parse(saved)?.googleId : null;
+    const stored = gId && localStorage.getItem(`formulax_grade_${gId}`);
+    return stored ? Number(stored) : null;
+  });
+  const [notifPrefs, setNotifPrefs] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("formulax_notif_prefs")) || {}; }
+    catch { return {}; }
+  });
 
   useEffect(() => {
     if (darkMode) document.documentElement.classList.add("dark-mode");
     else document.documentElement.classList.remove("dark-mode");
     localStorage.setItem("formulax_dark", darkMode);
   }, [darkMode]);
+
+  const handleSetUserGrade = (grade) => {
+    setUserGrade(grade);
+    if (user?.googleId) localStorage.setItem(`formulax_grade_${user.googleId}`, String(grade));
+  };
+
+  const handleSetNotifPrefs = (prefs) => {
+    setNotifPrefs(prefs);
+    localStorage.setItem("formulax_notif_prefs", JSON.stringify(prefs));
+  };
 
   const handleSetDisplayName = (name) => {
     setDisplayName(name);
@@ -253,18 +272,6 @@ export default function App() {
     }
   };
 
-  const handleResetStats = async () => {
-    const zero = { formulasViewed: 0, flashcardsStudied: 0, quizzesCompleted: 0 };
-    setStats(zero);
-    if (user?.googleId) {
-      localStorage.setItem(`formulax_stats_${user.googleId}`, JSON.stringify(zero));
-      await Promise.all([
-        resetStats(user.googleId).catch(console.error),
-        deleteUserAnalytics(user.googleId).catch(console.error),
-      ]);
-    }
-  };
-
   useEffect(() => {
     localStorage.setItem("formulax_premium", isPremium);
   }, [isPremium]);
@@ -338,7 +345,7 @@ export default function App() {
     }
     // Lưu lớp ưu tiên nếu người dùng chọn
     if (grade && user?.googleId) {
-      localStorage.setItem(`formulax_grade_${user.googleId}`, String(grade));
+      handleSetUserGrade(grade);
     }
   };
 
@@ -453,6 +460,22 @@ export default function App() {
             setActiveTab={setActiveTab}
           />
         );
+      case "settings":
+        return (
+          <SettingsView
+            user={user}
+            setActiveTab={setActiveTab}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            displayName={displayName}
+            onSetDisplayName={handleSetDisplayName}
+            userGrade={userGrade}
+            onSetUserGrade={handleSetUserGrade}
+            isPremium={isPremium}
+            notifPrefs={notifPrefs}
+            onSetNotifPrefs={handleSetNotifPrefs}
+          />
+        );
       default:
         return (
           <Dashboard
@@ -475,13 +498,11 @@ export default function App() {
       <Header
         user={user}
         isPremium={isPremium}
-        onResetStats={handleResetStats}
         onLogout={handleLogout}
         isLoggedIn={isLoggedIn}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
         displayName={displayName}
-        onSetDisplayName={handleSetDisplayName}
+        setActiveTab={setActiveTab}
+        notifPrefs={notifPrefs}
       />
 
       {renderView()}
@@ -489,14 +510,12 @@ export default function App() {
       <BottomNav
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
         displayName={displayName}
-        onSetDisplayName={handleSetDisplayName}
         onLogout={handleLogout}
         user={user}
         isLoggedIn={isLoggedIn}
         isPremium={isPremium}
+        notifPrefs={notifPrefs}
       />
 
       {showOnboarding && (
