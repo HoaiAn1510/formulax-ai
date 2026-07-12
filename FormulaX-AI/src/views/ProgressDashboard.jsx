@@ -53,6 +53,30 @@ function FormulaChip({ formula, onViewDetail }) {
   );
 }
 
+function getLongestStreak(activityDates) {
+  if (!activityDates.length) return 0;
+  const sorted = [...new Set(activityDates)].sort();
+  let longest = 1;
+  let current = 1;
+  for (let i = 1; i < sorted.length; i++) {
+    const diffDays = Math.round((new Date(sorted[i]) - new Date(sorted[i - 1])) / 86400000);
+    current = diffDays === 1 ? current + 1 : 1;
+    longest = Math.max(longest, current);
+  }
+  return longest;
+}
+
+function StreakStat({ icon, label, value }) {
+  return (
+    <div className="flex-1 md:flex-none bg-[#F8FAFC] dark:bg-[#0F172A]/40 border border-[#F1F5F9] dark:border-[#334155] rounded-xl p-3 flex flex-col items-center md:items-start gap-1">
+      <div className="flex items-center gap-1.5 text-[#94A3B8] text-[0.62rem] font-bold uppercase tracking-wide">
+        {icon} {label}
+      </div>
+      <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0]">{value}</div>
+    </div>
+  );
+}
+
 function StreakChart({ activityDates, streak }) {
   const todayStr = new Date().toISOString().slice(0, 10);
   const dateSet = new Set(activityDates);
@@ -74,6 +98,10 @@ function StreakChart({ activityDates, streak }) {
     weeks.push(week);
   }
 
+  const longestStreak = getLongestStreak(activityDates);
+  const monthPrefix = todayStr.slice(0, 7);
+  const daysThisMonth = activityDates.filter(d => d.startsWith(monthPrefix)).length;
+
   return (
     <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-3.5 mb-5">
       <div className="flex justify-between items-center mb-2.5">
@@ -84,44 +112,51 @@ function StreakChart({ activityDates, streak }) {
         <span className="font-extrabold text-[#F97316] text-[1.1rem]">{streak} ngày</span>
       </div>
 
-      <div className="md:max-w-md md:mx-auto">
-        <div className="grid grid-cols-7 gap-[3px] mb-[3px]">
-          {["T2","T3","T4","T5","T6","T7","CN"].map(d => (
-            <div key={d} className="text-center text-[0.58rem] text-[#94A3B8] font-bold">{d}</div>
-          ))}
-        </div>
-
-        {weeks.map((week, wi) => (
-          <div key={wi} className="grid grid-cols-7 gap-[3px] mb-[3px]">
-            {week.map(({ dateStr, day }) => {
-              const active = dateSet.has(dateStr);
-              const isToday = dateStr === todayStr;
-              const isFuture = dateStr > todayStr;
-              return (
-                <div
-                  key={dateStr}
-                  title={dateStr}
-                  className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
-                    isFuture ? "bg-transparent" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
-                  }`}
-                  style={{ border: isToday ? "2px solid #D97706" : "1.5px solid transparent" }}
-                >
-                  {!isFuture ? day : ""}
-                </div>
-              );
-            })}
+      <div className="md:flex md:gap-5 md:items-start">
+        <div className="md:flex-1 md:max-w-[380px]">
+          <div className="grid grid-cols-7 gap-[3px] mb-[3px]">
+            {["T2","T3","T4","T5","T6","T7","CN"].map(d => (
+              <div key={d} className="text-center text-[0.58rem] text-[#94A3B8] font-bold">{d}</div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      <div className="flex gap-3 mt-2 justify-end">
-        <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
-          <div className="w-2.5 h-2.5 rounded-sm bg-[#F1F5F9] dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#475569]" />
-          Không học
+          {weeks.map((week, wi) => (
+            <div key={wi} className="grid grid-cols-7 gap-[3px] mb-[3px]">
+              {week.map(({ dateStr, day }) => {
+                const active = dateSet.has(dateStr);
+                const isToday = dateStr === todayStr;
+                const isFuture = dateStr > todayStr;
+                return (
+                  <div
+                    key={dateStr}
+                    title={dateStr}
+                    className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
+                      isFuture ? "bg-transparent" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
+                    }`}
+                    style={{ border: isToday ? "2px solid #D97706" : "1.5px solid transparent" }}
+                  >
+                    {!isFuture ? day : ""}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+
+          <div className="flex gap-3 mt-2 justify-end">
+            <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#F1F5F9] dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#475569]" />
+              Không học
+            </div>
+            <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
+              <div className="w-2.5 h-2.5 rounded-sm bg-accent" />
+              Có học
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
-          <div className="w-2.5 h-2.5 rounded-sm bg-accent" />
-          Có học
+
+        <div className="flex gap-2 md:flex-col md:gap-3 mt-3 md:mt-0 md:w-40 md:shrink-0">
+          <StreakStat icon={<Flame size={12} color="#F97316" />} label="Streak dài nhất" value={`${longestStreak} ngày`} />
+          <StreakStat icon={<BarChart2 size={12} color="#D97706" />} label="Đã học tháng này" value={`${daysThisMonth} ngày`} />
         </div>
       </div>
     </div>
