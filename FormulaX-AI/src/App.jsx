@@ -23,6 +23,7 @@ import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 import FormulaDetailModal from "./components/FormulaDetailModal";
 import OnboardingModal from "./components/OnboardingModal";
+import { ToastContainer, showToast } from "./components/Toast";
 
 import Dashboard from "./views/Dashboard";
 import FormulaLibrary from "./views/FormulaLibrary";
@@ -251,6 +252,7 @@ export default function App() {
       if (isBookmarked) removeBookmark(user.googleId, formulaId).catch(console.error);
       else              addBookmark(user.googleId, formulaId).catch(console.error);
     }
+    showToast(isBookmarked ? "Đã xoá khỏi Bookmark" : "Đã thêm vào Bookmark");
   };
 
   const handleSaveNote = (formulaId, text) => {
@@ -318,11 +320,13 @@ export default function App() {
   const handleAddFlashcardDeck = (deck) => {
     setFlashcardDecks(prev => [...prev, deck]);
     if (user?.googleId) upsertFlashcardDeck(user.googleId, deck).catch(console.error);
+    showToast(`Đã tạo bộ thẻ "${deck.name}"`);
   };
 
   const handleDeleteFlashcardDeck = (deckId) => {
     setFlashcardDecks(prev => prev.filter(d => d.id !== deckId));
     if (user?.googleId) deleteFlashcardDeckDB(user.googleId, deckId).catch(console.error);
+    showToast("Đã xoá bộ thẻ", "info");
   };
 
   const handleRenameFlashcardDeck = (deckId, newName) => {
@@ -337,10 +341,13 @@ export default function App() {
   };
 
   const handleAddFormulaToFavoriteDeck = (formulaId, deckId) => {
+    let alreadyInDeck = false;
+    let deckName = "";
     setFlashcardDecks(prev => {
       const updated = prev.map(d => {
         if (d.id !== deckId) return d;
-        if (d.formulaIds.includes(formulaId)) return d;
+        deckName = d.name;
+        if (d.formulaIds.includes(formulaId)) { alreadyInDeck = true; return d; }
         const updatedDeck = { ...d, formulaIds: [...d.formulaIds, formulaId], updatedAt: new Date().toISOString() };
         if (user?.googleId) upsertFlashcardDeck(user.googleId, updatedDeck).catch(console.error);
         return updatedDeck;
@@ -348,6 +355,7 @@ export default function App() {
       return updated;
     });
     setAddFormulaModal(null);
+    showToast(alreadyInDeck ? `Công thức đã có trong "${deckName}"` : `Đã thêm vào "${deckName}"`, alreadyInDeck ? "info" : "success");
   };
 
   const handleRemoveFormulaFromDeck = (formulaId, deckId) => {
@@ -385,20 +393,12 @@ export default function App() {
 
   if (isLoadingData) {
     return (
-      <div style={{
-        minHeight: "100vh", display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center", gap: "16px",
-        backgroundColor: "#F8FAFC"
-      }}>
-        <div style={{
-          width: "40px", height: "40px", borderRadius: "50%",
-          border: "3px solid #E2E8F0", borderTopColor: "#3B82F6",
-          animation: "spin 0.8s linear infinite"
-        }} />
-        <p style={{ fontSize: "0.85rem", color: "#64748B", fontWeight: "600" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-[#0F172A]">
+        <img src="/favicon.svg" alt="FormulaX" className="w-12 h-12 rounded-xl animate-pulse" />
+        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
+        <p className="text-[0.85rem] font-semibold text-text-muted dark:text-[#94A3B8]">
           Đang tải dữ liệu của bạn…
         </p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -607,6 +607,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <ToastContainer />
     </div>
   );
 }
