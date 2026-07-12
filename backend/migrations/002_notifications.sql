@@ -20,7 +20,9 @@ create index if not exists notifications_google_id_idx on public.notifications (
 
 alter table public.notifications enable row level security;
 
-create policy if not exists "Cho phép đọc/ghi công khai, lọc google_id ở client" on public.notifications
+-- CREATE POLICY không hỗ trợ IF NOT EXISTS trong Postgres — drop trước rồi tạo lại để idempotent.
+drop policy if exists "Cho phép đọc/ghi công khai, lọc google_id ở client" on public.notifications;
+create policy "Cho phép đọc/ghi công khai, lọc google_id ở client" on public.notifications
   for all using (true) with check (true);
 
 grant select, insert, update, delete on public.notifications to anon, authenticated, service_role;
