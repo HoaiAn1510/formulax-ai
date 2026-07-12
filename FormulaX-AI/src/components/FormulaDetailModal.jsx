@@ -71,13 +71,17 @@ export default function FormulaDetailModal({
     const parsed = parseExplanationToTable(explanation);
 
     if (parsed.rows.length === 0) {
-      return <RichTextRenderer text={explanation} />;
+      return (
+        <div className="text-[0.85rem] text-[#475569] dark:text-[#94A3B8] formula-explanation-prose">
+          <RichTextRenderer text={explanation} />
+        </div>
+      );
     }
 
     return (
       <div>
         {parsed.intro && (
-          <div className="mb-3 font-semibold text-[0.85rem] text-[#475569] dark:text-[#94A3B8]">
+          <div className="mb-3 font-semibold text-[0.85rem] text-[#475569] dark:text-[#94A3B8] formula-explanation-prose">
             <RichTextRenderer text={parsed.intro} />
           </div>
         )}
@@ -106,7 +110,7 @@ export default function FormulaDetailModal({
         </div>
 
         {parsed.footer && (
-          <div className="mt-2.5 text-[0.8rem] text-[#64748B] dark:text-[#94A3B8] italic leading-[1.4]">
+          <div className="mt-2.5 text-[0.8rem] text-[#64748B] dark:text-[#94A3B8] italic leading-[1.4] formula-explanation-prose">
             <RichTextRenderer text={parsed.footer} />
           </div>
         )}
