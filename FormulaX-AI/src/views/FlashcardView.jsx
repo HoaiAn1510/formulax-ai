@@ -674,7 +674,7 @@ export default function FlashcardView({
               <div className="w-full h-[380px] [perspective:1000px] cursor-pointer mb-2" onClick={() => setIsFlipped(!isFlipped)}>
                 <div className={`w-full h-full relative transition-transform duration-[0.6s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}>
                   {/* Front */}
-                  <div className="glass-card absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden">
+                  <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden">
                     <span className="text-[0.7rem] font-bold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.5px]">Mặt trước - Tên công thức</span>
                     <div className="flex flex-col items-center gap-4 text-center flex-1 justify-center">
                       <span className="tag bg-[#f1f5f9] text-[#1E3A5F]">
@@ -688,13 +688,13 @@ export default function FlashcardView({
                   </div>
 
                   {/* Back */}
-                  <div className="glass-card absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden [transform:rotateY(180deg)]">
+                  <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden [transform:rotateY(180deg)]">
                     <span className="text-[0.7rem] font-bold text-secondary uppercase tracking-[0.5px]">Mặt sau - Công thức</span>
                     <div className="flex flex-col items-center gap-3 w-full flex-1 min-h-0 justify-start overflow-y-auto overflow-x-hidden">
                       <div className="bg-[#f1f5f9] rounded-xl p-4 flex items-center justify-center min-h-[70px] max-h-[200px] overflow-auto shrink-0 border border-[#e2e8f0] w-full">
                         <MathElement math={currentCard.latex} block={true} />
                       </div>
-                      <div className="text-[0.8rem] text-[#475569] text-left w-full overflow-x-auto">
+                      <div className="flashcard-explanation text-[0.8rem] text-[#475569] dark:text-[#CBD5E1] text-left w-full overflow-x-auto">
                         <strong>Giải thích:</strong>
                         <div className="mt-0.5">
                           <RichTextRenderer text={currentCard.explanation} />

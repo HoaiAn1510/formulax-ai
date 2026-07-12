@@ -338,7 +338,7 @@ export default function QuizView({
               </div>
 
               {/* Figma Setup Card Container */}
-              <div className="glass-card p-6 flex flex-col gap-6 mb-4">
+              <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-6 flex flex-col gap-6 mb-4">
 
                 {/* Section 1: Chọn chủ đề */}
                 <div>
@@ -462,8 +462,8 @@ export default function QuizView({
                   <div className="grid grid-cols-3 gap-3">
                     {/* Option 1: Trắc nghiệm */}
                     <div
-                      className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
-                        quizType === "multiple-choice" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                      className={`bg-white dark:bg-[#1E293B] border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
+                        quizType === "multiple-choice" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] dark:border-[#334155] text-primary dark:text-[#E2E8F0] hover:bg-[#f8fafc] dark:hover:bg-[#334155]"
                       }`}
                       onClick={() => setQuizType("multiple-choice")}
                     >
@@ -473,8 +473,8 @@ export default function QuizView({
 
                     {/* Option 2: Điền đáp án */}
                     <div
-                      className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
-                        quizType === "fill-in" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                      className={`bg-white dark:bg-[#1E293B] border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
+                        quizType === "fill-in" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] dark:border-[#334155] text-primary dark:text-[#E2E8F0] hover:bg-[#f8fafc] dark:hover:bg-[#334155]"
                       }`}
                       onClick={() => {
                         if (!isPremium) {
@@ -494,8 +494,8 @@ export default function QuizView({
 
                     {/* Option 3: Kết hợp */}
                     <div
-                      className={`bg-white border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
-                        quizType === "hybrid" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] text-primary hover:bg-[#f8fafc]"
+                      className={`bg-white dark:bg-[#1E293B] border rounded-xl py-4 px-2 text-center cursor-pointer text-[0.85rem] font-bold transition duration-200 flex flex-col items-center justify-center gap-1.5 ${
+                        quizType === "hybrid" ? "border-accent bg-accent/5 text-accent" : "border-[rgba(30,58,95,0.07)] dark:border-[#334155] text-primary dark:text-[#E2E8F0] hover:bg-[#f8fafc] dark:hover:bg-[#334155]"
                       }`}
                       onClick={() => {
                         if (!isPremium) {

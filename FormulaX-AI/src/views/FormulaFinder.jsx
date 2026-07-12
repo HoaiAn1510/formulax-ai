@@ -448,7 +448,7 @@ export default function FormulaFinder({
               <div
                 key={session.id}
                 className={`mb-1.5 rounded-[10px] overflow-hidden border-[1.5px] ${
-                  currentSessionId === session.id ? "border-accent bg-accent/5" : "border-[#E2E8F0] bg-white"
+                  currentSessionId === session.id ? "border-accent bg-accent/5" : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
                 }`}
               >
                 {/* Rename mode */}
@@ -499,7 +499,7 @@ export default function FormulaFinder({
                       onClick={() => loadSession(session)}
                       className="flex-1 text-left py-2.5 px-2.5 bg-transparent border-none cursor-pointer min-w-0"
                     >
-                      <div className="text-[0.78rem] font-semibold text-[#1E3A5F] whitespace-nowrap overflow-hidden text-ellipsis">
+                      <div className="text-[0.78rem] font-semibold text-[#1E3A5F] dark:text-[#E2E8F0] whitespace-nowrap overflow-hidden text-ellipsis">
                         {session.name}
                       </div>
                       <div className="text-[0.68rem] text-[#94A3B8] mt-0.5">
@@ -593,7 +593,7 @@ export default function FormulaFinder({
                     )}
 
                     {!msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && (
-                      <div className="leading-[1.65] text-[0.88rem]">
+                      <div className="chat-bot-text leading-[1.65] text-[0.88rem]">
                         {msg.sender === "bot"
                           ? <RichTextRenderer text={msg.text || ""} />
                           : <span className="whitespace-pre-wrap">{msg.text}</span>
@@ -619,12 +619,12 @@ export default function FormulaFinder({
 
                     {/* Formula card */}
                     {msg.sender === "bot" && msg.aiResult && (
-                      <div className="mt-3.5 bg-white border-[1.5px] border-[#e2e8f0] border-l-4 border-l-accent rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+                      <div className="ai-result-card mt-3.5 bg-white dark:bg-[#1E293B] border-[1.5px] border-[#e2e8f0] dark:border-[#334155] border-l-4 border-l-accent rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
                         <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5 before:content-['✨'] before:text-[0.95rem]">{msg.aiResult.name}</div>
                         <div className="bg-[#f8fafc] border border-secondary/15 rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)]">
                           <MathElement math={msg.aiResult.latex} block={true} />
                         </div>
-                        <div className="text-xs text-[#334155]">
+                        <div className="text-xs text-[#334155] dark:text-[#CBD5E1]">
                           <strong>Ý nghĩa:</strong>
                           <RichTextRenderer text={msg.aiResult.explanation.split('\n')[0]} />
                         </div>
@@ -642,14 +642,14 @@ export default function FormulaFinder({
                           </button>
                           <button
                             className={`flex-1 py-2 px-3 rounded-lg text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border border-black/[0.03] inline-flex items-center justify-center min-h-[38px] hover:-translate-y-[1.5px] hover:scale-[1.02] hover:shadow-[0_4px_8px_rgba(30,58,95,0.06)] active:translate-y-0 active:scale-100 ${
-                              bookmarkedIds.includes(msg.aiResult.id) ? "bg-error/8 text-error" : "bg-[rgba(30,58,95,0.05)] text-[#1E3A5F]"
+                              bookmarkedIds.includes(msg.aiResult.id) ? "bg-error/8 text-error" : "bg-[rgba(30,58,95,0.05)] text-[#1E3A5F] dark:bg-[rgba(226,232,240,0.08)] dark:text-[#E2E8F0]"
                             }`}
                             onClick={() => handleBookmarkWithPopup(msg.aiResult.id, msg.aiResult.name)}
                           >
                             {bookmarkedIds.includes(msg.aiResult.id) ? "✓ Đã lưu" : "Lưu lại"}
                           </button>
                           <button
-                            className="flex-1 py-2 px-3 rounded-lg text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border border-black/[0.03] inline-flex items-center justify-center min-h-[38px] hover:-translate-y-[1.5px] hover:scale-[1.02] hover:shadow-[0_4px_8px_rgba(30,58,95,0.06)] active:translate-y-0 active:scale-100 bg-primary text-white"
+                            className="flex-1 py-2 px-3 rounded-lg text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border border-black/[0.03] inline-flex items-center justify-center min-h-[38px] hover:-translate-y-[1.5px] hover:scale-[1.02] hover:shadow-[0_4px_8px_rgba(30,58,95,0.06)] active:translate-y-0 active:scale-100 bg-[#1E3A5F] text-white"
                             onClick={() => onViewDetail(msg.aiResult)}
                           >
                             Chi tiết
