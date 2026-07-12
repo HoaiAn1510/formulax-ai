@@ -100,7 +100,7 @@ function StreakChart({ activityDates, streak }) {
               <div
                 key={dateStr}
                 title={dateStr}
-                className={`aspect-square rounded flex items-center justify-center text-[0.5rem] font-bold ${
+                className={`h-6 md:h-8 rounded flex items-center justify-center text-[0.5rem] font-bold ${
                   isFuture ? "bg-transparent" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
                 }`}
                 style={{ border: isToday ? "2px solid #D97706" : "1.5px solid transparent" }}
@@ -262,7 +262,7 @@ export default function ProgressDashboard({ user, stats, formulas, setActiveTab,
   return (
     <div className="view-container">
       <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
+        <div className="relative z-[1] md:max-w-2xl md:mx-auto">
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
             <button
