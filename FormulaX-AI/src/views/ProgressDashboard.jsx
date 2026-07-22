@@ -1,7 +1,55 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock } from "lucide-react";
+import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 import CountUp from "../components/CountUp";
+import { showToast } from "../components/Toast";
+import { BADGES } from "../data/badges";
+
+const BADGE_ICONS = { Flame, ClipboardList, Layers, BookOpen };
+
+function evaluateBadges(streak, stats) {
+  const values = {
+    streak,
+    quizzes: stats?.quizzesCompleted ?? 0,
+    flashcards: stats?.flashcardsStudied ?? 0,
+    formulas: stats?.formulasViewed ?? 0,
+  };
+  return BADGES.map(b => ({ ...b, unlocked: values[b.metric] >= b.threshold }));
+}
+
+function BadgesSection({ badges }) {
+  const unlockedCount = badges.filter(b => b.unlocked).length;
+  return (
+    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
+      <div className="flex items-center gap-2 mb-3.5">
+        <Award size={16} color="#D97706" />
+        <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">Huy hiệu</h2>
+        <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {unlockedCount}/{badges.length}</span>
+      </div>
+      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+        {badges.map(b => {
+          const Icon = BADGE_ICONS[b.icon] || Flame;
+          return (
+            <div
+              key={b.id}
+              title={b.description}
+              className={`flex flex-col items-center gap-1.5 rounded-xl p-2.5 border ${
+                b.unlocked ? "border-accent/25 bg-accent/6" : "border-[#F1F5F9] dark:border-[#334155] opacity-50"
+              }`}
+            >
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
+                b.unlocked ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
+              }`}>
+                <Icon size={16} />
+              </div>
+              <span className="text-[0.62rem] font-bold text-center text-primary dark:text-[#E2E8F0] leading-tight">{b.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -284,7 +332,7 @@ function getFormulasForQuizTopic(quizTopic, formulas) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ProgressDashboard({ user, formulas, setActiveTab, onViewDetail, isPremium }) {
+export default function ProgressDashboard({ user, formulas, setActiveTab, onViewDetail, isPremium, stats }) {
   const [selectedDate, setSelectedDate]   = useState(new Date().toISOString().slice(0, 10));
   const [streak, setStreak]               = useState(0);
   const [activityDates, setActivityDates] = useState([]);
@@ -311,6 +359,32 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [user?.googleId]);
+
+  const badges = useMemo(() => evaluateBadges(streak, stats), [streak, stats]);
+
+  // Toast "vừa mở khóa huy hiệu" — chỉ báo khi phát hiện huy hiệu MỚI so với lần trước
+  // (localStorage). Lần đầu chạy tính năng này (chưa có key), âm thầm chốt trạng thái hiện
+  // tại làm mốc thay vì spam toast cho user đã có streak/stats từ trước.
+  useEffect(() => {
+    if (!user?.googleId || loading) return;
+    const unlockedIds = badges.filter(b => b.unlocked).map(b => b.id);
+    const key = `formulax_badges_seen_${user.googleId}`;
+    const seenRaw = localStorage.getItem(key);
+    if (seenRaw === null) {
+      localStorage.setItem(key, JSON.stringify(unlockedIds));
+      return;
+    }
+    let seen = [];
+    try { seen = JSON.parse(seenRaw); } catch { seen = []; }
+    const newlyUnlocked = unlockedIds.filter(id => !seen.includes(id));
+    if (newlyUnlocked.length > 0) {
+      newlyUnlocked.forEach((id, i) => {
+        const badge = BADGES.find(b => b.id === id);
+        if (badge) setTimeout(() => showToast(`Đã mở khóa: ${badge.label}`, "success"), i * 400);
+      });
+      localStorage.setItem(key, JSON.stringify(unlockedIds));
+    }
+  }, [user?.googleId, loading, badges]);
 
   const dailyHistoryMap = useMemo(() => {
     const m = {};
@@ -439,6 +513,9 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
               )}
             </div>
           </div>
+
+          {/* Badges — luôn hiển thị đầy đủ danh sách, huy hiệu chưa mở khóa đóng vai trò mục tiêu */}
+          <BadgesSection badges={badges} />
 
           {/* AI Coach suggestions — scoped to the same selected day, full width below the grid */}
           <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">

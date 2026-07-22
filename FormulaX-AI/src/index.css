@@ -36,6 +36,13 @@
   background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
 }
 
+/* Banner chuỗi học (streak) trên Dashboard — dùng đúng #F97316 đã dùng cho Flame icon/
+   StreakChart trong ProgressDashboard.jsx, tách riêng khỏi bg-banner-orange (đó là màu
+   upsell Premium, không phải streak). */
+@utility bg-banner-flame {
+  background: linear-gradient(135deg, #F97316 0%, #FB923C 100%);
+}
+
 @utility bg-progress-premium {
   background: linear-gradient(90deg, #D97706 0%, #F59E0B 100%);
 }
