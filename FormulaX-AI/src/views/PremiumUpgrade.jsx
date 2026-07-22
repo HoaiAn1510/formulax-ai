@@ -67,11 +67,17 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
     }
     setIsProcessing(true);
     setPaymentNotice(null);
+    // Timeout chủ động — nếu không, backend treo/mạng rớt sẽ khiến isProcessing kẹt true
+    // mãi mãi, làm "đứng hình" cả 4 nút CTA Premium trên trang (đều dùng chung state này)
+    // cho tới khi tải lại trang, không có thông báo lỗi nào cho người dùng biết.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
       const res = await fetch(`${BACKEND_URL}/api/payment/momo/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.googleId, plan }),
+        signal: controller.signal,
       });
       const data = await res.json();
       if (!res.ok || !data.payUrl) {
@@ -80,8 +86,14 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
       // Chuyển hướng sang cổng thanh toán MoMo thật — is_premium chỉ được set khi IPN xác nhận.
       window.location.href = data.payUrl;
     } catch (err) {
-      setPaymentNotice({ type: "error", text: err.message || "Không thể kết nối cổng thanh toán MoMo. Vui lòng thử lại sau." });
+      const isTimeout = err.name === "AbortError";
+      setPaymentNotice({
+        type: "error",
+        text: isTimeout ? "Hết thời gian chờ kết nối cổng thanh toán MoMo. Vui lòng thử lại." : (err.message || "Không thể kết nối cổng thanh toán MoMo. Vui lòng thử lại sau."),
+      });
       setIsProcessing(false);
+    } finally {
+      clearTimeout(timeoutId);
     }
   };
 

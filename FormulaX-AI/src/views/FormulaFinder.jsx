@@ -211,11 +211,25 @@ export default function FormulaFinder({
   };
 
   const callAI = async (userMessage, messageHistory) => {
-    const response = await fetch(`${BACKEND_URL}/api/chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: userMessage, history: messageHistory })
-    });
+    // Timeout chủ động — không có dòng này, backend treo/mạng rớt sẽ khiến fetch không bao
+    // giờ resolve/reject, isAnalyzing kẹt true mãi mãi và nút gửi tin nhắn "chết" vĩnh viễn
+    // cho tới khi tải lại trang.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    let response;
+    try {
+      response = await fetch(`${BACKEND_URL}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage, history: messageHistory }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if (err.name === "AbortError") throw new Error("Hết thời gian chờ phản hồi từ AI. Vui lòng thử lại.");
+      throw err;
+    } finally {
+      clearTimeout(timeoutId);
+    }
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
       throw new Error(errData.error || `HTTP ${response.status}`);

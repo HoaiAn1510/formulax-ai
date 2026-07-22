@@ -47,6 +47,12 @@ export default function LoginView() {
       setError("Đăng nhập Google thất bại. Vui lòng thử lại.");
       setLoading(false);
     },
+    // Người dùng đóng popup Google (hoặc popup bị chặn) không tính là onSuccess/onError —
+    // nếu không bắt riêng, loading set true lúc bấm nút sẽ kẹt mãi vì không callback nào
+    // được gọi, nút Đăng nhập nhìn như bị vô hiệu hóa vĩnh viễn cho tới khi tải lại trang.
+    onNonOAuthError: () => {
+      setLoading(false);
+    },
   });
 
   const handleEmailLogin = (e) => {
