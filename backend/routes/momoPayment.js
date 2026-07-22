@@ -3,7 +3,7 @@ import { supabaseAdmin } from "../lib/supabaseAdmin.js";
 import {
   PLAN_CONFIG,
   isValidPlan,
-  computeExpiry,
+  computeStackedExpiry,
   signHmacSHA256,
   buildCreateRawSignature,
   buildIpnRawSignature,
@@ -74,11 +74,18 @@ router.post("/create", async (req, res) => {
 
     // Ghi log đơn hàng "pending" trước khi gọi MoMo — dùng để chống IPN xử lý trùng
     // và để IPN tra được userId/plan theo orderId mà không cần tin vào extraData.
-    if (supabaseAdmin) {
-      const { error: insertError } = await supabaseAdmin.from("payments").insert({
-        order_id: orderId, request_id: requestId, google_id: userId, plan, amount, status: "pending",
-      });
-      if (insertError) console.error("[MoMo create] Ghi payments lỗi:", insertError.message);
+    // Bắt buộc phải ghi thành công mới gọi sang MoMo: nếu bỏ qua lỗi ở đây, IPN sau này
+    // sẽ không tìm thấy order (order_id không tồn tại trong bảng payments) và không có
+    // cách nào cấp premium cho người dùng dù họ đã thanh toán — đơn hàng "mồ côi".
+    if (!supabaseAdmin) {
+      return res.status(500).json({ error: "Hệ thống thanh toán chưa sẵn sàng (Supabase service role chưa cấu hình)." });
+    }
+    const { error: insertError } = await supabaseAdmin.from("payments").insert({
+      order_id: orderId, request_id: requestId, google_id: userId, plan, amount, status: "pending",
+    });
+    if (insertError) {
+      console.error("[MoMo create] Ghi payments lỗi:", insertError.message);
+      return res.status(500).json({ error: "Không tạo được đơn hàng, vui lòng thử lại." });
     }
 
     const momoRes = await fetch(process.env.MOMO_CREATE_ENDPOINT, {
@@ -149,12 +156,23 @@ router.post("/ipn", async (req, res) => {
     }
 
     if (Number(resultCode) === 0) {
-      const expiry = computeExpiry(order.plan);
+      const { data: existingUser } = await supabaseAdmin
+        .from("users")
+        .select("premium_expiry")
+        .eq("google_id", order.google_id)
+        .maybeSingle();
+      const expiry = computeStackedExpiry(order.plan, existingUser?.premium_expiry);
       const { error: userError } = await supabaseAdmin.from("users").upsert(
         { google_id: order.google_id, is_premium: true, premium_expiry: expiry.toISOString(), updated_at: new Date().toISOString() },
         { onConflict: "google_id" }
       );
-      if (userError) console.error("[MoMo IPN] Cập nhật users lỗi:", userError.message);
+      if (userError) {
+        // Không đánh dấu payments là "success" và không ACK 204 — MoMo coi 204 là đã xử lý
+        // xong nên sẽ không gọi lại IPN nữa. Trả lỗi để MoMo retry, tránh mất vĩnh viễn
+        // việc cấp premium chỉ vì một lỗi DB tạm thời.
+        console.error("[MoMo IPN] Cập nhật users lỗi — trả lỗi để MoMo retry IPN:", userError.message);
+        return res.status(500).end();
+      }
 
       await supabaseAdmin.from("payments").update({
         status: "success", momo_trans_id: String(transId), result_code: Number(resultCode), updated_at: new Date().toISOString(),
@@ -214,7 +232,12 @@ router.post("/simulate-success", async (req, res) => {
       return res.json({ ok: true, message: "Đơn này đã được xác nhận thành công trước đó." });
     }
 
-    const expiry = computeExpiry(order.plan);
+    const { data: existingUser } = await supabaseAdmin
+      .from("users")
+      .select("premium_expiry")
+      .eq("google_id", order.google_id)
+      .maybeSingle();
+    const expiry = computeStackedExpiry(order.plan, existingUser?.premium_expiry);
     const { error: userError } = await supabaseAdmin.from("users").upsert(
       { google_id: order.google_id, is_premium: true, premium_expiry: expiry.toISOString(), updated_at: new Date().toISOString() },
       { onConflict: "google_id" }
@@ -232,17 +255,33 @@ router.post("/simulate-success", async (req, res) => {
   }
 });
 
-// DEBUG: truy vấn trạng thái đơn payment theo orderId (dùng để kiểm tra nhanh từ client/postman)
-router.get('/payment/:orderId', async (req, res) => {
-  const { orderId } = req.params;
-  if (!supabaseAdmin) return res.status(500).json({ error: 'Supabase service role key not configured' });
+// DEV-ONLY: tra cứu trạng thái 1 đơn hàng theo orderId (dùng bởi public/simulate-payment.html).
+// Khoá bằng DEV_SIMULATE_SECRET giống /simulate-success — route cũ (GET, không xác thực)
+// lộ toàn bộ PII thanh toán (google_id, số tiền, trans_id...) cho bất kỳ ai biết/đoán được
+// orderId, kể cả khi orderId không phải bí mật (xuất hiện ngay trên URL redirect /return).
+router.post("/payment-status", async (req, res) => {
+  const devSecret = process.env.DEV_SIMULATE_SECRET;
+  if (!devSecret) {
+    return res.status(403).json({ error: "DEV_SIMULATE_SECRET chưa cấu hình trong .env — route debug bị khoá." });
+  }
+  const { orderId, secret } = req.body;
+  if (secret !== devSecret) {
+    return res.status(403).json({ error: "Sai khoá xác nhận." });
+  }
+  if (!orderId) {
+    return res.status(400).json({ error: "Thiếu orderId" });
+  }
+  if (!supabaseAdmin) {
+    return res.status(500).json({ error: "Supabase chưa cấu hình service role key" });
+  }
+
   try {
-    const { data, error } = await supabaseAdmin.from('payments').select('*').eq('order_id', orderId).single();
+    const { data, error } = await supabaseAdmin.from("payments").select("*").eq("order_id", orderId).single();
     if (error) return res.status(500).json({ error: error.message });
     res.json({ payment: data });
   } catch (err) {
-    console.error('[MoMo debug] error fetching payment:', err.message);
-    res.status(500).json({ error: 'Error fetching payment' });
+    console.error("[MoMo debug] error fetching payment:", err.message);
+    res.status(500).json({ error: "Error fetching payment" });
   }
 });
 

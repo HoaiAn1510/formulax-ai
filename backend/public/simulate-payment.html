@@ -36,10 +36,15 @@
 
   document.getElementById("btnCheck").onclick = async () => {
     const orderId = document.getElementById("orderId").value.trim();
-    if (!orderId) return (out.textContent = "Thiếu Order ID.");
+    const secret = document.getElementById("secret").value.trim();
+    if (!orderId || !secret) return (out.textContent = "Cần nhập đủ Order ID và Dev Secret.");
     out.textContent = "Đang kiểm tra...";
     try {
-      const res = await fetch(`${base}/api/payment/momo/payment/${encodeURIComponent(orderId)}`);
+      const res = await fetch(`${base}/api/payment/momo/payment-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, secret }),
+      });
       const data = await res.json();
       out.textContent = JSON.stringify(data, null, 2);
     } catch (e) {

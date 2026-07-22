@@ -17,6 +17,15 @@ export function computeExpiry(plan, from = new Date()) {
   return d;
 }
 
+// Nếu người dùng đang còn hạn Premium chưa hết, cộng dồn gói mới vào hạn hiện có thay vì
+// tính lại từ thời điểm thanh toán — tránh mất thời gian còn lại khi gia hạn sớm.
+export function computeStackedExpiry(plan, currentExpiryIso) {
+  const now = new Date();
+  const currentExpiry = currentExpiryIso ? new Date(currentExpiryIso) : null;
+  const base = currentExpiry && currentExpiry > now ? currentExpiry : now;
+  return computeExpiry(plan, base);
+}
+
 export function signHmacSHA256(rawSignature, secretKey) {
   return crypto.createHmac("sha256", secretKey).update(rawSignature).digest("hex");
 }
