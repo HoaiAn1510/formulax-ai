@@ -129,15 +129,14 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
               key={option.letter}
               onClick={() => handleSelect(option)}
               disabled={revealed}
-              className={`flex items-center w-full min-h-[46px] py-2.5 px-3.5 rounded-xl text-[0.85rem] font-semibold text-left gap-2.5 border-[1.5px] text-primary transition-all duration-200 disabled:opacity-100 ${
-                // Nền luôn sáng (không đổi theo dark mode) — chữ do KaTeX tự render dùng màu
-                // mặc định tối, không kế thừa currentColor, nên cần nền sáng để đọc được ở cả
-                // 2 chế độ. Cùng lý do QuizView.jsx giữ nền trắng cho các nút đáp án bất kể dark mode.
+              className={`flex items-center w-full min-h-[46px] py-2.5 px-3.5 rounded-xl text-[0.85rem] font-semibold text-left gap-2.5 border-[1.5px] text-primary dark:text-[#E2E8F0] transition-all duration-200 disabled:opacity-100 ${
+                // KaTeX kế thừa color từ phần tử cha bình thường (không cần nền sáng cố định để
+                // đọc được — xem FormulaDetailModal.jsx render MathElement trực tiếp trên nền tối).
                 isRight
-                  ? "border-success bg-[#F0FDF4]"
+                  ? "border-success bg-[#F0FDF4] dark:bg-success/15"
                   : isWrongSelected
-                    ? "border-error bg-[#FEF2F2]"
-                    : "border-[rgba(30,58,95,0.07)] bg-white" + (revealed ? "" : " cursor-pointer hover:border-accent hover:bg-accent/[0.02]")
+                    ? "border-error bg-[#FEF2F2] dark:bg-error/15"
+                    : "border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-white dark:bg-[#1E293B]" + (revealed ? "" : " cursor-pointer hover:border-accent hover:bg-accent/[0.02]")
               }`}
             >
               <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[0.78rem] font-extrabold shrink-0 ${
@@ -154,8 +153,7 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
       </div>
 
       {answer && (
-        // Nền sáng cố định — cùng lý do với nút đáp án ở trên, giải thích cũng chứa KaTeX.
-        <div className="mt-3 p-3 rounded-xl bg-[#F8FAFC] text-[0.78rem] text-text-muted leading-[1.6]">
+        <div className="mt-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A]/40 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.6]">
           <RichTextRenderer text={question.explanation} />
         </div>
       )}

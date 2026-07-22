@@ -648,12 +648,12 @@ export default function QuizView({
                           className={`flex items-center w-full min-h-[56px] py-3 px-4 rounded-xl text-[0.95rem] font-semibold text-left cursor-pointer transition-all duration-200 gap-3 border-[1.5px] text-primary dark:text-[#E2E8F0] ${
                             isSelected
                               ? "border-accent bg-accent/5 shadow-[0_4px_12px_rgba(217,119,6,0.1)]"
-                              : "border-[rgba(30,58,95,0.07)] bg-white shadow-[0_4px_20px_rgba(30,58,95,0.04)] hover:border-accent hover:bg-accent/[0.02] hover:shadow-[0_4px_12px_rgba(217,119,6,0.08)] hover:-translate-y-px"
+                              : "border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-white dark:bg-[#1E293B] shadow-[0_4px_20px_rgba(30,58,95,0.04)] hover:border-accent hover:bg-accent/[0.02] hover:shadow-[0_4px_12px_rgba(217,119,6,0.08)] hover:-translate-y-px"
                           }`}
                           onClick={() => handleSelectOption(option)}
                         >
                           <div className={`flex items-center justify-center w-7 h-7 rounded-full text-[0.85rem] font-extrabold shrink-0 transition-all duration-200 ${
-                            isSelected ? "bg-accent border-accent text-white" : "bg-[#f1f5f9] border border-[#cbd5e1] text-text-muted"
+                            isSelected ? "bg-accent border-accent text-white" : "bg-[#f1f5f9] dark:bg-[#334155] border border-[#cbd5e1] dark:border-[#475569] text-text-muted dark:text-[#94A3B8]"
                           }`}>{option.letter}</div>
                           <div className="flex-1"><RichTextRenderer text={option.text} /></div>
                         </button>
