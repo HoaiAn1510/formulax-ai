@@ -377,7 +377,7 @@ export default function QuizView({
 
                 {/* Section 1: Chọn chủ đề */}
                 <div>
-                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                  <div className="flex items-center gap-2 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-3">
                     <BookOpen size={15} className="text-accent" />
                     <span>Chọn chủ đề</span>
                     {!allMode && selectedTopics.length > 0 && (
@@ -421,7 +421,7 @@ export default function QuizView({
 
                 {/* Section 1b: Chọn lớp */}
                 <div>
-                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                  <div className="flex items-center gap-2 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-3">
                     <GraduationCap size={15} className="text-accent" />
                     <span>Chọn lớp</span>
                     {!allGradeMode && selectedGrades.length > 0 && (
@@ -463,7 +463,7 @@ export default function QuizView({
 
                 {/* Section 2: Số câu hỏi */}
                 <div>
-                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                  <div className="flex items-center gap-2 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-3">
                     <BarChart2 size={15} className="text-accent" />
                     <span>Số câu hỏi</span>
                   </div>
@@ -490,7 +490,7 @@ export default function QuizView({
 
                 {/* Section 3: Loại câu hỏi */}
                 <div>
-                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                  <div className="flex items-center gap-2 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-3">
                     <Layers size={15} className="text-accent" />
                     <span>Loại câu hỏi</span>
                   </div>
@@ -552,7 +552,7 @@ export default function QuizView({
 
                 {/* Section 4: Giới hạn thời gian */}
                 <div>
-                  <div className="flex items-center gap-2 text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3">
+                  <div className="flex items-center gap-2 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-3">
                     <Timer size={15} className="text-accent" />
                     <span>Giới hạn thời gian</span>
                   </div>

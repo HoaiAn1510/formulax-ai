@@ -63,6 +63,19 @@
   box-shadow: var(--shadow-glass-card-hover);
 }
 
+/* Phản hồi "nhấn" (press feedback) — lún nhẹ lúc bấm, thắng tạm thời transform hover
+   trong lúc :active (đúng ý muốn), tự trả lại hover:-translate-y-* khi thả tay ra. */
+.glass-card:active, .glass-card-sm:active {
+  transform: scale(0.98);
+}
+
+/* Đồng bộ độ dày nét icon Lucide toàn app — mặc định thư viện là 2, giảm còn 1.5 cho
+   cảm giác mảnh/tinh tế hơn, hợp phong cách SaaS tối giản (kiểu Linear). Lucide gắn sẵn
+   class "lucide" lên mọi icon nên chỉ cần 1 rule duy nhất, không phải sửa từng icon. */
+.lucide {
+  stroke-width: 1.5;
+}
+
 /* Đưa vào @layer base để Tailwind utilities (mb-*, p-*, px-*, py-*...) vẫn override
    được như bình thường — rule nằm ngoài mọi @layer sẽ luôn thắng rule có layer,
    bất kể thứ tự hay độ đặc hiệu, nên để reset trần ở đây sẽ đè chết toàn bộ margin/padding utility. */
@@ -86,5 +99,16 @@
   button, input, select, textarea {
     font-family: inherit;
     outline: none;
+  }
+
+  /* Focus ring amber nhất quán cho điều hướng bàn phím — outline:none phía trên chỉ bỏ
+     viền mặc định của trình duyệt, KHÔNG được để mất luôn dấu hiệu focus (ảnh hưởng
+     accessibility). :focus-visible chỉ hiện khi điều hướng bằng bàn phím (Tab), không
+     hiện khi click chuột, nên không phá layout/hover bình thường. */
+  button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible,
+  a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }

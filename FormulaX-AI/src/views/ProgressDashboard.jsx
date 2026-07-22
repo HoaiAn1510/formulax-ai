@@ -396,8 +396,16 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
               </div>
 
               {loading ? (
-                <div className="text-center py-5 text-[#94A3B8] text-[0.82rem]">
-                  Đang tải...
+                <div className="animate-pulse">
+                  {[85, 65, 45].map((w, i) => (
+                    <div key={i} className="mb-3.5">
+                      <div className="flex justify-between items-center mb-1.5">
+                        <div className="h-3 w-24 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
+                        <div className="h-3 w-7 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
+                      </div>
+                      <div className="bg-[#F1F5F9] dark:bg-[#334155] rounded-md h-2" style={{ width: `${w}%` }} />
+                    </div>
+                  ))}
                 </div>
               ) : !isPremium ? (
                 <>
@@ -443,7 +451,20 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             </div>
 
             {loading ? (
-              <div className="text-center py-4 text-[#94A3B8] text-[0.82rem]">Đang tải...</div>
+              <div className="animate-pulse flex flex-col gap-3.5">
+                {[0, 1].map(i => (
+                  <div key={i}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="h-3 w-20 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
+                      <div className="h-4 w-14 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
+                    </div>
+                    <div className="flex gap-2 pl-[19px]">
+                      <div className="h-7 w-36 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
+                      <div className="h-7 w-32 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : !isPremium ? (
               <EmptyState
                 message="Nâng cấp Premium để nhận gợi ý ôn tập cá nhân hóa theo điểm yếu của bạn."

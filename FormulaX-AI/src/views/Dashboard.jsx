@@ -186,7 +186,7 @@ export default function Dashboard({
           {/* Limit quota progress indicator card */}
           <div className="glass-card p-4 mt-6 flex flex-col gap-3 dark:bg-[#1E293B] dark:border-[#334155]">
             <div className="flex justify-between items-center">
-              <div className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5">
+              <div className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5">
                 <Crown size={14} className="text-premium" />
                 <span>Còn {isPremium ? "Không giới hạn" : `${remainingQuizzes}/10`} quiz miễn phí hôm nay</span>
               </div>
