@@ -655,7 +655,7 @@ export default function QuizView({
                           <div className={`flex items-center justify-center w-7 h-7 rounded-full text-[0.85rem] font-extrabold shrink-0 transition-all duration-200 ${
                             isSelected ? "bg-accent border-accent text-white" : "bg-[#f1f5f9] dark:bg-[#334155] border border-[#cbd5e1] dark:border-[#475569] text-text-muted dark:text-[#94A3B8]"
                           }`}>{option.letter}</div>
-                          <div className="flex-1"><RichTextRenderer text={option.text} /></div>
+                          <div className="quiz-question-text flex-1"><RichTextRenderer text={option.text} /></div>
                         </button>
                       );
                     })}
@@ -738,7 +738,7 @@ export default function QuizView({
                               <span className="text-text-muted dark:text-[#94A3B8]">Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span className="bg-accent/10 text-accent rounded ml-1 py-px px-1.5">Điền đáp án</span></span>
                               <span className={`py-1 px-2 rounded ${statusClass}`}>{statusLabel}</span>
                             </div>
-                            <div className="text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0]">
+                            <div className="quiz-question-text text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0]">
                               <RichTextRenderer text={q.text} />
                             </div>
                             <div className="flex flex-col gap-1.5 bg-white dark:bg-[#0F172A]/40 rounded-lg p-2.5 border border-[#E2E8F0] dark:border-[#334155]">
@@ -751,7 +751,7 @@ export default function QuizView({
                                 <span className="font-bold text-success">{correctOpt?.text}</span>
                               </div>
                             </div>
-                            <div className="bg-white dark:bg-[#0F172A]/40 border border-dashed border-[rgba(30,58,95,0.15)] dark:border-[#475569] rounded-lg p-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
+                            <div className="formula-explanation-prose bg-white dark:bg-[#0F172A]/40 border border-dashed border-[rgba(30,58,95,0.15)] dark:border-[#475569] rounded-lg p-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
                               <strong className="block text-primary dark:text-[#E2E8F0] mb-1 text-[0.8rem] font-extrabold">Lời giải chi tiết:</strong>
                               <RichTextRenderer text={q.explanation} />
                             </div>
@@ -790,7 +790,7 @@ export default function QuizView({
                           </div>
 
                           {/* Question Text */}
-                          <div className="text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0]">
+                          <div className="quiz-question-text text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0]">
                             <RichTextRenderer text={q.text} />
                           </div>
 
@@ -821,7 +821,7 @@ export default function QuizView({
                                   <div className={`w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.75rem] font-extrabold shrink-0 ${badgeClass}`}>
                                     {option.letter}
                                   </div>
-                                  <div className="flex-1 text-primary dark:text-[#E2E8F0]"><RichTextRenderer text={option.text} /></div>
+                                  <div className="quiz-question-text flex-1 text-primary dark:text-[#E2E8F0]"><RichTextRenderer text={option.text} /></div>
                                   {optBadge}
                                 </div>
                               );
@@ -829,7 +829,7 @@ export default function QuizView({
                           </div>
 
                           {/* Explanation Box */}
-                          <div className="bg-white dark:bg-[#0F172A]/40 border border-dashed border-[rgba(30,58,95,0.15)] dark:border-[#475569] rounded-lg p-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
+                          <div className="formula-explanation-prose bg-white dark:bg-[#0F172A]/40 border border-dashed border-[rgba(30,58,95,0.15)] dark:border-[#475569] rounded-lg p-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
                             <strong className="block text-primary dark:text-[#E2E8F0] mb-1 text-[0.8rem] font-extrabold">
                               Lời giải chi tiết:
                             </strong>

@@ -86,21 +86,21 @@ export default function FormulaDetailModal({
           </div>
         )}
 
-        <div className="overflow-x-auto rounded-xl border border-[#e2e8f0] shadow-[0_2px_8px_rgba(30,58,95,0.01)]">
+        <div className="overflow-x-auto rounded-xl border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.01)]">
           <table className="w-full border-collapse text-[0.85rem] text-left">
             <thead>
               <tr>
-                <th className="w-[30%] bg-[#f8fafc] border-b-[1.5px] border-[#e2e8f0] py-2.5 px-3.5 font-extrabold text-primary">Ký hiệu</th>
-                <th className="bg-[#f8fafc] border-b-[1.5px] border-[#e2e8f0] py-2.5 px-3.5 font-extrabold text-primary">Ý nghĩa chi tiết</th>
+                <th className="w-[30%] bg-[#f8fafc] dark:bg-[#0F172A]/60 border-b-[1.5px] border-[#e2e8f0] dark:border-[#334155] py-2.5 px-3.5 font-extrabold text-primary dark:text-[#E2E8F0]">Ký hiệu</th>
+                <th className="bg-[#f8fafc] dark:bg-[#0F172A]/60 border-b-[1.5px] border-[#e2e8f0] dark:border-[#334155] py-2.5 px-3.5 font-extrabold text-primary dark:text-[#E2E8F0]">Ý nghĩa chi tiết</th>
               </tr>
             </thead>
             <tbody>
               {parsed.rows.map((row, idx) => (
-                <tr key={idx} className="border-b border-[#f1f5f9] transition duration-200 hover:bg-secondary/1 last:border-b-0">
-                  <td className="py-3 px-3.5 leading-[1.5] font-bold text-primary bg-[#fafbfc] border-r border-[#f1f5f9]">
+                <tr key={idx} className="border-b border-[#f1f5f9] dark:border-[#334155] transition duration-200 hover:bg-secondary/1 last:border-b-0">
+                  <td className="quiz-question-text py-3 px-3.5 leading-[1.5] font-bold text-primary dark:text-[#E2E8F0] bg-[#fafbfc] dark:bg-[#1E293B] border-r border-[#f1f5f9] dark:border-[#334155]">
                     {row.symbol ? <RichTextRenderer text={row.symbol} /> : "—"}
                   </td>
-                  <td className="py-3 px-3.5 leading-[1.5] text-[#475569] bg-[#fafbfc]">
+                  <td className="formula-explanation-prose py-3 px-3.5 leading-[1.5] text-[#475569] dark:text-[#94A3B8] bg-[#fafbfc] dark:bg-[#1E293B]">
                     <RichTextRenderer text={row.description} />
                   </td>
                 </tr>
@@ -141,15 +141,15 @@ export default function FormulaDetailModal({
         </div>
 
         {/* Large Math Display Box */}
-        <div className="bg-[linear-gradient(135deg,#f8fafc_0%,#f1f5f9_100%)] border-[1.5px] border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-xl py-6 px-4 flex items-center justify-center mb-6 shadow-[inset_0_2px_4px_rgba(30,58,95,0.02)] min-h-[80px]">
+        <div className="bg-[linear-gradient(135deg,#f8fafc_0%,#f1f5f9_100%)] dark:bg-[linear-gradient(135deg,#1E293B_0%,#0F172A_100%)] border-[1.5px] border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-xl py-6 px-4 flex items-center justify-center mb-6 shadow-[inset_0_2px_4px_rgba(30,58,95,0.02)] min-h-[80px] text-primary dark:text-[#E2E8F0]">
           <MathElement math={formula.latex} block={true} />
         </div>
 
         {/* Mẹo nhớ nhanh */}
         {formula.mnemonic && (
-          <div className="bg-[#fffbeb] border border-[rgba(245,158,11,0.2)] rounded-xl py-3 px-4 mb-4 flex flex-col gap-1 shadow-[0_4px_12px_rgba(245,158,11,0.02)]">
-            <span className="text-[0.75rem] font-extrabold uppercase tracking-[0.5px] text-[#b45309] flex items-center gap-1">💡 Mẹo nhớ nhanh:</span>
-            <span className="text-[0.85rem] font-bold text-[#78350f] leading-[1.5]">{formula.mnemonic}</span>
+          <div className="bg-[#fffbeb] dark:bg-accent/10 border border-[rgba(245,158,11,0.2)] dark:border-accent/25 rounded-xl py-3 px-4 mb-4 flex flex-col gap-1 shadow-[0_4px_12px_rgba(245,158,11,0.02)]">
+            <span className="text-[0.75rem] font-extrabold uppercase tracking-[0.5px] text-[#b45309] dark:text-[#FCD34D] flex items-center gap-1">💡 Mẹo nhớ nhanh:</span>
+            <span className="text-[0.85rem] font-bold text-[#78350f] dark:text-[#FCD34D] leading-[1.5]">{formula.mnemonic}</span>
           </div>
         )}
 
@@ -165,7 +165,7 @@ export default function FormulaDetailModal({
           {formula.example && (
             <div>
               <h4 className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] uppercase tracking-[0.5px] mb-3 flex items-center gap-1.5">Ví dụ minh họa</h4>
-              <div className="bg-[#f8fafc] p-4 rounded-xl border border-[#e2e8f0] leading-[1.6] text-[0.85rem] text-[#475569]">
+              <div className="formula-explanation-prose bg-[#f8fafc] dark:bg-[#0F172A]/40 p-4 rounded-xl border border-[#e2e8f0] dark:border-[#334155] leading-[1.6] text-[0.85rem] text-[#475569] dark:text-[#94A3B8]">
                 <RichTextRenderer text={formula.example} />
               </div>
             </div>
@@ -180,7 +180,7 @@ export default function FormulaDetailModal({
               </span>
             </h4>
             <textarea
-              className="w-full min-h-[100px] bg-[#f8fafc] border-[1.5px] border-[#e2e8f0] rounded-xl p-3 text-[0.85rem] font-medium text-primary dark:text-[#E2E8F0] resize-y transition duration-200 focus:border-accent focus:bg-white focus:shadow-[0_0_0_3px_rgba(217,119,6,0.1)]"
+              className="w-full min-h-[100px] bg-[#f8fafc] dark:bg-[#0F172A]/40 border-[1.5px] border-[#e2e8f0] dark:border-[#334155] rounded-xl p-3 text-[0.85rem] font-medium text-primary dark:text-[#E2E8F0] resize-y transition duration-200 focus:border-accent focus:bg-white dark:focus:bg-[#0F172A] focus:shadow-[0_0_0_3px_rgba(217,119,6,0.1)]"
               placeholder="Nhập ghi chú cá nhân của bạn về công thức này (ví dụ: mẹo nhớ nhanh, các lỗi sai cần tránh...)"
               value={noteText}
               onChange={(e) => setNoteText(e.target.value)}
@@ -198,7 +198,7 @@ export default function FormulaDetailModal({
         </div>
 
         {/* Actions bar */}
-        <div className="border-t border-[#f1f5f9] mt-6 pt-4 flex gap-3">
+        <div className="border-t border-[#f1f5f9] dark:border-[#334155] mt-6 pt-4 flex gap-3">
           <button
             className={`btn flex-1 ${isBookmarked ? "btn-secondary" : "btn-primary"}`}
             onClick={() => onToggleBookmark(formula.id)}

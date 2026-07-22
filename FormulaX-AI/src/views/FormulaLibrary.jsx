@@ -166,7 +166,7 @@ export default function FormulaLibrary({
 
           {/* Autocomplete Search Bar */}
           <div className="relative w-full mb-4" ref={searchContainerRef}>
-            <div className="glass-card-sm relative flex items-center w-full px-4">
+            <div className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] relative flex items-center w-full px-4">
               <Search size={18} className="text-[#94A3B8] mr-3 shrink-0" />
               <input
                 type="text"

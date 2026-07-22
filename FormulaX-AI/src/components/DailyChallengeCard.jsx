@@ -113,7 +113,7 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
         )}
       </div>
 
-      <div className="text-[0.9rem] font-semibold text-primary dark:text-[#E2E8F0] leading-[1.55] mb-3">
+      <div className="quiz-question-text text-[0.9rem] font-semibold text-primary dark:text-[#E2E8F0] leading-[1.55] mb-3">
         <RichTextRenderer text={question.text} />
       </div>
 
@@ -144,7 +144,7 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
               }`}>
                 {option.letter}
               </div>
-              <div className="flex-1"><RichTextRenderer text={option.text} /></div>
+              <div className="quiz-question-text flex-1"><RichTextRenderer text={option.text} /></div>
               {isRight && <CheckCircle2 size={16} className="text-success shrink-0" />}
               {isWrongSelected && <XCircle size={16} className="text-error shrink-0" />}
             </button>
@@ -153,7 +153,7 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
       </div>
 
       {answer && (
-        <div className="mt-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A]/40 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.6]">
+        <div className="formula-explanation-prose mt-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A]/40 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.6]">
           <RichTextRenderer text={question.explanation} />
         </div>
       )}

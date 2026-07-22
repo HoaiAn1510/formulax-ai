@@ -414,7 +414,7 @@ export default function FormulaFinder({
 
         <div className="flex items-center gap-2">
           <button
-            className="md:hidden relative inline-flex items-center gap-1.5 bg-white border border-[#E2E8F0] rounded-full px-3 py-2 text-[0.75rem] font-bold text-primary cursor-pointer transition duration-200 hover:bg-[#f8fafc] hover:border-[#cbd5e1] mb-0"
+            className="md:hidden relative inline-flex items-center gap-1.5 bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-full px-3 py-2 text-[0.75rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer transition duration-200 hover:bg-[#f8fafc] dark:hover:bg-[#334155] hover:border-[#cbd5e1] mb-0"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <History size={14} />
@@ -586,8 +586,8 @@ export default function FormulaFinder({
 
                     {msg.isImage && (
                       <div className="flex flex-col gap-1.5">
-                        <div className="relative w-[180px] h-[100px] bg-[linear-gradient(135deg,#F8FAFC_0%,#E2E8F0_100%)] rounded-lg border-[1.5px] border-[#CBD5E1] flex flex-col items-center justify-center text-[0.8rem] text-[#475569] font-bold">
-                          <div className="text-[0.85rem] text-[#1E3A5F] font-mono z-[1]">R = 3cm | V = ?</div>
+                        <div className="relative w-[180px] h-[100px] bg-[linear-gradient(135deg,#F8FAFC_0%,#E2E8F0_100%)] dark:bg-[linear-gradient(135deg,#1E293B_0%,#0F172A_100%)] rounded-lg border-[1.5px] border-[#CBD5E1] dark:border-[#334155] flex flex-col items-center justify-center text-[0.8rem] text-[#475569] dark:text-[#94A3B8] font-bold">
+                          <div className="text-[0.85rem] text-[#1E3A5F] dark:text-[#E2E8F0] font-mono z-[1]">R = 3cm | V = ?</div>
                           <span className="absolute bottom-1.5 right-1.5 bg-success text-white text-[0.6rem] py-0.5 px-1.5 rounded z-[1] font-extrabold">CAPTURE OCR</span>
                         </div>
                         <div className="text-xs text-text-muted font-semibold pl-1">Ảnh chụp đề bài từ Camera AI</div>
@@ -635,15 +635,15 @@ export default function FormulaFinder({
                     {msg.sender === "bot" && msg.aiResult && (
                       <div className="finder-ai-card mt-3.5 bg-white dark:bg-[#1E293B] border-[1.5px] border-[#e2e8f0] dark:border-[#334155] border-l-4 border-l-accent rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
                         <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5 before:content-['✨'] before:text-[0.95rem]">{msg.aiResult.name}</div>
-                        <div className="bg-[#f8fafc] border border-secondary/15 rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)] !text-[#1E3A5F]">
+                        <div className="bg-[#f8fafc] dark:bg-[#0F172A]/60 border border-secondary/15 dark:border-[#334155] rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)] !text-[#1E3A5F] dark:!text-[#E2E8F0]">
                           <MathElement math={msg.aiResult.latex} block={true} />
                         </div>
-                        <div className="text-xs text-[#334155] dark:text-[#CBD5E1]">
+                        <div className="finder-ai-card text-xs text-[#334155] dark:text-[#CBD5E1]">
                           <strong>Ý nghĩa:</strong>
                           <RichTextRenderer text={msg.aiResult.explanation.split('\n')[0]} />
                         </div>
                         {msg.aiResult.mnemonic && (
-                          <div className="text-xs text-[#78350f] bg-[#fffbeb] border border-[rgba(245,158,11,0.15)] py-2 px-3 rounded-lg leading-[1.45] mt-1">
+                          <div className="text-xs text-[#78350f] dark:text-[#FCD34D] bg-[#fffbeb] dark:bg-accent/10 border border-[rgba(245,158,11,0.15)] dark:border-accent/25 py-2 px-3 rounded-lg leading-[1.45] mt-1">
                             <strong>💡 Mẹo nhớ:</strong> {msg.aiResult.mnemonic}
                           </div>
                         )}
@@ -711,7 +711,7 @@ export default function FormulaFinder({
 
           {/* Chat input */}
           <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
-            <div className="glass-card-sm flex items-center gap-2 py-1.5 px-3">
+            <div className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] flex items-center gap-2 py-1.5 px-3">
               <button type="button" onClick={() => setCameraOpen(true)}
                 className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-1 pl-2"
                 title="Quét đề bài bằng Camera AI"

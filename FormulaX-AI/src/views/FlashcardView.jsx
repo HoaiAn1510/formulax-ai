@@ -802,7 +802,7 @@ export default function FlashcardView({
                   <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden [transform:rotateY(180deg)]">
                     <span className="text-[0.7rem] font-bold text-secondary uppercase tracking-[0.5px]">Mặt sau - Công thức</span>
                     <div className="flex flex-col items-center gap-3 w-full flex-1 min-h-0 justify-start overflow-y-auto overflow-x-hidden">
-                      <div className="bg-[#f1f5f9] rounded-xl p-4 flex items-center justify-center min-h-[70px] max-h-[200px] overflow-auto shrink-0 border border-[#e2e8f0] w-full !text-[#1E3A5F]">
+                      <div className="bg-[#f1f5f9] dark:bg-[#0F172A]/60 rounded-xl p-4 flex items-center justify-center min-h-[70px] max-h-[200px] overflow-auto shrink-0 border border-[#e2e8f0] dark:border-[#334155] w-full !text-[#1E3A5F] dark:!text-[#E2E8F0]">
                         <MathElement math={currentCard.latex} block={true} />
                       </div>
                       <div className="flashcard-explanation text-[0.8rem] text-[#475569] dark:text-[#CBD5E1] text-left w-full overflow-x-auto">
@@ -880,8 +880,8 @@ export default function FlashcardView({
               <div className="summary-icon">
                 <CheckCircle size={32} />
               </div>
-              <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F]">Hoàn thành bộ thẻ!</h2>
-              <p className="text-[0.85rem] text-[#64748B]">
+              <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">Hoàn thành bộ thẻ!</h2>
+              <p className="text-[0.85rem] text-[#64748B] dark:text-[#94A3B8]">
                 Bạn đã ôn tập xong <strong>{isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}</strong>.
               </p>
 
@@ -896,7 +896,7 @@ export default function FlashcardView({
                 </div>
               </div>
 
-              <div className="text-[0.9rem] font-extrabold text-[#1E3A5F]">
+              <div className="text-[0.9rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">
                 Tỷ lệ ghi nhớ: {cards.length > 0 ? Math.round((rememberedCount / cards.length) * 100) : 0}%
               </div>
 

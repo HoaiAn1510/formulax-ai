@@ -2890,6 +2890,7 @@
 .dark-mode .autocomplete-dropdown { background: #1E293B !important; border-color: #334155 !important; }
 .dark-mode .chat-bubble.bot { background: #1E293B !important; border-color: #334155 !important; }
 .dark-mode .formula-detail-modal { background: #1E293B !important; }
+.dark-mode .summary-stat-box { background-color: #0F172A !important; border-color: #334155 !important; }
 .dark-mode input, .dark-mode textarea { background: #0F172A !important; color: #E2E8F0 !important; border-color: #334155 !important; }
 .dark-mode .nav-item { color: #94A3B8; }
 .dark-mode .nav-item.active { color: #3B82F6; background-color: rgba(59,130,246,0.08) !important; }
