@@ -189,6 +189,10 @@ export default function FlashcardView({
   const [dueReviewFormulaIds, setDueReviewFormulaIds] = useState([]);
 
   // Study session state
+  // Thứ tự thẻ của deck thường được chốt (snapshot) lúc bắt đầu phiên — không tính lại
+  // sortFormulaIdsByDue() mỗi render, vì onGradeCard cập nhật progress ngay sau khi chấm
+  // điểm 1 thẻ, làm thứ tự đổi giữa chừng và currentIndex+1 trỏ nhầm/bỏ sót thẻ.
+  const [studyCardIds, setStudyCardIds] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [rememberedCount, setRememberedCount] = useState(0);
@@ -215,7 +219,7 @@ export default function FlashcardView({
   const cards = isDueReviewSession
     ? dueReviewFormulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean)
     : activeDeck
-      ? sortFormulaIdsByDue(activeDeck.formulaIds, progress).map(id => formulas.find(f => f.id === id)).filter(Boolean)
+      ? studyCardIds.map(id => formulas.find(f => f.id === id)).filter(Boolean)
       : [];
 
   const currentCard = cards[currentIndex] || null;
@@ -234,6 +238,7 @@ export default function FlashcardView({
     if (!deck) return;
     setIsDueReviewSession(false);
     setActiveDeckId(deckId);
+    setStudyCardIds(sortFormulaIdsByDue(deck.formulaIds, progress));
     setCurrentIndex(0);
     setIsFlipped(false);
     setRememberedCount(0);
@@ -364,6 +369,9 @@ export default function FlashcardView({
   }, [view, isFlipped, currentIndex, cards.length]);
 
   const handleRestartDeck = () => {
+    if (!isDueReviewSession && activeDeck) {
+      setStudyCardIds(sortFormulaIdsByDue(activeDeck.formulaIds, progress));
+    }
     setCurrentIndex(0);
     setIsFlipped(false);
     setRememberedCount(0);
@@ -376,6 +384,7 @@ export default function FlashcardView({
     onRemoveFormula(currentCard.id, activeDeckId);
     // Move to next card or end session
     setIsFlipped(false);
+    setStudyCardIds(prev => prev.filter(id => id !== currentCard.id));
     const newCards = cards.filter(c => c.id !== currentCard.id);
     if (newCards.length === 0) {
       setView("list");

@@ -46,6 +46,14 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
 
   const handleSkip = () => onFinish(selectedGrade);
 
+  // Bước Finder/Quiz có nút "Thử ngay" riêng — kết thúc onboarding rồi điều hướng thẳng
+  // tới tính năng đó, thay vì chỉ đóng modal (trước đây onGoToFinder/onGoToQuiz được
+  // truyền vào nhưng không nơi nào gọi tới, nút không có tác dụng).
+  const handleTryNow = (goTo) => {
+    onFinish(selectedGrade);
+    goTo?.();
+  };
+
   return (
     <div style={{
       position: "fixed", inset: 0, zIndex: 9999,
@@ -92,9 +100,34 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
         <h2 style={{ fontSize: "1.25rem", fontWeight: "800", color: "#1E3A5F", marginBottom: "8px" }}>
           {current.title}
         </h2>
-        <p style={{ fontSize: "0.85rem", color: "#64748B", lineHeight: "1.55", marginBottom: "24px" }}>
+        <p style={{ fontSize: "0.85rem", color: "#64748B", lineHeight: "1.55", marginBottom: current.id === "finder" || current.id === "quiz" ? "12px" : "24px" }}>
           {current.subtitle}
         </p>
+
+        {current.id === "finder" && (
+          <button
+            onClick={() => handleTryNow(onGoToFinder)}
+            style={{
+              background: "none", border: "none", cursor: "pointer", padding: 0,
+              color: "#10B981", fontWeight: "700", fontSize: "0.8rem",
+              marginBottom: "24px", display: "flex", alignItems: "center", gap: "4px",
+            }}
+          >
+            Thử ngay <ArrowRight size={13} />
+          </button>
+        )}
+        {current.id === "quiz" && (
+          <button
+            onClick={() => handleTryNow(onGoToQuiz)}
+            style={{
+              background: "none", border: "none", cursor: "pointer", padding: 0,
+              color: "#F59E0B", fontWeight: "700", fontSize: "0.8rem",
+              marginBottom: "24px", display: "flex", alignItems: "center", gap: "4px",
+            }}
+          >
+            Thử ngay <ArrowRight size={13} />
+          </button>
+        )}
 
         {/* Step 1 — grade selector */}
         {step === 0 && (

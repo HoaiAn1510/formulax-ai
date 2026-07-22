@@ -33,7 +33,6 @@ export default function QuizView({
   const [userAnswers, setUserAnswers] = useState({});
   const [fillInputs, setFillInputs] = useState({});
   const [score, setScore] = useState(0);
-  const [failedQuestions, setFailedQuestions] = useState([]);
   const [showConfetti, setShowConfetti] = useState(false);
 
   // Bung confetti khi vừa nộp bài và đạt từ 80% trở lên — chỉ 1 lần mỗi lần chuyển sang màn kết quả
@@ -89,6 +88,10 @@ export default function QuizView({
     }
 
     const available = getFilteredQuestions();
+    if (available.length === 0) {
+      showToast("Chủ đề/lớp đã chọn chưa có câu hỏi nào. Hãy chọn phạm vi khác.", "error");
+      return;
+    }
     const count = Math.max(1, Math.min(parseInt(questionCountInput) || 10, available.length));
     const shuffled = [...available].sort(() => 0.5 - Math.random()).slice(0, count);
 
@@ -104,7 +107,6 @@ export default function QuizView({
     setUserAnswers({});
     setFillInputs({});
     setScore(0);
-    setFailedQuestions([]);
 
     const limitMins = parseInt(timeLimitInput) || 0;
     if (limitMins <= 0) {
@@ -147,49 +149,21 @@ export default function QuizView({
 
   const handleSubmitQuizAuto = () => {
     let finalScore = 0;
-    const failedList = [];
 
     questions.forEach((q, idx) => {
-      const correctOpt = q.options.find(o => o.isCorrect);
       if (isFillQuestion(idx)) {
         const userInput = fillInputs[idx] || "";
+        const correctOpt = q.options.find(o => o.isCorrect);
         const isCorrect = userInput.trim() !== "" &&
           normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
-        if (isCorrect) {
-          finalScore += 1;
-        } else {
-          failedList.push({
-            questionText: q.text,
-            userAnswer: userInput || "Bỏ qua",
-            userAnswerText: userInput || "Chưa trả lời",
-            correctAnswer: correctOpt?.letter || "",
-            correctAnswerText: correctOpt?.text || "",
-            explanation: q.explanation,
-            wasSkipped: !userInput.trim(),
-            isFillIn: true,
-          });
-        }
+        if (isCorrect) finalScore += 1;
       } else {
         const selected = userAnswers[idx];
-        if (selected && selected.isCorrect) {
-          finalScore += 1;
-        } else {
-          failedList.push({
-            questionText: q.text,
-            userAnswer: selected ? selected.letter : "Bỏ qua",
-            userAnswerText: selected ? selected.text : "Chưa trả lời",
-            correctAnswer: correctOpt?.letter || "",
-            correctAnswerText: correctOpt?.text || "",
-            explanation: q.explanation,
-            wasSkipped: !selected,
-            isFillIn: false,
-          });
-        }
+        if (selected && selected.isCorrect) finalScore += 1;
       }
     });
 
     setScore(finalScore);
-    setFailedQuestions(failedList);
     setQuizState("result");
 
     if (!isPremium) {
