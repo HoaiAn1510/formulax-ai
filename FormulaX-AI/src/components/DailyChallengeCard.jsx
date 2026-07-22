@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Sparkles, CheckCircle2, XCircle } from "lucide-react";
+import { Sparkles, CheckCircle2, XCircle, X, RotateCcw } from "lucide-react";
 import { questionsPool } from "../data/questions";
 import { RichTextRenderer } from "../utils/katexHelper";
 
@@ -26,6 +26,7 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
   }, [today, userGrade]);
 
   const [answer, setAnswer] = useState(null); // { selectedLetter, isCorrect }
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     if (!question) return;
@@ -35,11 +36,13 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
         const saved = JSON.parse(raw);
         if (saved.questionId === question.id) {
           setAnswer({ selectedLetter: saved.selectedLetter, isCorrect: saved.isCorrect });
+          setCollapsed(!!saved.collapsed);
           onAnswered?.();
         }
       } catch { /* ignore malformed cache */ }
     } else {
       setAnswer(null);
+      setCollapsed(false);
     }
   }, [question?.id, user?.googleId]);
 
@@ -51,21 +54,63 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
     setAnswer({ selectedLetter: option.letter, isCorrect });
     localStorage.setItem(
       storageKey(user, today),
-      JSON.stringify({ questionId: question.id, selectedLetter: option.letter, isCorrect })
+      JSON.stringify({ questionId: question.id, selectedLetter: option.letter, isCorrect, collapsed: false })
     );
     onAnswered?.();
   };
 
+  const handleCollapse = () => {
+    setCollapsed(true);
+    localStorage.setItem(
+      storageKey(user, today),
+      JSON.stringify({ questionId: question.id, selectedLetter: answer.selectedLetter, isCorrect: answer.isCorrect, collapsed: true })
+    );
+  };
+
+  if (answer && collapsed) {
+    return (
+      <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-6 md:mb-8 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${answer.isCorrect ? "bg-success/10 text-success" : "bg-error/10 text-error"}`}>
+            {answer.isCorrect ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+          </div>
+          <div className="min-w-0">
+            <div className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0]">Thử thách hôm nay: Đã hoàn thành</div>
+            <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8]">{answer.isCorrect ? "Bạn đã trả lời đúng" : "Bạn đã trả lời sai"}</div>
+          </div>
+        </div>
+        <button
+          onClick={() => setCollapsed(false)}
+          className="flex items-center gap-1 text-[0.75rem] font-bold text-accent bg-accent/10 border-none rounded-lg py-1.5 px-2.5 cursor-pointer shrink-0"
+        >
+          <RotateCcw size={13} />
+          Xem lại
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-6 md:mb-8">
-      <div className="flex items-center gap-2 mb-3">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-accent/10 text-accent shrink-0">
-          <Sparkles size={16} />
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-accent/10 text-accent shrink-0">
+            <Sparkles size={16} />
+          </div>
+          <div>
+            <div className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0]">Thử thách hôm nay</div>
+            <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8]">{question.topic} · Lớp {question.grade}</div>
+          </div>
         </div>
-        <div>
-          <div className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0]">Thử thách hôm nay</div>
-          <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8]">{question.topic} · Lớp {question.grade}</div>
-        </div>
+        {answer && (
+          <button
+            onClick={handleCollapse}
+            aria-label="Đóng"
+            className="w-7 h-7 rounded-lg flex items-center justify-center bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] border-none cursor-pointer shrink-0"
+          >
+            <X size={15} />
+          </button>
+        )}
       </div>
 
       <div className="text-[0.9rem] font-semibold text-primary dark:text-[#E2E8F0] leading-[1.55] mb-3">
