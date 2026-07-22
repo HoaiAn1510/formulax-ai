@@ -700,21 +700,21 @@ export default function QuizView({
             <div className="quiz-results-container">
               <Confetti active={showConfetti} />
               <div className="summary-card !mt-0">
-                <div className="summary-icon" style={{ backgroundColor: "rgba(30, 58, 95, 0.05)", color: "#1E3A5F" }}>
+                <div className="summary-icon bg-primary/5 dark:bg-white/10 text-primary dark:text-[#E2E8F0]">
                   <Award size={32} />
                 </div>
-                <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F]">Kết quả bài kiểm tra</h2>
+                <h2 className="text-[1.3rem] font-extrabold text-primary dark:text-[#E2E8F0]">Kết quả bài kiểm tra</h2>
 
-                <div className="summary-score" style={{ color: score >= (questions.length / 2) ? "#10B981" : "#EF4444" }}>
+                <div className={`summary-score ${score >= (questions.length / 2) ? "text-success" : "text-error"}`}>
                   {score} / {questions.length}
                 </div>
 
-                <p className="text-[0.85rem] text-[#64748B]">
+                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8]">
                   Bạn trả lời đúng <strong>{Math.round((score / questions.length) * 100)}%</strong> số câu hỏi.
                 </p>
 
                 <div className="w-full text-left mt-4">
-                  <h4 className="text-[0.95rem] font-extrabold text-[#1E3A5F] mb-3 border-b-[1.5px] border-[#F1F5F9] pb-1.5">
+                  <h4 className="text-[0.95rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-3 border-b-[1.5px] border-[#F1F5F9] dark:border-[#334155] pb-1.5">
                     Xem chi tiết bài làm:
                   </h4>
                   <div className="flex flex-col gap-4 w-full max-h-[420px] overflow-y-auto pr-1">
@@ -727,36 +727,32 @@ export default function QuizView({
                         const userInput = fillInputs[idx] || "";
                         const isCorrect = userInput.trim() !== "" &&
                           normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
-                        const cardBorderColor = !userInput.trim() ? "rgba(30,58,95,0.07)"
-                          : isCorrect ? "rgba(16,185,129,0.2)" : "rgba(239,68,68,0.2)";
-                        const cardBgColor = !userInput.trim() ? "#F8FAFC"
-                          : isCorrect ? "rgba(16,185,129,0.01)" : "rgba(239,68,68,0.01)";
+                        const cardClass = !userInput.trim() ? "border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]"
+                          : isCorrect ? "border-success/20 bg-success/[0.03] dark:bg-success/10" : "border-error/20 bg-error/[0.03] dark:bg-error/10";
                         const statusLabel = !userInput.trim() ? "Chưa trả lời" : isCorrect ? "Đúng" : "Sai";
-                        const statusColor = !userInput.trim() ? "#64748B" : isCorrect ? "#10B981" : "#EF4444";
+                        const statusClass = !userInput.trim() ? "text-text-muted dark:text-[#94A3B8] bg-text-muted/10" : isCorrect ? "text-success bg-success/10" : "text-error bg-error/10";
 
                         return (
-                          <div key={q.id}
-                            style={{ border: `1.5px solid ${cardBorderColor}`, backgroundColor: cardBgColor, borderRadius: "12px", padding: "16px", display: "flex", flexDirection: "column", gap: "12px" }}
-                          >
+                          <div key={q.id} className={`flex flex-col gap-3 rounded-xl p-4 border-[1.5px] ${cardClass}`}>
                             <div className="flex justify-between items-center text-[0.75rem] font-bold">
-                              <span className="text-[#64748B]">Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span className="bg-accent/10 text-accent rounded ml-1" style={{ padding: "1px 5px" }}>Điền đáp án</span></span>
-                              <span style={{ color: statusColor, background: `${statusColor}15`, padding: "4px 8px", borderRadius: "4px" }}>{statusLabel}</span>
+                              <span className="text-text-muted dark:text-[#94A3B8]">Câu {idx + 1}: {q.topic} • Lớp {q.grade} <span className="bg-accent/10 text-accent rounded ml-1 py-px px-1.5">Điền đáp án</span></span>
+                              <span className={`py-1 px-2 rounded ${statusClass}`}>{statusLabel}</span>
                             </div>
-                            <div className="text-[0.9rem] font-bold text-[#1E3A5F]">
+                            <div className="text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0]">
                               <RichTextRenderer text={q.text} />
                             </div>
-                            <div className="flex flex-col gap-1.5 bg-white rounded-lg p-2.5 border border-[#E2E8F0]">
+                            <div className="flex flex-col gap-1.5 bg-white dark:bg-[#0F172A]/40 rounded-lg p-2.5 border border-[#E2E8F0] dark:border-[#334155]">
                               <div className="text-[0.82rem]">
-                                <span className="text-[#64748B] font-semibold">Bạn trả lời: </span>
-                                <span className="font-bold" style={{ color: isCorrect ? "#10B981" : "#EF4444" }}>{userInput || "(bỏ qua)"}</span>
+                                <span className="text-text-muted dark:text-[#94A3B8] font-semibold">Bạn trả lời: </span>
+                                <span className={`font-bold ${isCorrect ? "text-success" : "text-error"}`}>{userInput || "(bỏ qua)"}</span>
                               </div>
                               <div className="text-[0.82rem]">
-                                <span className="text-[#64748B] font-semibold">Đáp án đúng: </span>
-                                <span className="font-bold text-[#10B981]">{correctOpt?.text}</span>
+                                <span className="text-text-muted dark:text-[#94A3B8] font-semibold">Đáp án đúng: </span>
+                                <span className="font-bold text-success">{correctOpt?.text}</span>
                               </div>
                             </div>
-                            <div className="bg-white border border-dashed border-[rgba(30,58,95,0.15)] rounded-lg p-3 text-[0.8rem] text-[#475569] leading-[1.5]">
-                              <strong className="block text-[#1E3A5F] mb-1 text-[0.8rem] font-extrabold">Lời giải chi tiết:</strong>
+                            <div className="bg-white dark:bg-[#0F172A]/40 border border-dashed border-[rgba(30,58,95,0.15)] dark:border-[#475569] rounded-lg p-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
+                              <strong className="block text-primary dark:text-[#E2E8F0] mb-1 text-[0.8rem] font-extrabold">Lời giải chi tiết:</strong>
                               <RichTextRenderer text={q.explanation} />
                             </div>
                           </div>
@@ -767,53 +763,34 @@ export default function QuizView({
                       const selected = userAnswers[idx];
                       const isCorrect = selected && selected.isCorrect;
 
-                      let cardBorderColor = "rgba(30,58,95,0.07)";
-                      let cardBgColor = "#F8FAFC";
+                      let cardClass = "border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]";
                       let statusLabel = "Chưa trả lời";
-                      let statusColor = "#64748B";
+                      let statusClass = "text-text-muted dark:text-[#94A3B8] bg-text-muted/10";
 
                       if (selected) {
                         if (isCorrect) {
-                          cardBorderColor = "rgba(16, 185, 129, 0.2)";
-                          cardBgColor = "rgba(16, 185, 129, 0.01)";
+                          cardClass = "border-success/20 bg-success/[0.03] dark:bg-success/10";
                           statusLabel = "Đúng";
-                          statusColor = "#10B981";
+                          statusClass = "text-success bg-success/10";
                         } else {
-                          cardBorderColor = "rgba(239, 68, 68, 0.2)";
-                          cardBgColor = "rgba(239, 68, 68, 0.01)";
+                          cardClass = "border-error/20 bg-error/[0.03] dark:bg-error/10";
                           statusLabel = `Sai (Chọn: ${selected.letter})`;
-                          statusColor = "#EF4444";
+                          statusClass = "text-error bg-error/10";
                         }
                       }
 
                       return (
-                        <div
-                          key={q.id}
-                          style={{
-                            border: "1.5px solid " + cardBorderColor,
-                            backgroundColor: cardBgColor,
-                            borderRadius: "12px",
-                            padding: "16px",
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "12px"
-                          }}
-                        >
+                        <div key={q.id} className={`flex flex-col gap-3 rounded-xl p-4 border-[1.5px] ${cardClass}`}>
                           {/* Review Card Header */}
                           <div className="flex justify-between items-center text-[0.75rem] font-bold">
-                            <span className="text-[#64748B]">Câu {idx + 1}: {q.topic} • Lớp {q.grade}</span>
-                            <span style={{
-                              color: statusColor,
-                              backgroundColor: selected ? (isCorrect ? "rgba(16, 185, 129, 0.08)" : "rgba(239, 68, 68, 0.08)") : "rgba(100, 116, 139, 0.08)",
-                              padding: "4px 8px",
-                              borderRadius: "4px"
-                            }}>
+                            <span className="text-text-muted dark:text-[#94A3B8]">Câu {idx + 1}: {q.topic} • Lớp {q.grade}</span>
+                            <span className={`py-1 px-2 rounded ${statusClass}`}>
                               {statusLabel}
                             </span>
                           </div>
 
                           {/* Question Text */}
-                          <div className="text-[0.9rem] font-bold text-[#1E3A5F]">
+                          <div className="text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0]">
                             <RichTextRenderer text={q.text} />
                           </div>
 
@@ -823,54 +800,28 @@ export default function QuizView({
                               const isOptSelected = selected === option;
                               const isOptCorrect = option.isCorrect;
 
-                              let optBorder = "1px solid #E2E8F0";
-                              let optBg = "white";
+                              let optClass = "border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]";
+                              let badgeClass = "bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8]";
                               let optBadge = null;
 
                               if (isOptCorrect) {
-                                optBorder = "1.5px solid #10B981";
-                                optBg = "rgba(16, 185, 129, 0.04)";
+                                optClass = "border-[1.5px] border-success bg-success/[0.04] dark:bg-success/10";
+                                badgeClass = "bg-success text-white";
                                 if (isOptSelected) {
                                   optBadge = <CheckCircle size={14} fill="#10B981" color="white" />;
                                 }
                               } else if (isOptSelected) {
-                                optBorder = "1.5px solid #EF4444";
-                                optBg = "rgba(239, 68, 68, 0.04)";
+                                optClass = "border-[1.5px] border-error bg-error/[0.04] dark:bg-error/10";
+                                badgeClass = "bg-error text-white";
                                 optBadge = <XCircle size={14} fill="#EF4444" color="white" />;
                               }
 
                               return (
-                                <div
-                                  key={option.letter}
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "10px",
-                                    padding: "8px 12px",
-                                    borderRadius: "8px",
-                                    border: optBorder,
-                                    backgroundColor: optBg,
-                                    fontSize: "0.85rem",
-                                    fontWeight: "600"
-                                  }}
-                                >
-                                  <div
-                                    style={{
-                                      width: "22px",
-                                      height: "22px",
-                                      borderRadius: "50%",
-                                      backgroundColor: isOptCorrect ? "#10B981" : (isOptSelected ? "#EF4444" : "#F1F5F9"),
-                                      color: isOptCorrect || isOptSelected ? "white" : "#64748B",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      fontSize: "0.75rem",
-                                      fontWeight: "800"
-                                    }}
-                                  >
+                                <div key={option.letter} className={`flex items-center gap-2.5 py-2 px-3 rounded-lg text-[0.85rem] font-semibold ${optClass}`}>
+                                  <div className={`w-[22px] h-[22px] rounded-full flex items-center justify-center text-[0.75rem] font-extrabold shrink-0 ${badgeClass}`}>
                                     {option.letter}
                                   </div>
-                                  <div style={{ flex: 1 }}><RichTextRenderer text={option.text} /></div>
+                                  <div className="flex-1 text-primary dark:text-[#E2E8F0]"><RichTextRenderer text={option.text} /></div>
                                   {optBadge}
                                 </div>
                               );
@@ -878,8 +829,8 @@ export default function QuizView({
                           </div>
 
                           {/* Explanation Box */}
-                          <div className="bg-white border border-dashed border-[rgba(30,58,95,0.15)] rounded-lg p-3 text-[0.8rem] text-[#475569] leading-[1.5]">
-                            <strong className="block text-[#1E3A5F] mb-1 text-[0.8rem] font-extrabold">
+                          <div className="bg-white dark:bg-[#0F172A]/40 border border-dashed border-[rgba(30,58,95,0.15)] dark:border-[#475569] rounded-lg p-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
+                            <strong className="block text-primary dark:text-[#E2E8F0] mb-1 text-[0.8rem] font-extrabold">
                               Lời giải chi tiết:
                             </strong>
                             <RichTextRenderer text={q.explanation} />
@@ -890,8 +841,8 @@ export default function QuizView({
                   </div>
                 </div>
 
-                <div className="border-t border-[#f1f5f9] w-full pt-4 mt-4">
-                  <p className="text-xs text-[#64748B] flex items-center justify-center gap-1">
+                <div className="border-t border-[#f1f5f9] dark:border-[#334155] w-full pt-4 mt-4">
+                  <p className="text-xs text-text-muted dark:text-[#94A3B8] flex items-center justify-center gap-1">
                     Lượt test miễn phí hôm nay: <strong>{isPremium ? "Không giới hạn" : `${remainingQuizzes} lượt`}</strong>
                   </p>
                 </div>
