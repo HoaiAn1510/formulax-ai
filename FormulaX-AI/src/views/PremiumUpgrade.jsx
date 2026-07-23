@@ -12,7 +12,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending", text }
 
-  // Xử lý khi MoMo redirect người dùng quay lại qua /api/payment/momo/return
+  // Xử lý khi PayOS redirect người dùng quay lại qua /api/payment/payos/return
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const paymentStatus = params.get("payment");
@@ -38,7 +38,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
         return;
       }
       (async () => {
-        // Kiểm tra trạng thái is_premium mới nhất từ Supabase — nguồn sự thật là IPN từ MoMo,
+        // Kiểm tra trạng thái is_premium mới nhất từ Supabase — nguồn sự thật là webhook từ PayOS,
         // không tự setIsPremium(true) chỉ vì redirect về có payment=success.
         const { data, error } = await supabase
           .from("users")
@@ -52,7 +52,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
         } else {
           setPaymentNotice({
             type: "pending",
-            text: "MoMo đã ghi nhận giao dịch, hệ thống đang cập nhật tài khoản Premium. Nếu sau vài phút vẫn chưa thấy cập nhật, hãy tải lại trang này.",
+            text: "Hệ thống đã ghi nhận giao dịch, đang cập nhật tài khoản Premium. Nếu sau vài phút vẫn chưa thấy cập nhật, hãy tải lại trang này.",
           });
         }
         cleanUrl();
@@ -73,23 +73,23 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
-      const res = await fetch(`${BACKEND_URL}/api/payment/momo/create`, {
+      const res = await fetch(`${BACKEND_URL}/api/payment/payos/create`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId: user.googleId, plan }),
         signal: controller.signal,
       });
       const data = await res.json();
-      if (!res.ok || !data.payUrl) {
-        throw new Error(data.error || "Không tạo được giao dịch MoMo");
+      if (!res.ok || !data.checkoutUrl) {
+        throw new Error(data.error || "Không tạo được giao dịch PayOS");
       }
-      // Chuyển hướng sang cổng thanh toán MoMo thật — is_premium chỉ được set khi IPN xác nhận.
-      window.location.href = data.payUrl;
+      // Chuyển hướng sang cổng thanh toán PayOS thật — is_premium chỉ được set khi webhook xác nhận.
+      window.location.href = data.checkoutUrl;
     } catch (err) {
       const isTimeout = err.name === "AbortError";
       setPaymentNotice({
         type: "error",
-        text: isTimeout ? "Hết thời gian chờ kết nối cổng thanh toán MoMo. Vui lòng thử lại." : (err.message || "Không thể kết nối cổng thanh toán MoMo. Vui lòng thử lại sau."),
+        text: isTimeout ? "Hết thời gian chờ kết nối cổng thanh toán PayOS. Vui lòng thử lại." : (err.message || "Không thể kết nối cổng thanh toán PayOS. Vui lòng thử lại sau."),
       });
       setIsProcessing(false);
     } finally {
@@ -162,7 +162,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
     },
     {
       q: "Cách thanh toán và nhận tài khoản Premium thế nào?",
-      a: "Bạn có thể thanh toán qua MoMo, ZaloPay, VNPay hoặc Chuyển khoản ngân hàng. Tài khoản sẽ được nâng cấp lên Premium ngay lập tức sau khi giao dịch hoàn tất."
+      a: "Bạn thanh toán qua PayOS — hỗ trợ chuyển khoản ngân hàng và quét mã VietQR. Tài khoản sẽ được nâng cấp lên Premium ngay lập tức sau khi giao dịch hoàn tất."
     },
     {
       q: "Tôi có thể dùng chung tài khoản trên nhiều thiết bị không?",
@@ -176,7 +176,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
         <div className="relative z-[1]">
           <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-12">
 
-            {/* Payment notice — hiện sau khi MoMo redirect người dùng quay lại */}
+            {/* Payment notice — hiện sau khi PayOS redirect người dùng quay lại */}
             {paymentNotice && (
               <div
                 className={`flex items-center gap-2.5 py-3 px-4 rounded-xl text-[0.85rem] font-semibold ${
@@ -370,44 +370,28 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                     onClick={() => handleUpgrade("monthly")}
                     disabled={isProcessing}
                   >
-                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Mua ngay với Momo / Thẻ</span>}
+                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Thanh toán qua PayOS</span>}
                   </button>
                 </div>
               </div>
             )}
 
-            {/* Section 6: Nhiều cách thanh toán */}
+            {/* Section 6: Thanh toán qua PayOS */}
             <div className="text-center">
               <div className="text-xs text-text-muted dark:text-[#94A3B8] font-bold uppercase tracking-[0.5px] mb-3">
-                Nhiều cách thanh toán
+                Thanh toán an toàn qua
               </div>
-              <div className="flex justify-center gap-6 items-center">
-                <button
-                  type="button"
-                  onClick={() => handleUpgrade("monthly")}
-                  disabled={isProcessing}
-                  className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  <div className="w-10 h-10 rounded-full bg-[#A20067] flex items-center justify-center text-white font-extrabold text-[0.7rem]">MoMo</div>
-                  <span className="text-[0.65rem] text-text-muted dark:text-[#94A3B8] font-semibold">Ví MoMo</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => showToast("ZaloPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.", "info")}
-                  className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer opacity-50"
-                >
-                  <div className="w-10 h-10 rounded-full bg-[#007DFF] flex items-center justify-center text-white font-extrabold text-[0.7rem]">Zalo</div>
-                  <span className="text-[0.65rem] text-text-muted dark:text-[#94A3B8] font-semibold">ZaloPay (sắp ra mắt)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => showToast("VNPay sắp ra mắt. Hiện tại vui lòng thanh toán qua Ví MoMo.", "info")}
-                  className="flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer opacity-50"
-                >
-                  <div className="w-10 h-10 rounded-full bg-[#EA2027] flex items-center justify-center text-white font-extrabold text-[0.7rem]">VN</div>
-                  <span className="text-[0.65rem] text-text-muted dark:text-[#94A3B8] font-semibold">VNPay (sắp ra mắt)</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => handleUpgrade("monthly")}
+                disabled={isProcessing}
+                className="flex flex-col items-center gap-1.5 bg-transparent border-none cursor-pointer mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                <div className="w-11 h-11 rounded-full bg-[#0F172A] flex items-center justify-center text-white">
+                  <Landmark size={20} />
+                </div>
+                <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold">PayOS · Chuyển khoản & VietQR</span>
+              </button>
             </div>
 
             {/* Section 7: FAQs Accordion */}
