@@ -31,6 +31,9 @@ function Gem({ reducedMotion }) {
 // Vòng hào quang xoay quanh viên đá — CHỈ tự xoay quanh trục Z của chính nó, KHÔNG nằm
 // trong Float (khác với Gem) nên góc nghiêng luôn cố định, không bị Float làm chao đảo
 // khiến có lúc nhìn gần như cạnh (edge-on) trông như bị "đứt" cắt ngang qua viên đá.
+// Góc nghiêng gần 90° (nhìn gần như cạnh) để trông NGANG qua "eo" viên đá kiểu vành đai
+// sao Thổ, chỉ xéo nhẹ — trước đây từng để góc này cao nhưng gộp chung Float nên chao đảo
+// gây lỗi, giờ đã tách riêng nên nghiêng sâu vẫn ổn định, không còn bị "đứt".
 // Bán kính đủ lớn để bao trọn viên đá, không cắt vào thân đá ở góc nhìn nào.
 function HaloRing({ reducedMotion }) {
   const ringRef = useRef();
@@ -39,7 +42,7 @@ function HaloRing({ reducedMotion }) {
     ringRef.current.rotation.z -= delta * 0.25;
   });
   return (
-    <mesh ref={ringRef} rotation={[Math.PI / 3, 0, 0]}>
+    <mesh ref={ringRef} rotation={[Math.PI / 2.35, 0.1, 0]}>
       <torusGeometry args={[2.15, 0.04, 16, 100]} />
       <meshStandardMaterial color="#FCD34D" emissive="#F59E0B" emissiveIntensity={0.6} metalness={0.9} roughness={0.25} />
     </mesh>
