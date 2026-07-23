@@ -28,8 +28,10 @@ function Gem({ reducedMotion }) {
   );
 }
 
-// Vòng hào quang xoay quanh viên đá — tự quay ngược chiều gem để tạo cảm giác chuyển
-// động lớp lang, giống huy hiệu/hào quang thay vì chỉ 1 khối tĩnh.
+// Vòng hào quang xoay quanh viên đá — CHỈ tự xoay quanh trục Z của chính nó, KHÔNG nằm
+// trong Float (khác với Gem) nên góc nghiêng luôn cố định, không bị Float làm chao đảo
+// khiến có lúc nhìn gần như cạnh (edge-on) trông như bị "đứt" cắt ngang qua viên đá.
+// Bán kính đủ lớn để bao trọn viên đá, không cắt vào thân đá ở góc nhìn nào.
 function HaloRing({ reducedMotion }) {
   const ringRef = useRef();
   useFrame((_, delta) => {
@@ -37,8 +39,8 @@ function HaloRing({ reducedMotion }) {
     ringRef.current.rotation.z -= delta * 0.25;
   });
   return (
-    <mesh ref={ringRef} rotation={[Math.PI / 2.3, 0, 0]}>
-      <torusGeometry args={[1.85, 0.035, 16, 100]} />
+    <mesh ref={ringRef} rotation={[Math.PI / 3, 0, 0]}>
+      <torusGeometry args={[2.15, 0.04, 16, 100]} />
       <meshStandardMaterial color="#FCD34D" emissive="#F59E0B" emissiveIntensity={0.6} metalness={0.9} roughness={0.25} />
     </mesh>
   );
@@ -46,10 +48,12 @@ function HaloRing({ reducedMotion }) {
 
 function Scene({ reducedMotion }) {
   const gem = (
-    <Float speed={reducedMotion ? 0 : 1.8} rotationIntensity={reducedMotion ? 0 : 0.6} floatIntensity={reducedMotion ? 0 : 0.8}>
-      <Gem reducedMotion={reducedMotion} />
+    <>
+      <Float speed={reducedMotion ? 0 : 1.8} rotationIntensity={reducedMotion ? 0 : 0.6} floatIntensity={reducedMotion ? 0 : 0.8}>
+        <Gem reducedMotion={reducedMotion} />
+      </Float>
       <HaloRing reducedMotion={reducedMotion} />
-    </Float>
+    </>
   );
 
   return (
