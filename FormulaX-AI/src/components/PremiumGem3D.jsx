@@ -108,8 +108,13 @@ export default function PremiumGem3D() {
   }, []);
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 13], fov: 32 }} gl={{ antialias: true, alpha: true }}>
+    <div style={{ width: "100%", height: "100%", touchAction: "none" }}>
+      <Canvas
+        dpr={[1, 2]}
+        camera={{ position: [0, 0, 13], fov: 32 }}
+        gl={{ antialias: true, alpha: true }}
+        style={{ touchAction: "none" }}
+      >
         <Scene reducedMotion={reducedMotion} />
       </Canvas>
     </div>
