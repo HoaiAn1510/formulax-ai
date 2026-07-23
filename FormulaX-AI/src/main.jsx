@@ -1,6 +1,5 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { GoogleOAuthProvider } from '@react-oauth/google'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import App from './App.jsx'
@@ -21,15 +20,13 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// Thay YOUR_GOOGLE_CLIENT_ID bằng Client ID lấy từ Google Cloud Console
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID";
-
+// Đăng nhập Google giờ đi qua Supabase Auth (xem context/AuthContext.jsx) nên không còn cần
+// GoogleOAuthProvider của @react-oauth/google. Client ID được khai báo ở Supabase Dashboard →
+// Authentication → Providers → Google, không nằm trong code frontend nữa.
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AuthProvider>
-        <App />
-      </AuthProvider>
-    </GoogleOAuthProvider>
+    <AuthProvider>
+      <App />
+    </AuthProvider>
   </StrictMode>,
 )

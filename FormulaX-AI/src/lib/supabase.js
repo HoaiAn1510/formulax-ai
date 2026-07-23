@@ -87,13 +87,20 @@ export async function checkPremiumStatus(googleId) {
 
 // ─── Bookmark ───────────────────────────────────────────────────────────────
 
+// supabase-js KHÔNG throw khi database từ chối — nó trả về { error }. Bỏ qua giá trị này là
+// hỏng âm thầm: giao diện báo "Đã thêm vào Bookmark" trong khi không có gì được ghi, và
+// .catch() ở phía gọi cũng không bao giờ chạy. Luôn kiểm tra error rồi throw.
 export async function addBookmark(googleId, formulaId) {
-  await supabase.from("bookmarks").upsert({ google_id: googleId, formula_id: formulaId });
+  const { error } = await supabase
+    .from("bookmarks")
+    .upsert({ google_id: googleId, formula_id: formulaId });
+  if (error) throw new Error(`Lưu bookmark thất bại: ${error.message} (${error.code || "?"})`);
 }
 
 export async function removeBookmark(googleId, formulaId) {
-  await supabase.from("bookmarks").delete()
+  const { error } = await supabase.from("bookmarks").delete()
     .eq("google_id", googleId).eq("formula_id", formulaId);
+  if (error) throw new Error(`Xoá bookmark thất bại: ${error.message} (${error.code || "?"})`);
 }
 
 // ─── Notes ──────────────────────────────────────────────────────────────────

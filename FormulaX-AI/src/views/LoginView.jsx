@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, LayoutGrid, AlertCircle } from "lucide-react";
-import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../context/AuthContext";
 
 // Google icon SVG
@@ -16,7 +15,7 @@ function GoogleIcon() {
 }
 
 export default function LoginView() {
-  const { login } = useAuth();
+  const { loginWithGoogle } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("login");
@@ -26,34 +25,22 @@ export default function LoginView() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Google OAuth — fetches user profile after getting access token
-  const googleLogin = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setLoading(true);
-      setError("");
-      try {
-        const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        });
-        const userInfo = await res.json();
-        login(userInfo);
-      } catch {
-        setError("Không thể lấy thông tin tài khoản Google. Vui lòng thử lại.");
-      } finally {
-        setLoading(false);
-      }
-    },
-    onError: () => {
+  // Đăng nhập Google qua Supabase Auth. Khác luồng cũ ở hai điểm: (1) đây là redirect cả
+  // trang sang Google rồi quay lại, không phải popup — nên không cần xử lý trường hợp người
+  // dùng đóng popup; (2) khi quay về, phiên do Supabase cấp và AuthContext tự nhận qua
+  // onAuthStateChange, không cần gọi login() thủ công nữa.
+  const googleLogin = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      await loginWithGoogle();
+      // Nếu chuyển hướng thành công thì trang này bị thay thế, không chạy tiếp tới đây.
+    } catch (err) {
+      console.error("Đăng nhập Google thất bại:", err);
       setError("Đăng nhập Google thất bại. Vui lòng thử lại.");
       setLoading(false);
-    },
-    // Người dùng đóng popup Google (hoặc popup bị chặn) không tính là onSuccess/onError —
-    // nếu không bắt riêng, loading set true lúc bấm nút sẽ kẹt mãi vì không callback nào
-    // được gọi, nút Đăng nhập nhìn như bị vô hiệu hóa vĩnh viễn cho tới khi tải lại trang.
-    onNonOAuthError: () => {
-      setLoading(false);
-    },
-  });
+    }
+  };
 
   const handleEmailLogin = (e) => {
     e.preventDefault();
@@ -98,7 +85,7 @@ export default function LoginView() {
 
         {/* Google Sign-In Button */}
         <button
-          onClick={() => { setError(""); setLoading(true); googleLogin(); }}
+          onClick={googleLogin}
           disabled={loading}
           className={`flex items-center justify-center gap-2.5 w-full h-[46px] rounded-[10px] border-[1.5px] border-[#E2E8F0] dark:border-[#334155] text-[0.9rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] ${
             loading ? "bg-[#F8FAFC] dark:bg-[#0F172A] cursor-not-allowed" : "bg-white dark:bg-[#1E293B] cursor-pointer"
