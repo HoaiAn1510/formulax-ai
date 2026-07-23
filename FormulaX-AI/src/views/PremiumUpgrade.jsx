@@ -215,18 +215,33 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
             {/* Section 1: Hero Banner */}
             <div className="bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] py-10 px-6 rounded-2xl text-center text-white relative shadow-[0_10px_30px_rgba(15,23,42,0.15)] overflow-hidden">
+              {/* Lưới chấm mờ trang trí nền — thuần CSS, tạo chiều sâu cho hero, không ảnh hưởng nội dung */}
+              <div
+                className="absolute inset-0 pointer-events-none opacity-[0.15]"
+                style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
+              />
+
+              <div className="relative z-[1]">
               <div className="mb-3">
                 <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">CHƯƠNG TRÌNH KHUYÊN DÙNG</span>
               </div>
 
-              <div className="mx-auto mb-1 flex items-center justify-center" style={{ width: 220, height: 220 }}>
-                <Suspense fallback={<Crown size={90} fill="#F59E0B" color="#F59E0B" />}>
-                  <PremiumGem3D size={220} />
+              <div className="relative mx-auto mb-1 flex items-center justify-center" style={{ width: 260, height: 260 }}>
+                {/* Glow ánh sáng phía sau viên đá — CSS thuần, làm viên đá nổi bật hẳn lên trên nền navy */}
+                <div
+                  className="absolute inset-0 rounded-full pointer-events-none"
+                  style={{ background: "radial-gradient(circle, rgba(245,158,11,0.35) 0%, rgba(245,158,11,0.12) 45%, transparent 72%)", filter: "blur(6px)" }}
+                />
+                <Suspense fallback={<Crown size={100} fill="#F59E0B" color="#F59E0B" className="relative z-[1]" />}>
+                  <div className="relative z-[1]">
+                    <PremiumGem3D size={260} />
+                  </div>
                 </Suspense>
               </div>
 
-              <h1 className="text-[1.45rem] font-extrabold text-white mb-2">
-                Mở khóa toàn bộ sức mạnh <span className="text-premium">FormulaX AI</span>
+              <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
+                Mở khóa toàn bộ sức mạnh{" "}
+                <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">FormulaX AI</span>
               </h1>
 
               {/* Plan selector */}
@@ -286,6 +301,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                   <span>Trở về gói Free (Giả lập)</span>
                 </button>
               )}
+              </div>
             </div>
 
             {/* Section 3: Goals Grid */}
