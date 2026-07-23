@@ -125,7 +125,7 @@ export default function Dashboard({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 md:mb-8">
             {/* Card 1: Thư viện */}
             <div
-              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] dark:bg-[#1E293B] dark:border-[#334155]"
               onClick={() => setActiveTab("library")}
             >
               <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-secondary/8 text-secondary">
@@ -136,7 +136,7 @@ export default function Dashboard({
 
             {/* Card 2: Tìm kiếm AI */}
             <div
-              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] dark:bg-[#1E293B] dark:border-[#334155]"
               onClick={() => setActiveTab("finder")}
             >
               <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-success/8 text-success">
@@ -147,7 +147,7 @@ export default function Dashboard({
 
             {/* Card 3: Flashcard */}
             <div
-              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] dark:bg-[#1E293B] dark:border-[#334155]"
               onClick={() => setActiveTab("flashcard")}
             >
               <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-premium/8 text-premium">
@@ -158,7 +158,7 @@ export default function Dashboard({
 
             {/* Card 4: Kiểm tra */}
             <div
-              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+              className="glass-card py-6 md:py-8 px-4 flex flex-col items-center justify-center gap-3 cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] dark:bg-[#1E293B] dark:border-[#334155]"
               onClick={() => setActiveTab("quiz")}
             >
               <div className="w-[52px] h-[52px] rounded-full flex items-center justify-center bg-error/8 text-error">
@@ -245,7 +245,7 @@ export default function Dashboard({
             {recommendedFormulas.map((formula) => (
               <div
                 key={formula.id}
-                className="glass-card-sm px-4 py-3 flex items-center justify-between cursor-pointer transition-transform duration-200 hover:translate-x-0.5 dark:bg-[#1E293B] dark:border-[#334155]"
+                className="glass-card-sm px-4 py-3 flex items-center justify-between cursor-pointer transition-transform duration-200 hover:translate-x-0.5 active:scale-[0.98] dark:bg-[#1E293B] dark:border-[#334155]"
                 onClick={() => onViewDetail(formula)}
               >
                 <div className="flex items-center gap-3">

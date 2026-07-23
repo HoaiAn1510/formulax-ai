@@ -70,11 +70,11 @@
   box-shadow: var(--shadow-glass-card-hover);
 }
 
-/* Phản hồi "nhấn" (press feedback) — lún nhẹ lúc bấm, thắng tạm thời transform hover
-   trong lúc :active (đúng ý muốn), tự trả lại hover:-translate-y-* khi thả tay ra. */
-.glass-card:active, .glass-card-sm:active {
-  transform: scale(0.98);
-}
+/* Phản hồi "nhấn" (press feedback) KHÔNG áp dụng chung cho mọi .glass-card/.glass-card-sm
+   nữa — nhiều khung dùng class này chỉ để lấy style card (bảng thống kê, khung ví dụ,
+   sidebar...) chứ không phải nút bấm, lún xuống khi chạm vào chúng gây cảm giác sai. Nơi
+   nào thực sự là nút (có onClick điều hướng/hành động) tự thêm `active:scale-[0.98]`
+   (utility Tailwind) trực tiếp vào className của chính nó.
 
 /* Đồng bộ độ dày nét icon Lucide toàn app — mặc định thư viện là 2, giảm còn 1.5 cho
    cảm giác mảnh/tinh tế hơn, hợp phong cách SaaS tối giản (kiểu Linear). Lucide gắn sẵn

@@ -782,7 +782,7 @@ export default function FlashcardView({
               </div>
 
               {/* 3D Flip Card */}
-              <div className="w-full h-[380px] [perspective:1000px] cursor-pointer mb-2" onClick={() => setIsFlipped(!isFlipped)}>
+              <div className="w-full h-[380px] [perspective:1000px] cursor-pointer mb-2 active:scale-[0.98] transition-transform duration-200" onClick={() => setIsFlipped(!isFlipped)}>
                 <div className={`w-full h-full relative transition-transform duration-[0.6s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}>
                   {/* Front */}
                   <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden">
