@@ -8,6 +8,42 @@ import { showToast } from "../components/Toast";
 // Premium — lazy-load để không đội thêm bundle chính cho toàn app.
 const PremiumGem3D = lazy(() => import("../components/PremiumGem3D"));
 
+// Kiểm tra WebGL 1 lần khi module load — máy/trình duyệt không hỗ trợ thì không tải cả
+// ~267KB chunk Three.js làm gì, dùng thẳng icon Crown tĩnh thay thế.
+function detectWebGLSupport() {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(window.WebGLRenderingContext && (canvas.getContext("webgl2") || canvas.getContext("webgl")));
+  } catch {
+    return false;
+  }
+}
+const WEBGL_SUPPORTED = typeof window !== "undefined" && detectWebGLSupport();
+
+// Bắt lỗi runtime nếu Canvas 3D crash vì lý do khác (driver GPU crash, context mất và
+// không phục hồi được...) — không để cả banner Premium trắng xoá, rơi về icon tĩnh.
+class Gem3DErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(error) {
+    console.error("[PremiumGem3D] Lỗi khi render, chuyển sang icon tĩnh:", error);
+  }
+  render() {
+    return this.state.hasError ? this.props.fallback : this.props.children;
+  }
+}
+
+const GEM_FALLBACK = (
+  <div className="absolute inset-0 flex items-start justify-center pt-10">
+    <Crown size={100} fill="#F59E0B" color="#F59E0B" />
+  </div>
+);
+
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
 // Nguồn giá duy nhất — dùng chung cho banner hero và Gold card để không bao giờ lệch nhau.
@@ -187,7 +223,25 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
   return (
     <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
+      {/* Thanh CTA dính - phải nằm NGOÀI div overflow-hidden bên dưới, vì position:sticky
+          không hoạt động nếu có tổ tiên nào đó overflow:hidden/auto/scroll (giới hạn CSS). */}
+      {!isPremium && (
+        <div className="sticky top-[65px] md:top-0 z-20 -mx-4 md:-mx-8 -mt-6 md:-mt-8 mb-6 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-sm border-b border-[rgba(30,58,95,0.07)] dark:border-[#334155] py-2.5 px-4 md:px-8 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+          <div className="flex items-center gap-2 min-w-0">
+            <Crown size={16} fill="#F59E0B" color="#F59E0B" className="shrink-0" />
+            <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0] truncate">Premium chỉ từ {PLAN_DISPLAY.monthly.price}{PLAN_DISPLAY.monthly.unit}</span>
+          </div>
+          <button
+            onClick={() => handleUpgrade(selectedPlan)}
+            disabled={isProcessing}
+            className="btn btn-premium h-9 px-4 text-[0.8rem] shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isProcessing ? <Loader2 size={13} className="animate-spin" /> : <span>Nâng cấp</span>}
+          </button>
+        </div>
+      )}
+
+      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
         <div className="relative z-[1]">
           <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-12">
 
@@ -224,9 +278,15 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
               {/* Viên đá 3D + sao trải kín — canvas full-bleed phủ trọn khung hero, không còn là
                   ô vuông nhỏ. Sparkles bên trong PremiumGem3D.jsx tự lo phần "đầy sao khắp khung". */}
               <div className="absolute inset-0 z-0">
-                <Suspense fallback={null}>
-                  <PremiumGem3D />
-                </Suspense>
+                {WEBGL_SUPPORTED ? (
+                  <Gem3DErrorBoundary fallback={GEM_FALLBACK}>
+                    <Suspense fallback={GEM_FALLBACK}>
+                      <PremiumGem3D />
+                    </Suspense>
+                  </Gem3DErrorBoundary>
+                ) : (
+                  GEM_FALLBACK
+                )}
               </div>
 
               {/* pointer-events-none để chuột "xuyên" xuống canvas 3D bên dưới (kéo xoay viên
