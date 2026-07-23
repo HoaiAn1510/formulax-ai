@@ -420,12 +420,16 @@ export default function FlashcardView({
       .replace(/>/g, "&gt;");
 
     // Convert explanation markdown to HTML (preserves $math$ for KaTeX auto-render)
+    // Mỗi dòng phải đi qua esc() TRƯỚC khi ghép chuỗi HTML: nội dung thẻ hiện lấy từ
+    // formulas.js (tin cậy), nhưng hàm này ghi thẳng vào document.write của cửa sổ mới — nếu
+    // sau này thẻ nhận nội dung người dùng tự nhập thì thiếu bước escape là XSS ngay.
     const expToHtml = (text) => {
       if (!text) return "";
       const lines = text.split("\n");
       const parts = [];
       let listItems = [];
-      for (const line of lines) {
+      for (const rawLine of lines) {
+        const line = esc(rawLine);
         if (/^\s*-\s/.test(line)) {
           const content = line.replace(/^\s*-\s/, "").replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
           listItems.push(`<li>${content}</li>`);

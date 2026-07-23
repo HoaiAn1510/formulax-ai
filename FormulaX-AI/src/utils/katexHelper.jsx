@@ -1,6 +1,46 @@
 import React, { useEffect, useRef } from "react";
 
 /**
+ * Chính sách "trust" của KaTeX. Trước đây đặt `trust: true` cho toàn bộ lệnh, nghĩa là KaTeX
+ * chấp nhận cả \href và \url với URL tùy ý — chuỗi LaTeX ở đây không phải lúc nào cũng do ta
+ * kiểm soát (câu trả lời của AI, ghi chú người dùng nhập), nên một chuỗi kiểu
+ * \href{javascript:...}{bấm vào đây} sẽ render thành link chạy script khi người dùng bấm (XSS).
+ *
+ * Nội dung toán trong formulas.js/questions.js không dùng \href, \url hay \includegraphics
+ * (đã kiểm: 0 lần xuất hiện), nên chặn hẳn nhóm lệnh này không làm mất khả năng hiển thị nào.
+ * Các lệnh "trust" còn lại (\htmlClass, \htmlId...) chỉ cho qua với giao thức an toàn.
+ */
+const katexTrust = (context) => {
+  if (context.command === "\\href" || context.command === "\\url") {
+    return /^(https?:|mailto:|#|\/)/i.test(context.url || "");
+  }
+  return false;
+};
+
+/**
+ * KaTeX được nạp từ CDN bằng <script defer> trong index.html, không phải import qua bundler —
+ * nên về nguyên tắc window.katex đã tồn tại trước khi React render. Nhưng nếu CDN chậm hoặc
+ * bị chặn, component sẽ render đúng một lần rồi thôi và công thức mất hẳn (effect không tự
+ * chạy lại). Promise dưới đây chờ script sẵn sàng để render bù, tối đa 10 giây.
+ */
+let katexReadyPromise = null;
+function whenKatexReady() {
+  if (window.katex) return Promise.resolve(true);
+  if (!katexReadyPromise) {
+    katexReadyPromise = new Promise((resolve) => {
+      const startedAt = Date.now();
+      const timer = setInterval(() => {
+        if (window.katex || Date.now() - startedAt > 10000) {
+          clearInterval(timer);
+          resolve(Boolean(window.katex));
+        }
+      }, 50);
+    });
+  }
+  return katexReadyPromise;
+}
+
+/**
  * MathElement renders a LaTeX string using KaTeX.
  * @param {Object} props
  * @param {string} props.math - The LaTeX formula.
@@ -11,18 +51,33 @@ export const MathElement = ({ math, block = false, className = "" }) => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (containerRef.current && window.katex) {
+    let cancelled = false;
+
+    const renderMath = () => {
+      if (cancelled || !containerRef.current || !window.katex) return;
       try {
         window.katex.render(math, containerRef.current, {
           displayMode: block,
           throwOnError: false,
-          trust: true,
+          trust: katexTrust,
+          maxExpand: 1000, // chặn macro tự nhân bản kiểu "billion laughs" làm treo tab trình duyệt
         });
       } catch (err) {
         console.error("KaTeX rendering error for formula:", math, err);
         containerRef.current.textContent = math; // Fallback
       }
+    };
+
+    if (window.katex) {
+      renderMath();
+    } else {
+      // KaTeX chưa về (CDN chậm) — chờ rồi render bù. Trong lúc chờ hiển thị chuỗi LaTeX thô
+      // thay vì khoảng trắng, để người dùng vẫn đọc được nội dung.
+      if (containerRef.current) containerRef.current.textContent = math;
+      whenKatexReady().then(renderMath);
     }
+
+    return () => { cancelled = true; };
   }, [math, block]);
 
   return (

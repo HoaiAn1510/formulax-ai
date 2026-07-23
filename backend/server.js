@@ -1,11 +1,15 @@
 import "./loadEnv.js"; // phải đứng đầu tiên — nạp .env trước khi module khác đọc process.env
 import express from "express";
 import cors from "cors";
+import compression from "compression";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import Groq from "groq-sdk";
 import payosPaymentRouter from "./routes/payosPayment.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
 const allowedOrigins = [
   "http://localhost:5173",
@@ -14,10 +18,63 @@ const allowedOrigins = [
   process.env.FRONTEND_URL, // set this on Render to your Vercel URL
 ].filter(Boolean);
 
-app.use(cors({ origin: allowedOrigins }));
-app.use(express.json());
-app.use(express.static("public")); // trang dev-tool test thủ công PayOS (public/simulate-payment.html)
+// Render/Vercel đặt app sau reverse proxy — không bật trust proxy thì req.ip luôn là IP của
+// proxy, mọi người dùng bị gộp chung một quota rate limit. Chỉ tin đúng 1 hop (proxy của
+// hosting), không dùng `true` vì như vậy client có thể tự giả mạo X-Forwarded-For để né limit.
+app.set("trust proxy", 1);
 
+// Trang dev-tool test thủ công PayOS (public/simulate-payment.html) — chỉ phục vụ ở môi
+// trường dev. Mount TRƯỚC helmet để CSP mặc định không chặn inline script của trang test.
+if (!IS_PRODUCTION) {
+  app.use(express.static("public"));
+}
+
+// Câu trả lời của AI thường 2–6 KB text/LaTeX, nén gzip còn khoảng 1/3 — đáng kể với người
+// dùng mạng 3G/4G ở quê, và Render không tự nén giúp.
+app.use(compression());
+
+app.use(helmet({
+  // Backend là API thuần, được gọi cross-origin từ frontend Vercel — CORP mặc định
+  // (same-origin) không phù hợp ở đây.
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
+app.use(cors({ origin: allowedOrigins, methods: ["GET", "POST"], maxAge: 86400 }));
+// Giới hạn kích thước body: request hợp lệ lớn nhất (message + 10 lượt history) chỉ vài KB,
+// mặc định 100kb của express là quá rộng cho endpoint gọi AI tính tiền theo token.
+app.use(express.json({ limit: "64kb" }));
+
+// ─── Rate limit ────────────────────────────────────────────────────────────
+// Giới hạn 10 lượt hỏi/ngày của gói Free chỉ được kiểm tra ở client (localStorage) nên bỏ qua
+// được dễ dàng bằng cách gọi thẳng API. Các limiter dưới đây là chốt chặn phía server để một
+// IP không thể vét cạn quota Groq/PayOS — đặt rộng hơn hạn mức nghiệp vụ để không chặn nhầm
+// người dùng thật (nhiều học sinh cùng NAT ra một IP ở trường/quán net).
+const chatBurstLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 12,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "Bạn hỏi hơi nhanh, chờ khoảng một phút rồi thử lại nhé." },
+});
+
+const chatDailyLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 300,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "Đã đạt giới hạn số câu hỏi trong ngày. Vui lòng quay lại vào ngày mai." },
+});
+
+const paymentLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "Bạn đã tạo quá nhiều đơn thanh toán. Vui lòng thử lại sau một giờ." },
+});
+
+// Chỉ giới hạn /create — KHÔNG áp cho /webhook, vì webhook do PayOS gọi server-to-server và
+// bị chặn ở đây đồng nghĩa người dùng đã trả tiền nhưng không được cấp Premium.
+app.use("/api/payment/payos/create", paymentLimiter);
 app.use("/api/payment/payos", payosPaymentRouter);
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
@@ -201,12 +258,24 @@ function parseReplyFormat(text) {
   return cleaned ? { reply: cleaned, formulaId } : null;
 }
 
-app.post("/api/chat", async (req, res) => {
+// Trần độ dài input — chặn việc nhồi prompt khổng lồ để đốt token của Groq. Câu hỏi toán THPT
+// thực tế hiếm khi vượt 2000 ký tự; mỗi lượt history cũng cắt bớt thay vì gửi nguyên văn.
+const MAX_MESSAGE_CHARS = 2000;
+const MAX_HISTORY_ITEMS = 10;
+const MAX_HISTORY_ITEM_CHARS = 1500;
+
+app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
   try {
     const { message, history = [] } = req.body;
 
-    if (!message?.trim()) {
+    if (typeof message !== "string" || !message.trim()) {
       return res.status(400).json({ error: "Message is required" });
+    }
+
+    if (message.length > MAX_MESSAGE_CHARS) {
+      return res.status(400).json({
+        error: `Câu hỏi quá dài (tối đa ${MAX_MESSAGE_CHARS} ký tự). Bạn rút gọn lại giúp mình nhé.`,
+      });
     }
 
     if (!process.env.GROQ_API_KEY) {
@@ -214,12 +283,12 @@ app.post("/api/chat", async (req, res) => {
     }
 
     // Chuyển lịch sử sang format OpenAI-compatible
-    const chatHistory = history
-      .filter(h => h.sender === "user" || h.sender === "bot")
-      .slice(-10)
+    const chatHistory = (Array.isArray(history) ? history : [])
+      .filter(h => h && (h.sender === "user" || h.sender === "bot"))
+      .slice(-MAX_HISTORY_ITEMS)
       .map(h => ({
         role: h.sender === "user" ? "user" : "assistant",
-        content: h.text || ""
+        content: String(h.text || "").slice(0, MAX_HISTORY_ITEM_CHARS)
       }));
 
     const completion = await groq.chat.completions.create({
@@ -254,11 +323,10 @@ app.post("/api/chat", async (req, res) => {
     const status = error.status || error.statusCode || 500;
     let errorMsg = "Không thể kết nối AI";
     if (status === 429) errorMsg = "AI đang bận, thử lại sau vài giây";
-    else if (status === 401) errorMsg = "Groq API key không hợp lệ";
-    res.status(status >= 400 && status < 600 ? status : 500).json({
-      error: errorMsg,
-      message: error.message
-    });
+    else if (status === 401) errorMsg = "Lỗi cấu hình phía máy chủ, vui lòng thử lại sau";
+    // Chỉ trả thông điệp chung cho client — error.message của SDK có thể chứa chi tiết nội bộ
+    // (endpoint, tên model, một phần API key trong thông báo xác thực). Chi tiết đã có ở log server.
+    res.status(status >= 400 && status < 600 ? status : 500).json({ error: errorMsg });
   }
 });
 
@@ -278,5 +346,6 @@ app.listen(PORT, () => {
   const payosOk = process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY;
   console.log(`💳 PayOS Payment: ${payosOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
   const supabaseOk = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.startsWith("CHUA_CAU_HINH");
-  console.log(`🗄️  Supabase (service role): ${supabaseOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — webhook sẽ không cập nhật được is_premium (.env)"}\n`);
+  console.log(`🗄️  Supabase (service role): ${supabaseOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — webhook sẽ không cập nhật được is_premium (.env)"}`);
+  console.log(`🛡️  Môi trường: ${IS_PRODUCTION ? "production — route DEV & trang test đã khoá" : "development — route DEV mở, KHÔNG dùng cấu hình này khi deploy"}\n`);
 });

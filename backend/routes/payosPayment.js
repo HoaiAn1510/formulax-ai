@@ -4,6 +4,27 @@ import { PLAN_CONFIG, isValidPlan, computeStackedExpiry, generateOrderCode, getP
 
 const router = express.Router();
 
+const IS_PRODUCTION = process.env.NODE_ENV === "production";
+
+// Chốt chặn cho toàn bộ route DEV bên dưới. Trước đây các route này chỉ được bảo vệ bằng
+// DEV_SIMULATE_SECRET — nếu secret đó lộ (commit nhầm, chia sẻ trong nhóm, brute-force) thì
+// bất kỳ ai cũng tự cấp được Premium mà không cần trả tiền, vì /simulate-success bỏ qua hoàn
+// toàn bước xác minh chữ ký PayOS. Ở production route trả 404 y như route không tồn tại,
+// không tiết lộ là có route ẩn.
+function devOnly(req, res, next) {
+  if (IS_PRODUCTION) {
+    return res.status(404).json({ error: "Not found" });
+  }
+  const devSecret = process.env.DEV_SIMULATE_SECRET;
+  if (!devSecret) {
+    return res.status(403).json({ error: "DEV_SIMULATE_SECRET chưa cấu hình trong .env — route dev bị khoá." });
+  }
+  if (req.body?.secret !== devSecret) {
+    return res.status(403).json({ error: "Sai khoá xác nhận." });
+  }
+  next();
+}
+
 function payosConfigured() {
   return Boolean(process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY);
 }
@@ -13,9 +34,16 @@ router.post("/create", async (req, res) => {
   try {
     const { userId, plan } = req.body;
 
-    if (!userId || !isValidPlan(plan)) {
+    // userId ở đây là Google `sub` — chuỗi số do Google cấp. Chỉ nhận đúng dạng đó để không
+    // ghi rác/ký tự lạ vào bảng payments. Lưu ý giới hạn đã biết: client vẫn tự khai userId,
+    // backend chưa xác minh Google token (xem TODO bên dưới), nên đây mới chỉ là lọc định dạng.
+    if (typeof userId !== "string" || !/^[0-9]{6,32}$/.test(userId) || !isValidPlan(plan)) {
       return res.status(400).json({ error: "Thiếu userId hoặc plan không hợp lệ (monthly | 6months)" });
     }
+    // TODO(bảo mật): yêu cầu frontend gửi kèm Google access token và verify với
+    // https://www.googleapis.com/oauth2/v3/userinfo, đối chiếu `sub` === userId trước khi tạo
+    // đơn. Hiện tại người khác có thể tạo đơn hộ một googleId bất kỳ — chưa gây thiệt hại vì
+    // Premium chỉ được cấp sau webhook đã trả tiền thật, nhưng cần đóng trước khi mở bán rộng.
     if (!payosConfigured()) {
       return res.status(500).json({ error: "PayOS chưa được cấu hình trong backend/.env" });
     }
@@ -142,17 +170,9 @@ router.get("/return", (req, res) => {
 });
 
 // DEV-ONLY: giả lập PayOS xác nhận thanh toán thành công — dùng khi chưa muốn chuyển khoản thật.
-// Bắt buộc DEV_SIMULATE_SECRET đúng trong .env, không cấu hình thì route luôn từ chối (fail closed).
-// Nhắc: xoá route này trước khi lên Production thật, vì nó bỏ qua xác minh chữ ký PayOS.
-router.post("/simulate-success", async (req, res) => {
-  const devSecret = process.env.DEV_SIMULATE_SECRET;
-  if (!devSecret) {
-    return res.status(403).json({ error: "DEV_SIMULATE_SECRET chưa cấu hình trong .env — route giả lập bị khoá." });
-  }
-  const { orderCode, secret } = req.body;
-  if (secret !== devSecret) {
-    return res.status(403).json({ error: "Sai khoá xác nhận." });
-  }
+// Hai lớp khoá (xem devOnly): chỉ chạy khi NODE_ENV !== "production" VÀ đúng DEV_SIMULATE_SECRET.
+router.post("/simulate-success", devOnly, async (req, res) => {
+  const { orderCode } = req.body;
   if (!orderCode) {
     return res.status(400).json({ error: "Thiếu orderCode" });
   }
@@ -198,17 +218,10 @@ router.post("/simulate-success", async (req, res) => {
 });
 
 // DEV-ONLY: tra cứu trạng thái 1 đơn hàng theo orderCode (dùng bởi public/simulate-payment.html).
-// Khoá bằng DEV_SIMULATE_SECRET giống /simulate-success — không xác thực thì lộ PII thanh toán
+// Khoá bằng devOnly giống /simulate-success — không xác thực thì lộ PII thanh toán
 // (google_id, số tiền...) cho bất kỳ ai biết/đoán được orderCode.
-router.post("/payment-status", async (req, res) => {
-  const devSecret = process.env.DEV_SIMULATE_SECRET;
-  if (!devSecret) {
-    return res.status(403).json({ error: "DEV_SIMULATE_SECRET chưa cấu hình trong .env — route debug bị khoá." });
-  }
-  const { orderCode, secret } = req.body;
-  if (secret !== devSecret) {
-    return res.status(403).json({ error: "Sai khoá xác nhận." });
-  }
+router.post("/payment-status", devOnly, async (req, res) => {
+  const { orderCode } = req.body;
   if (!orderCode) {
     return res.status(400).json({ error: "Thiếu orderCode" });
   }
