@@ -2,7 +2,7 @@ import "./loadEnv.js"; // phải đứng đầu tiên — nạp .env trước kh
 import express from "express";
 import cors from "cors";
 import Groq from "groq-sdk";
-import momoPaymentRouter from "./routes/momoPayment.js";
+import payosPaymentRouter from "./routes/payosPayment.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,9 +16,9 @@ const allowedOrigins = [
 
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
-app.use(express.static("public")); // trang dev-tool test thủ công MoMo (public/simulate-payment.html)
+app.use(express.static("public")); // trang dev-tool test thủ công PayOS (public/simulate-payment.html)
 
-app.use("/api/payment/momo", momoPaymentRouter);
+app.use("/api/payment/payos", payosPaymentRouter);
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -275,8 +275,8 @@ app.listen(PORT, () => {
   console.log(`\n🚀 FormulaX AI Backend đang chạy tại http://localhost:${PORT}`);
   console.log(`📚 Đã tải ${FORMULA_LIST.length} công thức vào context AI`);
   console.log(`🔑 Groq API Key: ${process.env.GROQ_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
-  const momoOk = process.env.MOMO_PARTNER_CODE && process.env.MOMO_ACCESS_KEY && process.env.MOMO_SECRET_KEY;
-  console.log(`💳 MoMo Payment: ${momoOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
+  const payosOk = process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY;
+  console.log(`💳 PayOS Payment: ${payosOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
   const supabaseOk = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.startsWith("CHUA_CAU_HINH");
-  console.log(`🗄️  Supabase (service role): ${supabaseOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — IPN sẽ không cập nhật được is_premium (.env)"}\n`);
+  console.log(`🗄️  Supabase (service role): ${supabaseOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — webhook sẽ không cập nhật được is_premium (.env)"}\n`);
 });
