@@ -20,6 +20,19 @@ const MONTHLY_PRICE = 49000;
 const SIX_MONTH_PRICE = 249000;
 const SIX_MONTH_SAVINGS_PERCENT = Math.round((1 - SIX_MONTH_PRICE / (MONTHLY_PRICE * 6)) * 100);
 
+// Sao lấp lánh trải khắp banner hero — thuần CSS (tái dùng @keyframes pulse-bubble đã có
+// sẵn trong App.css cho "typing indicator"), tạo ở module scope để vị trí ngôi sao không
+// bị random lại (nhảy lung tung) mỗi khi component re-render vì đổi selectedPlan/isProcessing.
+const HERO_STARS = Array.from({ length: 45 }).map((_, i) => ({
+  id: i,
+  top: `${Math.random() * 100}%`,
+  left: `${Math.random() * 100}%`,
+  size: 1 + Math.random() * 2,
+  delay: `${(Math.random() * 3).toFixed(2)}s`,
+  duration: `${(1.6 + Math.random() * 2.2).toFixed(2)}s`,
+  color: Math.random() > 0.65 ? "#FDE68A" : "#FFFFFF",
+}));
+
 export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }) {
   const { user } = useAuth();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
@@ -220,6 +233,26 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 className="absolute inset-0 pointer-events-none opacity-[0.15]"
                 style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
               />
+
+              {/* Sao lấp lánh trải khắp khung hero, không chỉ quanh viên đá */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                {HERO_STARS.map((star) => (
+                  <div
+                    key={star.id}
+                    className="absolute rounded-full animate-[pulse-bubble_2s_ease-in-out_infinite]"
+                    style={{
+                      top: star.top,
+                      left: star.left,
+                      width: star.size,
+                      height: star.size,
+                      backgroundColor: star.color,
+                      animationDelay: star.delay,
+                      animationDuration: star.duration,
+                      boxShadow: `0 0 ${star.size * 2}px ${star.color}`,
+                    }}
+                  />
+                ))}
+              </div>
 
               <div className="relative z-[1]">
               <div className="mb-3">
