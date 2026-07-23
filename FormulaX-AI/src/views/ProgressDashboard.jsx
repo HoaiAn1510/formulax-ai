@@ -447,8 +447,8 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             <StatCard icon={<Layers size={20} />}        value={selectedDayData.flashcardIds.length} label="Thẻ đã ôn"   sublabel={selectedDateLabel} color="#10B981" />
           </div>
 
-          {/* Streak calendar (left column) + Topic performance & Coach (right column) on wide desktop screens */}
-          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-2 lg:items-stretch mb-4">
+          {/* Chuỗi học + Hiệu suất theo chủ đề + Coach gợi ý ôn tập — 1 hàng ngang trên desktop */}
+          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:items-stretch mb-4">
             {/* Streak activity chart — click a day to see what was studied that day */}
             <StreakChart
               activityDates={activityDates}
@@ -512,82 +512,82 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                 />
               )}
             </div>
+
+            {/* AI Coach suggestions — scoped to the same selected day, giờ nằm chung hàng với Chuỗi học/Hiệu suất */}
+            <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4">
+              <div className="flex items-center gap-2 mb-3.5">
+                <Target size={16} color="#10B981" />
+                <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
+                  Coach gợi ý ôn tập
+                </h2>
+                <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
+              </div>
+
+              {loading ? (
+                <div className="animate-pulse flex flex-col gap-3.5">
+                  {[0, 1].map(i => (
+                    <div key={i}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <div className="h-3 w-20 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
+                        <div className="h-4 w-14 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
+                      </div>
+                      <div className="flex gap-2 pl-[19px]">
+                        <div className="h-7 w-36 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
+                        <div className="h-7 w-32 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : !isPremium ? (
+                <EmptyState
+                  message="Nâng cấp Premium để nhận gợi ý ôn tập cá nhân hóa theo điểm yếu của bạn."
+                  ctaLabel="Nâng cấp Premium"
+                  onCta={() => setActiveTab("premium")}
+                />
+              ) : weakTopics.length === 0 && hasQuizData ? (
+                <div className="text-center py-3">
+                  <CheckCircle size={28} color="#10B981" className="mx-auto mb-2 block" />
+                  <p className="m-0 text-[0.82rem] text-success font-semibold">
+                    Tốt lắm! Bạn học đều tất cả chủ đề trong ngày {selectedDateLabel}.
+                  </p>
+                </div>
+              ) : weakTopics.length === 0 ? (
+                <EmptyState
+                  message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
+                  ctaLabel="Bắt đầu quiz"
+                  onCta={() => setActiveTab("quiz")}
+                />
+              ) : (
+                weakTopics.map(t => {
+                  const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
+                  return (
+                    <div key={t.topic} className="mb-3.5">
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <AlertTriangle size={13} color="#F97316" />
+                        <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">
+                          {t.topic}
+                        </span>
+                        <span className="text-[0.68rem] font-bold text-white bg-error rounded py-px px-1.5">
+                          {t.rate}% đúng
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5 pl-[19px]">
+                        {suggested.map(f => (
+                          <FormulaChip key={f.id} formula={f} onViewDetail={onViewDetail} />
+                        ))}
+                        {suggested.length === 0 && (
+                          <span className="text-xs text-[#94A3B8]">Chưa có công thức cho chủ đề này.</span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
 
           {/* Badges — luôn hiển thị đầy đủ danh sách, huy hiệu chưa mở khóa đóng vai trò mục tiêu */}
           <BadgesSection badges={badges} />
-
-          {/* AI Coach suggestions — scoped to the same selected day, full width below the grid */}
-          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
-            <div className="flex items-center gap-2 mb-3.5">
-              <Target size={16} color="#10B981" />
-              <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
-                Coach gợi ý ôn tập
-              </h2>
-              <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
-            </div>
-
-            {loading ? (
-              <div className="animate-pulse flex flex-col gap-3.5">
-                {[0, 1].map(i => (
-                  <div key={i}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="h-3 w-20 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
-                      <div className="h-4 w-14 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
-                    </div>
-                    <div className="flex gap-2 pl-[19px]">
-                      <div className="h-7 w-36 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
-                      <div className="h-7 w-32 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : !isPremium ? (
-              <EmptyState
-                message="Nâng cấp Premium để nhận gợi ý ôn tập cá nhân hóa theo điểm yếu của bạn."
-                ctaLabel="Nâng cấp Premium"
-                onCta={() => setActiveTab("premium")}
-              />
-            ) : weakTopics.length === 0 && hasQuizData ? (
-              <div className="text-center py-3">
-                <CheckCircle size={28} color="#10B981" className="mx-auto mb-2 block" />
-                <p className="m-0 text-[0.82rem] text-success font-semibold">
-                  Tốt lắm! Bạn học đều tất cả chủ đề trong ngày {selectedDateLabel}.
-                </p>
-              </div>
-            ) : weakTopics.length === 0 ? (
-              <EmptyState
-                message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
-                ctaLabel="Bắt đầu quiz"
-                onCta={() => setActiveTab("quiz")}
-              />
-            ) : (
-              weakTopics.map(t => {
-                const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
-                return (
-                  <div key={t.topic} className="mb-3.5">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <AlertTriangle size={13} color="#F97316" />
-                      <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">
-                        {t.topic}
-                      </span>
-                      <span className="text-[0.68rem] font-bold text-white bg-error rounded py-px px-1.5">
-                        {t.rate}% đúng
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5 pl-[19px]">
-                      {suggested.map(f => (
-                        <FormulaChip key={f.id} formula={f} onViewDetail={onViewDetail} />
-                      ))}
-                      {suggested.length === 0 && (
-                        <span className="text-xs text-[#94A3B8]">Chưa có công thức cho chủ đề này.</span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
 
           {/* Strong topics callout */}
           {strongTopics.length > 0 && (
