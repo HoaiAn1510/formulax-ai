@@ -20,19 +20,6 @@ const MONTHLY_PRICE = 49000;
 const SIX_MONTH_PRICE = 249000;
 const SIX_MONTH_SAVINGS_PERCENT = Math.round((1 - SIX_MONTH_PRICE / (MONTHLY_PRICE * 6)) * 100);
 
-// Sao lấp lánh trải khắp banner hero — thuần CSS (tái dùng @keyframes pulse-bubble đã có
-// sẵn trong App.css cho "typing indicator"), tạo ở module scope để vị trí ngôi sao không
-// bị random lại (nhảy lung tung) mỗi khi component re-render vì đổi selectedPlan/isProcessing.
-const HERO_STARS = Array.from({ length: 45 }).map((_, i) => ({
-  id: i,
-  top: `${Math.random() * 100}%`,
-  left: `${Math.random() * 100}%`,
-  size: 1 + Math.random() * 2,
-  delay: `${(Math.random() * 3).toFixed(2)}s`,
-  duration: `${(1.6 + Math.random() * 2.2).toFixed(2)}s`,
-  color: Math.random() > 0.65 ? "#FDE68A" : "#FFFFFF",
-}));
-
 export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }) {
   const { user } = useAuth();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
@@ -234,24 +221,12 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
               />
 
-              {/* Sao lấp lánh trải khắp khung hero, không chỉ quanh viên đá */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                {HERO_STARS.map((star) => (
-                  <div
-                    key={star.id}
-                    className="absolute rounded-full animate-[pulse-bubble_2s_ease-in-out_infinite]"
-                    style={{
-                      top: star.top,
-                      left: star.left,
-                      width: star.size,
-                      height: star.size,
-                      backgroundColor: star.color,
-                      animationDelay: star.delay,
-                      animationDuration: star.duration,
-                      boxShadow: `0 0 ${star.size * 2}px ${star.color}`,
-                    }}
-                  />
-                ))}
+              {/* Viên đá 3D + sao trải kín — canvas full-bleed phủ trọn khung hero, không còn là
+                  ô vuông nhỏ. Sparkles bên trong PremiumGem3D.jsx tự lo phần "đầy sao khắp khung". */}
+              <div className="absolute inset-0 z-0">
+                <Suspense fallback={null}>
+                  <PremiumGem3D />
+                </Suspense>
               </div>
 
               <div className="relative z-[1]">
@@ -259,18 +234,8 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">CHƯƠNG TRÌNH KHUYÊN DÙNG</span>
               </div>
 
-              <div className="relative mx-auto mb-1 flex items-center justify-center" style={{ width: 260, height: 260 }}>
-                {/* Glow ánh sáng phía sau viên đá — CSS thuần, làm viên đá nổi bật hẳn lên trên nền navy */}
-                <div
-                  className="absolute inset-0 rounded-full pointer-events-none"
-                  style={{ background: "radial-gradient(circle, rgba(245,158,11,0.35) 0%, rgba(245,158,11,0.12) 45%, transparent 72%)", filter: "blur(6px)" }}
-                />
-                <Suspense fallback={<Crown size={100} fill="#F59E0B" color="#F59E0B" className="relative z-[1]" />}>
-                  <div className="relative z-[1]">
-                    <PremiumGem3D size={260} />
-                  </div>
-                </Suspense>
-              </div>
+              {/* Chỗ trống giữ đúng nhịp bố cục cũ — viên đá thật render ở lớp nền phía sau (canvas full-bleed) */}
+              <div style={{ height: 260 }} aria-hidden="true" />
 
               <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
                 Mở khóa toàn bộ sức mạnh{" "}

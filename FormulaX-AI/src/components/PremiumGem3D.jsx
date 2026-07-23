@@ -46,28 +46,35 @@ function HaloRing({ reducedMotion }) {
   );
 }
 
-function Scene({ reducedMotion }) {
-  const gem = (
-    <>
+// Cụm viên đá + vòng hào quang được đẩy lên phía trên (position Y dương) trong khung hình
+// full-bleed rộng hơn, để giữ đúng vị trí thị giác cũ (phía trên tiêu đề) thay vì rơi vào
+// giữa khung — kích thước bản thân viên đá không đổi, chỉ khung canvas rộng ra.
+function GemGroup({ reducedMotion }) {
+  return (
+    <group position={[0, 1.5, 0]}>
       <Float speed={reducedMotion ? 0 : 1.8} rotationIntensity={reducedMotion ? 0 : 0.6} floatIntensity={reducedMotion ? 0 : 0.8}>
         <Gem reducedMotion={reducedMotion} />
       </Float>
       <HaloRing reducedMotion={reducedMotion} />
-    </>
+    </group>
   );
+}
 
+function Scene({ reducedMotion }) {
   return (
     <>
       <ambientLight intensity={0.45} />
-      <pointLight position={[3, 3, 3]} intensity={1.6} color="#FEF3C7" />
-      <pointLight position={[-3, -2, -2]} intensity={0.6} color="#60A5FA" />
+      <pointLight position={[3, 4, 3]} intensity={1.6} color="#FEF3C7" />
+      <pointLight position={[-3, 0, -2]} intensity={0.6} color="#60A5FA" />
       <Suspense fallback={null}>
         <Environment preset="city" />
       </Suspense>
-      <Sparkles count={70} scale={3.6} size={3} speed={reducedMotion ? 0 : 0.45} color="#FDE68A" />
-      <Sparkles count={25} scale={4.2} size={5} speed={reducedMotion ? 0 : 0.25} color="#FFFFFF" />
+      {/* Sao trải khắp toàn bộ khung — canvas giờ full-bleed nên scale phải đủ lớn để phủ kín,
+          không chỉ co cụm quanh viên đá như trước. */}
+      <Sparkles count={160} scale={[9, 11, 5]} size={2.6} speed={reducedMotion ? 0 : 0.4} color="#FDE68A" />
+      <Sparkles count={70} scale={[9, 11, 5]} size={4.5} speed={reducedMotion ? 0 : 0.22} color="#FFFFFF" />
       {reducedMotion ? (
-        gem
+        <GemGroup reducedMotion={reducedMotion} />
       ) : (
         <PresentationControls
           global
@@ -76,14 +83,17 @@ function Scene({ reducedMotion }) {
           azimuth={[-0.6, 0.6]}
           config={{ mass: 1, tension: 170, friction: 26 }}
         >
-          {gem}
+          <GemGroup reducedMotion={reducedMotion} />
         </PresentationControls>
       )}
     </>
   );
 }
 
-export default function PremiumGem3D({ size = 220 }) {
+// Full-bleed — lấp đầy trọn khung chứa (hero banner), không còn là ô vuông nhỏ cố định.
+// Camera lùi xa hơn để giữ đúng kích thước viên đá trên màn hình dù khung canvas rộng ra
+// nhiều so với trước (260x260 → nguyên khung hero).
+export default function PremiumGem3D() {
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -95,8 +105,8 @@ export default function PremiumGem3D({ size = 220 }) {
   }, []);
 
   return (
-    <div style={{ width: size, height: size }}>
-      <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 4], fov: 40 }} gl={{ antialias: true, alpha: true }}>
+    <div style={{ width: "100%", height: "100%" }}>
+      <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 13], fov: 32 }} gl={{ antialias: true, alpha: true }}>
         <Scene reducedMotion={reducedMotion} />
       </Canvas>
     </div>
