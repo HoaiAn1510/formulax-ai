@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
-import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown } from "lucide-react";
+import { Crown, Check, X, ShieldCheck, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { showToast } from "../components/Toast";
@@ -55,6 +55,36 @@ const PLAN_DISPLAY = {
 const MONTHLY_PRICE = 49000;
 const SIX_MONTH_PRICE = 249000;
 const SIX_MONTH_SAVINGS_PERCENT = Math.round((1 - SIX_MONTH_PRICE / (MONTHLY_PRICE * 6)) * 100);
+
+// Dữ liệu tĩnh, không phụ thuộc props/state — đặt ở module scope để (1) không tạo lại mảng
+// mỗi lần render, (2) dùng làm dependency ổn định cho effect bơm JSON-LD FAQPage bên dưới.
+const FAQS = [
+  {
+    q: "Tôi có thể hủy gói đăng ký bất cứ lúc nào không?",
+    a: "Có, bạn hoàn toàn có thể hủy gia hạn gói Premium bất cứ lúc nào trong mục Cài đặt tài khoản mà không bị phạt hay tính thêm bất kỳ khoản phí ẩn nào.",
+    icon: XCircle
+  },
+  {
+    q: "Tài liệu PDF/Ảnh kết xuất ra có giới hạn số lượng không?",
+    a: "Hoàn toàn không. Tài khoản Premium cho phép bạn xuất không giới hạn số lượng thẻ ghi nhớ cá nhân ra định dạng tệp PDF/Ảnh độ nét cao để ôn thi offline.",
+    icon: FileDown
+  },
+  {
+    q: "Trợ lý Finder AI hỗ trợ những môn học nào khác ngoài Toán không?",
+    a: "Hiện tại FormulaX AI tối ưu hóa dữ liệu chuyên sâu cho chương trình Toán THPT (Đại số, Giải tích, Hình học, Xác suất). Các môn Vật lý và Hóa học dự kiến sẽ ra mắt trong quý sau.",
+    icon: Sparkles
+  },
+  {
+    q: "Cách thanh toán và nhận tài khoản Premium thế nào?",
+    a: "Bạn thanh toán qua PayOS — hỗ trợ chuyển khoản ngân hàng và quét mã VietQR. Tài khoản sẽ được nâng cấp lên Premium ngay lập tức sau khi giao dịch hoàn tất.",
+    icon: Landmark
+  },
+  {
+    q: "Tôi có thể dùng chung tài khoản trên nhiều thiết bị không?",
+    a: "Có, tài khoản Premium hỗ trợ đăng nhập và đồng bộ dữ liệu ôn tập trên 3 thiết bị cùng một lúc (Điện thoại, Máy tính bảng, Máy tính cá nhân).",
+    icon: Smartphone
+  }
+];
 
 // Định dạng ngày hết hạn kiểu Việt Nam + số ngày còn lại — trả về null nếu chưa có dữ liệu
 // (user chưa từng mua, hoặc premiumExpiry chưa tải xong).
@@ -170,6 +200,9 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
     setOpenFaqIdx(openFaqIdx === idx ? null : idx);
   };
 
+  // Rút còn 4 lý do mạnh nhất, mỗi lý do phủ 1 giá trị riêng biệt (AI chuyên sâu, thời gian,
+  // khối lượng luyện đề, offline) — tránh trùng lặp như "Trợ lý Finder AI" với "Hiểu sâu bản
+  // chất" (cùng nói về Finder AI) hay "Yêu thích & Lưu trữ" (giá trị chung chung, không đặc thù Premium).
   const goals = [
     {
       icon: Target,
@@ -190,22 +223,10 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
       color: "success"
     },
     {
-      icon: Heart,
-      title: "Yêu thích & Lưu trữ",
-      desc: "Lưu trữ toàn bộ công thức quan trọng, dễ dàng ôn tập lại bất cứ khi nào bạn cần mà không sợ thất lạc.",
-      color: "error"
-    },
-    {
-      icon: Sparkles,
-      title: "Trợ lý Finder AI",
-      desc: "Giải đáp chi tiết mọi thắc mắc toán học, hỗ trợ đắc lực trong suốt quá trình ôn thi của bạn.",
-      color: "accent"
-    },
-    {
       icon: Smartphone,
       title: "Xuất PDF & Offline",
       desc: "Kết xuất flashcard ra file PDF/Ảnh chất lượng cao phục vụ in ấn học tập offline mọi lúc mọi nơi.",
-      color: "secondary"
+      color: "error"
     }
   ];
 
@@ -227,33 +248,24 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
     { name: "Xuất PDF/Ảnh Flashcard", free: "Khóa", premium: "Tải về chất lượng cao" }
   ];
 
-  const faqs = [
-    {
-      q: "Tôi có thể hủy gói đăng ký bất cứ lúc nào không?",
-      a: "Có, bạn hoàn toàn có thể hủy gia hạn gói Premium bất cứ lúc nào trong mục Cài đặt tài khoản mà không bị phạt hay tính thêm bất kỳ khoản phí ẩn nào.",
-      icon: XCircle
-    },
-    {
-      q: "Tài liệu PDF/Ảnh kết xuất ra có giới hạn số lượng không?",
-      a: "Hoàn toàn không. Tài khoản Premium cho phép bạn xuất không giới hạn số lượng thẻ ghi nhớ cá nhân ra định dạng tệp PDF/Ảnh độ nét cao để ôn thi offline.",
-      icon: FileDown
-    },
-    {
-      q: "Trợ lý Finder AI hỗ trợ những môn học nào khác ngoài Toán không?",
-      a: "Hiện tại FormulaX AI tối ưu hóa dữ liệu chuyên sâu cho chương trình Toán THPT (Đại số, Giải tích, Hình học, Xác suất). Các môn Vật lý và Hóa học dự kiến sẽ ra mắt trong quý sau.",
-      icon: Sparkles
-    },
-    {
-      q: "Cách thanh toán và nhận tài khoản Premium thế nào?",
-      a: "Bạn thanh toán qua PayOS — hỗ trợ chuyển khoản ngân hàng và quét mã VietQR. Tài khoản sẽ được nâng cấp lên Premium ngay lập tức sau khi giao dịch hoàn tất.",
-      icon: Landmark
-    },
-    {
-      q: "Tôi có thể dùng chung tài khoản trên nhiều thiết bị không?",
-      a: "Có, tài khoản Premium hỗ trợ đăng nhập và đồng bộ dữ liệu ôn tập trên 3 thiết bị cùng một lúc (Điện thoại, Máy tính bảng, Máy tính cá nhân).",
-      icon: Smartphone
-    }
-  ];
+  // Bơm JSON-LD FAQPage vào <head> khi mở trang Premium — giúp Google có thể hiện thẳng
+  // câu hỏi/trả lời trong kết quả tìm kiếm (rich snippet), không đổi giao diện gì cả. Dọn
+  // lại script khi rời trang để không tích script trùng nếu người dùng quay lại nhiều lần.
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.type = "application/ld+json";
+    script.text = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: FAQS.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: { "@type": "Answer", text: faq.a }
+      }))
+    });
+    document.head.appendChild(script);
+    return () => document.head.removeChild(script);
+  }, []);
 
   return (
     <div className="view-container">
@@ -435,7 +447,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 </h2>
                 <p className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] mt-1">Đầy đủ tính năng hỗ trợ thi THPT Quốc gia tốt nhất</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {goals.map((goal, idx) => {
                   const GoalIcon = goal.icon;
                   return (
@@ -464,7 +476,8 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 </p>
               </div>
 
-              <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] overflow-x-auto">
+              {/* Desktop: bảng đầy đủ. Mobile: bảng cuộn ngang khó đọc — thay bằng thẻ xếp dọc bên dưới. */}
+              <div className="hidden md:block glass-card dark:bg-[#1E293B] dark:border-[#334155] overflow-x-auto">
                 <table className="w-full border-collapse text-[0.85rem] text-left">
                   <thead>
                     <tr>
@@ -504,6 +517,36 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              <div className="md:hidden flex flex-col gap-3">
+                {features.map((feat, idx) => (
+                  <div key={idx} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 flex flex-col gap-3">
+                    <div className="font-bold text-primary dark:text-[#E2E8F0] text-[0.9rem]">{feat.name}</div>
+                    <div className="flex gap-2.5">
+                      <div className="flex-1 rounded-lg bg-[#f8fafc] dark:bg-[#0F172A]/40 p-2.5">
+                        <div className="text-[0.62rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-wide mb-1">Bản Free</div>
+                        {feat.free === "Khóa" ? (
+                          <div className="flex items-center gap-1.5 text-error font-bold text-[0.8rem]">
+                            <X size={13} /> <span>Khóa</span>
+                          </div>
+                        ) : (
+                          <div className="text-text-muted dark:text-[#94A3B8] font-medium text-[0.8rem]">{feat.free}</div>
+                        )}
+                      </div>
+                      <div className="flex-1 rounded-lg bg-premium/8 border border-premium/20 p-2.5">
+                        <div className="text-[0.62rem] font-extrabold text-[#D97706] uppercase tracking-wide mb-1">Bản Pro</div>
+                        {feat.premium === "Mở khóa toàn bộ" || feat.premium === "Tải về chất lượng cao" ? (
+                          <div className="flex items-center gap-1.5 text-success font-bold text-[0.8rem]">
+                            <Check size={13} /> <span>{feat.premium}</span>
+                          </div>
+                        ) : (
+                          <div className="text-primary dark:text-[#E2E8F0] font-bold text-[0.8rem]">{feat.premium}</div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -555,23 +598,16 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               </div>
             )}
 
-            {/* Section 6: Thanh toán qua PayOS */}
-            <div className="text-center">
-              <div className="text-xs text-text-muted dark:text-[#94A3B8] font-bold uppercase tracking-[0.5px] mb-3">
-                Thanh toán an toàn qua
-              </div>
-              <button
-                type="button"
-                onClick={() => handleUpgrade(selectedPlan)}
-                disabled={isProcessing}
-                className="flex flex-col items-center gap-1.5 bg-transparent border-none cursor-pointer mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                <div className="w-11 h-11 rounded-full bg-[#0F172A] flex items-center justify-center text-white">
-                  <Landmark size={20} />
+            {/* Section 6: Thanh toán qua PayOS — chỉ còn thông tin/tin cậy, bỏ nút bấm vì trùng
+                chức năng với các nút CTA chính đã có ở hero/Gold card/banner cuối trang. */}
+            <div className="flex flex-col items-center gap-2">
+              <div className="flex items-center gap-2.5 text-text-muted dark:text-[#94A3B8]">
+                <div className="w-9 h-9 rounded-full bg-[#0F172A] flex items-center justify-center text-white shrink-0">
+                  <Landmark size={16} />
                 </div>
-                <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold">PayOS · Chuyển khoản & VietQR</span>
-              </button>
-              <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[0.7rem] text-text-muted dark:text-[#94A3B8]">
+                <span className="text-[0.78rem] font-semibold">Thanh toán an toàn qua PayOS · Chuyển khoản & VietQR</span>
+              </div>
+              <div className="flex items-center justify-center gap-1.5 text-[0.7rem] text-text-muted dark:text-[#94A3B8]">
                 <ShieldCheck size={13} className="shrink-0 text-success" />
                 <span>Thông tin thanh toán được mã hóa và bảo mật</span>
               </div>
@@ -581,7 +617,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             <div>
               <h2 className="text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center justify-center gap-2 mb-2">Câu hỏi thường gặp</h2>
               <div className="flex flex-col">
-                {faqs.map((faq, idx) => {
+                {FAQS.map((faq, idx) => {
                   const isOpen = openFaqIdx === idx;
                   const FaqIcon = faq.icon;
                   return (
