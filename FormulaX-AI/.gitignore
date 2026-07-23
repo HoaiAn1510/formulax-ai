@@ -1,5 +1,7 @@
 # Environment variables (NEVER commit these)
 .env
+.env.*
+!.env.example
 .env.local
 .env.production
 

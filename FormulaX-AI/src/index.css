@@ -22,8 +22,8 @@
   --shadow-glass-card-hover: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
-/* Design tokens Navy+Amber dùng chung — xem thêm src/styles/theme.js
-   (bản inline-style cho các view chưa migrate sang Tailwind). */
+/* Design tokens Navy+Amber dùng chung. Đây là nguồn sự thật duy nhất về màu/shadow/radius,
+   cùng với :root trong src/App.css (src/styles/theme.js cũ đã xoá vì không ai import). */
 @utility bg-page-gradient {
   background: #F8FAFC;
 }

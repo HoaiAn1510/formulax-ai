@@ -1,3 +1,23 @@
 .vercel
 .claude/settings.local.json
 docs/sgk-pdf/
+
+# ─── Bí mật — repo này PUBLIC, tuyệt đối không đẩy lên ───────────────────────
+# Khai báo ở cả gốc lẫn từng thư mục con để lỡ thêm service mới cũng không lọt.
+.env
+.env.*
+!.env.example
+*.env.backup*
+*.pem
+*.key
+*.p12
+
+# Log runtime (có thể chứa payload request, id người dùng)
+*.log
+
+# ─── Tài liệu kiểm định bảo mật nội bộ ──────────────────────────────────────
+# docs/SECURITY.md liệt kê cả những điểm yếu CHƯA vá (phân quyền Premium còn ở
+# client, /payos/create chưa xác minh danh tính...). Trên một repo public, đó là
+# bản đồ chỉ đường cho người muốn khai thác. Giữ ở máy, chia sẻ riêng khi cần.
+# docs/PERFORMANCE.md thì đẩy lên bình thường — chỉ có số đo, không có gì nhạy cảm.
+docs/SECURITY.md
