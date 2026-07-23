@@ -68,7 +68,8 @@ cd backend && npm start            # backend production
 
 Quy tắc riêng cho `questions.js`:
 
-- `blankAnswer` phải khớp nội dung với option có `isCorrect: true`, chỉ khác là bỏ dấu `$` bao ngoài LaTeX.
+- `blankAnswer` là **đáp án người học gõ tay ở chế độ điền**, viết dạng chữ thường cho dễ nhập — KHÔNG phải bản sao LaTeX của option. Theo đúng dữ liệu hiện có: option `$y' = 3x^2$` → `blankAnswer: "3x^2"`; option `$36\pi \text{ cm}^3$` → `blankAnswer: "36pi"`. Không bao dấu `$`, tránh lệnh LaTeX (`\dfrac`, `\infty`…) vì người học không gõ được, và tuyệt đối không điền nhãn lựa chọn (`"A"`, `"D"`).
+- Chạy `npm run test:data` sau mỗi lần sửa `formulas.js`/`questions.js` — script kiểm tra id trùng, thiếu trường bắt buộc, sai enum topic/grade/difficulty, số dấu `$` lẻ, ngoặc LaTeX lệch, và số đáp án `isCorrect`.
 - Bài tập trích từ SGK phải giữ đúng số liệu/đề bài gốc, không tự đổi số cho "gọn" — nếu số liệu SGK phức tạp thì giữ nguyên, không đơn giản hóa.
 - 3 phương án sai (distractor) nên phản ánh lỗi sai thường gặp thực tế (nhầm dấu, quên hệ số...) nếu SGK có gợi ý, không tự bịa phương án sai vô nghĩa.
 

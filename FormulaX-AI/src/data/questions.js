@@ -146,12 +146,12 @@ export const questionsPool = [
     grade: 11,
     text: "Tìm đạo hàm của hàm số $y = \\tan x$.",
     options: [
-      { letter: "A", text: "$y' = \\frac{1}{\\cos^2 x}$", isCorrect: true },
+      { letter: "A", text: "$y' = \\frac{1}{\\cos^2 x}$", isCorrect: false },
       { letter: "B", text: "$y' = 1 + \\tan^2 x$", isCorrect: false },
       { letter: "C", text: "$y' = -\\frac{1}{\\sin^2 x}$", isCorrect: false },
       { letter: "D", text: "Cả A và B đều đúng", isCorrect: true }
     ],
-    blankAnswer: "D",
+    blankAnswer: "1/cos^2 x",
     explanation: "Ta có $(\\tan x)' = \\frac{1}{\\cos^2 x} = 1 + \\tan^2 x$. Do đó cả A và B đều đúng."
   },
   {
@@ -1121,9 +1121,9 @@ export const questionsPool = [
       { letter: "A", text: "$(\\frac{1}{4})^{10}$", isCorrect: true },
       { letter: "B", text: "$10 \\cdot \\frac{1}{4}$", isCorrect: false },
       { letter: "C", text: "$(\\frac{3}{4})^{10}$", isCorrect: false },
-      { letter: "D", text: "$\\frac{1}{4^{10}}$", isCorrect: true }
+      { letter: "D", text: "$\\frac{1}{10^4}$", isCorrect: false }
     ],
-    blankAnswer: "A",
+    blankAnswer: "(1/4)^10",
     explanation: "Xác suất đúng 1 câu là $\\frac{1}{4}$. Vì việc chọn đáp án ở 10 câu độc lập nhau nên xác suất đúng tất cả là $(\\frac{1}{4})^{10}$."
   },
   {
