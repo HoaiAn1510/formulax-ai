@@ -407,7 +407,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
         <div className="relative z-[1]">
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
-            <button
+            <button aria-label="Về trang chủ"
               onClick={() => setActiveTab("dashboard")}
               className="flex items-center justify-center w-[34px] h-[34px] rounded-[10px] bg-[#F1F5F9] dark:bg-[#334155] border-none cursor-pointer text-primary dark:text-[#E2E8F0]"
             >

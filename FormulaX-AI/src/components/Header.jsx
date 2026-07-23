@@ -32,7 +32,7 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
 
         {/* Bell */}
         <div ref={notifRef} className="relative">
-          <button
+          <button aria-label="Thông báo"
             className="relative w-10 h-10 flex items-center justify-center rounded-full text-primary dark:text-[#E2E8F0] cursor-pointer transition duration-200 hover:bg-[rgba(30,58,95,0.04)]"
             onClick={() => {
               setShowNotifications(p => !p);

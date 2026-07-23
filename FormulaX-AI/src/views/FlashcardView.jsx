@@ -627,7 +627,7 @@ export default function FlashcardView({
                             >
                               <FileDown size={15} />
                             </button>
-                            <button
+                            <button aria-label="Xoá bộ thẻ"
                               onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
                               title="Xoá bộ thẻ"
                               className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
@@ -682,7 +682,7 @@ export default function FlashcardView({
                             </div>
                           </div>
                           <div className="flex items-center gap-1">
-                            <button
+                            <button aria-label="Đổi tên bộ thẻ"
                               onClick={e => { e.stopPropagation(); handleStartRename(deck); }}
                               title="Đổi tên"
                               className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
@@ -696,7 +696,7 @@ export default function FlashcardView({
                             >
                               <FileDown size={15} />
                             </button>
-                            <button
+                            <button aria-label="Xoá bộ thẻ"
                               onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
                               title="Xoá bộ thẻ"
                               className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
@@ -825,13 +825,13 @@ export default function FlashcardView({
 
               {/* Arrows */}
               <div className="flex justify-between items-center w-full mt-2 gap-4">
-                <button className="arrow-btn !text-[#1E3A5F]" onClick={handlePrev} disabled={currentIndex === 0}>
+                <button aria-label="Thẻ trước" className="arrow-btn !text-[#1E3A5F]" onClick={handlePrev} disabled={currentIndex === 0}>
                   <ArrowLeft size={18} />
                 </button>
                 <span className="text-[0.8rem] text-text-muted font-bold self-center">
                   Lật thẻ xem đáp án trước khi chấm
                 </span>
-                <button className="arrow-btn !text-[#1E3A5F]" onClick={handleNext} disabled={currentIndex === cards.length - 1}>
+                <button aria-label="Thẻ tiếp theo" className="arrow-btn !text-[#1E3A5F]" onClick={handleNext} disabled={currentIndex === cards.length - 1}>
                   <ArrowRight size={18} />
                 </button>
               </div>

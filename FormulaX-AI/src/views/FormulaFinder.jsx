@@ -478,10 +478,10 @@ export default function FormulaFinder({
                       }}
                       className="flex-1 border-[1.5px] border-accent rounded-md py-1 px-2 text-[0.78rem] outline-none"
                     />
-                    <button onClick={confirmRename} className="bg-success border-none rounded-md py-1 px-1.5 cursor-pointer text-white flex items-center">
+                    <button aria-label="Lưu tên mới" onClick={confirmRename} className="bg-success border-none rounded-md py-1 px-1.5 cursor-pointer text-white flex items-center">
                       <Check size={12} />
                     </button>
-                    <button onClick={() => setRenamingId(null)} className="bg-[#F1F5F9] border-none rounded-md py-1 px-1.5 cursor-pointer text-text-muted flex items-center">
+                    <button aria-label="Huỷ đổi tên" onClick={() => setRenamingId(null)} className="bg-[#F1F5F9] border-none rounded-md py-1 px-1.5 cursor-pointer text-text-muted flex items-center">
                       <X size={12} />
                     </button>
                   </div>
@@ -522,14 +522,14 @@ export default function FormulaFinder({
                     </button>
 
                     <div className="flex gap-0.5 pr-1.5 shrink-0">
-                      <button
+                      <button aria-label="Đổi tên cuộc trò chuyện"
                         onClick={() => { setRenamingId(session.id); setRenameValue(session.name); }}
                         title="Đổi tên"
                         className="bg-transparent border-none cursor-pointer p-1.5 text-[#94A3B8] rounded-md flex items-center"
                       >
                         <Pencil size={12} />
                       </button>
-                      <button
+                      <button aria-label="Xoá cuộc trò chuyện"
                         onClick={() => setDeletingId(session.id)}
                         title="Xóa"
                         className="bg-transparent border-none cursor-pointer p-1.5 text-[#94A3B8] rounded-md flex items-center"
@@ -768,7 +768,7 @@ export default function FormulaFinder({
                 "{savedPopup.formulaName.length > 35 ? savedPopup.formulaName.slice(0, 35) + "..." : savedPopup.formulaName}"
               </div>
             </div>
-            <button onClick={() => setSavedPopup(null)} className="ml-auto bg-transparent border-none cursor-pointer text-[#94A3B8] flex items-center">
+            <button aria-label="Đóng thông báo" onClick={() => setSavedPopup(null)} className="ml-auto bg-transparent border-none cursor-pointer text-[#94A3B8] flex items-center">
               <X size={14} />
             </button>
           </div>
@@ -794,7 +794,7 @@ export default function FormulaFinder({
       {cameraOpen && (
         <div className="fixed inset-0 bg-[rgba(15,23,42,0.75)] backdrop-blur-[4px] z-[1000] flex items-center justify-center p-5">
           <div className="bg-white rounded-2xl w-full max-w-[420px] p-6 shadow-[0_10px_25px_rgba(0,0,0,0.15)] relative flex flex-col gap-4">
-            <button onClick={() => setCameraOpen(false)} className="absolute top-4 right-4 bg-[#F1F5F9] border-none w-8 h-8 rounded-full cursor-pointer flex items-center justify-center text-[#1E3A5F]">
+            <button aria-label="Đóng camera" onClick={() => setCameraOpen(false)} className="absolute top-4 right-4 bg-[#F1F5F9] border-none w-8 h-8 rounded-full cursor-pointer flex items-center justify-center text-[#1E3A5F]">
               <X size={16} />
             </button>
             <div className="text-center mt-2">
