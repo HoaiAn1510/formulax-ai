@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ArrowLeft, Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles } from "lucide-react";
+import { ArrowLeft, Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles, FileText, ShieldCheck } from "lucide-react";
+import LegalModal from "../components/LegalModal";
 
 function ToggleSwitch({ on, onClick }) {
   return (
@@ -38,6 +39,7 @@ export default function SettingsView({
 }) {
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(displayName || "");
+  const [legalDoc, setLegalDoc] = useState(null); // "terms" | "privacy" | null
 
   const handleSaveName = () => {
     onSetDisplayName?.(nameInput.trim());
@@ -55,7 +57,7 @@ export default function SettingsView({
         <div className="relative z-[1] md:max-w-2xl md:mx-auto">
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
-            <button
+            <button aria-label="Về trang chủ"
               onClick={() => setActiveTab("dashboard")}
               className="flex items-center justify-center w-[34px] h-[34px] rounded-[10px] bg-[#F1F5F9] dark:bg-[#334155] border-none cursor-pointer text-primary dark:text-[#E2E8F0]"
             >
@@ -117,8 +119,8 @@ export default function SettingsView({
                       autoFocus
                       className="py-1.5 px-2.5 rounded-lg border-[1.5px] border-accent text-[0.8rem] outline-none w-32 bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0]"
                     />
-                    <button onClick={handleSaveName} className="py-1.5 px-2 border-none rounded-lg cursor-pointer bg-success text-white flex items-center"><Check size={13} /></button>
-                    <button onClick={() => setEditingName(false)} className="py-1.5 px-2 border-none rounded-lg cursor-pointer bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] flex items-center"><X size={13} /></button>
+                    <button aria-label="Lưu tên hiển thị" onClick={handleSaveName} className="py-1.5 px-2 border-none rounded-lg cursor-pointer bg-success text-white flex items-center"><Check size={13} /></button>
+                    <button aria-label="Huỷ đổi tên" onClick={() => setEditingName(false)} className="py-1.5 px-2 border-none rounded-lg cursor-pointer bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] flex items-center"><X size={13} /></button>
                   </div>
                 ) : (
                   <button
@@ -204,8 +206,44 @@ export default function SettingsView({
               control={<ToggleSwitch on={notifPrefs?.milestone !== false} onClick={() => toggleNotifPref("milestone")} />}
             />
           </div>
+
+          {/* Pháp lý — bắt buộc phải tiếp cận được sau khi đăng nhập, không chỉ ở màn đăng nhập:
+              người dùng cần đọc lại chính sách và biết cách yêu cầu xoá dữ liệu bất cứ lúc nào. */}
+          <div className="glass-card p-4 dark:bg-[#1E293B] dark:border-[#334155] mt-4">
+            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Pháp lý</h2>
+            <SettingRow
+              icon={<FileText size={16} />}
+              label="Điều khoản dịch vụ"
+              description="Quy định sử dụng, thanh toán và hoàn tiền"
+              control={
+                <button
+                  onClick={() => setLegalDoc("terms")}
+                  aria-label="Mở Điều khoản dịch vụ"
+                  className="bg-transparent border-none cursor-pointer text-accent text-[0.8rem] font-bold"
+                >
+                  Xem
+                </button>
+              }
+            />
+            <SettingRow
+              icon={<ShieldCheck size={16} />}
+              label="Chính sách bảo mật"
+              description="Dữ liệu được thu thập, dùng vào việc gì và cách yêu cầu xoá"
+              control={
+                <button
+                  onClick={() => setLegalDoc("privacy")}
+                  aria-label="Mở Chính sách bảo mật"
+                  className="bg-transparent border-none cursor-pointer text-accent text-[0.8rem] font-bold"
+                >
+                  Xem
+                </button>
+              }
+            />
+          </div>
         </div>
       </div>
+
+      {legalDoc && <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />}
     </div>
   );
 }

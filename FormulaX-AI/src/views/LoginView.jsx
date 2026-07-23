@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { ArrowLeft, Mail, Lock, Eye, EyeOff, LayoutGrid, AlertCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import LegalModal from "../components/LegalModal";
 
 // Google icon SVG
 function GoogleIcon() {
@@ -24,6 +25,7 @@ export default function LoginView() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [legalDoc, setLegalDoc] = useState(null); // "terms" | "privacy" | null
 
   // Đăng nhập Google qua Supabase Auth. Khác luồng cũ ở hai điểm: (1) đây là redirect cả
   // trang sang Google rồi quay lại, không phải popup — nên không cần xử lý trường hợp người
@@ -139,7 +141,7 @@ export default function LoginView() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="pl-[38px] pr-[38px] w-full h-[42px] rounded-lg border-[1.5px] border-[#E2E8F0] dark:border-[#334155] text-[0.85rem] text-[#1E3A5F] dark:text-[#E2E8F0] bg-white dark:bg-[#0F172A] outline-none box-border focus:border-accent"
               />
-              <button
+              <button aria-label="Hiện hoặc ẩn mật khẩu"
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 bg-transparent border-none cursor-pointer text-[#94A3B8] flex"
@@ -161,10 +163,24 @@ export default function LoginView() {
       {/* Footer */}
       <p className="relative z-[1] mt-5 text-[0.7rem] text-[#94A3B8] text-center max-w-[320px] leading-[1.5]">
         Bằng cách đăng nhập, bạn đồng ý với{" "}
-        <span className="text-accent cursor-pointer">Điều khoản dịch vụ</span>{" "}
+        <button
+          type="button"
+          onClick={() => setLegalDoc("terms")}
+          className="text-accent bg-transparent border-none p-0 cursor-pointer underline text-[0.7rem] font-medium"
+        >
+          Điều khoản dịch vụ
+        </button>{" "}
         và{" "}
-        <span className="text-accent cursor-pointer">Chính sách bảo mật</span>
+        <button
+          type="button"
+          onClick={() => setLegalDoc("privacy")}
+          className="text-accent bg-transparent border-none p-0 cursor-pointer underline text-[0.7rem] font-medium"
+        >
+          Chính sách bảo mật
+        </button>
       </p>
+
+      {legalDoc && <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />}
     </div>
   );
 }
