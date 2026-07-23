@@ -242,6 +242,22 @@ export default function Dashboard({
           </div>
 
           <div className="flex flex-col gap-2 mb-6 md:mb-8">
+            {/* Dữ liệu công thức được App tải động (chunk riêng, xem App.jsx) nên trong vài
+                trăm ms đầu mảng còn rỗng — vẽ skeleton thay vì để trống, tránh nội dung
+                nhảy chỗ khi danh sách gợi ý xuất hiện. */}
+            {formulas.length === 0 && [0, 1, 2].map((i) => (
+              <div
+                key={`skeleton-${i}`}
+                className="glass-card-sm px-4 py-3 flex items-center gap-3 dark:bg-[#1E293B] dark:border-[#334155]"
+                aria-hidden="true"
+              >
+                <div className="w-[38px] h-[38px] rounded-lg bg-[#E5E7EB] dark:bg-[#334155] animate-pulse shrink-0" />
+                <div className="flex-1">
+                  <div className="h-3 w-1/2 rounded bg-[#E5E7EB] dark:bg-[#334155] animate-pulse" />
+                  <div className="h-2.5 w-1/4 rounded bg-[#EFF2F6] dark:bg-[#293548] animate-pulse mt-2" />
+                </div>
+              </div>
+            ))}
             {recommendedFormulas.map((formula) => (
               <div
                 key={formula.id}

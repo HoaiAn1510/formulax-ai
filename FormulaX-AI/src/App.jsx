@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
 import "./App.css";
 
 import { useAuth } from "./context/AuthContext";
-import { formulas } from "./data/formulas";
 import {
   loadUserData,
   checkPremiumStatus,
@@ -26,24 +25,53 @@ import OnboardingModal from "./components/OnboardingModal";
 import { ToastContainer, showToast } from "./components/Toast";
 import { ConfirmDialogHost } from "./components/ConfirmDialog";
 
+// Dashboard và LoginView là màn hình đầu tiên người dùng thấy (đã đăng nhập / chưa đăng nhập)
+// nên giữ nạp thẳng — lazy hai màn này chỉ thêm một vòng request trước khi vẽ được gì.
 import Dashboard from "./views/Dashboard";
-import FormulaLibrary from "./views/FormulaLibrary";
-import FormulaFinder from "./views/FormulaFinder";
-import FlashcardView from "./views/FlashcardView";
-import QuizView from "./views/QuizView";
-import PremiumUpgrade from "./views/PremiumUpgrade";
 import LoginView from "./views/LoginView";
-import ProgressDashboard from "./views/ProgressDashboard";
-import SettingsView from "./views/SettingsView";
+
+// Các view còn lại tách thành chunk riêng, chỉ tải khi người dùng thực sự mở tab đó.
+// Trước đây tất cả nằm chung một bundle: riêng QuizView kéo theo cả questions.js (356 KB)
+// dù người dùng chưa hề vào phần luyện tập.
+const FormulaLibrary   = lazy(() => import("./views/FormulaLibrary"));
+const FormulaFinder    = lazy(() => import("./views/FormulaFinder"));
+const FlashcardView    = lazy(() => import("./views/FlashcardView"));
+const QuizView         = lazy(() => import("./views/QuizView"));
+const PremiumUpgrade   = lazy(() => import("./views/PremiumUpgrade"));
+const ProgressDashboard = lazy(() => import("./views/ProgressDashboard"));
+const SettingsView     = lazy(() => import("./views/SettingsView"));
+
+// Màn hình chờ dùng chung khi đang tải chunk của một view (hoặc dữ liệu công thức).
+function ViewLoading() {
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-20">
+      <div className="w-8 h-8 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
+      <p className="text-[0.8rem] font-semibold text-text-muted dark:text-[#94A3B8]">Đang tải…</p>
+    </div>
+  );
+}
 
 export default function App() {
-  const { user, logout, isLoggedIn } = useAuth();
+  const { user, logout, isLoggedIn, authLoading } = useAuth();
 
   const [activeTab, setActiveTab]   = useState("dashboard");
   const [isPremium, setIsPremium]   = useState(() => localStorage.getItem("formulax_premium") === "true");
   const [premiumExpiry, setPremiumExpiry] = useState(null); // ISO string — dùng cho màn hình trạng thái tài khoản Premium
   const [selectedFormula, setSelectedFormula] = useState(null);
   const [isLoadingData, setIsLoadingData]     = useState(false);
+
+  // formulas.js nặng ~410 KB nguồn (246 công thức kèm giải thích + ví dụ). Nạp tĩnh ở đây
+  // đồng nghĩa toàn bộ khối đó nằm trong bundle đầu tiên, chặn cả những màn hình không cần
+  // tới nó. Tải động ngay khi App mount: người dùng thấy khung Dashboard trước, danh sách
+  // gợi ý điền vào ngay sau đó (thường trong cùng một nhịp vẽ vì request chạy song song).
+  const [formulas, setFormulas] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    import("./data/formulas")
+      .then((m) => { if (alive) setFormulas(m.formulas); })
+      .catch((err) => console.error("Không tải được dữ liệu công thức:", err));
+    return () => { alive = false; };
+  }, []);
 
   // ─── Preferences ─────────────────────────────────────────────────────────
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("formulax_dark") === "true");
@@ -394,6 +422,17 @@ export default function App() {
   };
 
   // ─── Loading screen ───────────────────────────────────────────────────────
+  // Phiên Supabase được khôi phục bất đồng bộ. Không chờ authLoading thì lần nào tải trang
+  // người dùng đã đăng nhập cũng thấy nháy qua màn hình đăng nhập rồi mới vào app.
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-[#0F172A]">
+        <img src="/favicon.svg" alt="FormulaX" className="w-12 h-12 rounded-xl animate-pulse" />
+        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
+      </div>
+    );
+  }
+
   if (!isLoggedIn) return <LoginView />;
 
   if (isLoadingData) {
@@ -410,6 +449,13 @@ export default function App() {
 
   // ─── Render views ─────────────────────────────────────────────────────────
   const renderView = () => {
+    // Bốn view này vô nghĩa khi chưa có dữ liệu công thức — danh sách rỗng trông như lỗi ứng
+    // dụng. Chờ chunk formulas về rồi mới vẽ. Dashboard không nằm ở đây vì nó còn nhiều nội
+    // dung khác vẽ được ngay, chỉ riêng phần "Gợi ý hôm nay" hiển thị skeleton.
+    if (["library", "finder", "flashcard", "progress"].includes(activeTab) && formulas.length === 0) {
+      return <ViewLoading />;
+    }
+
     switch (activeTab) {
       case "dashboard":
         return (
@@ -558,7 +604,7 @@ export default function App() {
         onOpenNotifications={handleMarkNotificationsRead}
       />
 
-      {renderView()}
+      <Suspense fallback={<ViewLoading />}>{renderView()}</Suspense>
 
       <BottomNav
         activeTab={activeTab}

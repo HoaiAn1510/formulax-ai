@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sparkles, CheckCircle2, XCircle, X, RotateCcw } from "lucide-react";
-import { questionsPool } from "../data/questions";
 import { RichTextRenderer } from "../utils/katexHelper";
 
 // Số ngẫu nhiên có seed riêng cho Thử thách hôm nay — độc lập với seededRandom() của
@@ -18,12 +17,33 @@ function storageKey(user, today) {
 export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
   const today = new Date().toISOString().slice(0, 10);
 
+  // questions.js nặng ~356 KB nguồn. Thẻ này nằm trên Dashboard nên nạp tĩnh sẽ kéo cả ngân
+  // hàng câu hỏi vào bundle đầu tiên, dù chỉ dùng đúng 1 câu mỗi ngày. Tải động sau khi
+  // Dashboard đã vẽ xong; trong lúc chờ thẻ trả về null (không chiếm chỗ, không nhảy layout).
+  const [questionsPool, setQuestionsPool] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    // Hoãn tới lúc trình duyệt rảnh: thẻ thử thách là nội dung phụ, không nên tranh băng thông
+    // với chunk formulas mà phần chính của Dashboard đang chờ.
+    const schedule = window.requestIdleCallback || ((cb) => setTimeout(cb, 200));
+    const handle = schedule(() => {
+      import("../data/questions")
+        .then((m) => { if (alive) setQuestionsPool(m.questionsPool); })
+        .catch((err) => console.error("Không tải được ngân hàng câu hỏi:", err));
+    });
+    return () => {
+      alive = false;
+      if (window.cancelIdleCallback && window.requestIdleCallback) window.cancelIdleCallback(handle);
+    };
+  }, []);
+
   const question = useMemo(() => {
+    if (!questionsPool) return null;
     const gradePool = userGrade ? questionsPool.filter(q => q.grade === userGrade) : [];
     const pool = gradePool.length > 0 ? gradePool : questionsPool;
     if (pool.length === 0) return null;
     return pool[seededPick(`dc_${today}`, pool.length)];
-  }, [today, userGrade]);
+  }, [today, userGrade, questionsPool]);
 
   const [answer, setAnswer] = useState(null); // { selectedLetter, isCorrect }
   const [collapsed, setCollapsed] = useState(false);

@@ -11,13 +11,18 @@
     <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    
-    <!-- KaTeX CSS & JS -->
+
+    <!-- KaTeX CSS & JS.
+         `defer` để script KaTeX không chặn quá trình phân tích HTML (trước đây trang phải chờ
+         tải xong ~280 KB JS từ CDN mới vẽ được gì). Script defer chạy theo đúng thứ tự khai
+         báo và luôn xong trước module /src/main.jsx bên dưới, nên window.katex đã sẵn sàng khi
+         React render; katexHelper.jsx vẫn có cơ chế chờ dự phòng nếu CDN trả về chậm. -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
     <!-- Auto-render extension to easily render LaTeX in text -->
-    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.contrib/auto-render.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.contrib/auto-render.min.js"></script>
   </head>
   <body>
     <div id="root"></div>
