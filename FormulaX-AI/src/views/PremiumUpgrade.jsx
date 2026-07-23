@@ -229,7 +229,9 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 </Suspense>
               </div>
 
-              <div className="relative z-[1]">
+              {/* pointer-events-none để chuột "xuyên" xuống canvas 3D bên dưới (kéo xoay viên
+                  đá) — chỉ bật lại pointer-events-auto cho từng nút thật cần bấm được. */}
+              <div className="relative z-[1] pointer-events-none">
               <div className="mb-3">
                 <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">CHƯƠNG TRÌNH KHUYÊN DÙNG</span>
               </div>
@@ -251,7 +253,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                       key={planId}
                       type="button"
                       onClick={() => setSelectedPlan(planId)}
-                      className={`relative flex-1 rounded-xl py-2.5 px-3 text-left border-[1.5px] transition-all duration-200 cursor-pointer ${
+                      className={`relative flex-1 rounded-xl py-2.5 px-3 text-left border-[1.5px] transition-all duration-200 cursor-pointer pointer-events-auto ${
                         isSelected
                           ? "border-premium bg-premium/10"
                           : "border-white/15 bg-white/5 hover:border-white/30"
@@ -278,7 +280,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
               {!isPremium ? (
                 <button
-                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
                   onClick={() => handleUpgrade(selectedPlan)}
                   disabled={isProcessing}
                 >
@@ -293,7 +295,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 </button>
               ) : (
                 <button
-                  className="btn btn-secondary w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg"
+                  className="btn btn-secondary w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg pointer-events-auto"
                   onClick={handleDowngrade}
                 >
                   <span>Trở về gói Free (Giả lập)</span>
