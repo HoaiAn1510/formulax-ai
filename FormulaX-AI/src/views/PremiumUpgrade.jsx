@@ -1,16 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { showToast } from "../components/Toast";
 
+// three.js/@react-three/fiber/@react-three/drei chỉ tải khi người dùng thực sự mở trang
+// Premium — lazy-load để không đội thêm bundle chính cho toàn app.
+const PremiumGem3D = lazy(() => import("../components/PremiumGem3D"));
+
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+
+// Nguồn giá duy nhất — dùng chung cho banner hero và Gold card để không bao giờ lệch nhau.
+// Khớp PLAN_CONFIG thật ở backend/lib/payos.js.
+const PLAN_DISPLAY = {
+  monthly: { price: "49.000 ₫", unit: "/tháng", label: "1 tháng" },
+  "6months": { price: "249.000 ₫", unit: "/6 tháng", label: "6 tháng" },
+};
+const MONTHLY_PRICE = 49000;
+const SIX_MONTH_PRICE = 249000;
+const SIX_MONTH_SAVINGS_PERCENT = Math.round((1 - SIX_MONTH_PRICE / (MONTHLY_PRICE * 6)) * 100);
 
 export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }) {
   const { user } = useAuth();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending", text }
+  const [selectedPlan, setSelectedPlan] = useState("monthly");
 
   // Xử lý khi PayOS redirect người dùng quay lại qua /api/payment/payos/return
   useEffect(() => {
@@ -204,15 +219,44 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">CHƯƠNG TRÌNH KHUYÊN DÙNG</span>
               </div>
 
-              <Crown size={36} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-3" />
+              <div className="mx-auto mb-1 flex items-center justify-center" style={{ width: 220, height: 220 }}>
+                <Suspense fallback={<Crown size={90} fill="#F59E0B" color="#F59E0B" />}>
+                  <PremiumGem3D size={220} />
+                </Suspense>
+              </div>
 
               <h1 className="text-[1.45rem] font-extrabold text-white mb-2">
                 Mở khóa toàn bộ sức mạnh <span className="text-premium">FormulaX AI</span>
               </h1>
 
-              <div className="flex items-baseline justify-center gap-1.5 my-3">
-                <span className="text-[2.2rem] font-extrabold text-premium">49.000 ₫</span>
-                <span className="text-[0.9rem] text-[#94A3B8] font-semibold">/ tháng</span>
+              {/* Plan selector */}
+              <div className="flex items-stretch justify-center gap-2.5 my-4 max-w-[420px] mx-auto">
+                {["monthly", "6months"].map((planId) => {
+                  const isSelected = selectedPlan === planId;
+                  return (
+                    <button
+                      key={planId}
+                      type="button"
+                      onClick={() => setSelectedPlan(planId)}
+                      className={`relative flex-1 rounded-xl py-2.5 px-3 text-left border-[1.5px] transition-all duration-200 cursor-pointer ${
+                        isSelected
+                          ? "border-premium bg-premium/10"
+                          : "border-white/15 bg-white/5 hover:border-white/30"
+                      }`}
+                    >
+                      {planId === "6months" && (
+                        <span className="absolute -top-2 right-2 bg-success text-white text-[0.62rem] font-extrabold py-0.5 px-1.5 rounded-full">
+                          Tiết kiệm {SIX_MONTH_SAVINGS_PERCENT}%
+                        </span>
+                      )}
+                      <div className="text-[0.72rem] font-bold text-[#CBD5E1] uppercase tracking-[0.03em]">{PLAN_DISPLAY[planId].label}</div>
+                      <div className="text-[1.05rem] font-extrabold text-white">
+                        {PLAN_DISPLAY[planId].price}
+                        <span className="text-[0.68rem] font-semibold text-[#94A3B8] ml-1">{PLAN_DISPLAY[planId].unit}</span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               <p className="text-[0.85rem] text-[#CBD5E1] max-w-[480px] mx-auto mb-5 leading-[1.5]">
@@ -222,7 +266,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
               {!isPremium ? (
                 <button
                   className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
-                  onClick={() => handleUpgrade("monthly")}
+                  onClick={() => handleUpgrade(selectedPlan)}
                   disabled={isProcessing}
                 >
                   {isProcessing ? (
@@ -244,15 +288,6 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
               )}
             </div>
 
-            {/* Section 2: Account Progress Tracker Links */}
-            <div className="bg-[#F1F5F9] dark:bg-[#1E293B] py-3 px-4 rounded-xl text-center text-[0.8rem] font-semibold text-[#475569] dark:text-[#94A3B8]">
-              <div className="flex justify-center gap-4 flex-wrap">
-                <span>• 1. Thư viện công thức</span>
-                <span>• 2. Flashcard ghi nhớ</span>
-                <span>• 3. Đánh giá kiểm tra</span>
-              </div>
-            </div>
-
             {/* Section 3: Goals Grid */}
             <div>
               <div className="text-center mb-6">
@@ -265,7 +300,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 {goals.map((goal, idx) => {
                   const GoalIcon = goal.icon;
                   return (
-                    <div key={idx} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] flex gap-3 p-4">
+                    <div key={idx} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] flex gap-3 p-4 transition-transform duration-300 [transform-style:preserve-3d] hover:[transform:perspective(700px)_rotateX(3deg)_rotateY(-3deg)_translateY(-2px)]">
                       <div className="w-9 h-9 rounded-lg bg-premium/8 text-premium flex items-center justify-center shrink-0">
                         <GoalIcon size={18} />
                       </div>
@@ -335,13 +370,13 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                   <span className="bg-success text-white text-[0.7rem] font-extrabold py-0.5 px-2 rounded">MỞ KHÓA NGAY</span>
                 </div>
 
-                <div className="border-2 border-premium rounded-[20px] p-6 max-w-[400px] w-full bg-white dark:bg-[#1E293B] shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+                <div className="border-2 border-premium rounded-[20px] p-6 max-w-[400px] w-full bg-white dark:bg-[#1E293B] shadow-[0_2px_6px_rgba(15,23,42,0.05)] transition-transform duration-300 [transform-style:preserve-3d] hover:[transform:perspective(800px)_rotateX(2deg)_translateY(-3px)]">
                   <div className="text-center mb-4">
                     <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-1.5" />
-                    <h3 className="text-[1.1rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Premium hàng tháng</h3>
+                    <h3 className="text-[1.1rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Premium {PLAN_DISPLAY[selectedPlan].label}</h3>
                     <p className="text-xs text-text-muted dark:text-[#94A3B8] mt-0.5 mb-0">Gói tài khoản ưu việt nhất</p>
-                    <h3 className="text-[1.8rem] font-extrabold text-premium mt-2.5 mb-0">49.000 ₫</h3>
-                    <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold">/tháng</span>
+                    <h3 className="text-[1.8rem] font-extrabold text-premium mt-2.5 mb-0">{PLAN_DISPLAY[selectedPlan].price}</h3>
+                    <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold">{PLAN_DISPLAY[selectedPlan].unit}</span>
                   </div>
 
                   <div className="h-px bg-[#E2E8F0] dark:bg-[#334155] my-4" />
@@ -367,7 +402,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
                   <button
                     className="btn btn-premium vibrate w-full h-11 text-[0.9rem] rounded-lg border-none disabled:opacity-60 disabled:cursor-not-allowed"
-                    onClick={() => handleUpgrade("monthly")}
+                    onClick={() => handleUpgrade(selectedPlan)}
                     disabled={isProcessing}
                   >
                     {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Thanh toán qua PayOS</span>}
@@ -383,7 +418,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
               </div>
               <button
                 type="button"
-                onClick={() => handleUpgrade("monthly")}
+                onClick={() => handleUpgrade(selectedPlan)}
                 disabled={isProcessing}
                 className="flex flex-col items-center gap-1.5 bg-transparent border-none cursor-pointer mx-auto disabled:opacity-60 disabled:cursor-not-allowed"
               >
@@ -427,7 +462,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                 <div className="flex gap-3 w-full justify-center flex-wrap mt-1">
                   <button
                     className="btn btn-premium vibrate h-[42px] text-[0.85rem] px-5 rounded-lg disabled:opacity-60 disabled:cursor-not-allowed"
-                    onClick={() => handleUpgrade("monthly")}
+                    onClick={() => handleUpgrade(selectedPlan)}
                     disabled={isProcessing}
                   >
                     {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Nâng cấp Premium</span>}
