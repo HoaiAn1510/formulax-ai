@@ -41,6 +41,7 @@ export default function App() {
 
   const [activeTab, setActiveTab]   = useState("dashboard");
   const [isPremium, setIsPremium]   = useState(() => localStorage.getItem("formulax_premium") === "true");
+  const [premiumExpiry, setPremiumExpiry] = useState(null); // ISO string — dùng cho màn hình trạng thái tài khoản Premium
   const [selectedFormula, setSelectedFormula] = useState(null);
   const [isLoadingData, setIsLoadingData]     = useState(false);
 
@@ -184,11 +185,14 @@ export default function App() {
       .finally(() => setIsLoadingData(false));
   }, [user?.googleId]);
 
-  // ─── Đồng bộ trạng thái Premium từ Supabase (nguồn sự thật do backend ghi sau khi MoMo xác nhận) ──
+  // ─── Đồng bộ trạng thái Premium từ Supabase (nguồn sự thật do backend ghi sau khi PayOS xác nhận) ──
   useEffect(() => {
     if (!user?.googleId) return;
     checkPremiumStatus(user.googleId)
-      .then((result) => setIsPremium(result.isPremium))
+      .then((result) => {
+        setIsPremium(result.isPremium);
+        setPremiumExpiry(result.premiumExpiry);
+      })
       .catch((err) => console.error("[Supabase] checkPremiumStatus:", err));
   }, [user?.googleId]);
 
@@ -496,6 +500,8 @@ export default function App() {
           <PremiumUpgrade
             isPremium={isPremium}
             setIsPremium={setIsPremium}
+            premiumExpiry={premiumExpiry}
+            setPremiumExpiry={setPremiumExpiry}
             setActiveTab={setActiveTab}
           />
         );

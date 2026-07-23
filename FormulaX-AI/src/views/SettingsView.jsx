@@ -164,9 +164,12 @@ export default function SettingsView({
               description={isPremium ? "Bạn đang là thành viên Premium — không giới hạn tính năng" : "Nâng cấp để mở khoá toàn bộ tính năng học tập"}
               control={
                 isPremium ? (
-                  <span className="text-[0.7rem] font-bold text-success bg-success/8 py-1.5 px-3 rounded-lg inline-flex items-center gap-1">
+                  <button
+                    onClick={() => setActiveTab("premium")}
+                    className="text-[0.7rem] font-bold text-success bg-success/8 py-1.5 px-3 rounded-lg inline-flex items-center gap-1 border-none cursor-pointer"
+                  >
                     <Sparkles size={12} /> Đang dùng
-                  </span>
+                  </button>
                 ) : (
                   <button
                     onClick={() => setActiveTab("premium")}

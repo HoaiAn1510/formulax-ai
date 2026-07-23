@@ -56,12 +56,24 @@ const MONTHLY_PRICE = 49000;
 const SIX_MONTH_PRICE = 249000;
 const SIX_MONTH_SAVINGS_PERCENT = Math.round((1 - SIX_MONTH_PRICE / (MONTHLY_PRICE * 6)) * 100);
 
-export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }) {
+// Định dạng ngày hết hạn kiểu Việt Nam + số ngày còn lại — trả về null nếu chưa có dữ liệu
+// (user chưa từng mua, hoặc premiumExpiry chưa tải xong).
+function formatExpiry(premiumExpiry) {
+  if (!premiumExpiry) return null;
+  const expiryDate = new Date(premiumExpiry);
+  if (Number.isNaN(expiryDate.getTime())) return null;
+  const daysLeft = Math.ceil((expiryDate.getTime() - Date.now()) / 86400000);
+  const formatted = expiryDate.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return { formatted, daysLeft };
+}
+
+export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry, setPremiumExpiry, setActiveTab }) {
   const { user } = useAuth();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending", text }
   const [selectedPlan, setSelectedPlan] = useState("monthly");
+  const expiryInfo = formatExpiry(premiumExpiry);
 
   // Xử lý khi PayOS redirect người dùng quay lại qua /api/payment/payos/return
   useEffect(() => {
@@ -99,6 +111,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
 
         if (!error && data?.is_premium) {
           setIsPremium(true);
+          setPremiumExpiry?.(data.premium_expiry);
           setPaymentNotice({ type: "success", text: "Thanh toán thành công! Tài khoản của bạn đã được nâng cấp lên Premium." });
         } else {
           setPaymentNotice({
@@ -109,7 +122,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
         cleanUrl();
       })();
     }
-  }, [user?.googleId, setIsPremium]);
+  }, [user?.googleId, setIsPremium, setPremiumExpiry]);
 
   const handleUpgrade = async (plan = "monthly") => {
     if (!user?.googleId) {
@@ -293,18 +306,44 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
                   đá) — chỉ bật lại pointer-events-auto cho từng nút thật cần bấm được. */}
               <div className="relative z-[1] pointer-events-none">
               <div className="mb-3">
-                <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">CHƯƠNG TRÌNH KHUYÊN DÙNG</span>
+                <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">
+                  {isPremium ? "THÀNH VIÊN PREMIUM" : "CHƯƠNG TRÌNH KHUYÊN DÙNG"}
+                </span>
               </div>
 
               {/* Chỗ trống giữ đúng nhịp bố cục cũ — viên đá thật render ở lớp nền phía sau (canvas full-bleed) */}
               <div style={{ height: 260 }} aria-hidden="true" />
 
-              <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
-                Mở khóa toàn bộ sức mạnh{" "}
-                <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">FormulaX AI</span>
-              </h1>
+              {isPremium ? (
+                <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
+                  Bạn đang là{" "}
+                  <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">Premium</span>
+                  !
+                </h1>
+              ) : (
+                <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
+                  Mở khóa toàn bộ sức mạnh{" "}
+                  <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">FormulaX AI</span>
+                </h1>
+              )}
 
-              {/* Plan selector */}
+              {/* Trạng thái gói — chỉ hiện khi đã là Premium và biết ngày hết hạn */}
+              {isPremium && expiryInfo && (
+                <div
+                  className={`inline-flex items-center gap-2 mx-auto mb-4 py-2 px-4 rounded-xl text-[0.8rem] font-bold ${
+                    expiryInfo.daysLeft <= 7 ? "bg-premium/15 text-premium" : "bg-success/15 text-success"
+                  }`}
+                >
+                  <Clock size={15} className="shrink-0" />
+                  <span>
+                    {expiryInfo.daysLeft > 0
+                      ? `Còn hiệu lực đến ${expiryInfo.formatted} (còn ${expiryInfo.daysLeft} ngày)`
+                      : `Đã hết hạn từ ${expiryInfo.formatted}`}
+                  </span>
+                </div>
+              )}
+
+              {/* Plan selector — user Premium cũng dùng để gia hạn thêm (thời gian cộng dồn vào hạn hiện có) */}
               <div className="flex items-stretch justify-center gap-2.5 my-4 max-w-[420px] mx-auto">
                 {["monthly", "6months"].map((planId) => {
                   const isSelected = selectedPlan === planId;
@@ -335,30 +374,33 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, setActiveTab }
               </div>
 
               <p className="text-[0.85rem] text-[#CBD5E1] max-w-[480px] mx-auto mb-5 leading-[1.5]">
-                Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý giải toán AI đắc lực.
+                {isPremium
+                  ? "Cảm ơn bạn đã đồng hành cùng FormulaX AI! Gia hạn sớm để việc ôn tập không bị gián đoạn."
+                  : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý giải toán AI đắc lực."}
               </p>
 
-              {!isPremium ? (
+              <button
+                className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
+                onClick={() => handleUpgrade(selectedPlan)}
+                disabled={isProcessing}
+              >
+                {isProcessing ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <>
+                    <span>{isPremium ? "Gia hạn ngay" : "Nâng cấp Pro ngay"}</span>
+                    <Crown size={14} fill="white" />
+                  </>
+                )}
+              </button>
+
+              {/* Giả lập hạ cấp — công cụ test nội bộ, để nhỏ/phụ để không lẫn với luồng thanh toán thật */}
+              {isPremium && (
                 <button
-                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
-                  onClick={() => handleUpgrade(selectedPlan)}
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? (
-                    <Loader2 size={14} className="animate-spin" />
-                  ) : (
-                    <>
-                      <span>Nâng cấp Pro ngay</span>
-                      <Crown size={14} fill="white" />
-                    </>
-                  )}
-                </button>
-              ) : (
-                <button
-                  className="btn btn-secondary w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg pointer-events-auto"
+                  className="block mx-auto mt-3 bg-transparent border-none text-[0.72rem] text-[#94A3B8] underline cursor-pointer pointer-events-auto"
                   onClick={handleDowngrade}
                 >
-                  <span>Trở về gói Free (Giả lập)</span>
+                  Trở về gói Free (giả lập — chỉ để test)
                 </button>
               )}
               </div>
