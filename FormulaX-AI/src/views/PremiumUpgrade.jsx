@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
-import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock } from "lucide-react";
+import { Crown, Check, X, ShieldCheck, Heart, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
 import { showToast } from "../components/Toast";
@@ -174,34 +174,50 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
     {
       icon: Target,
       title: "Hiểu sâu bản chất",
-      desc: "Finder AI phân tích ngữ nghĩa, giải thích chi tiết ý nghĩa từng ký hiệu và ví dụ minh họa trực quan."
+      desc: "Finder AI phân tích ngữ nghĩa, giải thích chi tiết ý nghĩa từng ký hiệu và ví dụ minh họa trực quan.",
+      color: "secondary"
     },
     {
       icon: Zap,
       title: "Tối ưu hóa thời gian",
-      desc: "Học tập thông minh hơn, rút ngắn 50% thời gian ôn luyện ghi nhớ công thức toán học phổ thông."
+      desc: "Học tập thông minh hơn, rút ngắn 50% thời gian ôn luyện ghi nhớ công thức toán học phổ thông.",
+      color: "premium"
     },
     {
       icon: Award,
       title: "Luyện đề không giới hạn",
-      desc: "Ngân hàng đề thi trắc nghiệm phong phú, tự do tùy biến cấu trúc đề theo lớp và chủ đề ôn thi."
+      desc: "Ngân hàng đề thi trắc nghiệm phong phú, tự do tùy biến cấu trúc đề theo lớp và chủ đề ôn thi.",
+      color: "success"
     },
     {
       icon: Heart,
       title: "Yêu thích & Lưu trữ",
-      desc: "Lưu trữ toàn bộ công thức quan trọng, dễ dàng ôn tập lại bất cứ khi nào bạn cần mà không sợ thất lạc."
+      desc: "Lưu trữ toàn bộ công thức quan trọng, dễ dàng ôn tập lại bất cứ khi nào bạn cần mà không sợ thất lạc.",
+      color: "error"
     },
     {
       icon: Sparkles,
       title: "Trợ lý Finder AI",
-      desc: "Giải đáp chi tiết mọi thắc mắc toán học, hỗ trợ đắc lực trong suốt quá trình ôn thi của bạn."
+      desc: "Giải đáp chi tiết mọi thắc mắc toán học, hỗ trợ đắc lực trong suốt quá trình ôn thi của bạn.",
+      color: "accent"
     },
     {
       icon: Smartphone,
       title: "Xuất PDF & Offline",
-      desc: "Kết xuất flashcard ra file PDF/Ảnh chất lượng cao phục vụ in ấn học tập offline mọi lúc mọi nơi."
+      desc: "Kết xuất flashcard ra file PDF/Ảnh chất lượng cao phục vụ in ấn học tập offline mọi lúc mọi nơi.",
+      color: "secondary"
     }
   ];
+
+  // Class literal đầy đủ cho từng màu — Tailwind JIT quét text tĩnh trong file, không quét
+  // được chuỗi ghép động kiểu `bg-${color}/8`, nên phải khai báo sẵn từng cặp ở đây.
+  const GOAL_COLOR_CLASSES = {
+    secondary: "bg-secondary/8 text-secondary",
+    premium: "bg-premium/8 text-premium",
+    success: "bg-success/8 text-success",
+    error: "bg-error/8 text-error",
+    accent: "bg-accent/8 text-accent",
+  };
 
   const features = [
     { name: "Luyện đề trắc nghiệm", free: "Giới hạn 10 câu/ngày", premium: "Không giới hạn câu hỏi" },
@@ -214,23 +230,28 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   const faqs = [
     {
       q: "Tôi có thể hủy gói đăng ký bất cứ lúc nào không?",
-      a: "Có, bạn hoàn toàn có thể hủy gia hạn gói Premium bất cứ lúc nào trong mục Cài đặt tài khoản mà không bị phạt hay tính thêm bất kỳ khoản phí ẩn nào."
+      a: "Có, bạn hoàn toàn có thể hủy gia hạn gói Premium bất cứ lúc nào trong mục Cài đặt tài khoản mà không bị phạt hay tính thêm bất kỳ khoản phí ẩn nào.",
+      icon: XCircle
     },
     {
       q: "Tài liệu PDF/Ảnh kết xuất ra có giới hạn số lượng không?",
-      a: "Hoàn toàn không. Tài khoản Premium cho phép bạn xuất không giới hạn số lượng thẻ ghi nhớ cá nhân ra định dạng tệp PDF/Ảnh độ nét cao để ôn thi offline."
+      a: "Hoàn toàn không. Tài khoản Premium cho phép bạn xuất không giới hạn số lượng thẻ ghi nhớ cá nhân ra định dạng tệp PDF/Ảnh độ nét cao để ôn thi offline.",
+      icon: FileDown
     },
     {
       q: "Trợ lý Finder AI hỗ trợ những môn học nào khác ngoài Toán không?",
-      a: "Hiện tại FormulaX AI tối ưu hóa dữ liệu chuyên sâu cho chương trình Toán THPT (Đại số, Giải tích, Hình học, Xác suất). Các môn Vật lý và Hóa học dự kiến sẽ ra mắt trong quý sau."
+      a: "Hiện tại FormulaX AI tối ưu hóa dữ liệu chuyên sâu cho chương trình Toán THPT (Đại số, Giải tích, Hình học, Xác suất). Các môn Vật lý và Hóa học dự kiến sẽ ra mắt trong quý sau.",
+      icon: Sparkles
     },
     {
       q: "Cách thanh toán và nhận tài khoản Premium thế nào?",
-      a: "Bạn thanh toán qua PayOS — hỗ trợ chuyển khoản ngân hàng và quét mã VietQR. Tài khoản sẽ được nâng cấp lên Premium ngay lập tức sau khi giao dịch hoàn tất."
+      a: "Bạn thanh toán qua PayOS — hỗ trợ chuyển khoản ngân hàng và quét mã VietQR. Tài khoản sẽ được nâng cấp lên Premium ngay lập tức sau khi giao dịch hoàn tất.",
+      icon: Landmark
     },
     {
       q: "Tôi có thể dùng chung tài khoản trên nhiều thiết bị không?",
-      a: "Có, tài khoản Premium hỗ trợ đăng nhập và đồng bộ dữ liệu ôn tập trên 3 thiết bị cùng một lúc (Điện thoại, Máy tính bảng, Máy tính cá nhân)."
+      a: "Có, tài khoản Premium hỗ trợ đăng nhập và đồng bộ dữ liệu ôn tập trên 3 thiết bị cùng một lúc (Điện thoại, Máy tính bảng, Máy tính cá nhân).",
+      icon: Smartphone
     }
   ];
 
@@ -419,7 +440,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                   const GoalIcon = goal.icon;
                   return (
                     <div key={idx} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] flex gap-3 p-4 transition-transform duration-300 [transform-style:preserve-3d] hover:[transform:perspective(700px)_rotateX(3deg)_rotateY(-3deg)_translateY(-2px)]">
-                      <div className="w-9 h-9 rounded-lg bg-premium/8 text-premium flex items-center justify-center shrink-0">
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${GOAL_COLOR_CLASSES[goal.color]}`}>
                         <GoalIcon size={18} />
                       </div>
                       <div>
@@ -449,7 +470,12 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     <tr>
                       <th className="text-left py-4 px-5 font-extrabold text-primary dark:text-[#E2E8F0] border-b-2 border-[#f1f5f9] dark:border-[#334155] text-[0.9rem]">Tính năng</th>
                       <th className="text-center py-4 px-5 font-extrabold text-primary dark:text-[#E2E8F0] border-b-2 border-[#f1f5f9] dark:border-[#334155] text-[0.9rem]">Bản Free</th>
-                      <th className="text-center py-4 px-5 font-black text-[#d97706] bg-premium/4 border-b-2 border-premium/15 text-[0.9rem]">Bản Pro</th>
+                      <th className="text-center py-4 px-5 font-black text-[#d97706] bg-premium/4 border-b-2 border-premium/15 text-[0.9rem]">
+                        <span className="inline-flex flex-col items-center gap-1">
+                          <span className="text-[0.6rem] font-extrabold text-white bg-accent py-0.5 px-2 rounded-full tracking-wide">ĐƯỢC CHỌN NHIỀU NHẤT</span>
+                          <span>Bản Pro</span>
+                        </span>
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -545,6 +571,10 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 </div>
                 <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold">PayOS · Chuyển khoản & VietQR</span>
               </button>
+              <div className="flex items-center justify-center gap-1.5 mt-2.5 text-[0.7rem] text-text-muted dark:text-[#94A3B8]">
+                <ShieldCheck size={13} className="shrink-0 text-success" />
+                <span>Thông tin thanh toán được mã hóa và bảo mật</span>
+              </div>
             </div>
 
             {/* Section 7: FAQs Accordion */}
@@ -553,14 +583,20 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               <div className="flex flex-col">
                 {faqs.map((faq, idx) => {
                   const isOpen = openFaqIdx === idx;
+                  const FaqIcon = faq.icon;
                   return (
                     <div key={idx} className="border-b border-[#E2E8F0] dark:border-[#334155] py-2">
-                      <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center bg-transparent border-none py-3 px-1 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer text-left">
-                        <span>{faq.q}</span>
-                        {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                      <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center gap-3 bg-transparent border-none py-3 px-1 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer text-left">
+                        <span className="flex items-center gap-2.5 min-w-0">
+                          <span className="w-7 h-7 rounded-lg bg-accent/8 text-accent flex items-center justify-center shrink-0">
+                            <FaqIcon size={14} />
+                          </span>
+                          <span>{faq.q}</span>
+                        </span>
+                        {isOpen ? <ChevronUp size={16} className="shrink-0" /> : <ChevronDown size={16} className="shrink-0" />}
                       </button>
                       {isOpen && (
-                        <div className="py-1 px-1 pb-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
+                        <div className="py-1 pl-[38px] pr-1 pb-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
                           {faq.a}
                         </div>
                       )}
