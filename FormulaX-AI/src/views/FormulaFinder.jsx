@@ -116,7 +116,7 @@ export default function FormulaFinder({
           // Cloud rỗng → upload local sessions lên (lần đầu sync)
           const localSessions = loadSessionsFromStorage(sessionsKey);
           if (localSessions.length > 0) {
-            localSessions.forEach(s => upsertChatSession(user.googleId, s));
+            localSessions.forEach(s => upsertChatSession(user.googleId, s).catch(console.error));
             setSessions(localSessions);
           }
         }
@@ -178,7 +178,7 @@ export default function FormulaFinder({
       });
       if (user?.googleId) {
         const existing = sessionsRef.current.find(s => s.id === sesId);
-        upsertChatSession(user.googleId, { id: sesId, name: existing?.name || "", messages, updatedAt });
+        upsertChatSession(user.googleId, { id: sesId, name: existing?.name || "", messages, updatedAt }).catch(console.error);
       }
     } else {
       const newId = Date.now().toString();
@@ -199,7 +199,7 @@ export default function FormulaFinder({
         saveSessionsToStorage(sessionsKey, updated);
         return updated;
       });
-      if (user?.googleId) upsertChatSession(user.googleId, newSession);
+      if (user?.googleId) upsertChatSession(user.googleId, newSession).catch(console.error);
     }
   }, [messages, sessionsKey]);
 
@@ -360,7 +360,7 @@ export default function FormulaFinder({
     });
     if (user?.googleId) {
       const session = sessionsRef.current.find(s => s.id === renamingId);
-      if (session) upsertChatSession(user.googleId, { ...session, name: newName });
+      if (session) upsertChatSession(user.googleId, { ...session, name: newName }).catch(console.error);
     }
     setRenamingId(null);
   };

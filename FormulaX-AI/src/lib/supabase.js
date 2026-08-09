@@ -8,6 +8,23 @@ export const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
+/**
+ * supabase-js KHÔNG throw khi database từ chối — nó trả về `{ error }`. Bỏ qua giá trị đó là
+ * hỏng hoàn toàn âm thầm: giao diện vẫn báo "Đã lưu" trong khi không có gì được ghi, và
+ * `.catch()` ở nơi gọi cũng không bao giờ chạy vì Promise vẫn resolve bình thường.
+ *
+ * Đây không phải rủi ro lý thuyết: khi bật RLS, toàn bộ thao tác ghi bị từ chối mà app không
+ * hề báo gì — mất khá lâu mới lần ra vì console sạch trơn.
+ *
+ * Mọi hàm ghi trong file này phải đi qua đây. Vừa ghi log (để còn dấu vết kể cả khi nơi gọi
+ * quên bắt lỗi) vừa throw (để nơi gọi có thể phản ứng).
+ */
+function throwIfError(label, error) {
+  if (!error) return;
+  console.error(`[Supabase] ${label} thất bại:`, error.message, error.code ? `(${error.code})` : "");
+  throw new Error(`${label} thất bại: ${error.message}${error.code ? ` (${error.code})` : ""}`);
+}
+
 /** Tải toàn bộ dữ liệu của một user */
 export async function loadUserData(googleId) {
   const today = new Date().toISOString().slice(0, 10);
@@ -94,22 +111,23 @@ export async function addBookmark(googleId, formulaId) {
   const { error } = await supabase
     .from("bookmarks")
     .upsert({ google_id: googleId, formula_id: formulaId });
-  if (error) throw new Error(`Lưu bookmark thất bại: ${error.message} (${error.code || "?"})`);
+  throwIfError("Lưu bookmark", error);
 }
 
 export async function removeBookmark(googleId, formulaId) {
   const { error } = await supabase.from("bookmarks").delete()
     .eq("google_id", googleId).eq("formula_id", formulaId);
-  if (error) throw new Error(`Xoá bookmark thất bại: ${error.message} (${error.code || "?"})`);
+  throwIfError("Xoá bookmark", error);
 }
 
 // ─── Notes ──────────────────────────────────────────────────────────────────
 
 export async function saveNote(googleId, formulaId, noteText) {
-  await supabase.from("user_notes").upsert(
+  const { error } = await supabase.from("user_notes").upsert(
     { google_id: googleId, formula_id: formulaId, note_text: noteText, updated_at: new Date().toISOString() },
     { onConflict: "google_id,formula_id" }
   );
+  throwIfError("Lưu ghi chú", error);
 }
 
 // ─── Stats ──────────────────────────────────────────────────────────────────
@@ -118,37 +136,41 @@ export async function saveStats(googleId, stats, displayName) {
   const payload = { google_id: googleId, formulas_viewed: stats.formulasViewed, flashcards_studied: stats.flashcardsStudied, quizzes_completed: stats.quizzesCompleted, updated_at: new Date().toISOString() };
   if (displayName !== undefined) payload.display_name = displayName;
   const { error } = await supabase.from("learning_stats").upsert(payload, { onConflict: "google_id" });
-  if (error) console.error("[Supabase] saveStats error:", error);
+  throwIfError("Lưu thống kê học tập", error);
 }
 
 export async function saveDisplayName(googleId, displayName) {
-  await supabase.from("learning_stats").upsert(
+  const { error } = await supabase.from("learning_stats").upsert(
     { google_id: googleId, display_name: displayName, updated_at: new Date().toISOString() },
     { onConflict: "google_id" }
   );
+  throwIfError("Lưu tên hiển thị", error);
 }
 
 export async function resetStats(googleId) {
-  await supabase.from("learning_stats").upsert(
+  const { error } = await supabase.from("learning_stats").upsert(
     { google_id: googleId, formulas_viewed: 0, flashcards_studied: 0, quizzes_completed: 0, updated_at: new Date().toISOString() },
     { onConflict: "google_id" }
   );
+  throwIfError("Đặt lại thống kê", error);
 }
 
 // ─── Search history ──────────────────────────────────────────────────────────
 
 export async function addSearchHistoryEntry(googleId, query) {
-  await supabase.from("search_history").insert({ google_id: googleId, query });
+  const { error } = await supabase.from("search_history").insert({ google_id: googleId, query });
+  throwIfError("Lưu lịch sử tìm kiếm", error);
 }
 
 // ─── Quiz daily ──────────────────────────────────────────────────────────────
 
 export async function saveQuizDaily(googleId, remaining) {
   const today = new Date().toISOString().slice(0, 10);
-  await supabase.from("quiz_daily").upsert(
+  const { error } = await supabase.from("quiz_daily").upsert(
     { google_id: googleId, remaining_count: remaining, reset_date: today },
     { onConflict: "google_id" }
   );
+  throwIfError("Lưu lượt quiz trong ngày", error);
 }
 
 // ─── Chat Sessions ────────────────────────────────────────────────────────────
@@ -177,13 +199,13 @@ export async function upsertChatSession(googleId, session) {
     messages: session.messages,
     updated_at: new Date().toISOString(),
   }, { onConflict: "id" });
-  if (error) console.error("[Supabase] upsertChatSession:", error);
+  throwIfError("Lưu cuộc trò chuyện", error);
 }
 
 export async function deleteChatSession(googleId, sessionId) {
   const { error } = await supabase.from("chat_sessions").delete()
     .eq("google_id", googleId).eq("id", sessionId);
-  if (error) console.error("[Supabase] deleteChatSession:", error);
+  throwIfError("Xoá cuộc trò chuyện", error);
 }
 
 // ─── Flashcard Decks ─────────────────────────────────────────────────────────
@@ -218,13 +240,13 @@ export async function upsertFlashcardDeck(googleId, deck) {
     grade: deck.grade || null,
     updated_at: new Date().toISOString(),
   }, { onConflict: "id" });
-  if (error) console.error("[Supabase] upsertFlashcardDeck:", error);
+  throwIfError("Lưu bộ thẻ", error);
 }
 
 export async function deleteFlashcardDeck(googleId, deckId) {
   const { error } = await supabase.from("flashcard_decks").delete()
     .eq("google_id", googleId).eq("id", deckId);
-  if (error) console.error("[Supabase] deleteFlashcardDeck:", error);
+  throwIfError("Xoá bộ thẻ", error);
 }
 
 // ─── Flashcard Spaced Repetition Progress ─────────────────────────────────────
@@ -260,7 +282,7 @@ export async function upsertFlashcardProgress(googleId, formulaId, progress) {
     last_reviewed_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   }, { onConflict: "google_id,formula_id" });
-  if (error) console.error("[Supabase] upsertFlashcardProgress:", error);
+  throwIfError("Lưu tiến độ ôn thẻ", error);
 }
 
 // ─── Quiz Results ─────────────────────────────────────────────────────────────
@@ -276,7 +298,7 @@ export async function saveQuizResult(googleId, { topic, questionsTotal, question
     questions_total: questionsTotal,
     questions_correct: questionsCorrect,
   });
-  if (error) console.error("[Supabase] saveQuizResult:", error);
+  throwIfError("Lưu kết quả quiz", error);
 }
 
 // ─── Flashcard Activity ───────────────────────────────────────────────────────
@@ -290,7 +312,7 @@ export async function saveFlashcardActivity(googleId, { formulaId, result, topic
     topic: topic || null,
     grade: grade ? Number(grade) : null,
   });
-  if (error) console.error("[Supabase] saveFlashcardActivity:", error);
+  throwIfError("Lưu hoạt động flashcard", error);
 }
 
 // ─── Analytics ────────────────────────────────────────────────────────────────
@@ -354,10 +376,12 @@ export async function deleteUserAnalytics(googleId) {
   if (!googleId) return;
   const { streak } = await getActivityData(googleId);
 
-  await Promise.all([
+  const [delQuiz, delActivity] = await Promise.all([
     supabase.from("quiz_results").delete().eq("google_id", googleId),
     supabase.from("flashcard_activity").delete().eq("google_id", googleId),
   ]);
+  throwIfError("Xoá kết quả quiz", delQuiz.error);
+  throwIfError("Xoá hoạt động flashcard", delActivity.error);
 
   if (streak > 0) {
     const records = [];
@@ -373,7 +397,8 @@ export async function deleteUserAnalytics(googleId) {
         created_at: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0).toISOString(),
       });
     }
-    await supabase.from("flashcard_activity").insert(records);
+    const { error } = await supabase.from("flashcard_activity").insert(records);
+    throwIfError("Ghi lại chuỗi ngày học", error);
   }
 }
 
