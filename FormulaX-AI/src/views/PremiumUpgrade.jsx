@@ -167,9 +167,20 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
     try {
+      // Lấy Supabase access token từ phiên đăng nhập hiện tại để backend có thể xác minh
+      // danh tính (verify JWT → lấy Google sub, đối chiếu với userId gửi lên).
+      const { data: sessionData } = await supabase.auth.getSession();
+      const accessToken = sessionData?.session?.access_token;
+      if (!accessToken) {
+        throw new Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại.");
+      }
+
       const res = await fetch(`${BACKEND_URL}/api/payment/payos/create`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`,
+        },
         body: JSON.stringify({ userId: user.googleId, plan }),
         signal: controller.signal,
       });
@@ -294,13 +305,12 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             {/* Payment notice — hiện sau khi PayOS redirect người dùng quay lại */}
             {paymentNotice && (
               <div
-                className={`flex items-center gap-2.5 py-3 px-4 rounded-xl text-[0.85rem] font-semibold ${
-                  paymentNotice.type === "success"
+                className={`flex items-center gap-2.5 py-3 px-4 rounded-xl text-[0.85rem] font-semibold ${paymentNotice.type === "success"
                     ? "bg-success/10 text-success border border-success/20"
                     : paymentNotice.type === "pending"
-                    ? "bg-premium/10 text-[#92400E] border border-premium/20"
-                    : "bg-error/10 text-error border border-error/20"
-                }`}
+                      ? "bg-premium/10 text-[#92400E] border border-premium/20"
+                      : "bg-error/10 text-error border border-error/20"
+                  }`}
               >
                 {paymentNotice.type === "success" ? (
                   <CheckCircle2 size={18} className="shrink-0" />
@@ -338,104 +348,102 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               {/* pointer-events-none để chuột "xuyên" xuống canvas 3D bên dưới (kéo xoay viên
                   đá) — chỉ bật lại pointer-events-auto cho từng nút thật cần bấm được. */}
               <div className="relative z-[1] pointer-events-none">
-              <div className="mb-3">
-                <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">
-                  {isPremium ? "THÀNH VIÊN PREMIUM" : "CHƯƠNG TRÌNH KHUYÊN DÙNG"}
-                </span>
-              </div>
-
-              {/* Chỗ trống giữ đúng nhịp bố cục cũ — viên đá thật render ở lớp nền phía sau (canvas full-bleed) */}
-              <div style={{ height: 260 }} aria-hidden="true" />
-
-              {isPremium ? (
-                <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
-                  Bạn đang là{" "}
-                  <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">Premium</span>
-                  !
-                </h1>
-              ) : (
-                <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
-                  Mở khóa toàn bộ sức mạnh{" "}
-                  <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">FormulaX AI</span>
-                </h1>
-              )}
-
-              {/* Trạng thái gói — chỉ hiện khi đã là Premium và biết ngày hết hạn */}
-              {isPremium && expiryInfo && (
-                <div
-                  className={`inline-flex items-center gap-2 mx-auto mb-4 py-2 px-4 rounded-xl text-[0.8rem] font-bold ${
-                    expiryInfo.daysLeft <= 7 ? "bg-premium/15 text-premium" : "bg-success/15 text-success"
-                  }`}
-                >
-                  <Clock size={15} className="shrink-0" />
-                  <span>
-                    {expiryInfo.daysLeft > 0
-                      ? `Còn hiệu lực đến ${expiryInfo.formatted} (còn ${expiryInfo.daysLeft} ngày)`
-                      : `Đã hết hạn từ ${expiryInfo.formatted}`}
+                <div className="mb-3">
+                  <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">
+                    {isPremium ? "THÀNH VIÊN PREMIUM" : "CHƯƠNG TRÌNH KHUYÊN DÙNG"}
                   </span>
                 </div>
-              )}
 
-              {/* Plan selector — user Premium cũng dùng để gia hạn thêm (thời gian cộng dồn vào hạn hiện có) */}
-              <div className="flex items-stretch justify-center gap-2.5 my-4 max-w-[420px] mx-auto">
-                {["monthly", "6months"].map((planId) => {
-                  const isSelected = selectedPlan === planId;
-                  return (
-                    <button
-                      key={planId}
-                      type="button"
-                      onClick={() => setSelectedPlan(planId)}
-                      className={`relative flex-1 rounded-xl py-2.5 px-3 text-left border-[1.5px] transition-all duration-200 cursor-pointer pointer-events-auto ${
-                        isSelected
-                          ? "border-premium bg-premium/10"
-                          : "border-white/15 bg-white/5 hover:border-white/30"
-                      }`}
-                    >
-                      {planId === "6months" && (
-                        <span className="absolute -top-2 right-2 bg-success text-white text-[0.62rem] font-extrabold py-0.5 px-1.5 rounded-full">
-                          Tiết kiệm {SIX_MONTH_SAVINGS_PERCENT}%
-                        </span>
-                      )}
-                      <div className="text-[0.72rem] font-bold text-[#CBD5E1] uppercase tracking-[0.03em]">{PLAN_DISPLAY[planId].label}</div>
-                      <div className="text-[1.05rem] font-extrabold text-white">
-                        {PLAN_DISPLAY[planId].price}
-                        <span className="text-[0.68rem] font-semibold text-[#94A3B8] ml-1">{PLAN_DISPLAY[planId].unit}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+                {/* Chỗ trống giữ đúng nhịp bố cục cũ — viên đá thật render ở lớp nền phía sau (canvas full-bleed) */}
+                <div style={{ height: 260 }} aria-hidden="true" />
 
-              <p className="text-[0.85rem] text-[#CBD5E1] max-w-[480px] mx-auto mb-5 leading-[1.5]">
-                {isPremium
-                  ? "Cảm ơn bạn đã đồng hành cùng FormulaX AI! Gia hạn sớm để việc ôn tập không bị gián đoạn."
-                  : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý giải toán AI đắc lực."}
-              </p>
-
-              <button
-                className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
-                onClick={() => handleUpgrade(selectedPlan)}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <Loader2 size={14} className="animate-spin" />
+                {isPremium ? (
+                  <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
+                    Bạn đang là{" "}
+                    <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">Premium</span>
+                    !
+                  </h1>
                 ) : (
-                  <>
-                    <span>{isPremium ? "Gia hạn ngay" : "Nâng cấp Pro ngay"}</span>
-                    <Crown size={14} fill="white" />
-                  </>
+                  <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
+                    Mở khóa toàn bộ sức mạnh{" "}
+                    <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">FormulaX AI</span>
+                  </h1>
                 )}
-              </button>
 
-              {/* Giả lập hạ cấp — công cụ test nội bộ, để nhỏ/phụ để không lẫn với luồng thanh toán thật */}
-              {isPremium && (
+                {/* Trạng thái gói — chỉ hiện khi đã là Premium và biết ngày hết hạn */}
+                {isPremium && expiryInfo && (
+                  <div
+                    className={`inline-flex items-center gap-2 mx-auto mb-4 py-2 px-4 rounded-xl text-[0.8rem] font-bold ${expiryInfo.daysLeft <= 7 ? "bg-premium/15 text-premium" : "bg-success/15 text-success"
+                      }`}
+                  >
+                    <Clock size={15} className="shrink-0" />
+                    <span>
+                      {expiryInfo.daysLeft > 0
+                        ? `Còn hiệu lực đến ${expiryInfo.formatted} (còn ${expiryInfo.daysLeft} ngày)`
+                        : `Đã hết hạn từ ${expiryInfo.formatted}`}
+                    </span>
+                  </div>
+                )}
+
+                {/* Plan selector — user Premium cũng dùng để gia hạn thêm (thời gian cộng dồn vào hạn hiện có) */}
+                <div className="flex items-stretch justify-center gap-2.5 my-4 max-w-[420px] mx-auto">
+                  {["monthly", "6months"].map((planId) => {
+                    const isSelected = selectedPlan === planId;
+                    return (
+                      <button
+                        key={planId}
+                        type="button"
+                        onClick={() => setSelectedPlan(planId)}
+                        className={`relative flex-1 rounded-xl py-2.5 px-3 text-left border-[1.5px] transition-all duration-200 cursor-pointer pointer-events-auto ${isSelected
+                            ? "border-premium bg-premium/10"
+                            : "border-white/15 bg-white/5 hover:border-white/30"
+                          }`}
+                      >
+                        {planId === "6months" && (
+                          <span className="absolute -top-2 right-2 bg-success text-white text-[0.62rem] font-extrabold py-0.5 px-1.5 rounded-full">
+                            Tiết kiệm {SIX_MONTH_SAVINGS_PERCENT}%
+                          </span>
+                        )}
+                        <div className="text-[0.72rem] font-bold text-[#CBD5E1] uppercase tracking-[0.03em]">{PLAN_DISPLAY[planId].label}</div>
+                        <div className="text-[1.05rem] font-extrabold text-white">
+                          {PLAN_DISPLAY[planId].price}
+                          <span className="text-[0.68rem] font-semibold text-[#94A3B8] ml-1">{PLAN_DISPLAY[planId].unit}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <p className="text-[0.85rem] text-[#CBD5E1] max-w-[480px] mx-auto mb-5 leading-[1.5]">
+                  {isPremium
+                    ? "Cảm ơn bạn đã đồng hành cùng FormulaX AI! Gia hạn sớm để việc ôn tập không bị gián đoạn."
+                    : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý giải toán AI đắc lực."}
+                </p>
+
                 <button
-                  className="block mx-auto mt-3 bg-transparent border-none text-[0.72rem] text-[#94A3B8] underline cursor-pointer pointer-events-auto"
-                  onClick={handleDowngrade}
+                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
+                  onClick={() => handleUpgrade(selectedPlan)}
+                  disabled={isProcessing}
                 >
-                  Trở về gói Free (giả lập — chỉ để test)
+                  {isProcessing ? (
+                    <Loader2 size={14} className="animate-spin" />
+                  ) : (
+                    <>
+                      <span>{isPremium ? "Gia hạn ngay" : "Nâng cấp Pro ngay"}</span>
+                      <Crown size={14} fill="white" />
+                    </>
+                  )}
                 </button>
-              )}
+
+                {/* Giả lập hạ cấp — công cụ test nội bộ, để nhỏ/phụ để không lẫn với luồng thanh toán thật */}
+                {isPremium && (
+                  <button
+                    className="block mx-auto mt-3 bg-transparent border-none text-[0.72rem] text-[#94A3B8] underline cursor-pointer pointer-events-auto"
+                    onClick={handleDowngrade}
+                  >
+                    Trở về gói Free (giả lập — chỉ để test)
+                  </button>
+                )}
               </div>
             </div>
 

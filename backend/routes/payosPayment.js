@@ -6,6 +6,31 @@ const router = express.Router();
 
 const IS_PRODUCTION = process.env.NODE_ENV === "production";
 
+/**
+ * Xác minh Supabase JWT từ Authorization header và trả về Google sub của người dùng.
+ * Ném Error nếu token thiếu, không hợp lệ, hoặc không tìm thấy Google identity.
+ *
+ * Dùng supabaseAdmin.auth.getUser() — Supabase tự verify chữ ký JWT với secret của project,
+ * không cần gọi thêm Google API. Đây là cách chính thức Supabase khuyến nghị cho server-side
+ * auth (https://supabase.com/docs/guides/auth/server-side/creating-a-client).
+ */
+async function extractVerifiedGoogleId(req) {
+  const authHeader = req.headers["authorization"] || "";
+  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
+  if (!token) throw new Error("Thiếu Authorization header.");
+
+  const { data, error } = await supabaseAdmin.auth.getUser(token);
+  if (error || !data?.user) throw new Error("Token không hợp lệ hoặc đã hết hạn.");
+
+  // Ưu tiên đọc từ identities (do Supabase quản lý), không tin user_metadata
+  // vì người dùng có thể tự ghi đè user_metadata qua updateUser().
+  const googleIdentity = data.user.identities?.find((i) => i.provider === "google");
+  const googleId = googleIdentity?.id || null;
+  if (!googleId) throw new Error("Tài khoản không liên kết với Google.");
+
+  return googleId;
+}
+
 // Chốt chặn cho toàn bộ route DEV bên dưới. Trước đây các route này chỉ được bảo vệ bằng
 // DEV_SIMULATE_SECRET — nếu secret đó lộ (commit nhầm, chia sẻ trong nhóm, brute-force) thì
 // bất kỳ ai cũng tự cấp được Premium mà không cần trả tiền, vì /simulate-success bỏ qua hoàn
@@ -34,25 +59,35 @@ router.post("/create", async (req, res) => {
   try {
     const { userId, plan } = req.body;
 
-    // userId ở đây là Google `sub` — chuỗi số do Google cấp. Chỉ nhận đúng dạng đó để không
-    // ghi rác/ký tự lạ vào bảng payments. Lưu ý giới hạn đã biết: client vẫn tự khai userId,
-    // backend chưa xác minh Google token (xem TODO bên dưới), nên đây mới chỉ là lọc định dạng.
-    if (typeof userId !== "string" || !/^[0-9]{6,32}$/.test(userId) || !isValidPlan(plan)) {
-      return res.status(400).json({ error: "Thiếu userId hoặc plan không hợp lệ (monthly | 6months)" });
-    }
-    // TODO(bảo mật): yêu cầu frontend gửi kèm Google access token và verify với
-    // https://www.googleapis.com/oauth2/v3/userinfo, đối chiếu `sub` === userId trước khi tạo
-    // đơn. Hiện tại người khác có thể tạo đơn hộ một googleId bất kỳ — chưa gây thiệt hại vì
-    // Premium chỉ được cấp sau webhook đã trả tiền thật, nhưng cần đóng trước khi mở bán rộng.
-    if (!payosConfigured()) {
-      return res.status(500).json({ error: "PayOS chưa được cấu hình trong backend/.env" });
-    }
+    // Bước 1: Xác minh Supabase JWT — backend tự lấy Google sub từ token thay vì tin vào
+    // userId do client tự khai. Trả 401 ngay nếu token thiếu/hết hạn/giả mạo.
     if (!supabaseAdmin) {
       return res.status(500).json({ error: "Hệ thống thanh toán chưa sẵn sàng (Supabase service role chưa cấu hình)." });
+    }
+    let verifiedGoogleId;
+    try {
+      verifiedGoogleId = await extractVerifiedGoogleId(req);
+    } catch (authErr) {
+      return res.status(401).json({ error: authErr.message });
+    }
+
+    // Bước 2: Đối chiếu Google sub trong token với userId client gửi lên — ngăn tạo đơn hộ
+    // người khác (ví dụ gọi thẳng API với googleId của người dùng khác).
+    if (typeof userId !== "string" || userId !== verifiedGoogleId) {
+      return res.status(403).json({ error: "userId không khớp với tài khoản đang đăng nhập." });
+    }
+
+    if (!isValidPlan(plan)) {
+      return res.status(400).json({ error: "Plan không hợp lệ (monthly | 6months)" });
     }
 
     const { amount, label } = PLAN_CONFIG[plan];
     const orderCode = generateOrderCode();
+
+    if (!payosConfigured()) {
+      return res.status(500).json({ error: "PayOS chưa được cấu hình trong backend/.env" });
+    }
+
     const returnUrl = `${process.env.BACKEND_PUBLIC_URL}/api/payment/payos/return`;
     const cancelUrl = `${process.env.BACKEND_PUBLIC_URL}/api/payment/payos/return?cancel=true`;
 
