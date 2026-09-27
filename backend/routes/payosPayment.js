@@ -129,7 +129,7 @@ router.post("/webhook", async (req, res) => {
   try {
     if (!payosConfigured()) {
       console.error("[PayOS webhook] PayOS chưa được cấu hình, bỏ qua webhook.");
-      return res.status(204).end();
+      return res.status(200).json({ success: true });
     }
 
     let webhookData;
@@ -138,14 +138,14 @@ router.post("/webhook", async (req, res) => {
       webhookData = await getPayOS().webhooks.verify(req.body);
     } catch (verifyErr) {
       console.error("[PayOS webhook] Chữ ký không khớp — khả năng giả mạo:", verifyErr.message);
-      return res.status(204).end();
+      return res.status(200).json({ success: true });
     }
 
     const orderCode = webhookData.orderCode;
 
     if (!supabaseAdmin) {
       console.error("[PayOS webhook] Supabase chưa cấu hình service role key — không thể cập nhật is_premium cho orderCode:", orderCode);
-      return res.status(204).end();
+      return res.status(200).json({ success: true });
     }
 
     const { data: order } = await supabaseAdmin
@@ -156,7 +156,7 @@ router.post("/webhook", async (req, res) => {
 
     // Idempotency: PayOS có thể gọi webhook nhiều lần cho cùng 1 đơn — chỉ xử lý 1 lần.
     if (!order || order.status === "success") {
-      return res.status(204).end();
+      return res.status(200).json({ success: true });
     }
 
     const isSuccess = req.body?.success === true && webhookData.code === "00";
@@ -176,7 +176,7 @@ router.post("/webhook", async (req, res) => {
         // Không đánh dấu payments là "success" và không ACK 204 — trả lỗi để PayOS retry,
         // tránh mất vĩnh viễn việc cấp premium chỉ vì một lỗi DB tạm thời.
         console.error("[PayOS webhook] Cập nhật users lỗi — trả lỗi để PayOS retry:", userError.message);
-        return res.status(500).end();
+        return res.status(500).json({ success: false });
       }
 
       await supabaseAdmin.from("payments").update({
@@ -188,10 +188,10 @@ router.post("/webhook", async (req, res) => {
       }).eq("payos_order_code", orderCode);
     }
 
-    res.status(204).end();
+    res.status(200).json({ success: true });
   } catch (err) {
     console.error("[PayOS webhook] error:", err.message);
-    res.status(204).end();
+    res.status(200).json({ success: true });
   }
 });
 
