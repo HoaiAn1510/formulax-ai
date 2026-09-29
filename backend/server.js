@@ -6,6 +6,8 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import Groq from "groq-sdk";
 import payosPaymentRouter from "./routes/payosPayment.js";
+import { supabaseAdmin } from "./lib/supabaseAdmin.js";
+import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -264,6 +266,19 @@ const MAX_MESSAGE_CHARS = 2000;
 const MAX_HISTORY_ITEMS = 10;
 const MAX_HISTORY_ITEM_CHARS = 1500;
 
+// Google Free: 10 lượt/ngày (xem CLAUDE.md). Premium: không giới hạn. Khách ẩn danh: 0 — AI
+// Finder bắt buộc đăng nhập Google, xem verifySupabaseUser + kiểm tra is_anonymous bên dưới.
+const FREE_AI_DAILY_LIMIT = 10;
+
+function computeIsPremium(userRow) {
+  if (!userRow?.is_premium) return false;
+  // NULL = Premium không thời hạn, chỉ xảy ra khi cấp tay trong DB (ví dụ tài khoản demo) —
+  // webhook PayOS luôn set premium_expiry cụ thể mỗi lần cấp thật. Khớp với checkPremiumStatus()
+  // ở FormulaX-AI/src/lib/supabase.js để backend/frontend không lệch cách tính Premium.
+  if (!userRow.premium_expiry) return true;
+  return new Date(userRow.premium_expiry) > new Date();
+}
+
 app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
   try {
     const { message, history = [] } = req.body;
@@ -280,6 +295,66 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
 
     if (!process.env.GROQ_API_KEY) {
       return res.status(500).json({ error: "GROQ_API_KEY chưa được cấu hình trong file .env" });
+    }
+
+    // Xác thực người gọi bằng Supabase JWT — bắt buộc để biết chắc đây là tài khoản Google nào
+    // (hoặc chặn nếu là khách ẩn danh) TRƯỚC KHI tốn phí gọi Groq. Giới hạn 10 lượt/ngày trước
+    // đây chỉ kiểm tra ở localStorage phía client nên gọi thẳng API là bỏ qua được — đây là
+    // chốt chặn thật sự phía server.
+    let authUser;
+    try {
+      authUser = await verifySupabaseUser(req);
+    } catch (err) {
+      return res.status(err.status || 401).json({ error: err.message });
+    }
+
+    // AI Finder bắt buộc đăng nhập Google — khách ẩn danh có phiên hợp lệ (qua được bước xác
+    // thực ở trên) nhưng không được cấp bất kỳ lượt hỏi nào.
+    if (authUser.is_anonymous) {
+      return res.status(403).json({ error: "Đăng nhập Google để dùng AI" });
+    }
+
+    const googleId = extractGoogleId(authUser);
+    if (!googleId) {
+      return res.status(403).json({ error: "Tài khoản chưa liên kết Google." });
+    }
+
+    const { data: userRow, error: userRowError } = await supabaseAdmin
+      .from("users")
+      .select("is_premium, premium_expiry")
+      .eq("google_id", googleId)
+      .maybeSingle();
+    if (userRowError) {
+      // Fail closed: không đọc được trạng thái Premium thì từ chối luôn, không đoán/không cho
+      // qua như Free. 503 vì đây là Supabase (phụ thuộc ngoài) đang lỗi, không phải bug ở đây.
+      console.error("[FormulaX Backend] Đọc trạng thái Premium lỗi:", userRowError.message);
+      return res.status(503).json({ error: "Không xác thực được trạng thái tài khoản, thử lại sau." });
+    }
+    const isPremium = computeIsPremium(userRow);
+
+    // Premium: bỏ qua hoàn toàn bước đếm quota. Free: tăng bộ đếm TRƯỚC khi gọi Groq (RPC
+    // increment_ai_usage là tăng nguyên tử, không có khoảng hở race condition) — nếu vượt hạn
+    // mức thì từ chối ngay, không gọi Groq. Nếu Groq lỗi Ở BƯỚC SAU (mạng, Groq quá tải...), lượt
+    // vừa tăng vẫn bị tính mất — chấp nhận được vì đây là trường hợp hiếm và tăng-trước-gọi-sau
+    // là cách duy nhất tránh race condition (đọc-rồi-tăng có khoảng hở, 2 request đồng thời có
+    // thể cùng vượt hạn mức).
+    let remaining = null;
+    if (!isPremium) {
+      const { data: usageCount, error: usageError } = await supabaseAdmin.rpc("increment_ai_usage", {
+        p_google_id: googleId,
+      });
+      if (usageError) {
+        // Fail closed: không kiểm tra được quota thì từ chối, KHÔNG cho qua như còn lượt.
+        console.error("[FormulaX Backend] increment_ai_usage lỗi:", usageError.message);
+        return res.status(503).json({ error: "Không kiểm tra được hạn mức AI, thử lại sau." });
+      }
+      if (usageCount > FREE_AI_DAILY_LIMIT) {
+        return res.status(429).json({
+          error: `Bạn đã dùng hết ${FREE_AI_DAILY_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`,
+          remaining: 0,
+        });
+      }
+      remaining = FREE_AI_DAILY_LIMIT - usageCount;
     }
 
     // Chuyển lịch sử sang format OpenAI-compatible
@@ -315,7 +390,8 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
 
     res.json({
       reply: normalizeMath(parsed.reply || rawText),
-      formulaId: parsed.formulaId || null
+      formulaId: parsed.formulaId || null,
+      remaining, // null = Premium (không giới hạn), số = lượt Free còn lại sau câu hỏi này
     });
 
   } catch (error) {
@@ -327,6 +403,61 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     // Chỉ trả thông điệp chung cho client — error.message của SDK có thể chứa chi tiết nội bộ
     // (endpoint, tên model, một phần API key trong thông báo xác thực). Chi tiết đã có ở log server.
     res.status(status >= 400 && status < 600 ? status : 500).json({ error: errorMsg });
+  }
+});
+
+// GET /api/chat/usage — cho frontend biết còn bao nhiêu lượt AI hôm nay MÀ KHÔNG tốn 1 lượt.
+// Dùng khi người dùng vừa mở Formula Finder, chưa hỏi gì — tránh chỉ đoán qua cache cũ ở client.
+app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
+  try {
+    let authUser;
+    try {
+      authUser = await verifySupabaseUser(req);
+    } catch (err) {
+      return res.status(err.status || 401).json({ error: err.message });
+    }
+
+    if (authUser.is_anonymous) {
+      return res.status(403).json({ error: "Đăng nhập Google để dùng AI" });
+    }
+
+    const googleId = extractGoogleId(authUser);
+    if (!googleId) {
+      return res.status(403).json({ error: "Tài khoản chưa liên kết Google." });
+    }
+
+    const { data: userRow, error: userRowError } = await supabaseAdmin
+      .from("users")
+      .select("is_premium, premium_expiry")
+      .eq("google_id", googleId)
+      .maybeSingle();
+    if (userRowError) {
+      console.error("[FormulaX Backend] Đọc trạng thái Premium lỗi:", userRowError.message);
+      return res.status(503).json({ error: "Không xác thực được trạng thái tài khoản, thử lại sau." });
+    }
+    const isPremium = computeIsPremium(userRow);
+
+    if (isPremium) {
+      return res.json({ isPremium: true, remaining: null, limit: null });
+    }
+
+    // Chỉ đọc, KHÔNG tăng đếm — increment_ai_usage chỉ được gọi từ /api/chat khi thực sự hỏi.
+    const { data: usageCount, error: usageError } = await supabaseAdmin.rpc("get_ai_usage", {
+      p_google_id: googleId,
+    });
+    if (usageError) {
+      console.error("[FormulaX Backend] get_ai_usage lỗi:", usageError.message);
+      return res.status(503).json({ error: "Không đọc được hạn mức AI, thử lại sau." });
+    }
+
+    res.json({
+      isPremium: false,
+      remaining: Math.max(0, FREE_AI_DAILY_LIMIT - usageCount),
+      limit: FREE_AI_DAILY_LIMIT,
+    });
+  } catch (err) {
+    console.error("[FormulaX Backend] /api/chat/usage error:", err.message);
+    res.status(500).json({ error: "Không đọc được hạn mức AI." });
   }
 });
 
@@ -346,6 +477,6 @@ app.listen(PORT, () => {
   const payosOk = process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY;
   console.log(`💳 PayOS Payment: ${payosOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
   const supabaseOk = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.startsWith("CHUA_CAU_HINH");
-  console.log(`🗄️  Supabase (service role): ${supabaseOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — webhook sẽ không cập nhật được is_premium (.env)"}`);
+  console.log(`🗄️  Supabase (service role): ${supabaseOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — webhook sẽ không cập nhật được is_premium, /api/chat sẽ từ chối mọi request (.env)"}`);
   console.log(`🛡️  Môi trường: ${IS_PRODUCTION ? "production — route DEV & trang test đã khoá" : "development — route DEV mở, KHÔNG dùng cấu hình này khi deploy"}\n`);
 });
