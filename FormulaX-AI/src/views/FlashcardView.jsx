@@ -8,6 +8,7 @@ import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { saveFlashcardActivity } from "../lib/supabase";
 import { sortFormulaIdsByDue, getDueReviewQueue } from "../utils/spacedRepetition";
 import { showToast } from "../components/Toast";
+import { useGuestGate } from "../utils/useGuestGate";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -181,6 +182,10 @@ export default function FlashcardView({
   progress = {},
   onGradeCard,
 }) {
+  // Bộ thẻ và lịch ôn (spaced repetition) được lưu theo người dùng nên khóa với khách. Khách
+  // không có bộ thẻ nào → luôn thấy màn trống với 2 nút tạo bị khóa.
+  const { isGuest, requireGoogle } = useGuestGate();
+
   // view: "list" | "study" | "summary"
   const [view, setView] = useState("list");
   const [activeDeckId, setActiveDeckId] = useState(null);
@@ -263,7 +268,13 @@ export default function FlashcardView({
     setShowCreateFiltered(false);
   };
 
+  const handleOpenCreateFiltered = () => {
+    if (!requireGoogle()) return;
+    setShowCreateFiltered(true);
+  };
+
   const handleCreateFavoriteDeck = () => {
+    if (!requireGoogle()) return;
     const now = new Date().toISOString();
     const existingFav = decks.filter(d => d.type === "favorite");
     const deck = {
@@ -563,21 +574,23 @@ export default function FlashcardView({
                 </div>
                 <h3 className="text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Chưa có bộ thẻ nào</h3>
                 <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] max-w-[280px] leading-[1.5] m-0">
-                  Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức.
+                  {isGuest
+                    ? "Đăng nhập Google để tạo bộ thẻ, lưu lịch ôn tập và theo dõi thẻ đến hạn mỗi ngày."
+                    : "Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức."}
                 </p>
                 <div className="flex flex-col gap-2.5 w-full max-w-[300px] mt-2">
                   <button
                     className="btn btn-primary w-full justify-center"
-                    onClick={() => setShowCreateFiltered(true)}
+                    onClick={handleOpenCreateFiltered}
                   >
-                    <Layers size={15} />
+                    {isGuest ? <Lock size={15} /> : <Layers size={15} />}
                     <span>Tạo theo chủ đề</span>
                   </button>
                   <button
                     className="btn btn-secondary w-full justify-center"
                     onClick={handleCreateFavoriteDeck}
                   >
-                    <Heart size={15} />
+                    {isGuest ? <Lock size={15} /> : <Heart size={15} />}
                     <span>Tạo bộ yêu thích</span>
                   </button>
                 </div>
@@ -714,7 +727,7 @@ export default function FlashcardView({
                 <div className="flex flex-col gap-2.5 mt-2">
                   <button
                     className="btn btn-secondary w-full justify-center !border-dashed"
-                    onClick={() => setShowCreateFiltered(true)}
+                    onClick={handleOpenCreateFiltered}
                   >
                     <Plus size={15} />
                     <span>Thêm bộ theo chủ đề</span>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { X, Save, Edit3, Bookmark } from "lucide-react";
+import { X, Save, Edit3, Bookmark, Lock } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
+import { useGuestGate } from "../utils/useGuestGate";
+import GuestLockNotice from "./GuestLockNotice";
 
 export default function FormulaDetailModal({
   formula,
@@ -10,6 +12,7 @@ export default function FormulaDetailModal({
   isBookmarked,
   onToggleBookmark
 }) {
+  const { isGuest, promptLogin } = useGuestGate();
   const [noteText, setNoteText] = useState(userNote);
   const [isSaved, setIsSaved] = useState(false);
 
@@ -175,10 +178,20 @@ export default function FormulaDetailModal({
           <div className="mt-2">
             <h4 className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] uppercase tracking-[0.5px] mb-3 flex items-center justify-between gap-1.5">
               <span>Ghi chú của bạn</span>
-              <span className="text-[0.7rem] text-[#666] dark:text-[#94A3B8] normal-case font-medium flex items-center gap-0.5">
-                <Edit3 size={10} /> Tự động lưu khi nhấn Lưu
-              </span>
+              {!isGuest && (
+                <span className="text-[0.7rem] text-[#666] dark:text-[#94A3B8] normal-case font-medium flex items-center gap-0.5">
+                  <Edit3 size={10} /> Tự động lưu khi nhấn Lưu
+                </span>
+              )}
             </h4>
+            {isGuest ? (
+              <GuestLockNotice
+                title="Đăng nhập Google để viết ghi chú"
+                description="Ghi chú cá nhân được lưu theo tài khoản, xem lại được trên mọi thiết bị."
+                onClick={() => promptLogin()}
+              />
+            ) : (
+            <>
             <textarea
               className="w-full min-h-[100px] bg-[#f8fafc] dark:bg-[#0F172A]/40 border-[1.5px] border-[#e2e8f0] dark:border-[#334155] rounded-xl p-3 text-[0.85rem] font-medium text-primary dark:text-[#E2E8F0] resize-y transition duration-200 focus:border-accent focus:bg-white dark:focus:bg-[#0F172A] focus:shadow-[0_0_0_3px_rgba(217,119,6,0.1)]"
               placeholder="Nhập ghi chú cá nhân của bạn về công thức này (ví dụ: mẹo nhớ nhanh, các lỗi sai cần tránh...)"
@@ -194,6 +207,8 @@ export default function FormulaDetailModal({
                 <span>{isSaved ? "Đã lưu!" : "Lưu ghi chú"}</span>
               </button>
             </div>
+            </>
+            )}
           </div>
         </div>
 
@@ -203,7 +218,7 @@ export default function FormulaDetailModal({
             className={`btn flex-1 ${isBookmarked ? "btn-secondary" : "btn-primary"}`}
             onClick={() => onToggleBookmark(formula.id)}
           >
-            <Bookmark size={16} fill={isBookmarked ? "#1E3A5F" : "none"} />
+            {isGuest ? <Lock size={16} /> : <Bookmark size={16} fill={isBookmarked ? "#1E3A5F" : "none"} />}
             <span>{isBookmarked ? "Đã bookmark" : "Thêm vào Bookmark"}</span>
           </button>
 

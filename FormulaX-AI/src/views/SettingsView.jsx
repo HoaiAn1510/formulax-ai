@@ -1,6 +1,23 @@
 import { useState } from "react";
-import { ArrowLeft, Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles, FileText, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles, FileText, ShieldCheck, Lock, UserRound } from "lucide-react";
 import LegalModal from "../components/LegalModal";
+import GuestLockNotice from "../components/GuestLockNotice";
+import { useGuestGate } from "../utils/useGuestGate";
+import { useAuth } from "../context/AuthContext";
+import { showToast } from "../components/Toast";
+
+// Nút "đã khóa" đặt vào chỗ control của một dòng cài đặt — khách vẫn thấy tùy chọn tồn tại.
+function LockedControl({ label, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="py-1.5 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[0.78rem] font-bold text-text-muted dark:text-[#94A3B8] cursor-pointer inline-flex items-center gap-1"
+    >
+      <Lock size={12} className="text-accent" />
+      {label}
+    </button>
+  );
+}
 
 function ToggleSwitch({ on, onClick }) {
   return (
@@ -37,9 +54,22 @@ export default function SettingsView({
   isPremium,
   notifPrefs, onSetNotifPrefs,
 }) {
+  // Khách: giao diện sáng/tối và pháp lý vẫn dùng được; tên hiển thị, lớp học, thông báo là dữ
+  // liệu theo tài khoản nên khóa.
+  const { isGuest, promptLogin } = useGuestGate();
+  const { loginWithGoogle } = useAuth();
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(displayName || "");
   const [legalDoc, setLegalDoc] = useState(null); // "terms" | "privacy" | null
+
+  const handleGuestLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      console.error("Đăng nhập Google thất bại:", err);
+      showToast("Đăng nhập Google thất bại. Vui lòng thử lại.", "error");
+    }
+  };
 
   const handleSaveName = () => {
     onSetDisplayName?.(nameInput.trim());
@@ -75,7 +105,11 @@ export default function SettingsView({
 
           {/* Identity card */}
           <div className="rounded-2xl p-4 mb-4 flex items-center gap-3 bg-[linear-gradient(135deg,#1E3A5F_0%,#2563EB_100%)] shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
-            {user?.picture ? (
+            {isGuest ? (
+              <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
+                <UserRound size={22} />
+              </div>
+            ) : user?.picture ? (
               <img src={user.picture} referrerPolicy="no-referrer" alt="" className="w-12 h-12 rounded-full border-2 border-white/35 object-cover shrink-0" />
             ) : (
               <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-lg font-extrabold text-white shrink-0">
@@ -84,12 +118,16 @@ export default function SettingsView({
             )}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <span className="text-[0.92rem] font-extrabold text-white truncate">{displayName || user?.name || "Người dùng"}</span>
+                <span className="text-[0.92rem] font-extrabold text-white truncate">
+                  {isGuest ? "Khách" : displayName || user?.name || "Người dùng"}
+                </span>
                 {isPremium && (
                   <span className="text-[0.55rem] bg-[linear-gradient(135deg,#D97706,#F59E0B)] text-white py-px px-1.5 rounded-[4px] font-bold shrink-0">PRO</span>
                 )}
               </div>
-              <div className="text-[0.72rem] text-white/65 truncate">{user?.email || ""}</div>
+              <div className="text-[0.72rem] text-white/65 truncate">
+                {isGuest ? "Chưa đăng nhập — dữ liệu không được lưu" : user?.email || ""}
+              </div>
             </div>
           </div>
 
@@ -107,9 +145,13 @@ export default function SettingsView({
             <SettingRow
               icon={<Pencil size={16} />}
               label="Tên hiển thị"
-              description={editingName ? undefined : (displayName ? `Đang hiển thị: ${displayName}` : "Chưa đặt tên hiển thị")}
+              description={isGuest
+                ? "Đăng nhập Google để đặt tên hiển thị"
+                : editingName ? undefined : (displayName ? `Đang hiển thị: ${displayName}` : "Chưa đặt tên hiển thị")}
               control={
-                editingName ? (
+                isGuest ? (
+                  <LockedControl label="Sửa" onClick={() => promptLogin()} />
+                ) : editingName ? (
                   <div className="flex items-center gap-1.5">
                     <input
                       value={nameInput}
@@ -136,8 +178,13 @@ export default function SettingsView({
             <SettingRow
               icon={<GraduationCap size={16} />}
               label="Lớp học"
-              description="FormulaX ưu tiên gợi ý công thức phù hợp với lớp của bạn"
+              description={isGuest
+                ? "Đăng nhập Google để lưu lớp học và nhận gợi ý phù hợp"
+                : "FormulaX ưu tiên gợi ý công thức phù hợp với lớp của bạn"}
               control={
+                isGuest ? (
+                  <LockedControl label="Chọn lớp" onClick={() => promptLogin()} />
+                ) : (
                 <div className="flex gap-1.5">
                   {[10, 11, 12].map(g => (
                     <button
@@ -153,6 +200,7 @@ export default function SettingsView({
                     </button>
                   ))}
                 </div>
+                )
               }
             />
           </div>
@@ -162,10 +210,19 @@ export default function SettingsView({
             <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Gói của bạn</h2>
             <SettingRow
               icon={<Crown size={16} />}
-              label={isPremium ? "Premium" : "Miễn phí"}
-              description={isPremium ? "Bạn đang là thành viên Premium — không giới hạn tính năng" : "Nâng cấp để mở khoá toàn bộ tính năng học tập"}
+              label={isGuest ? "Chế độ khách" : isPremium ? "Premium" : "Miễn phí"}
+              description={isGuest
+                ? "Đăng nhập Google để dùng AI, lưu tiến độ và nâng cấp Premium"
+                : isPremium ? "Bạn đang là thành viên Premium — không giới hạn tính năng" : "Nâng cấp để mở khoá toàn bộ tính năng học tập"}
               control={
-                isPremium ? (
+                isGuest ? (
+                  <button
+                    onClick={handleGuestLogin}
+                    className="py-1.5 px-3 rounded-lg border-none bg-accent hover:bg-accent-hover text-white text-[0.78rem] font-bold cursor-pointer transition-colors duration-200"
+                  >
+                    Đăng nhập
+                  </button>
+                ) : isPremium ? (
                   <button
                     onClick={() => setActiveTab("premium")}
                     className="text-[0.7rem] font-bold text-success bg-success/8 py-1.5 px-3 rounded-lg inline-flex items-center gap-1 border-none cursor-pointer"
@@ -187,24 +244,35 @@ export default function SettingsView({
           {/* Thông báo */}
           <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
             <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Thông báo</h2>
-            <SettingRow
-              icon={<Bell size={16} />}
-              label="Nhắc giữ chuỗi học"
-              description="Nhắc khi còn chuỗi học nhưng hôm nay chưa ôn gì"
-              control={<ToggleSwitch on={notifPrefs?.streak !== false} onClick={() => toggleNotifPref("streak")} />}
-            />
-            <SettingRow
-              icon={<Bell size={16} />}
-              label="Gợi ý ôn chủ đề yếu"
-              description="Thông báo khi có chủ đề quiz đang dưới 60% đúng"
-              control={<ToggleSwitch on={notifPrefs?.weakTopic !== false} onClick={() => toggleNotifPref("weakTopic")} />}
-            />
-            <SettingRow
-              icon={<Bell size={16} />}
-              label="Chào mừng / thành tích mới"
-              description="Thông báo khi đạt mốc streak hoặc hoàn thành quiz đầu tiên"
-              control={<ToggleSwitch on={notifPrefs?.milestone !== false} onClick={() => toggleNotifPref("milestone")} />}
-            />
+            {isGuest ? (
+              <GuestLockNotice
+                className="mt-2"
+                title="Đăng nhập Google để nhận thông báo học tập"
+                description="Nhắc giữ chuỗi học, gợi ý ôn chủ đề yếu và thành tích mới — tính từ tiến độ đã lưu."
+                onClick={() => promptLogin()}
+              />
+            ) : (
+              <>
+                <SettingRow
+                  icon={<Bell size={16} />}
+                  label="Nhắc giữ chuỗi học"
+                  description="Nhắc khi còn chuỗi học nhưng hôm nay chưa ôn gì"
+                  control={<ToggleSwitch on={notifPrefs?.streak !== false} onClick={() => toggleNotifPref("streak")} />}
+                />
+                <SettingRow
+                  icon={<Bell size={16} />}
+                  label="Gợi ý ôn chủ đề yếu"
+                  description="Thông báo khi có chủ đề quiz đang dưới 60% đúng"
+                  control={<ToggleSwitch on={notifPrefs?.weakTopic !== false} onClick={() => toggleNotifPref("weakTopic")} />}
+                />
+                <SettingRow
+                  icon={<Bell size={16} />}
+                  label="Chào mừng / thành tích mới"
+                  description="Thông báo khi đạt mốc streak hoặc hoàn thành quiz đầu tiên"
+                  control={<ToggleSwitch on={notifPrefs?.milestone !== false} onClick={() => toggleNotifPref("milestone")} />}
+                />
+              </>
+            )}
           </div>
 
           {/* Pháp lý — bắt buộc phải tiếp cận được sau khi đăng nhập, không chỉ ở màn đăng nhập:

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { Search, Heart, HelpCircle, XCircle, ArrowLeft, BookOpen, Layers } from "lucide-react";
+import { Search, Heart, HelpCircle, XCircle, ArrowLeft, BookOpen, Layers, Lock } from "lucide-react";
 import { normalizeVi } from "../utils/textSearch";
+import { useGuestGate } from "../utils/useGuestGate";
 
 export default function FormulaLibrary({
   formulas,
@@ -10,6 +11,10 @@ export default function FormulaLibrary({
   onViewDetail,
   setActiveTab
 }) {
+  // Tra cứu mở cho khách; chỉ Yêu thích + Tạo Flashcard (dữ liệu theo người dùng) bị khóa.
+  // Bấm tim / Tạo Flashcard đi qua handler ở App.jsx vốn đã chặn khách, ở đây chỉ đổi biểu tượng.
+  const { isGuest, requireGoogle } = useGuestGate();
+
   // Precompute bản không dấu 1 lần cho mỗi công thức thay vì normalize lại toàn bộ danh sách mỗi lần gõ phím
   const searchIndex = useMemo(() => formulas.map(f => ({
     formula: f,
@@ -40,6 +45,7 @@ export default function FormulaLibrary({
       return;
     }
     if (topic === "Yêu thích") {
+      if (!requireGoogle()) return;
       setTopicMode("saved");
       setSelectedTopics([]);
       return;
@@ -225,7 +231,14 @@ export default function FormulaLibrary({
                       borderColor: "#E74C3C", color: "#E74C3C"
                     } : {}}
                   >
-                    {topic === "Yêu thích" ? <><Heart size={11} fill={isActive ? "white" : "#E74C3C"} color={isActive ? "white" : "#E74C3C"} className="inline mr-[3px] align-middle" /> Yêu thích</> : topic}
+                    {topic === "Yêu thích" ? (
+                      <>
+                        {isGuest
+                          ? <Lock size={11} color="#E74C3C" className="inline mr-[3px] align-middle" />
+                          : <Heart size={11} fill={isActive ? "white" : "#E74C3C"} color={isActive ? "white" : "#E74C3C"} className="inline mr-[3px] align-middle" />}
+                        {" "}Yêu thích
+                      </>
+                    ) : topic}
                   </button>
                 );
               })}
@@ -282,11 +295,17 @@ export default function FormulaLibrary({
                     <div className="flex justify-between items-start">
                       <h3 className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0]">{formula.name}</h3>
                       <button
-                        className={`w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors duration-150 shrink-0 hover:bg-error/8 hover:text-error ${isBookmarked ? "text-error" : "text-[#94A3B8]"}`}
+                        className={`relative w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors duration-150 shrink-0 hover:bg-error/8 hover:text-error ${isBookmarked ? "text-error" : "text-[#94A3B8]"}`}
                         onClick={() => onToggleBookmark(formula.id)}
-                        title={isBookmarked ? "Bỏ bookmark" : "Thêm bookmark"}
+                        title={isGuest ? "Đăng nhập Google để lưu yêu thích" : isBookmarked ? "Bỏ bookmark" : "Thêm bookmark"}
+                        aria-label={isGuest ? "Đăng nhập Google để lưu yêu thích" : isBookmarked ? "Bỏ bookmark" : "Thêm bookmark"}
                       >
                         <Heart size={18} fill={isBookmarked ? "#E74C3C" : "none"} />
+                        {isGuest && (
+                          <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-[#1E293B] flex items-center justify-center">
+                            <Lock size={9} className="text-accent" />
+                          </span>
+                        )}
                       </button>
                     </div>
 
@@ -313,7 +332,7 @@ export default function FormulaLibrary({
                         className="flex-1 bg-success/4 text-success border border-success/15 text-[0.8rem] font-bold py-2 px-3 rounded-xl min-h-[38px] inline-flex items-center justify-center gap-1.5 cursor-pointer transition duration-200 hover:bg-success/8 hover:-translate-y-px"
                         onClick={() => onCreateFlashcard(formula)}
                       >
-                        <Layers size={12} />
+                        {isGuest ? <Lock size={12} /> : <Layers size={12} />}
                         <span>Tạo Flashcard</span>
                       </button>
                     </div>

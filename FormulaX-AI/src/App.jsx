@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, lazy, Suspense } from "react";
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import "./App.css";
 
 import { useAuth } from "./context/AuthContext";
@@ -17,6 +17,8 @@ import {
   getRecommendationContext,
 } from "./lib/supabase";
 import { computeNextReview } from "./utils/spacedRepetition";
+import { useGuestGate } from "./utils/useGuestGate";
+import { getGuestQuizRemaining } from "./utils/guestQuiz";
 
 import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
@@ -53,10 +55,34 @@ function ViewLoading() {
 
 export default function App() {
   const { user, logout, isLoggedIn, authLoading } = useAuth();
+  // Khách (phiên ẩn danh) được xem nội dung nhưng mọi thao tác lưu dữ liệu cá nhân đều đi qua
+  // requireGoogle() ở các handler bên dưới — một chốt chung cho mọi nơi gọi (Thư viện, AI
+  // Finder, modal chi tiết...), thay vì để mỗi view tự nhớ kiểm tra.
+  const { isGuest, requireGoogle } = useGuestGate();
 
   const [activeTab, setActiveTab]   = useState("dashboard");
-  const [isPremium, setIsPremium]   = useState(() => localStorage.getItem("formulax_premium") === "true");
-  const [premiumExpiry, setPremiumExpiry] = useState(null); // ISO string — dùng cho màn hình trạng thái tài khoản Premium
+  // Cờ Premium được cache ở localStorage để khỏi nháy giao diện khi tải lại trang. Cache gắn
+  // theo googleId và chỉ có hiệu lực khi trùng người đang đăng nhập — trước đây là một khoá
+  // chung cho cả máy, nên tài khoản Free (hoặc khách) đăng nhập sau một tài khoản Premium trên
+  // cùng trình duyệt sẽ hiện Premium cho tới khi kiểm tra xong, hoặc luôn luôn nếu kiểm tra lỗi
+  // mạng. Chỉ ảnh hưởng giao diện: backend tự đọc bảng users, không tin cờ này.
+  // premiumState chỉ giữ kết quả đã biết chắc (kiểm tra từ Supabase / PremiumUpgrade). Khi chưa có
+  // kết quả cho đúng tài khoản đang đăng nhập thì đọc cache của chính tài khoản đó — không suy
+  // googleId từ formulax_user, vì AuthContext xoá khoá đó trong lúc phiên đang khôi phục.
+  const [premiumState, setPremiumState] = useState({ googleId: null, value: false });
+  // useCallback: PremiumUpgrade đưa hàm này vào deps của effect gọi Supabase — đổi danh tính mỗi
+  // lần render sẽ khiến effect đó chạy lại liên tục.
+  const setIsPremium = useCallback(
+    (value) => setPremiumState({ googleId: user?.googleId ?? null, value: Boolean(value) }),
+    [user?.googleId]
+  );
+  const [premiumExpiryValue, setPremiumExpiry] = useState(null); // ISO string — dùng cho màn hình trạng thái tài khoản Premium
+  const isPremium = !isGuest && Boolean(user?.googleId) && (
+    premiumState.googleId === user.googleId
+      ? premiumState.value
+      : localStorage.getItem(`formulax_premium_${user.googleId}`) === "true"
+  );
+  const premiumExpiry = isGuest ? null : premiumExpiryValue;
   const [selectedFormula, setSelectedFormula] = useState(null);
   const [isLoadingData, setIsLoadingData]     = useState(false);
 
@@ -101,16 +127,19 @@ export default function App() {
   }, [darkMode]);
 
   const handleSetUserGrade = (grade) => {
+    if (!requireGoogle()) return;
     setUserGrade(grade);
     if (user?.googleId) localStorage.setItem(`formulax_grade_${user.googleId}`, String(grade));
   };
 
   const handleSetNotifPrefs = (prefs) => {
+    if (!requireGoogle()) return;
     setNotifPrefs(prefs);
     localStorage.setItem("formulax_notif_prefs", JSON.stringify(prefs));
   };
 
   const handleSetDisplayName = (name) => {
+    if (!requireGoogle()) return;
     setDisplayName(name);
     if (user?.googleId) localStorage.setItem(`formulax_display_name_${user.googleId}`, name);
     localStorage.setItem("formulax_display_name", name);
@@ -123,6 +152,11 @@ export default function App() {
   const [stats, setStats]                     = useState({ formulasViewed: 0, flashcardsStudied: 0, quizzesCompleted: 0 });
   const [todayStats, setTodayStats]           = useState({ formulasViewed: 0, quizzesCompleted: 0, flashcardsStudied: 0 });
   const [remainingQuizzes, setRemainingQuizzes] = useState(10);
+  // Khách: lượt Quiz lấy từ localStorage (utils/guestQuiz.js), tách hẳn khỏi quiz_daily của
+  // tài khoản Google. QuizView tự trừ lượt qua consumeGuestQuiz() rồi gọi setter tương ứng.
+  const [guestQuizzesLeft, setGuestQuizzesLeft] = useState(getGuestQuizRemaining);
+  const quizzesLeft = isGuest ? guestQuizzesLeft : remainingQuizzes;
+  const setQuizzesLeft = isGuest ? setGuestQuizzesLeft : setRemainingQuizzes;
   const [searchHistory, setSearchHistory]     = useState([]);
   const [viewedFormulaIds, setViewedFormulaIds] = useState([]);
   const [flashcardDecks, setFlashcardDecks] = useState([]);
@@ -216,9 +250,10 @@ export default function App() {
   // ─── Đồng bộ trạng thái Premium từ Supabase (nguồn sự thật do backend ghi sau khi PayOS xác nhận) ──
   useEffect(() => {
     if (!user?.googleId) return;
-    checkPremiumStatus(user.googleId)
+    const googleId = user.googleId;
+    checkPremiumStatus(googleId)
       .then((result) => {
-        setIsPremium(result.isPremium);
+        setPremiumState({ googleId, value: result.isPremium });
         setPremiumExpiry(result.premiumExpiry);
       })
       .catch((err) => console.error("[Supabase] checkPremiumStatus:", err));
@@ -277,6 +312,7 @@ export default function App() {
   // ─── Handlers ─────────────────────────────────────────────────────────────
 
   const handleToggleBookmark = (formulaId) => {
+    if (!requireGoogle()) return;
     const isBookmarked = bookmarkedIds.includes(formulaId);
     setBookmarkedIds((prev) =>
       isBookmarked ? prev.filter((x) => x !== formulaId) : [...prev, formulaId]
@@ -289,6 +325,7 @@ export default function App() {
   };
 
   const handleSaveNote = (formulaId, text) => {
+    if (!requireGoogle()) return;
     setUserNotes((prev) => ({ ...prev, [formulaId]: text }));
     if (user?.googleId) {
       saveNote(user.googleId, formulaId, text).catch(console.error);
@@ -310,7 +347,9 @@ export default function App() {
   };
 
   const handleAddSearchHistory = (query) => {
-    if (!query?.trim()) return;
+    // Lịch sử tìm kiếm là tác dụng phụ ngầm, không phải thao tác người dùng bấm — với khách thì
+    // bỏ qua im lặng, không hiện hộp thoại.
+    if (isGuest || !query?.trim()) return;
     setSearchHistory((prev) => [query, ...prev.filter((q) => q !== query)].slice(0, 20));
     if (user?.googleId) {
       addSearchHistoryEntry(user.googleId, query).catch(console.error);
@@ -318,6 +357,7 @@ export default function App() {
   };
 
   const handleQuickFlashcard = (formula) => {
+    if (!requireGoogle()) return;
     const favoriteDecks = flashcardDecks.filter(d => d.type === "favorite");
     if (favoriteDecks.length === 0) {
       setActiveTab("flashcard");
@@ -327,8 +367,11 @@ export default function App() {
   };
 
   useEffect(() => {
-    localStorage.setItem("formulax_premium", isPremium);
-  }, [isPremium]);
+    // Khoá chung cũ không gắn tài khoản — xoá để không còn nơi nào đọc nhầm.
+    localStorage.removeItem("formulax_premium");
+    if (!user?.googleId || premiumState.googleId !== user.googleId) return;
+    localStorage.setItem(`formulax_premium_${user.googleId}`, String(premiumState.value));
+  }, [premiumState, user?.googleId]);
 
   const handleMarkNotificationsRead = () => {
     if (!notifications.some(n => n.unread)) return;
@@ -350,19 +393,24 @@ export default function App() {
 
   // ─── Flashcard deck handlers ──────────────────────────────────────────────
 
+  // Bộ thẻ + lịch ôn là dữ liệu theo người dùng. FlashcardView đã khóa nút tạo cho khách; các
+  // chốt dưới đây là lớp dự phòng nếu sau này có nơi khác gọi tới.
   const handleAddFlashcardDeck = (deck) => {
+    if (!requireGoogle()) return;
     setFlashcardDecks(prev => [...prev, deck]);
     if (user?.googleId) upsertFlashcardDeck(user.googleId, deck).catch(console.error);
     showToast(`Đã tạo bộ thẻ "${deck.name}"`);
   };
 
   const handleDeleteFlashcardDeck = (deckId) => {
+    if (!requireGoogle()) return;
     setFlashcardDecks(prev => prev.filter(d => d.id !== deckId));
     if (user?.googleId) deleteFlashcardDeckDB(user.googleId, deckId).catch(console.error);
     showToast("Đã xoá bộ thẻ", "info");
   };
 
   const handleRenameFlashcardDeck = (deckId, newName) => {
+    if (!requireGoogle()) return;
     setFlashcardDecks(prev => {
       const updated = prev.map(d => d.id === deckId ? { ...d, name: newName, updatedAt: new Date().toISOString() } : d);
       if (user?.googleId) {
@@ -374,6 +422,7 @@ export default function App() {
   };
 
   const handleAddFormulaToFavoriteDeck = (formulaId, deckId) => {
+    if (!requireGoogle()) return;
     let alreadyInDeck = false;
     let deckName = "";
     setFlashcardDecks(prev => {
@@ -392,6 +441,7 @@ export default function App() {
   };
 
   const handleRemoveFormulaFromDeck = (formulaId, deckId) => {
+    if (!requireGoogle()) return;
     setFlashcardDecks(prev => {
       const updated = prev.map(d => {
         if (d.id !== deckId) return d;
@@ -404,6 +454,7 @@ export default function App() {
   };
 
   const handleGradeCard = (formulaId, remembered) => {
+    if (isGuest) return;
     const next = computeNextReview(flashcardProgress[formulaId], remembered);
     setFlashcardProgress(prev => ({ ...prev, [formulaId]: next }));
     if (user?.googleId) upsertFlashcardProgress(user.googleId, formulaId, next).catch(console.error);
@@ -466,7 +517,7 @@ export default function App() {
             formulas={formulas}
             onViewDetail={handleViewDetail}
             isPremium={isPremium}
-            remainingQuizzes={remainingQuizzes}
+            remainingQuizzes={quizzesLeft}
             stats={stats}
             todayStats={todayStats}
             userGrade={userGrade}
@@ -523,8 +574,8 @@ export default function App() {
           <QuizView
             setActiveTab={setActiveTab}
             isPremium={isPremium}
-            remainingQuizzes={remainingQuizzes}
-            setRemainingQuizzes={setRemainingQuizzes}
+            remainingQuizzes={quizzesLeft}
+            setRemainingQuizzes={setQuizzesLeft}
             stats={stats}
             setStats={setStats}
             user={user}
@@ -576,7 +627,7 @@ export default function App() {
             formulas={formulas}
             onViewDetail={handleViewDetail}
             isPremium={isPremium}
-            remainingQuizzes={remainingQuizzes}
+            remainingQuizzes={quizzesLeft}
             stats={stats}
             todayStats={todayStats}
             userGrade={userGrade}

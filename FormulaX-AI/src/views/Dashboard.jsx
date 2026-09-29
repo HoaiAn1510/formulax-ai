@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, BarChart2, Flame, CheckCircle2, Circle } from "lucide-react";
+import { BookOpen, Search, Zap, ClipboardList, Crown, ChevronRight, LayoutGrid, Gem, BarChart2, Flame, CheckCircle2, Circle, Lock } from "lucide-react";
 import CountUp from "../components/CountUp";
 import Confetti from "../components/Confetti";
 import DailyChallengeCard from "../components/DailyChallengeCard";
+import GuestLockNotice from "../components/GuestLockNotice";
 import { getActivityData } from "../lib/supabase";
+import { useGuestGate } from "../utils/useGuestGate";
 
 // Số ngẫu nhiên có seed (từ chuỗi ngày hôm nay) — cùng 1 ngày luôn ra cùng thứ tự,
 // sang ngày khác thì đổi. Dùng để: (1) phá đồng hạng ổn định trong ngày, (2) cho user
@@ -56,6 +58,9 @@ export default function Dashboard({
   recentTopic,
   viewedFormulaIds,
 }) {
+  // Khách: chuỗi ngày học, nhiệm vụ, thống kê là tiến độ cá nhân → khóa. Gợi ý công thức và
+  // thử thách hằng ngày là nội dung → vẫn mở.
+  const { isGuest, requireGoogle } = useGuestGate();
   const firstName = displayName || user?.name?.split(" ").slice(-1)[0] || "bạn";
   const recommendedFormulas = useMemo(
     () => getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, viewedFormulaIds }, 3),
@@ -102,19 +107,21 @@ export default function Dashboard({
 
           {/* Streak banner */}
           <div
-            onClick={() => setActiveTab("progress")}
+            onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
             className="flex items-center justify-between bg-banner-flame rounded-2xl px-4 py-[13px] cursor-pointer text-white mb-4 shadow-[0_2px_6px_rgba(15,23,42,0.05)]"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-[10px] bg-white/15 flex items-center justify-center shrink-0">
-                <Flame size={18} />
+                {isGuest ? <Lock size={18} /> : <Flame size={18} />}
               </div>
               <div>
                 <div className="text-[0.88rem] font-bold">
-                  {streak ? `Chuỗi ${streak} ngày` : "Bắt đầu chuỗi học hôm nay!"}
+                  {isGuest ? "Chuỗi ngày học" : streak ? `Chuỗi ${streak} ngày` : "Bắt đầu chuỗi học hôm nay!"}
                 </div>
                 <div className="text-[0.7rem] opacity-75 mt-[1px]">
-                  {streak ? "Học hôm nay để giữ chuỗi liên tục" : "Học 1 lần hôm nay để bắt đầu chuỗi"}
+                  {isGuest
+                    ? "Đăng nhập Google để lưu chuỗi học mỗi ngày"
+                    : streak ? "Học hôm nay để giữ chuỗi liên tục" : "Học 1 lần hôm nay để bắt đầu chuỗi"}
                 </div>
               </div>
             </div>
@@ -174,23 +181,33 @@ export default function Dashboard({
               <h2 className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">
                 Nhiệm vụ hôm nay
               </h2>
-              <span className="text-xs font-bold text-accent">{doneCount}/{goals.length} hoàn thành</span>
+              {!isGuest && <span className="text-xs font-bold text-accent">{doneCount}/{goals.length} hoàn thành</span>}
             </div>
 
-            <div className="w-full h-2 bg-[#E5E7EB] dark:bg-[#334155] rounded-full overflow-hidden mb-3">
-              <div className="h-full rounded-full bg-progress-premium transition-[width] duration-500" style={{ width: `${(doneCount / goals.length) * 100}%` }} />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              {goals.map(g => (
-                <div key={g.key} className="flex items-center gap-2">
-                  {g.done ? <CheckCircle2 size={16} className="text-accent shrink-0" /> : <Circle size={16} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
-                  <span className={`text-[0.82rem] font-semibold ${g.done ? "text-primary dark:text-[#E2E8F0]" : "text-text-muted dark:text-[#94A3B8]"}`}>
-                    {g.label}
-                  </span>
+            {isGuest ? (
+              <GuestLockNotice
+                title="Đăng nhập Google để theo dõi nhiệm vụ"
+                description="Nhiệm vụ hằng ngày dựa trên tiến độ học được lưu theo tài khoản."
+                onClick={() => requireGoogle()}
+              />
+            ) : (
+              <>
+                <div className="w-full h-2 bg-[#E5E7EB] dark:bg-[#334155] rounded-full overflow-hidden mb-3">
+                  <div className="h-full rounded-full bg-progress-premium transition-[width] duration-500" style={{ width: `${(doneCount / goals.length) * 100}%` }} />
                 </div>
-              ))}
-            </div>
+
+                <div className="flex flex-col gap-2">
+                  {goals.map(g => (
+                    <div key={g.key} className="flex items-center gap-2">
+                      {g.done ? <CheckCircle2 size={16} className="text-accent shrink-0" /> : <Circle size={16} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
+                      <span className={`text-[0.82rem] font-semibold ${g.done ? "text-primary dark:text-[#E2E8F0]" : "text-text-muted dark:text-[#94A3B8]"}`}>
+                        {g.label}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           <DailyChallengeCard user={user} userGrade={userGrade} onAnswered={() => setDailyChallengeDone(true)} />
@@ -199,12 +216,12 @@ export default function Dashboard({
 
           {/* Analytics CTA Banner */}
           <div
-            onClick={() => setActiveTab("progress")}
+            onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
             className="flex items-center justify-between bg-banner-purple rounded-2xl px-4 py-[13px] cursor-pointer text-white mb-4 shadow-[0_2px_6px_rgba(15,23,42,0.05)]"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-[10px] bg-white/15 flex items-center justify-center shrink-0">
-                <BarChart2 size={18} />
+                {isGuest ? <Lock size={18} /> : <BarChart2 size={18} />}
               </div>
               <div>
                 <div className="text-[0.88rem] font-bold">Xem tiến độ học tập</div>
@@ -220,25 +237,36 @@ export default function Dashboard({
           <div className="flex justify-between items-center mb-[10px]">
             <h2 className="text-base font-extrabold text-primary dark:text-[#E2E8F0] m-0 flex items-center gap-2">Hôm nay</h2>
           </div>
-          <div className="glass-card grid grid-cols-3 py-4 mb-6 md:mb-8 dark:bg-[#1E293B] dark:border-[#334155]">
-            <div className="text-center py-2 border-r border-[#f1f5f9]">
-              <div className="text-[1.7rem] font-extrabold text-secondary"><CountUp value={todayStats?.formulasViewed ?? 0} /></div>
-              <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Công thức xem</div>
+          {isGuest ? (
+            <GuestLockNotice
+              className="mb-6 md:mb-8"
+              title="Đăng nhập Google để lưu thống kê học tập"
+              description="Số công thức đã xem, flashcard đã ôn và quiz đã làm được ghi lại theo tài khoản."
+              onClick={() => requireGoogle()}
+            />
+          ) : (
+            <div className="glass-card grid grid-cols-3 py-4 mb-6 md:mb-8 dark:bg-[#1E293B] dark:border-[#334155]">
+              <div className="text-center py-2 border-r border-[#f1f5f9]">
+                <div className="text-[1.7rem] font-extrabold text-secondary"><CountUp value={todayStats?.formulasViewed ?? 0} /></div>
+                <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Công thức xem</div>
+              </div>
+              <div className="text-center py-2 border-r border-[#f1f5f9]">
+                <div className="text-[1.7rem] font-extrabold text-success"><CountUp value={todayStats?.flashcardsStudied ?? 0} /></div>
+                <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Flashcard đã ôn</div>
+              </div>
+              <div className="text-center py-2">
+                <div className="text-[1.7rem] font-extrabold text-premium"><CountUp value={todayStats?.quizzesCompleted ?? 0} /></div>
+                <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Quiz hôm nay</div>
+              </div>
             </div>
-            <div className="text-center py-2 border-r border-[#f1f5f9]">
-              <div className="text-[1.7rem] font-extrabold text-success"><CountUp value={todayStats?.flashcardsStudied ?? 0} /></div>
-              <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Flashcard đã ôn</div>
-            </div>
-            <div className="text-center py-2">
-              <div className="text-[1.7rem] font-extrabold text-premium"><CountUp value={todayStats?.quizzesCompleted ?? 0} /></div>
-              <div className="text-xs font-bold text-text-muted dark:text-[#94A3B8] mt-1">Quiz hôm nay</div>
-            </div>
-          </div>
+          )}
 
           {/* Gợi ý hôm nay Section */}
           <div className="flex justify-between items-baseline mb-3">
             <h2 className="text-base font-extrabold text-primary dark:text-[#E2E8F0] m-0 flex items-center gap-2">Gợi ý hôm nay</h2>
-            <span className="text-xs text-text-muted dark:text-[#94A3B8] font-semibold">Dựa trên lịch sử học</span>
+            <span className="text-xs text-text-muted dark:text-[#94A3B8] font-semibold">
+              {isGuest ? "Đổi mới mỗi ngày" : "Dựa trên lịch sử học"}
+            </span>
           </div>
 
           <div className="flex flex-col gap-2 mb-6 md:mb-8">

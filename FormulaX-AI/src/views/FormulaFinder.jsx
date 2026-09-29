@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown } from "lucide-react";
+import { Send, ArrowLeft, History, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
-import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB } from "../lib/supabase";
+import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
+import { showToast } from "../components/Toast";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -32,21 +33,19 @@ function saveSessionsToStorage(key, sessions) {
   localStorage.setItem(key, JSON.stringify(sessions));
 }
 
+// Chỉ để hiển thị "Còn x/10". Hạn mức thật do backend đếm (bảng ai_usage_daily) — trước đây
+// đếm ở localStorage nên gọi thẳng API là bỏ qua được.
 const FREE_AI_LIMIT = 10;
 
-function getAiUsage(googleId) {
-  const today = new Date().toISOString().slice(0, 10);
-  try {
-    const raw = localStorage.getItem(`formulax_ai_${googleId}`);
-    if (!raw) return { count: 0, date: today };
-    const parsed = JSON.parse(raw);
-    return parsed.date === today ? parsed : { count: 0, date: today };
-  } catch { return { count: 0, date: today }; }
-}
+// Ví dụ hỏi đáp cho khách — cố định, KHÔNG gọi API. Chỉ hardcode id công thức; câu hỏi và lời
+// giải lấy nguyên văn từ field `example` của chính công thức đó trong formulas.js, nên không có
+// chữ toán nào do code hay AI tự sinh (quy tắc chống hallucination trong CLAUDE.md). Id không
+// còn tồn tại thì ví dụ đó tự bị bỏ qua.
+const GUEST_EXAMPLE_FORMULA_IDS = ["hh12-matcau-thetich", "ds10-phuongtrinh-bac2"];
 
-function saveAiUsage(googleId, count) {
-  const today = new Date().toISOString().slice(0, 10);
-  localStorage.setItem(`formulax_ai_${googleId}`, JSON.stringify({ count, date: today }));
+function splitExample(example) {
+  const [question, ...rest] = (example || "").split("\n");
+  return { question: question.trim(), solution: rest.join("\n").trim() };
 }
 
 export default function FormulaFinder({
@@ -60,14 +59,44 @@ export default function FormulaFinder({
   onAddSearchHistory,
   isPremium = false,
 }) {
-  const { user } = useAuth();
+  const { user, loginWithGoogle } = useAuth();
+  // AI Finder bắt buộc đăng nhập Google: khách thấy trang + ví dụ mẫu, ô nhập bị khóa. Backend
+  // cũng tự từ chối phiên ẩn danh (403), nên đây chỉ là lớp giao diện.
+  const isGuest = Boolean(user?.isAnonymous);
   const sessionsKey = `formulax_chat_sessions_${user?.googleId || "guest"}`;
 
-  const [aiQueriesLeft, setAiQueriesLeft] = useState(() => {
-    if (!user?.googleId) return FREE_AI_LIMIT;
-    const usage = getAiUsage(user.googleId);
-    return Math.max(0, FREE_AI_LIMIT - usage.count);
-  });
+  // null = chưa biết (đang tải). Số lượt thật lấy từ backend. Khách và Premium không dùng giá
+  // trị này (thanh đếm bị ẩn, handleSend không kiểm tra) nên không cần tải.
+  const [aiQueriesLeft, setAiQueriesLeft] = useState(null);
+
+  useEffect(() => {
+    if (isGuest || !user?.googleId || isPremium) return;
+    let alive = true;
+    (async () => {
+      try {
+        const token = await getAccessToken();
+        const res = await fetch(`${BACKEND_URL}/api/chat/usage`, {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (alive && typeof data.remaining === "number") setAiQueriesLeft(data.remaining);
+      } catch (err) {
+        // Không chặn người dùng chỉ vì không đọc được số lượt — backend vẫn tự kiểm tra khi gửi.
+        console.error("[AI Finder] Không tải được số lượt AI:", err);
+      }
+    })();
+    return () => { alive = false; };
+  }, [isGuest, user?.googleId, isPremium]);
+
+  const handleGuestLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      console.error("Đăng nhập Google thất bại:", err);
+      showToast("Đăng nhập Google thất bại. Vui lòng thử lại.", "error");
+    }
+  };
 
   const [messages, setMessages] = useState([]);
   const [query, setQuery] = useState("");
@@ -216,11 +245,16 @@ export default function FormulaFinder({
     // cho tới khi tải lại trang.
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000);
+    // Backend bắt buộc token để biết ai đang hỏi (đếm hạn mức, kiểm tra Premium, chặn khách).
+    const token = await getAccessToken();
     let response;
     try {
       response = await fetch(`${BACKEND_URL}/api/chat`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ message: userMessage, history: messageHistory }),
         signal: controller.signal,
       });
@@ -232,27 +266,30 @@ export default function FormulaFinder({
     }
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
-      throw new Error(errData.error || `HTTP ${response.status}`);
+      const err = new Error(errData.error || `HTTP ${response.status}`);
+      err.status = response.status;
+      // Có `remaining` nghĩa là 429 do hết hạn mức, phân biệt với 429 "AI đang bận" từ Groq.
+      err.remaining = errData.remaining;
+      throw err;
     }
     const data = await response.json();
     return data;
   };
 
+  const pushLimitHitMessage = (text) => {
+    setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text, isLimitHit: true }]);
+  };
+
   const handleSend = async (textToSend) => {
     if (!textToSend.trim() || isAnalyzing) return;
+    // Ô nhập đã khóa với khách; chốt thêm ở đây cho các đường gọi khác (camera, tệp đính kèm).
+    if (isGuest) return;
 
-    // Check daily AI limit for free users
-    if (!isPremium) {
-      const usage = getAiUsage(user?.googleId || "guest");
-      if (usage.count >= FREE_AI_LIMIT) {
-        setMessages(prev => [...prev, {
-          id: Date.now() + 1,
-          sender: "bot",
-          text: `Bạn đã dùng hết ${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`,
-          isLimitHit: true,
-        }]);
-        return;
-      }
+    // Chặn sớm khi đã biết chắc hết lượt, đỡ một vòng gọi mạng. Nếu số này cũ (vd. hỏi ở tab
+    // khác), backend vẫn trả 429 và được xử lý ở khối catch bên dưới.
+    if (!isPremium && aiQueriesLeft === 0) {
+      pushLimitHitMessage(`Bạn đã dùng hết ${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`);
+      return;
     }
 
     setApiError(null);
@@ -275,21 +312,15 @@ export default function FormulaFinder({
       return;
     }
 
-    // Deduct from free quota
-    if (!isPremium && user?.googleId) {
-      const usage = getAiUsage(user.googleId);
-      const newCount = usage.count + 1;
-      saveAiUsage(user.googleId, newCount);
-      setAiQueriesLeft(Math.max(0, FREE_AI_LIMIT - newCount));
-    }
-
     setIsAnalyzing(true);
     try {
       const historyForAPI = updatedMessages
         .filter(m => !m.isImage && !m.isFile)
         .slice(-6)
         .map(m => ({ sender: m.sender, text: m.text }));
-      const { reply, formulaId } = await callAI(textToSend, historyForAPI.slice(0, -1));
+      const { reply, formulaId, remaining } = await callAI(textToSend, historyForAPI.slice(0, -1));
+      // remaining = null với Premium (không giới hạn) → giữ nguyên, không hiện bộ đếm.
+      if (typeof remaining === "number") setAiQueriesLeft(remaining);
       const matchedFormula = formulaId ? formulas.find(f => f.id === formulaId) : null;
       const relatedFormulas = matchedFormula ? findRelatedFormulas(formulaId, matchedFormula) : [];
       setMessages(prev => [...prev, {
@@ -300,6 +331,11 @@ export default function FormulaFinder({
         related: relatedFormulas
       }]);
     } catch (error) {
+      if (error.status === 429 && error.remaining === 0) {
+        setAiQueriesLeft(0);
+        pushLimitHitMessage(error.message);
+        return;
+      }
       const isConn = error.message.includes("fetch") || error.message.includes("Failed");
       const errorMsg = isConn
         ? "Không thể kết nối tới backend. Hãy chắc chắn server đang chạy tại localhost:3001."
@@ -402,8 +438,16 @@ export default function FormulaFinder({
 
   // ─── Render ───────────────────────────────────────────────────────────────
 
+  const guestExamples = isGuest
+    ? GUEST_EXAMPLE_FORMULA_IDS.map(id => formulas.find(f => f.id === id)).filter(f => f?.example)
+    : [];
+
   return (
-    <div className="view-container !p-[10px] h-[calc(100vh-124px)] flex flex-col bg-page-gradient dark:bg-[#0F172A]">
+    // Trên mobile .view-container (App.css) là flex item `flex: 1` trong .app-container chỉ có
+    // min-height, nên kích thước của nó tính theo nội dung: chat dài hoặc ví dụ của khách kéo giãn
+    // cả khung và đẩy ô nhập ra khỏi màn hình thay vì cuộn bên trong. contain-size bỏ phần nội
+    // dung ra khỏi phép tính đó — view chỉ lấp đúng phần trống giữa header và thanh điều hướng.
+    <div className="view-container !p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page-gradient dark:bg-[#0F172A]">
 
       {/* Top action row */}
       <div className="flex justify-between items-center mb-2">
@@ -453,7 +497,14 @@ export default function FormulaFinder({
 
           <div className="text-[0.85rem] max-md:text-[0.8rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-2">Cuộc trò chuyện đã lưu</div>
 
-          {sessions.length === 0 ? (
+          {isGuest ? (
+            <div className="flex flex-col items-center text-center gap-2 py-4 px-2">
+              <Lock size={18} className="text-accent" />
+              <div className="text-[0.75rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
+                Đăng nhập Google để lưu và xem lại lịch sử trò chuyện.
+              </div>
+            </div>
+          ) : sessions.length === 0 ? (
             <div className="text-[0.75rem] text-[#999] py-2.5 text-center">
               Chưa có cuộc trò chuyện nào
             </div>
@@ -547,7 +598,46 @@ export default function FormulaFinder({
         {/* ─── Chat window ─── */}
         <div className="glass-card dark:bg-[#0F172A] flex flex-col flex-1 overflow-hidden">
           <div className="flex-1 py-5 px-4 overflow-y-auto flex flex-col gap-4 bg-transparent dark:bg-[#0F172A]" ref={chatMessagesRef}>
-            {messages.length === 0 ? (
+            {isGuest ? (
+              <div className="flex flex-col gap-4 w-full max-w-[640px] mx-auto">
+                <div className="flex flex-col items-center text-center gap-2 pt-2">
+                  <div className="w-14 h-14 rounded-full bg-accent-light dark:bg-accent/15 text-accent flex items-center justify-center">
+                    <Lock size={24} />
+                  </div>
+                  <h2 className="text-[1.2rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] m-0">
+                    Hỏi AI cần đăng nhập Google
+                  </h2>
+                  <p className="text-[0.82rem] text-text-muted dark:text-[#94A3B8] m-0 max-w-[420px] leading-[1.5]">
+                    Tài khoản Google miễn phí được hỏi {FREE_AI_LIMIT} lượt mỗi ngày. Dưới đây là ví dụ cách FormulaX AI trả lời.
+                  </p>
+                </div>
+
+                {guestExamples.map((formula) => {
+                  const { question, solution } = splitExample(formula.example);
+                  return (
+                    <div key={formula.id} className="flex flex-col gap-2.5 rounded-2xl border border-dashed border-[#E2E8F0] dark:border-[#334155] p-3.5">
+                      <span className="self-start text-[0.68rem] font-extrabold uppercase tracking-[0.5px] text-accent bg-accent-light dark:bg-accent/15 py-0.5 px-2 rounded-md">
+                        Ví dụ
+                      </span>
+                      <div className="self-end max-w-[85%] py-2.5 px-3.5 rounded-xl rounded-br-[2px] bg-accent text-white text-[0.85rem] leading-[1.5]">
+                        <RichTextRenderer text={question} />
+                      </div>
+                      <div className="self-start w-full md:max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] bg-white dark:bg-[#1E293B] flex flex-col gap-2.5">
+                        <div className="text-[0.95rem] font-extrabold text-primary dark:text-[#E2E8F0]">{formula.name}</div>
+                        <div className="bg-[#f8fafc] dark:bg-[#0F172A]/60 border border-[#E2E8F0] dark:border-[#334155] rounded-lg p-3 flex items-center justify-center !text-[#1E3A5F] dark:!text-[#E2E8F0]">
+                          <MathElement math={formula.latex} block={true} />
+                        </div>
+                        {solution && (
+                          <div className="chat-bot-text text-[0.85rem] leading-[1.6] text-primary dark:text-[#E2E8F0]">
+                            <RichTextRenderer text={solution} />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : messages.length === 0 ? (
               <div className="flex flex-col items-center text-center py-8 md:py-12 max-w-[500px] mx-auto gap-4">
                 <div className="w-[68px] h-[68px] rounded-full bg-secondary/8 text-secondary flex items-center justify-center">
                   <MessageSquare size={32} fill="rgba(59,130,246,0.1)" />
@@ -689,14 +779,16 @@ export default function FormulaFinder({
           </div>
 
           {/* Free user AI query counter */}
-          {!isPremium && (
+          {!isPremium && !isGuest && (
             <div className={`flex items-center justify-between py-1.5 px-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] text-[0.72rem] font-semibold ${
               aiQueriesLeft === 0 ? "bg-[rgba(239,68,68,0.04)] text-[#DC2626]" : "bg-[rgba(245,158,11,0.04)] text-[#92400E]"
             }`}>
               <span>
-                {aiQueriesLeft === 0
-                  ? "Đã dùng hết lượt hỏi AI hôm nay"
-                  : `Còn ${aiQueriesLeft}/${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay`
+                {aiQueriesLeft === null
+                  ? `Tối đa ${FREE_AI_LIMIT} lượt hỏi AI miễn phí mỗi ngày`
+                  : aiQueriesLeft === 0
+                    ? "Đã dùng hết lượt hỏi AI hôm nay"
+                    : `Còn ${aiQueriesLeft}/${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay`
                 }
               </span>
               <button
@@ -709,7 +801,27 @@ export default function FormulaFinder({
             </div>
           )}
 
-          {/* Chat input */}
+          {/* Chat input — khóa với khách, vẫn hiển thị để khách biết tính năng tồn tại */}
+          {isGuest ? (
+            <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <div
+                  aria-disabled="true"
+                  className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] flex-1 flex items-center gap-2 py-2.5 px-3 text-[0.85rem] text-[#94A3B8] cursor-not-allowed min-w-0"
+                >
+                  <Lock size={16} className="text-accent shrink-0" />
+                  <span className="truncate">Ô hỏi AI đang khóa ở chế độ khách</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleGuestLogin}
+                  className="shrink-0 bg-accent hover:bg-accent-hover text-white border-none rounded-[10px] py-2.5 px-4 text-[0.82rem] font-bold cursor-pointer transition-colors duration-200"
+                >
+                  Đăng nhập Google để hỏi AI
+                </button>
+              </div>
+            </div>
+          ) : (
           <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
             <div className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] flex items-center gap-2 py-1.5 px-3">
               <button type="button" onClick={() => setCameraOpen(true)}
@@ -740,7 +852,7 @@ export default function FormulaFinder({
               <button
                 type="button"
                 className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition duration-200 shrink-0 ${
-                  query.trim() && (isPremium || aiQueriesLeft > 0)
+                  query.trim() && (isPremium || aiQueriesLeft !== 0)
                     ? "bg-accent text-white"
                     : "bg-[#f1f5f9] text-text-muted"
                 }`}
@@ -752,6 +864,7 @@ export default function FormulaFinder({
               </button>
             </div>
           </div>
+          )}
         </div>
       </div>
 

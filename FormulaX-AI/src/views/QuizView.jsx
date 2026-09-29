@@ -6,6 +6,8 @@ import { saveQuizResult } from "../lib/supabase";
 import Confetti from "../components/Confetti";
 import { showConfirm } from "../components/ConfirmDialog";
 import { showToast } from "../components/Toast";
+import { useAuth } from "../context/AuthContext";
+import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from "../utils/guestQuiz";
 
 export default function QuizView({
   setActiveTab,
@@ -16,8 +18,22 @@ export default function QuizView({
   setStats,
   user,
 }) {
+  const { loginWithGoogle } = useAuth();
+  // Khách làm bài và xem đáp án bình thường, chỉ khác 2 điểm: lượt/ngày đếm ở localStorage
+  // (utils/guestQuiz.js) và kết quả không được lưu (saveQuizResult chỉ chạy khi có googleId).
+  const isGuest = Boolean(user?.isAnonymous);
+
   const [quizState, setQuizState] = useState("setup"); // setup, active, result
   const [showQuotaModal, setShowQuotaModal] = useState(false);
+
+  const handleGuestLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      console.error("Đăng nhập Google thất bại:", err);
+      showToast("Đăng nhập Google thất bại. Vui lòng thử lại.", "error");
+    }
+  };
   // Topic: allMode=true → tất cả chủ đề (other buttons disabled); allMode=false → chọn nhiều chủ đề
   const [allMode, setAllMode] = useState(true);
   const [selectedTopics, setSelectedTopics] = useState([]);
@@ -82,7 +98,11 @@ export default function QuizView({
   }, [timerActive, timeLeft, questions, userAnswers]);
 
   const startQuiz = () => {
-    if (!isPremium && remainingQuizzes <= 0) {
+    // Khách: đọc lại lượt từ localStorage ngay lúc bấm thay vì tin state — tab mở qua nửa đêm
+    // (giờ Việt Nam) vẫn được làm mới lượt đúng lúc.
+    const quizzesLeft = isGuest ? getGuestQuizRemaining() : remainingQuizzes;
+    if (isGuest) setRemainingQuizzes(quizzesLeft);
+    if (!isPremium && quizzesLeft <= 0) {
       setShowQuotaModal(true);
       return;
     }
@@ -167,7 +187,8 @@ export default function QuizView({
     setQuizState("result");
 
     if (!isPremium) {
-      setRemainingQuizzes(prev => Math.max(0, prev - 1));
+      if (isGuest) setRemainingQuizzes(consumeGuestQuiz());
+      else setRemainingQuizzes(prev => Math.max(0, prev - 1));
     }
 
     setStats(prev => ({
@@ -290,27 +311,45 @@ export default function QuizView({
                 <h2 className="text-[1.15rem] font-extrabold text-[#1E3A5F] mb-2">
                   Hết lượt quiz hôm nay!
                 </h2>
-                <p className="text-[0.83rem] text-text-muted leading-[1.55] mb-5">
-                  Bạn đã dùng hết <strong>10/10 lượt quiz miễn phí</strong> ngày hôm nay.
-                  Lượt sẽ được reset vào ngày mai — hoặc nâng cấp <strong>Premium</strong> để luyện không giới hạn!
-                </p>
+                {isGuest ? (
+                  <p className="text-[0.83rem] text-text-muted leading-[1.55] mb-5">
+                    Bạn đã dùng hết <strong>{GUEST_QUIZ_DAILY_LIMIT}/{GUEST_QUIZ_DAILY_LIMIT} lượt quiz của chế độ khách</strong> hôm nay.
+                    Lượt sẽ được làm mới vào ngày mai — hoặc đăng nhập Google để luyện tiếp và lưu kết quả.
+                  </p>
+                ) : (
+                  <p className="text-[0.83rem] text-text-muted leading-[1.55] mb-5">
+                    Bạn đã dùng hết <strong>10/10 lượt quiz miễn phí</strong> ngày hôm nay.
+                    Lượt sẽ được reset vào ngày mai — hoặc nâng cấp <strong>Premium</strong> để luyện không giới hạn!
+                  </p>
+                )}
 
-                {/* Highlight */}
-                <div className="bg-[linear-gradient(135deg,#FFFBEB,#FEF3C7)] border border-premium/25 rounded-xl py-3 px-4 mb-5 flex items-center justify-between">
-                  <div className="text-left">
-                    <div className="text-[0.7rem] text-[#92400E] font-bold mb-0.5">Premium</div>
-                    <div className="text-[0.82rem] font-extrabold text-[#1E3A5F]">Quiz không giới hạn mỗi ngày</div>
+                {/* Highlight — khách chưa có tài khoản để nâng cấp nên không mời mua Premium */}
+                {!isGuest && (
+                  <div className="bg-[linear-gradient(135deg,#FFFBEB,#FEF3C7)] border border-premium/25 rounded-xl py-3 px-4 mb-5 flex items-center justify-between">
+                    <div className="text-left">
+                      <div className="text-[0.7rem] text-[#92400E] font-bold mb-0.5">Premium</div>
+                      <div className="text-[0.82rem] font-extrabold text-[#1E3A5F]">Quiz không giới hạn mỗi ngày</div>
+                    </div>
+                    <div className="text-[0.9rem] font-extrabold text-premium">49.000đ/tháng</div>
                   </div>
-                  <div className="text-[0.9rem] font-extrabold text-premium">49.000đ/tháng</div>
-                </div>
+                )}
 
                 {/* Buttons */}
-                <button
-                  onClick={() => { setShowQuotaModal(false); setActiveTab("premium"); }}
-                  className="w-full py-3 rounded-xl border-none bg-[linear-gradient(135deg,#F59E0B,#EF4444)] text-white font-extrabold text-[0.9rem] cursor-pointer mb-2.5 flex items-center justify-center gap-2"
-                >
-                  <Crown size={16} /> Nâng cấp Premium ngay
-                </button>
+                {isGuest ? (
+                  <button
+                    onClick={() => { setShowQuotaModal(false); handleGuestLogin(); }}
+                    className="w-full py-3 rounded-xl border-none bg-accent hover:bg-accent-hover text-white font-extrabold text-[0.9rem] cursor-pointer mb-2.5 flex items-center justify-center gap-2 transition-colors duration-200"
+                  >
+                    Đăng nhập Google
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => { setShowQuotaModal(false); setActiveTab("premium"); }}
+                    className="w-full py-3 rounded-xl border-none bg-[linear-gradient(135deg,#F59E0B,#EF4444)] text-white font-extrabold text-[0.9rem] cursor-pointer mb-2.5 flex items-center justify-center gap-2"
+                  >
+                    <Crown size={16} /> Nâng cấp Premium ngay
+                  </button>
+                )}
                 <button
                   onClick={() => setShowQuotaModal(false)}
                   className="w-full py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-text-muted font-semibold text-[0.85rem] cursor-pointer"
@@ -557,7 +596,11 @@ export default function QuizView({
               {/* Footer limits */}
               <div className="text-left text-[0.8rem] text-text-muted mb-4 font-semibold pl-1 flex justify-between items-center">
                 <span>
-                  {isPremium ? "Premium — Không giới hạn lượt" : `Miễn phí — Còn ${remainingQuizzes}/10 lượt hôm nay`}
+                  {isPremium
+                    ? "Premium — Không giới hạn lượt"
+                    : isGuest
+                      ? `Chế độ khách — Còn ${remainingQuizzes}/${GUEST_QUIZ_DAILY_LIMIT} lượt hôm nay`
+                      : `Miễn phí — Còn ${remainingQuizzes}/10 lượt hôm nay`}
                 </span>
                 <span className="text-[#94A3B8] text-[0.72rem] text-right">
                   {allMode || selectedTopics.length === 0
@@ -845,10 +888,38 @@ export default function QuizView({
                   <p className="text-xs text-text-muted dark:text-[#94A3B8] flex items-center justify-center gap-1">
                     Lượt test miễn phí hôm nay: <strong>{isPremium ? "Không giới hạn" : `${remainingQuizzes} lượt`}</strong>
                   </p>
+                  {isGuest && (
+                    <p className="text-xs text-text-muted dark:text-[#94A3B8] flex items-center justify-center gap-1 mt-1.5 flex-wrap">
+                      <Lock size={11} className="text-accent" />
+                      <span>Chế độ khách không lưu kết quả.</span>
+                      <button
+                        type="button"
+                        onClick={handleGuestLogin}
+                        className="bg-transparent border-none p-0 text-accent font-bold underline cursor-pointer text-xs"
+                      >
+                        Đăng nhập Google để lưu tiến độ
+                      </button>
+                    </p>
+                  )}
                 </div>
 
                 <div className="summary-actions w-full">
-                  {!isPremium && remainingQuizzes <= 0 && (
+                  {isGuest && remainingQuizzes <= 0 && (
+                    <div className="premium-banner text-left mb-2">
+                      <div className="banner-badge">
+                        <Lock size={12} />
+                        <span>Hết lượt quiz của chế độ khách</span>
+                      </div>
+                      <p className="text-xs text-white">
+                        Đăng nhập Google để luyện tiếp hôm nay và lưu lại kết quả.
+                      </p>
+                      <button className="btn btn-premium" onClick={handleGuestLogin}>
+                        Đăng nhập Google
+                      </button>
+                    </div>
+                  )}
+
+                  {!isGuest && !isPremium && remainingQuizzes <= 0 && (
                     <div className="premium-banner text-left mb-2">
                       <div className="banner-badge">
                         <Crown size={12} fill="white" />

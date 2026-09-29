@@ -25,6 +25,16 @@ function throwIfError(label, error) {
   throw new Error(`${label} thất bại: ${error.message}${error.code ? ` (${error.code})` : ""}`);
 }
 
+/**
+ * Access token của phiên hiện tại (khách hoặc Google), để gửi kèm `Authorization: Bearer` khi
+ * gọi backend. Backend tự xác thực token và tự đọc is_anonymous — không gửi userId hay cờ nào
+ * do client tự khai.
+ */
+export async function getAccessToken() {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token || null;
+}
+
 /** Tải toàn bộ dữ liệu của một user */
 export async function loadUserData(googleId) {
   const today = new Date().toISOString().slice(0, 10);
