@@ -3,8 +3,6 @@ import { ArrowLeft, Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Spa
 import LegalModal from "../components/LegalModal";
 import GuestLockNotice from "../components/GuestLockNotice";
 import { useGuestGate } from "../utils/useGuestGate";
-import { useAuth } from "../context/AuthContext";
-import { showToast } from "../components/Toast";
 
 // Nút "đã khóa" đặt vào chỗ control của một dòng cài đặt — khách vẫn thấy tùy chọn tồn tại.
 function LockedControl({ label, onClick }) {
@@ -56,20 +54,10 @@ export default function SettingsView({
 }) {
   // Khách: giao diện sáng/tối và pháp lý vẫn dùng được; tên hiển thị, lớp học, thông báo là dữ
   // liệu theo tài khoản nên khóa.
-  const { isGuest, promptLogin } = useGuestGate();
-  const { loginWithGoogle } = useAuth();
+  const { isGuest, promptLogin, loginNow: handleGuestLogin } = useGuestGate();
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(displayName || "");
   const [legalDoc, setLegalDoc] = useState(null); // "terms" | "privacy" | null
-
-  const handleGuestLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (err) {
-      console.error("Đăng nhập Google thất bại:", err);
-      showToast("Đăng nhập Google thất bại. Vui lòng thử lại.", "error");
-    }
-  };
 
   const handleSaveName = () => {
     onSetDisplayName?.(nameInput.trim());

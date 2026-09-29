@@ -16,9 +16,8 @@ export function useGuestGate() {
   const { user, loginWithGoogle } = useAuth();
   const isGuest = Boolean(user?.isAnonymous);
 
-  const promptLogin = useCallback(async (message = GUEST_LOCK_MESSAGE) => {
-    const ok = await showConfirm(message, { confirmLabel: "Đăng nhập Google", cancelLabel: "Đóng" });
-    if (!ok) return;
+  // Đăng nhập Google ngay (cho các nút CTA "Đăng nhập" rõ ràng, không cần hỏi lại).
+  const loginNow = useCallback(async () => {
     try {
       await loginWithGoogle();
     } catch (err) {
@@ -27,6 +26,11 @@ export function useGuestGate() {
     }
   }, [loginWithGoogle]);
 
+  const promptLogin = useCallback(async (message = GUEST_LOCK_MESSAGE) => {
+    const ok = await showConfirm(message, { confirmLabel: "Đăng nhập Google", cancelLabel: "Đóng" });
+    if (ok) await loginNow();
+  }, [loginNow]);
+
   // Trả true nếu được dùng tiếp. Với khách: mở hộp thoại và trả false để nơi gọi dừng lại.
   const requireGoogle = useCallback((message) => {
     if (!isGuest) return true;
@@ -34,5 +38,5 @@ export function useGuestGate() {
     return false;
   }, [isGuest, promptLogin]);
 
-  return { isGuest, requireGoogle, promptLogin };
+  return { isGuest, requireGoogle, promptLogin, loginNow };
 }

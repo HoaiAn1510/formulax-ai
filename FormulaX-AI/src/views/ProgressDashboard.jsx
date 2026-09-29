@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award } from "lucide-react";
+import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award, LogIn } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
+import { useGuestGate } from "../utils/useGuestGate";
 import CountUp from "../components/CountUp";
 import { showToast } from "../components/Toast";
 import { BADGES } from "../data/badges";
@@ -333,6 +334,9 @@ function getFormulasForQuizTopic(quizTopic, formulas) {
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function ProgressDashboard({ user, formulas, setActiveTab, onViewDetail, isPremium, stats }) {
+  // Toàn bộ trang là tiến độ cá nhân → khóa với khách: vẫn hiện bố cục (làm mờ, không bấm
+  // được) để khách thấy tính năng tồn tại, kèm nút đăng nhập ở đầu trang.
+  const { isGuest, loginNow } = useGuestGate();
   const [selectedDate, setSelectedDate]   = useState(new Date().toISOString().slice(0, 10));
   const [streak, setStreak]               = useState(0);
   const [activityDates, setActivityDates] = useState([]);
@@ -423,8 +427,26 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             </div>
           </div>
 
+          {/* Guest gate — khách chưa có tài khoản nên mời đăng nhập, không mời mua Premium */}
+          {isGuest && (
+            <div className="bg-banner-purple rounded-2xl p-5 text-white text-center mb-5 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+              <Lock size={26} color="#F59E0B" className="mx-auto mb-2.5" />
+              <h3 className="m-0 mb-1.5 text-base font-extrabold">Đăng nhập Google để xem tiến độ học tập</h3>
+              <p className="m-0 mb-3.5 text-[0.8rem] opacity-85">
+                Chế độ khách không lưu kết quả quiz, flashcard hay chuỗi ngày học nên chưa có gì để phân tích.
+              </p>
+              <button
+                onClick={loginNow}
+                className="bg-accent hover:bg-accent-hover text-white border-none rounded-[10px] py-2.5 px-6 text-[0.85rem] font-extrabold cursor-pointer inline-flex items-center gap-1.5 transition-colors duration-200"
+              >
+                <LogIn size={14} />
+                Đăng nhập Google
+              </button>
+            </div>
+          )}
+
           {/* Premium gate */}
-          {!isPremium && (
+          {!isGuest && !isPremium && (
             <div className="bg-banner-purple rounded-2xl p-5 text-white text-center mb-5 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
               <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-2.5" />
               <h3 className="m-0 mb-1.5 text-base font-extrabold">Tính năng Premium</h3>
@@ -441,6 +463,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             </div>
           )}
 
+          <div className={isGuest ? "blur-[3px] pointer-events-none select-none opacity-70" : undefined} inert={isGuest}>
           {/* Stat cards: 2-column row — scoped to the day selected on the calendar below */}
           <div className="grid grid-cols-2 gap-2.5 mb-3">
             <StatCard icon={<ClipboardList size={20} />} value={selectedDayData.quizzes.length}      label="Quiz đã làm" sublabel={selectedDateLabel} color="#3B82F6" />
@@ -616,6 +639,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
               </div>
             </div>
             <Layers size={22} className="opacity-90 shrink-0" />
+          </div>
           </div>
         </div>
       </div>

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import {
   LayoutDashboard, BookOpen, Sparkles, Layers, GraduationCap,
-  LogOut, Bell, ChevronDown, User, Settings,
+  LogOut, Bell, ChevronDown, User, Settings, LogIn, Lock, UserRound,
 } from "lucide-react";
+import { useGuestGate } from "../utils/useGuestGate";
 
 // Class dùng chung cho mọi nav-item (5 tab chính + Cài đặt/Thông báo/Tài khoản + Đăng xuất).
 // Mobile: giữ nguyên pill xanh như cũ (không đổi). Desktop: sidebar luôn nền navy #16243A bất kể
@@ -40,6 +41,9 @@ export default function BottomNav({
   user, isLoggedIn, isPremium,
   notifications, onOpenNotifications,
 }) {
+  // Trên desktop sidebar thay cho Header (Header chỉ hiện ở mobile) — nên chỉ báo "Chế độ
+  // khách" + nút đăng nhập của desktop nằm ở đây.
+  const { isGuest, loginNow } = useGuestGate();
   const [accountOpen, setAccountOpen] = useState(false);
   const [notifOpen, setNotifOpen]     = useState(false);
 
@@ -75,6 +79,24 @@ export default function BottomNav({
         <img src="/favicon.svg" alt="FormulaX" className="w-8 h-8 object-cover shrink-0" />
         <span className={`font-extrabold text-[1.15rem] text-primary max-md:dark:text-[#E2E8F0] md:!text-white tracking-[-0.5px] ${collapsibleLabel}`}>FormulaX AI</span>
       </div>
+
+      {/* Chế độ khách — nhãn luôn thấy kể cả khi sidebar thu gọn, nút đăng nhập màu amber nổi
+          trên nền navy. Chỉ desktop: mobile đã có dải tương tự ở Header. */}
+      {isGuest && (
+        <div className="hidden md:flex flex-col items-center gap-2 px-2 pb-3 mb-1">
+          <span className="text-[0.62rem] font-extrabold uppercase tracking-wider text-[#FCD34D] bg-accent/20 rounded-md px-1.5 py-0.5 whitespace-nowrap">
+            Khách
+          </span>
+          <button
+            onClick={loginNow}
+            title="Đăng nhập Google"
+            className="flex items-center justify-center md:group-hover/sidebar:justify-start gap-0 md:group-hover/sidebar:gap-3 w-full h-11 px-3 rounded-xl bg-accent hover:bg-accent-hover text-white border-none cursor-pointer text-[0.85rem] font-bold transition-colors duration-200"
+          >
+            <LogIn size={18} className="shrink-0" />
+            <span className={collapsibleLabel}>Đăng nhập Google</span>
+          </button>
+        </div>
+      )}
 
       {/* Main nav tabs */}
       {tabs.map((tab) => {
@@ -126,7 +148,12 @@ export default function BottomNav({
 
         {notifOpen && (
           <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] border border-[#EEF2FF] max-md:dark:border-[#334155] md:!border-[#0F172A] p-2 bg-white max-md:dark:bg-[#1E293B] md:!bg-[#0F172A] flex flex-col gap-1.5 max-h-[160px] overflow-y-auto">
-            {notifList.length === 0 ? (
+            {isGuest ? (
+              <p className="text-[0.72rem] text-[#94A3B8] text-center py-1.5 m-0 leading-[1.45]">
+                <Lock size={12} className="inline mr-1 -mt-0.5 text-accent" />
+                Đăng nhập Google để nhận thông báo học tập.
+              </p>
+            ) : notifList.length === 0 ? (
               <p className="text-[0.72rem] text-[#94A3B8] text-center py-1.5 m-0">Chưa có thông báo nào.</p>
             ) : notifList.map(n => (
               <div key={n.id} className={`px-2 py-1.5 rounded-md text-[0.72rem] leading-[1.35] border-l-[3px] ${n.unread ? "bg-[rgba(46,134,222,0.05)] border-l-[#2E86DE]" : "bg-transparent border-l-transparent"}`}>
@@ -145,14 +172,16 @@ export default function BottomNav({
         >
           <ActiveAccentBar show={accountOpen} />
           <div className={navIconClass(accountOpen)}>
-            {isLoggedIn && user?.picture ? (
+            {isGuest ? (
+              <UserRound size={18} />
+            ) : isLoggedIn && user?.picture ? (
               <img src={user.picture} referrerPolicy="no-referrer" alt=""
                 className="w-5 h-5 rounded-full object-cover" />
             ) : (
               <User size={18} />
             )}
           </div>
-          <span className={collapsibleLabel}>Tài khoản</span>
+          <span className={collapsibleLabel}>{isGuest ? "Khách" : "Tài khoản"}</span>
           <div className="hidden md:group-hover/sidebar:flex items-center gap-1 md:ml-auto shrink-0">
             {isPremium && (
               <span className="text-[0.55rem] bg-[linear-gradient(135deg,#D97706,#F59E0B)] text-white py-px px-1 rounded-[3px] font-bold shrink-0">PRO</span>
@@ -165,7 +194,11 @@ export default function BottomNav({
           <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] bg-secondary/4 max-md:dark:bg-secondary/6 md:!bg-[#0F172A] border border-[#EEF2FF] max-md:dark:border-[#334155] md:!border-[#0F172A] overflow-hidden">
             {/* Avatar + name + email header */}
             <div className="flex items-center gap-2.5 py-2.5 px-3 bg-[linear-gradient(135deg,#1E3A5F_0%,#2563EB_100%)]">
-              {user?.picture ? (
+              {isGuest ? (
+                <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
+                  <UserRound size={18} />
+                </div>
+              ) : user?.picture ? (
                 <img src={user.picture} referrerPolicy="no-referrer" alt="" className="w-9 h-9 rounded-full border-2 border-white/35 object-cover shrink-0" />
               ) : (
                 <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-base font-extrabold text-white shrink-0">
@@ -173,21 +206,24 @@ export default function BottomNav({
                 </div>
               )}
               <div className="min-w-0">
-                <div className="text-[0.78rem] font-bold text-white truncate">{displayName || user?.name || "Người dùng"}</div>
-                <div className="text-[0.63rem] text-white/60 truncate">{user?.email || ""}</div>
+                <div className="text-[0.78rem] font-bold text-white truncate">{isGuest ? "Chế độ khách" : displayName || user?.name || "Người dùng"}</div>
+                <div className="text-[0.63rem] text-white/60 truncate">{isGuest ? "Chưa đăng nhập — không lưu tiến độ" : user?.email || ""}</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Đăng xuất — tách riêng, luôn hiện, không nằm trong dropdown Tài khoản */}
+        {/* Đăng xuất — tách riêng, luôn hiện, không nằm trong dropdown Tài khoản. Với khách là
+            thoát phiên ẩn danh (quay về màn đăng nhập), dùng màu trung tính thay vì đỏ. */}
         <button
-          className="w-full flex items-center gap-2.5 md:px-3 md:mx-2 md:w-[calc(100%-16px)] h-11 bg-transparent border-none cursor-pointer text-error text-[0.85rem] font-semibold text-left rounded-xl hover:bg-error/6 mt-1"
+          className={`w-full flex items-center gap-2.5 md:px-3 md:mx-2 md:w-[calc(100%-16px)] h-11 bg-transparent border-none cursor-pointer text-[0.85rem] font-semibold text-left rounded-xl mt-1 ${
+            isGuest ? "text-[#94A3B8] hover:bg-white/8" : "text-error hover:bg-error/6"
+          }`}
           onClick={onLogout}
-          title="Đăng xuất"
+          title={isGuest ? "Thoát chế độ khách" : "Đăng xuất"}
         >
           <div className={navIconClass(false)}><LogOut size={16} /></div>
-          <span className={collapsibleLabel}>Đăng xuất</span>
+          <span className={collapsibleLabel}>{isGuest ? "Thoát chế độ khách" : "Đăng xuất"}</span>
         </button>
       </div>
     </nav>

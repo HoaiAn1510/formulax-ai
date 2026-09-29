@@ -6,7 +6,7 @@ import { saveQuizResult } from "../lib/supabase";
 import Confetti from "../components/Confetti";
 import { showConfirm } from "../components/ConfirmDialog";
 import { showToast } from "../components/Toast";
-import { useAuth } from "../context/AuthContext";
+import { useGuestGate } from "../utils/useGuestGate";
 import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from "../utils/guestQuiz";
 
 export default function QuizView({
@@ -18,22 +18,13 @@ export default function QuizView({
   setStats,
   user,
 }) {
-  const { loginWithGoogle } = useAuth();
+  const { loginNow: handleGuestLogin } = useGuestGate();
   // Khách làm bài và xem đáp án bình thường, chỉ khác 2 điểm: lượt/ngày đếm ở localStorage
   // (utils/guestQuiz.js) và kết quả không được lưu (saveQuizResult chỉ chạy khi có googleId).
   const isGuest = Boolean(user?.isAnonymous);
 
   const [quizState, setQuizState] = useState("setup"); // setup, active, result
   const [showQuotaModal, setShowQuotaModal] = useState(false);
-
-  const handleGuestLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (err) {
-      console.error("Đăng nhập Google thất bại:", err);
-      showToast("Đăng nhập Google thất bại. Vui lòng thử lại.", "error");
-    }
-  };
   // Topic: allMode=true → tất cả chủ đề (other buttons disabled); allMode=false → chọn nhiều chủ đề
   const [allMode, setAllMode] = useState(true);
   const [selectedTopics, setSelectedTopics] = useState([]);

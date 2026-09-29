@@ -3,7 +3,7 @@ import { Send, ArrowLeft, History, MessageSquare, Camera, X, Paperclip, FileText
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
-import { showToast } from "../components/Toast";
+import { useGuestGate } from "../utils/useGuestGate";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -59,7 +59,8 @@ export default function FormulaFinder({
   onAddSearchHistory,
   isPremium = false,
 }) {
-  const { user, loginWithGoogle } = useAuth();
+  const { user } = useAuth();
+  const { loginNow: handleGuestLogin } = useGuestGate();
   // AI Finder bắt buộc đăng nhập Google: khách thấy trang + ví dụ mẫu, ô nhập bị khóa. Backend
   // cũng tự từ chối phiên ẩn danh (403), nên đây chỉ là lớp giao diện.
   const isGuest = Boolean(user?.isAnonymous);
@@ -89,14 +90,6 @@ export default function FormulaFinder({
     return () => { alive = false; };
   }, [isGuest, user?.googleId, isPremium]);
 
-  const handleGuestLogin = async () => {
-    try {
-      await loginWithGoogle();
-    } catch (err) {
-      console.error("Đăng nhập Google thất bại:", err);
-      showToast("Đăng nhập Google thất bại. Vui lòng thử lại.", "error");
-    }
-  };
 
   const [messages, setMessages] = useState([]);
   const [query, setQuery] = useState("");

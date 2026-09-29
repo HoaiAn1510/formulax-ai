@@ -1,6 +1,7 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
-import { Crown, Check, X, ShieldCheck, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown } from "lucide-react";
+import { Crown, Check, X, ShieldCheck, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useGuestGate } from "../utils/useGuestGate";
 import { supabase } from "../lib/supabase";
 import { showToast } from "../components/Toast";
 
@@ -99,6 +100,9 @@ function formatExpiry(premiumExpiry) {
 
 export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry, setPremiumExpiry, setActiveTab }) {
   const { user } = useAuth();
+  // Khách xem được bảng giá nhưng không tạo được đơn: backend (/payos/create) vốn đã từ chối
+  // token không có Google identity; ở đây chặn sớm để hiện hộp thoại mời đăng nhập thay vì lỗi 401.
+  const { isGuest, promptLogin } = useGuestGate();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending", text }
@@ -155,6 +159,10 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   }, [user?.googleId, setIsPremium, setPremiumExpiry]);
 
   const handleUpgrade = async (plan = "monthly") => {
+    if (isGuest) {
+      promptLogin("Đăng nhập Google để nâng cấp Premium. Chế độ khách không tạo được đơn thanh toán.");
+      return;
+    }
     if (!user?.googleId) {
       showToast("Vui lòng đăng nhập trước khi nâng cấp Premium.", "error");
       return;
@@ -293,7 +301,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             disabled={isProcessing}
             className="btn btn-premium h-9 px-4 text-[0.8rem] shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {isProcessing ? <Loader2 size={13} className="animate-spin" /> : <span>Nâng cấp</span>}
+            {isProcessing ? <Loader2 size={13} className="animate-spin" /> : <>{isGuest && <Lock size={13} />}<span>Nâng cấp</span></>}
           </button>
         </div>
       )}
@@ -429,6 +437,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     <Loader2 size={14} className="animate-spin" />
                   ) : (
                     <>
+                      {isGuest && <Lock size={14} />}
                       <span>{isPremium ? "Gia hạn ngay" : "Nâng cấp Pro ngay"}</span>
                       <Crown size={14} fill="white" />
                     </>
@@ -600,7 +609,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     onClick={() => handleUpgrade(selectedPlan)}
                     disabled={isProcessing}
                   >
-                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Thanh toán qua PayOS</span>}
+                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <>{isGuest && <Lock size={14} />}<span>Thanh toán qua PayOS</span></>}
                   </button>
                 </div>
               </div>
@@ -663,7 +672,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     onClick={() => handleUpgrade(selectedPlan)}
                     disabled={isProcessing}
                   >
-                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Nâng cấp Premium</span>}
+                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <>{isGuest && <Lock size={14} />}<span>Nâng cấp Premium</span></>}
                   </button>
                   <button
                     className="btn btn-secondary h-[42px] text-[0.85rem] px-5 rounded-lg"
