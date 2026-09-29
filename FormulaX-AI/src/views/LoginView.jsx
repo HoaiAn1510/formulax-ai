@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ArrowLeft, Mail, Lock, Eye, EyeOff, LayoutGrid, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import LegalModal from "../components/LegalModal";
 
@@ -15,16 +15,15 @@ function GoogleIcon() {
   );
 }
 
-export default function LoginView() {
-  const { loginWithGoogle } = useAuth();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState("login");
+function Spinner() {
+  return <div className="w-[18px] h-[18px] rounded-full border-2 border-[#CBD5E1] border-t-accent animate-spin" />;
+}
 
-  // Email/password fields (demo only — no real backend auth)
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+export default function LoginView() {
+  const { loginWithGoogle, loginAsGuest } = useAuth();
+  // "google" | "guest" | null — chỉ 1 trong 2 nút có thể đang xử lý cùng lúc.
+  const [loadingAction, setLoadingAction] = useState(null);
+  const [error, setError] = useState("");
   const [legalDoc, setLegalDoc] = useState(null); // "terms" | "privacy" | null
 
   // Đăng nhập Google qua Supabase Auth. Khác luồng cũ ở hai điểm: (1) đây là redirect cả
@@ -32,7 +31,7 @@ export default function LoginView() {
   // dùng đóng popup; (2) khi quay về, phiên do Supabase cấp và AuthContext tự nhận qua
   // onAuthStateChange, không cần gọi login() thủ công nữa.
   const googleLogin = async () => {
-    setLoading(true);
+    setLoadingAction("google");
     setError("");
     try {
       await loginWithGoogle();
@@ -40,13 +39,27 @@ export default function LoginView() {
     } catch (err) {
       console.error("Đăng nhập Google thất bại:", err);
       setError("Đăng nhập Google thất bại. Vui lòng thử lại.");
-      setLoading(false);
+      setLoadingAction(null);
     }
   };
 
-  const handleEmailLogin = (e) => {
-    e.preventDefault();
-    setError("Tính năng đăng nhập bằng email đang phát triển. Vui lòng dùng Google.");
+  // "Dùng thử không cần đăng nhập" — không redirect, AuthContext tự nhận phiên ẩn danh mới qua
+  // onAuthStateChange và App.jsx tự chuyển sang màn hình chính (isLoggedIn = !!user đã đúng cho
+  // cả phiên ẩn danh, xem AuthContext.jsx).
+  const guestLogin = async () => {
+    setLoadingAction("guest");
+    setError("");
+    try {
+      await loginAsGuest();
+    } catch (err) {
+      console.error("Vào chế độ khách thất bại:", err);
+      setError(
+        err.message?.includes("Anonymous sign-ins are disabled")
+          ? "Chế độ khách hiện chưa mở. Vui lòng đăng nhập bằng Google."
+          : "Không vào được chế độ khách. Vui lòng thử lại."
+      );
+      setLoadingAction(null);
+    }
   };
 
   return (
@@ -67,36 +80,16 @@ export default function LoginView() {
           </div>
         </div>
 
-        {/* Tab */}
-        <div className="flex bg-[#F1F5F9] dark:bg-[#0F172A] rounded-[10px] p-1">
-          {["login", "register"].map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-2 border-none rounded-[7px] text-[0.85rem] cursor-pointer transition-all duration-200 ${
-                activeTab === tab
-                  ? "bg-white dark:bg-[#1E293B] text-[#1E3A5F] dark:text-[#E2E8F0] font-bold shadow-[0_1px_4px_rgba(0,0,0,0.08)]"
-                  : "bg-transparent text-text-muted dark:text-[#94A3B8] font-semibold"
-              }`}
-            >
-              {tab === "login" ? "Đăng nhập" : "Đăng ký"}
-            </button>
-          ))}
-        </div>
-
-        {/* Google Sign-In Button */}
+        {/* Google Sign-In — nút chính */}
         <button
           onClick={googleLogin}
-          disabled={loading}
+          disabled={!!loadingAction}
           className={`flex items-center justify-center gap-2.5 w-full h-[46px] rounded-[10px] border-[1.5px] border-[#E2E8F0] dark:border-[#334155] text-[0.9rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] ${
-            loading ? "bg-[#F8FAFC] dark:bg-[#0F172A] cursor-not-allowed" : "bg-white dark:bg-[#1E293B] cursor-pointer"
+            loadingAction ? "bg-[#F8FAFC] dark:bg-[#0F172A] cursor-not-allowed" : "bg-white dark:bg-[#1E293B] cursor-pointer"
           }`}
         >
-          {loading ? (
-            <div className="w-[18px] h-[18px] rounded-full border-2 border-[#CBD5E1] border-t-accent animate-spin" />
-          ) : <GoogleIcon />}
-          <span>{loading ? "Đang đăng nhập..." : `${activeTab === "login" ? "Đăng nhập" : "Đăng ký"} với Google`}</span>
+          {loadingAction === "google" ? <Spinner /> : <GoogleIcon />}
+          <span>{loadingAction === "google" ? "Đang đăng nhập..." : "Đăng nhập với Google"}</span>
         </button>
 
         {/* Error message */}
@@ -110,54 +103,26 @@ export default function LoginView() {
         {/* Divider */}
         <div className="flex items-center gap-2.5">
           <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-[#334155]" />
-          <span className="text-[0.72rem] text-[#94A3B8] font-medium">hoặc dùng email</span>
+          <span className="text-[0.72rem] text-[#94A3B8] font-medium">hoặc</span>
           <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-[#334155]" />
         </div>
 
-        {/* Email/Password Form */}
-        <form onSubmit={handleEmailLogin} className="flex flex-col gap-3.5">
-          <div>
-            <label className="text-[0.78rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] block mb-1.5">Email</label>
-            <div className="relative flex items-center">
-              <Mail size={15} className="absolute left-3 text-[#94A3B8]" />
-              <input
-                type="email"
-                placeholder="ban@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="pl-[38px] w-full h-[42px] rounded-lg border-[1.5px] border-[#E2E8F0] dark:border-[#334155] text-[0.85rem] text-[#1E3A5F] dark:text-[#E2E8F0] bg-white dark:bg-[#0F172A] outline-none box-border focus:border-accent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="text-[0.78rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] block mb-1.5">Mật khẩu</label>
-            <div className="relative flex items-center">
-              <Lock size={15} className="absolute left-3 text-[#94A3B8]" />
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Nhập mật khẩu"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="pl-[38px] pr-[38px] w-full h-[42px] rounded-lg border-[1.5px] border-[#E2E8F0] dark:border-[#334155] text-[0.85rem] text-[#1E3A5F] dark:text-[#E2E8F0] bg-white dark:bg-[#0F172A] outline-none box-border focus:border-accent"
-              />
-              <button aria-label="Hiện hoặc ẩn mật khẩu"
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 bg-transparent border-none cursor-pointer text-[#94A3B8] flex"
-              >
-                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
-            </div>
-          </div>
-
+        {/* Dùng thử không cần đăng nhập — nút phụ: chỉ viền, không tô nền */}
+        <div className="flex flex-col gap-2">
           <button
-            type="submit"
-            className="w-full h-[42px] rounded-lg text-[0.88rem] font-bold mt-1 bg-accent text-white border-none cursor-pointer"
+            onClick={guestLogin}
+            disabled={!!loadingAction}
+            className={`flex items-center justify-center gap-2 w-full h-[46px] rounded-[10px] border-[1.5px] border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[0.85rem] font-bold text-text-muted dark:text-[#94A3B8] transition-all duration-200 hover:bg-[#F8FAFC] dark:hover:bg-[#334155]/40 ${
+              loadingAction ? "cursor-not-allowed opacity-70" : "cursor-pointer"
+            }`}
           >
-            {activeTab === "login" ? "Đăng nhập" : "Đăng ký"}
+            {loadingAction === "guest" && <Spinner />}
+            <span>{loadingAction === "guest" ? "Đang vào..." : "Dùng thử không cần đăng nhập"}</span>
           </button>
-        </form>
+          <p className="text-[0.72rem] text-[#94A3B8] text-center leading-[1.5] m-0">
+            Chế độ khách: tra cứu đầy đủ và 10 lượt Quiz mỗi ngày. Đăng nhập Google để dùng AI và lưu tiến độ.
+          </p>
+        </div>
       </div>
 
       {/* Footer */}

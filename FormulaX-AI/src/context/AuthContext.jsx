@@ -32,6 +32,11 @@ function mapSessionToUser(session) {
     email: u.email || "",
     picture: meta.avatar_url || meta.picture || "",
     googleId: extractGoogleId(u),
+    // `is_anonymous` do Supabase set thẳng trên user object khi đăng nhập qua
+    // signInAnonymously() — không phải thứ client tự khai nên tin được để hiển thị UI. Phân
+    // quyền dữ liệu thật (RLS, backend) vẫn tự tra lại is_anonymous từ JWT, không dựa vào cờ
+    // này ở phía client.
+    isAnonymous: Boolean(u.is_anonymous),
   };
 }
 
@@ -73,10 +78,31 @@ export function AuthProvider({ children }) {
   }, [user]);
 
   const loginWithGoogle = async () => {
+    // Từ chế độ khách bấm "Đăng nhập Google": đăng xuất phiên ẩn danh trước rồi mới đăng nhập
+    // Google bình thường — KHÔNG liên kết 2 phiên (khách không có dữ liệu cá nhân gì để giữ lại,
+    // xem CLAUDE.md phần "Chuyển khách → Google"). Nếu không signOut trước, phiên ẩn danh cũ vẫn
+    // nằm trong localStorage cho tới khi redirect quay về, gây nhầm lẫn trạng thái tạm thời.
+    if (user?.isAnonymous) {
+      await supabase.auth.signOut();
+    }
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: window.location.origin },
     });
+    if (error) throw error;
+  };
+
+  // "Dùng thử không cần đăng nhập" — tạo phiên ẩn danh thật qua Supabase Auth (không phải user
+  // giả ở client) để RLS đối chiếu được is_anonymous. Cần bật "Anonymous Sign-ins" trên Supabase
+  // Dashboard trước, nếu chưa bật thì signInAnonymously() trả lỗi rõ ràng, không phải lỗi mơ hồ.
+  //
+  // Kiểm tra getSession() trước khi tạo mới: nếu trang này được gọi lại trong khi đã có phiên
+  // (khách hoặc Google), không tạo thêm 1 user ẩn danh mới — tránh phình số lượng user ảo mỗi
+  // lần bấm nhầm hoặc mỗi lần LoginView mount lại.
+  const loginAsGuest = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) return;
+    const { error } = await supabase.auth.signInAnonymously();
     if (error) throw error;
   };
 
@@ -86,7 +112,20 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, authLoading, loginWithGoogle, logout, isLoggedIn: !!user }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        authLoading,
+        loginWithGoogle,
+        loginAsGuest,
+        logout,
+        // `isLoggedIn` nghĩa là "có phiên" (khách ẩn danh HOẶC Google) — đây là điều kiện duy
+        // nhất App.jsx cần để cho vào xem nội dung (đúng nguyên tắc "nội dung mở cho tất cả").
+        // Muốn biết có phải tài khoản Google thật để mở khoá cá nhân hóa thì dùng `user?.googleId`
+        // (đã là quy ước sẵn có khắp App.jsx) hoặc `!user?.isAnonymous`.
+        isLoggedIn: !!user,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
