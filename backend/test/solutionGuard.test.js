@@ -137,17 +137,26 @@ test("guard: bước chỉ thay số (số có trong đề/công thức) đượ
   assert.equal(removedSteps.length, 0);
 });
 
-test("guard: bước có kết quả tính ra (216, 288) được thay bằng bước trung tính, reminder có số lạ bị thay", () => {
+test("guard: bước có kết quả tính ra (216, 288) bị lọc, reminder có số lạ bị thay", () => {
   const { answer, removedSteps, replaced } = applyNumberGuard(sphereAnswer([
     { title: "Thay số", detail: "Thay $R = 6$:", expression: String.raw`V = \frac{4}{3}\pi \cdot 6^3` },
     { title: "Tính", detail: "Ta có $6^3 = 216$.", expression: String.raw`V = 288\pi` },
   ], { reminder: "Đáp án là 288π" }), { ...sphereCtx, formulaNames: ["Thể tích khối cầu"] });
-  assert.equal(answer.steps.length, 2);
-  assert.equal(answer.steps[1].title, "Thay số vào công thức");
-  assert.equal(answer.steps[1].detail, "Thay các dữ kiện vào công thức Thể tích khối cầu (xem thẻ ở trên), giữ nguyên các phép toán, chưa tính.");
+  // Bước trước đã thay số cho chính V → không thêm bước trung tính lặp lại.
+  assert.deepEqual(answer.steps.map((s) => s.title), ["Thay số"]);
   assert.deepEqual(removedSteps[0].leaked.sort(), ["216", "288"]);
   assert.deepEqual(replaced, ["reminder"]);
   assert.equal(answer.reminder, DEFAULT_TEXT.reminder);
+});
+
+test("guard: bước tính ra kết quả mà trước đó CHƯA có bước thay số → thay bằng bước trung tính", () => {
+  const { answer } = applyNumberGuard(sphereAnswer([
+    { title: "Dữ kiện", detail: "Đề cho $R = 6$ cm.", expression: "" },
+    { title: "Tính", detail: "Ta có:", expression: String.raw`V = 288\pi` },
+  ]), { ...sphereCtx, formulaNames: ["Thể tích khối cầu"] });
+  assert.equal(answer.steps.length, 2);
+  assert.equal(answer.steps[1].title, "Thay số vào công thức");
+  assert.equal(answer.steps[1].detail, "Thay các dữ kiện vào công thức Thể tích khối cầu (xem thẻ ở trên), giữ nguyên các phép toán, chưa tính.");
 });
 
 // Đạo hàm y = x^5 tại x = 2. Rút gọn biểu thức còn chứa biến (y' = 5x^4) là ĐƯỢC; thay x = 2 rồi
@@ -258,6 +267,26 @@ test("tham số — CẤM: đại lượng đề hỏi viết ở dạng đã r�
   assert.ok(leaksOf(R`V = \frac{a^3\sqrt{2}}{3}`, CHOP_Q, ["3"]).length > 0);
   assert.ok(leaksOf(R`V = \frac{\sqrt{2}}{3} a^3`, CHOP_Q, ["3"]).length > 0);
   assert.ok(leaksOf(R`d = \frac{a\sqrt{3}}{2}`, "Cho hình lập phương cạnh a. Tính khoảng cách từ A đến (BCD)").length > 0);
+});
+
+test("bước trung tính: bỏ khi bước ngay trước đã thay số cho cùng đại lượng (bài hình chóp); giữ khi khác đại lượng", () => {
+  const ctx = { sourceTexts: [CHOP_Q], formulaTexts: [R`V = \frac{1}{3} B \cdot h`], formulaNames: ["Thể tích khối chóp"] };
+  const chop = applyNumberGuard(derivAnswer([
+    { title: "Xác định dữ kiện", detail: "Đáy hình vuông cạnh $a$ nên $B = a^2$; $h = SA = a\\sqrt{2}$.", expression: "" },
+    { title: "Thay số vào công thức", detail: "Thay $B$ và $h$:", expression: R`V = \frac{1}{3} a^{2} \cdot a\sqrt{2}` },
+    { title: "Rút gọn biểu thức", detail: "Nhân các lũy thừa:", expression: R`V = \frac{1}{3} a^3 \sqrt{2}` },
+  ]), ctx);
+  assert.equal(chop.removedSteps.length, 1);
+  assert.deepEqual(chop.answer.steps.map((s) => s.title), ["Xác định dữ kiện", "Thay số vào công thức"]);
+  assert.ok(!chop.answer.steps.some((s) => s.neutral));
+
+  // Bước trước thay số cho B, bước bị lọc là V → vẫn cần bước trung tính.
+  const other = applyNumberGuard(derivAnswer([
+    { title: "Diện tích đáy", detail: "Đáy hình vuông cạnh $a$:", expression: R`B = a^2` },
+    { title: "Thể tích", detail: "Ta được:", expression: R`V = \frac{a^3\sqrt{2}}{3}` },
+  ]), ctx);
+  assert.deepEqual(other.answer.steps.map((s) => s.title), ["Diện tích đáy", "Thay số vào công thức"]);
+  assert.equal(other.answer.steps[1].neutral, true);
 });
 
 test("tham số — ĐƯỢC: thay số chưa rút gọn, đại lượng trung gian, nhắc lại dữ kiện", () => {

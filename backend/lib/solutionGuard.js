@@ -483,8 +483,17 @@ export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNam
   const removedSteps = [];
   const steps = [];
   let run = []; // chuỗi bước bị lọc liên tiếp đang gom
+  // Vế trái của biểu thức "V = ...", "S = ..." (đại lượng được tính); "" nếu không có dấu =.
+  const quantityOf = (expr) => (/=/.test(expr || "") ? compact(normalizeMath(expr).split("=")[0]) : "");
   const flushRun = () => {
-    if (run.some((st) => st.expression)) steps.push(neutralStep(formulaNames));
+    if (run.some((st) => st.expression)) {
+      // Bước giữ lại ngay trước đã thay số cho CÙNG đại lượng (V = \frac{1}{3} a^2 \cdot a\sqrt{2}, rồi
+      // bước bị lọc rút gọn V) → bước trung tính "Thay số vào công thức" chỉ lặp lại, bỏ đi.
+      const prev = steps[steps.length - 1];
+      const filteredQuantity = quantityOf(run.find((st) => st.expression).expression);
+      const repeatsPrevious = prev && !prev.neutral && filteredQuantity && quantityOf(prev.expression) === filteredQuantity;
+      if (!repeatsPrevious) steps.push(neutralStep(formulaNames));
+    }
     run = [];
   };
   for (const st of answer.steps) {
