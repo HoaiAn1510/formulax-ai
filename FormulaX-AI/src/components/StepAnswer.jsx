@@ -77,8 +77,10 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
         </section>
       )}
 
+      {/* RichTextRenderer bọc chữ trong .detail-paragraph-line, App.css tô cứng lớp đó màu
+          #334155 (không đổi theo dark mode ngoài .chat-bot-text) → ép kế thừa màu amber của khung. */}
       {answer.reminder && (
-        <div className="text-[0.82rem] font-semibold leading-[1.5] text-[#92400E] dark:text-[#FCD34D] bg-accent-light/70 dark:bg-accent/10 rounded-lg px-3 py-2 min-w-0 overflow-x-auto">
+        <div className="text-[0.82rem] font-semibold leading-[1.5] text-[#92400E] dark:text-[#FCD34D] [&_.detail-paragraph-line]:!text-inherit bg-accent-light/70 dark:bg-accent/10 rounded-lg px-3 py-2 min-w-0 overflow-x-auto">
           <RichTextRenderer text={answer.reminder} />
         </div>
       )}
