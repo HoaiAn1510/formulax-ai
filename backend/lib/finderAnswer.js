@@ -61,7 +61,9 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
     { role: "user", content: message },
   ];
 
-  const meta = { model, candidates: candidates.map((f) => f.id), attempts: 0, promptTokens: 0, completionTokens: 0 };
+  // cachedTokens: phần prompt Groq lấy từ cache (phần cố định của system prompt đứng đầu). Khi chấm
+  // 2026-09-30, token cache KHÔNG bị tính vào hạn mức ngày — theo dõi để biết cache giúp được bao nhiêu.
+  const meta = { model, candidates: candidates.map((f) => f.id), attempts: 0, promptTokens: 0, completionTokens: 0, cachedTokens: 0 };
   let activeModel = model;
   const canFallBack = model === FINDER_MODEL;
   if (canFallBack && now() < fallbackState.primaryBlockedUntil) {
@@ -83,6 +85,7 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
       );
       meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
       meta.completionTokens += completion.usage?.completion_tokens ?? 0;
+      meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
       parsed = parseModelJson(completion.choices?.[0]?.message?.content);
     } catch (err) {
       // Model chính hết hạn mức NGÀY → chuyển sang model dự phòng (chỉ một lần mỗi request, và chỉ

@@ -106,6 +106,17 @@ test("câu hỏi nối tiếp không có số: nhắc lại số của đề tr�
   assert.equal(answer.steps[0].expression, "V = \\frac{4}{3}\\pi \\cdot 6^3");
 });
 
+test("meta.cachedTokens lấy từ usage.prompt_tokens_details.cached_tokens (thiếu trường thì 0)", async () => {
+  const clock = { t: 0 };
+  const withCache = { chat: { completions: { create: async () => ({
+    choices: [{ message: { content: GOOD } }], usage: { prompt_tokens: 3400, completion_tokens: 1100, prompt_tokens_details: { cached_tokens: 1536 } },
+  }) } } };
+  const a = await askFinder({ groq: withCache, message: Q, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(a.meta.cachedTokens, 1536);
+  const b = await askFinder({ groq: fakeGroq([GOOD], clock, 1000), message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.equal(b.meta.cachedTokens, 0);
+});
+
 // ─── Model dự phòng khi model chính hết hạn mức NGÀY ────────────────────────
 // Lỗi 429 giống groq-sdk: status, error.error.message, headers (Headers).
 function groq429(message, retryAfter) {
