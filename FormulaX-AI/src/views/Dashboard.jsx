@@ -6,6 +6,7 @@ import DailyChallengeCard from "../components/DailyChallengeCard";
 import GuestLockNotice from "../components/GuestLockNotice";
 import { getActivityData } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
+import { vietnamToday } from "../utils/vietnamDate";
 
 // Số ngẫu nhiên có seed (từ chuỗi ngày hôm nay) — cùng 1 ngày luôn ra cùng thứ tự,
 // sang ngày khác thì đổi. Dùng để: (1) phá đồng hạng ổn định trong ngày, (2) cho user
@@ -32,7 +33,7 @@ function getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, 
     return { formula: f, score };
   });
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = vietnamToday(); // "Gợi ý hôm nay" đổi lúc nửa đêm giờ Việt Nam
   const rand = seededRandom(today);
   for (let i = scored.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));

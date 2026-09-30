@@ -5,6 +5,7 @@ import { useGuestGate } from "../utils/useGuestGate";
 import CountUp from "../components/CountUp";
 import { showToast } from "../components/Toast";
 import { BADGES } from "../data/badges";
+import { vietnamToday, shiftDay } from "../utils/vietnamDate";
 
 const BADGE_ICONS = { Flame, ClipboardList, Layers, BookOpen };
 
@@ -105,8 +106,8 @@ function FormulaChip({ formula, onViewDetail }) {
 }
 
 function formatDateLabel(date) {
-  const today     = new Date().toISOString().slice(0, 10);
-  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  const today     = vietnamToday();
+  const yesterday = shiftDay(today, -1);
   if (date === today) return "Hôm nay";
   if (date === yesterday) return "Hôm qua";
   const [y, mo, d] = date.split("-");
@@ -208,22 +209,21 @@ function DayDetail({ date, quizzes, flashcardIds, formulaMap }) {
 }
 
 function StreakChart({ activityDates, streak, selectedDate, onSelectDate, selectedDayData, formulaMap }) {
-  const todayStr = new Date().toISOString().slice(0, 10);
+  const todayStr = vietnamToday();
   const dateSet = new Set(activityDates);
 
-  // Build 4 calendar weeks (Mon–Sun), starting from the Monday 4 weeks ago
-  const today = new Date();
-  const dayOfWeek = (today.getDay() + 6) % 7; // Mon=0 … Sun=6
-  const startDate = new Date(today);
-  startDate.setDate(today.getDate() - dayOfWeek - 21);
+  // Build 4 calendar weeks (Mon–Sun), starting from the Monday 4 weeks ago. Tính hoàn toàn trên
+  // chuỗi ngày giờ Việt Nam: trước đây dựng từ giờ máy rồi đổi toISOString() (UTC), nên từ 0h tới
+  // 7h sáng mọi ô lịch bị lệch một ngày so với activityDates.
+  const dayOfWeek = (new Date(`${todayStr}T12:00:00Z`).getUTCDay() + 6) % 7; // Mon=0 … Sun=6
+  const startDay = shiftDay(todayStr, -dayOfWeek - 21);
 
   const weeks = [];
   for (let w = 0; w < 4; w++) {
     const week = [];
     for (let d = 0; d < 7; d++) {
-      const dt = new Date(startDate);
-      dt.setDate(startDate.getDate() + w * 7 + d);
-      week.push({ dateStr: dt.toISOString().slice(0, 10), day: dt.getDate() });
+      const dateStr = shiftDay(startDay, w * 7 + d);
+      week.push({ dateStr, day: Number(dateStr.slice(8, 10)) });
     }
     weeks.push(week);
   }
@@ -337,7 +337,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
   // Toàn bộ trang là tiến độ cá nhân → khóa với khách: vẫn hiện bố cục (làm mờ, không bấm
   // được) để khách thấy tính năng tồn tại, kèm nút đăng nhập ở đầu trang.
   const { isGuest, loginNow } = useGuestGate();
-  const [selectedDate, setSelectedDate]   = useState(new Date().toISOString().slice(0, 10));
+  const [selectedDate, setSelectedDate]   = useState(vietnamToday());
   const [streak, setStreak]               = useState(0);
   const [activityDates, setActivityDates] = useState([]);
   const [dailyHistory, setDailyHistory]   = useState([]);

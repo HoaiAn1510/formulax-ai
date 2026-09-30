@@ -31,6 +31,7 @@ import { ConfirmDialogHost } from "./components/ConfirmDialog";
 // nên giữ nạp thẳng — lazy hai màn này chỉ thêm một vòng request trước khi vẽ được gì.
 import Dashboard from "./views/Dashboard";
 import LoginView from "./views/LoginView";
+import { vietnamToday } from "./utils/vietnamDate";
 
 // Các view còn lại tách thành chunk riêng, chỉ tải khi người dùng thực sự mở tab đó.
 // Trước đây tất cả nằm chung một bundle: riêng QuizView kéo theo cả questions.js (356 KB)
@@ -191,7 +192,7 @@ export default function App() {
         prevStatsRef.current = data.stats;
         setSearchHistory(data.searchHistory);
         // Merge quiz daily: so sánh Supabase vs localStorage, lấy giá trị nhỏ hơn (hạn chế hơn)
-        const today = new Date().toISOString().slice(0, 10);
+        const today = vietnamToday(); // cùng ngày với quiz_daily.reset_date (giờ Việt Nam)
         const localQuiz = localStorage.getItem(`formulax_quiz_${user.googleId}`);
         let finalQuizzes = data.remainingQuizzes;
         if (localQuiz) {
@@ -304,7 +305,7 @@ export default function App() {
   // ─── Quiz daily — lưu localStorage ngay + Supabase (chỉ sau khi load xong)
   useEffect(() => {
     if (!user?.googleId || !dataLoadedRef.current) return;
-    const today = new Date().toISOString().slice(0, 10);
+    const today = vietnamToday(); // cùng ngày với quiz_daily.reset_date (giờ Việt Nam)
     localStorage.setItem(`formulax_quiz_${user.googleId}`, JSON.stringify({ count: remainingQuizzes, date: today }));
     saveQuizDaily(user.googleId, remainingQuizzes).catch(console.error);
   }, [remainingQuizzes, user?.googleId]);

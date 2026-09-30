@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { vietnamToday, vietnamDateOf, shiftDay, vietnamDayStartISO } from "../utils/vietnamDate";
 
 // Strip BOM (﻿) và whitespace — PowerShell có thể thêm BOM khi set env var qua CLI
 const supabaseUrl  = (import.meta.env.VITE_SUPABASE_URL  || "").replace(/^﻿/, "").trim();
@@ -37,7 +38,9 @@ export async function getAccessToken() {
 
 /** Tải toàn bộ dữ liệu của một user */
 export async function loadUserData(googleId) {
-  const today = new Date().toISOString().slice(0, 10);
+  // Ngày giờ Việt Nam: quiz_daily.reset_date lưu theo ngày này; đếm hoạt động "hôm nay" từ 0h VN.
+  const today = vietnamToday();
+  const todayStart = vietnamDayStartISO(today);
 
   const [bRes, nRes, sRes, hRes, qRes, todayQRes, todayFRes] = await Promise.all([
     supabase.from("bookmarks").select("formula_id").eq("google_id", googleId),
@@ -49,9 +52,9 @@ export async function loadUserData(googleId) {
       .order("searched_at", { ascending: false }).limit(20),
     supabase.from("quiz_daily").select("*").eq("google_id", googleId).limit(1),
     supabase.from("quiz_results").select("*", { count: "exact", head: true })
-      .eq("google_id", googleId).gte("created_at", today),
+      .eq("google_id", googleId).gte("created_at", todayStart),
     supabase.from("flashcard_activity").select("*", { count: "exact", head: true })
-      .eq("google_id", googleId).gte("created_at", today).neq("formula_id", "sys_streak"),
+      .eq("google_id", googleId).gte("created_at", todayStart).neq("formula_id", "sys_streak"),
   ]);
 
   // Bookmarks → mảng id
@@ -175,7 +178,7 @@ export async function addSearchHistoryEntry(googleId, query) {
 // ─── Quiz daily ──────────────────────────────────────────────────────────────
 
 export async function saveQuizDaily(googleId, remaining) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = vietnamToday();
   const { error } = await supabase.from("quiz_daily").upsert(
     { google_id: googleId, remaining_count: remaining, reset_date: today },
     { onConflict: "google_id" }
@@ -357,23 +360,24 @@ export async function getActivityData(googleId) {
     supabase.from("flashcard_activity").select("created_at").eq("google_id", googleId),
   ]);
 
+  // Mỗi hoạt động xếp vào NGÀY GIỜ VIỆT NAM của nó (trước đây là ngày UTC: học lúc 0h–7h bị tính
+  // vào hôm trước). Chuyển đổi 2026-09-30: không bản ghi nào nằm trong khung 0h–7h và không ai đang
+  // có chuỗi, nên không chuỗi hiện có nào bị đổi.
   const dateSet = new Set();
   [...(qRes.data || []), ...(fRes.data || [])].forEach(row => {
-    dateSet.add(new Date(row.created_at).toISOString().slice(0, 10));
+    dateSet.add(vietnamDateOf(row.created_at));
   });
 
   const sorted = [...dateSet].sort().reverse();
 
   let streak = 0;
   if (sorted.length > 0) {
-    const today = new Date().toISOString().slice(0, 10);
-    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const today = vietnamToday();
+    const yesterday = shiftDay(today, -1);
     if (sorted[0] === today || sorted[0] === yesterday) {
       streak = 1;
       for (let i = 1; i < sorted.length; i++) {
-        const prev = new Date(sorted[i - 1]);
-        prev.setDate(prev.getDate() - 1);
-        if (sorted[i] === prev.toISOString().slice(0, 10)) streak++;
+        if (sorted[i] === shiftDay(sorted[i - 1], -1)) streak++;
         else break;
       }
     }
@@ -395,16 +399,16 @@ export async function deleteUserAnalytics(googleId) {
 
   if (streak > 0) {
     const records = [];
+    const today = vietnamToday();
     for (let i = 0; i < streak; i++) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
       records.push({
         google_id: googleId,
         formula_id: "sys_streak",
         result: "correct",
         topic: null,
         grade: null,
-        created_at: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 12, 0, 0).toISOString(),
+        // 12h trưa giờ Việt Nam của từng ngày trong chuỗi — giữa ngày nên không lệch sang ngày khác.
+        created_at: new Date(`${shiftDay(today, -i)}T12:00:00+07:00`).toISOString(),
       });
     }
     const { error } = await supabase.from("flashcard_activity").insert(records);
@@ -438,7 +442,7 @@ export async function getDailyHistory(googleId) {
   const days = {};
 
   (qRes.data || []).forEach(row => {
-    const date = new Date(row.created_at).toISOString().slice(0, 10);
+    const date = vietnamDateOf(row.created_at);
     if (!days[date]) days[date] = { quizzes: [], flashcardIds: [] };
     days[date].quizzes.push({
       topic: row.topic,
@@ -449,7 +453,7 @@ export async function getDailyHistory(googleId) {
   });
 
   (fRes.data || []).forEach(row => {
-    const date = new Date(row.created_at).toISOString().slice(0, 10);
+    const date = vietnamDateOf(row.created_at);
     if (!days[date]) days[date] = { quizzes: [], flashcardIds: [] };
     if (!days[date].flashcardIds.includes(row.formula_id)) {
       days[date].flashcardIds.push(row.formula_id);
@@ -479,11 +483,11 @@ function formatRelativeTime(isoString) {
 
 export async function checkAndGenerateNotifications(googleId, notifPrefs = {}) {
   if (!googleId) return;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = vietnamToday(); // cùng kiểu ngày với activityDates (giờ Việt Nam)
 
   const [{ topicPerformance, streak, activityDates }, existingRes, quizCountRes] = await Promise.all([
     getAnalyticsSummary(googleId),
-    supabase.from("notifications").select("dedupe_key").eq("google_id", googleId).gte("created_at", today),
+    supabase.from("notifications").select("dedupe_key").eq("google_id", googleId).gte("created_at", vietnamDayStartISO(today)),
     supabase.from("quiz_results").select("*", { count: "exact", head: true }).eq("google_id", googleId),
   ]);
 
