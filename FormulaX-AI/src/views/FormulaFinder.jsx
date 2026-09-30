@@ -38,16 +38,41 @@ function saveSessionsToStorage(key, sessions) {
 // đếm ở localStorage nên gọi thẳng API là bỏ qua được.
 const FREE_AI_LIMIT = 10;
 
-// Ví dụ hỏi đáp cho khách — cố định, KHÔNG gọi API. Chỉ hardcode id công thức; câu hỏi và lời
-// giải lấy nguyên văn từ field `example` của chính công thức đó trong formulas.js, nên không có
-// chữ toán nào do code hay AI tự sinh (quy tắc chống hallucination trong CLAUDE.md). Id không
-// còn tồn tại thì ví dụ đó tự bị bỏ qua.
-const GUEST_EXAMPLE_FORMULA_IDS = ["hh12-matcau-thetich", "ds10-phuongtrinh-bac2"];
-
-function splitExample(example) {
-  const [question, ...rest] = (example || "").split("\n");
-  return { question: question.trim(), solution: rest.join("\n").trim() };
-}
+// Ví dụ hỏi đáp cho khách — cố định, KHÔNG gọi API, trình bày đúng cấu trúc câu trả lời thật
+// (công thức → các bước → lời nhắc, không có kết quả). Câu hỏi là dòng đầu field `example` của
+// công thức trong formulas.js; thẻ công thức lấy tên + LaTeX từ formulas.js theo id. Các bước
+// là văn bản đã được duyệt nguyên văn — chỉ thay số vào công thức có sẵn, không tính ra đáp số.
+// KHÔNG hiển thị phần lời giải/đáp số trong `example`. Id không còn tồn tại thì ví dụ tự bị bỏ.
+const GUEST_EXAMPLES = [
+  {
+    formulaId: "hh12-matcau-thetich",
+    answer: {
+      type: "solution",
+      formulaIds: ["hh12-matcau-thetich"],
+      intro: "Bài này dùng công thức thể tích khối cầu nhé.",
+      steps: [
+        { title: "Xác định dữ kiện", detail: "Đề cho bán kính khối cầu $R = 3$ cm.", expression: "" },
+        { title: "Thay số vào công thức", detail: "Áp dụng công thức thể tích khối cầu, thay $R = 3$:", expression: String.raw`V = \frac{4}{3}\pi \cdot 3^3` },
+        { title: "Tính theo thứ tự", detail: String.raw`Tính lũy thừa trước, rồi nhân với $\frac{4}{3}$. Giữ $\pi$ trong kết quả nếu đề không yêu cầu làm tròn; đơn vị là $\text{cm}^3$.`, expression: "" },
+      ],
+      reminder: "Phần tính còn lại bạn tự làm nhé, xong nhớ ghi đơn vị!",
+    },
+  },
+  {
+    formulaId: "ds10-phuongtrinh-bac2",
+    answer: {
+      type: "solution",
+      formulaIds: ["ds10-phuongtrinh-bac2"],
+      intro: "Bài này dùng biệt thức Delta của phương trình bậc hai.",
+      steps: [
+        { title: "Xác định hệ số", detail: "Phương trình có dạng $ax^2 + bx + c = 0$ với $a = 1$, $b = -5$, $c = 6$.", expression: "" },
+        { title: "Tính biệt thức Delta", detail: String.raw`Thay các hệ số vào công thức $\Delta = b^2 - 4ac$:`, expression: String.raw`\Delta = (-5)^2 - 4 \cdot 1 \cdot 6` },
+        { title: "Xét dấu Delta và tìm nghiệm", detail: String.raw`Nếu $\Delta > 0$, phương trình có 2 nghiệm phân biệt; thay $a$, $b$ và giá trị $\Delta$ vừa tính vào công thức nghiệm:`, expression: String.raw`x_{1,2} = \frac{-(-5) \pm \sqrt{\Delta}}{2 \cdot 1}` },
+      ],
+      reminder: String.raw`Bạn tự tính $\Delta$ rồi suy ra hai nghiệm nhé!`,
+    },
+  },
+];
 
 export default function FormulaFinder({
   formulas,
@@ -445,7 +470,9 @@ export default function FormulaFinder({
   // ─── Render ───────────────────────────────────────────────────────────────
 
   const guestExamples = isGuest
-    ? GUEST_EXAMPLE_FORMULA_IDS.map(id => formulas.find(f => f.id === id)).filter(f => f?.example)
+    ? GUEST_EXAMPLES
+        .map(ex => ({ ...ex, formula: formulas.find(f => f.id === ex.formulaId) }))
+        .filter(ex => ex.formula?.example)
     : [];
 
   return (
@@ -618,8 +645,9 @@ export default function FormulaFinder({
                   </p>
                 </div>
 
-                {guestExamples.map((formula) => {
-                  const { question, solution } = splitExample(formula.example);
+                {guestExamples.map(({ formula, answer }) => {
+                  // Chỉ lấy dòng đầu (đề bài) — phần còn lại của `example` là lời giải có đáp số.
+                  const question = formula.example.split("\n")[0].trim();
                   return (
                     <div key={formula.id} className="flex flex-col gap-2.5 rounded-2xl border border-dashed border-[#E2E8F0] dark:border-[#334155] p-3.5">
                       <span className="self-start text-[0.68rem] font-extrabold uppercase tracking-[0.5px] text-accent bg-accent-light dark:bg-accent/15 py-0.5 px-2 rounded-md">
@@ -628,16 +656,8 @@ export default function FormulaFinder({
                       <div className="self-end max-w-[85%] py-2.5 px-3.5 rounded-xl rounded-br-[2px] bg-accent text-white text-[0.85rem] leading-[1.5]">
                         <RichTextRenderer text={question} />
                       </div>
-                      <div className="self-start w-full md:max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] bg-white dark:bg-[#1E293B] flex flex-col gap-2.5">
-                        <div className="text-[0.95rem] font-extrabold text-primary dark:text-[#E2E8F0]">{formula.name}</div>
-                        <div className="bg-[#f8fafc] dark:bg-[#0F172A]/60 border border-[#E2E8F0] dark:border-[#334155] rounded-lg p-3 flex items-center justify-center !text-[#1E3A5F] dark:!text-[#E2E8F0]">
-                          <MathElement math={formula.latex} block={true} />
-                        </div>
-                        {solution && (
-                          <div className="chat-bot-text text-[0.85rem] leading-[1.6] text-primary dark:text-[#E2E8F0]">
-                            <RichTextRenderer text={solution} />
-                          </div>
-                        )}
+                      <div className="self-start w-full min-w-0 md:max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0]">
+                        <StepAnswer answer={answer} formulas={formulas} onViewDetail={onViewDetail} />
                       </div>
                     </div>
                   );
