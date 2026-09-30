@@ -6,6 +6,16 @@ import {
 
 const MAX_ATTEMPTS = 2; // lần 2 chỉ khi JSON hỏng không cứu được
 
+// Ngân sách thời gian cho MỖI request /api/chat, tính từ lúc request tới backend. Frontend chờ
+// 45 giây (FormulaFinder.jsx) — con số đó PHẢI lớn hơn ngân sách này. Nếu frontend hết giờ
+// trước, backend vẫn giao câu trả lời và KHÔNG hoàn lượt: học sinh mất lượt mà không thấy gì.
+export const CHAT_BUDGET_MS = 40_000;
+const PER_CALL_TIMEOUT_MS = 25_000;
+// Chỉ gọi lại khi còn ít nhất chừng này: gọi với timeout quá ngắn gần như chắc chắn hết giờ giữa
+// chừng, vừa tốn token (8k/phút cho cả app) vừa không đổi được kết quả. Khi chấm, 120b trả lời
+// chậm nhất khoảng 4,4 giây — 8 giây là đủ dư.
+const MIN_CALL_MS = 8_000;
+
 /**
  * Hỏi AI Finder một câu và trả về câu trả lời ĐÃ KIỂM TRA. Toàn bộ luồng nằm ở đây để server.js
  * và bộ chấm so sánh model (chạy ngoài) dùng chung đúng một đoạn code.
@@ -15,9 +25,11 @@ const MAX_ATTEMPTS = 2; // lần 2 chỉ khi JSON hỏng không cứu được
  * @param {string} opts.message         câu hỏi hiện tại
  * @param {{role: string, content: string}[]} opts.history  lịch sử đã cắt gọn (role user/assistant)
  * @param {string} [opts.model]
- * Lỗi từ Groq (429, mạng...) được ném ra ngoài cho nơi gọi xử lý.
+ * @param {number} [opts.deadline]  mốc thời gian (ms) phải xong; mặc định = bây giờ + CHAT_BUDGET_MS
+ * @param {() => number} [opts.now] đồng hồ, truyền vào được để test
+ * Lỗi từ Groq (429, mạng, timeout...) được ném ra ngoài cho nơi gọi xử lý.
  */
-export async function askFinder({ groq, message, history = [], model = FINDER_MODEL }) {
+export async function askFinder({ groq, message, history = [], model = FINDER_MODEL, now = Date.now, deadline = now() + CHAT_BUDGET_MS }) {
   // Công thức ứng viên theo câu hỏi hiện tại + 2 câu hỏi trước (hiểu câu hỏi nối tiếp).
   const recentUserTexts = history.filter((h) => h.role === "user").slice(-2).map((h) => h.content);
   const candidates = shortlistFormulas([message, ...recentUserTexts]);
@@ -30,9 +42,17 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
   const meta = { model, candidates: candidates.map((f) => f.id), attempts: 0, promptTokens: 0, completionTokens: 0 };
   let parsed = null;
   while (!parsed && meta.attempts < MAX_ATTEMPTS) {
+    const timeLeft = deadline - now();
+    if (meta.attempts > 0 && timeLeft < MIN_CALL_MS) {
+      meta.skippedRetryForTime = true; // không kịp gọi lại → trả câu mẫu (nơi gọi hoàn lượt)
+      break;
+    }
     meta.attempts++;
     try {
-      const completion = await groq.chat.completions.create({ model, messages, ...FINDER_PARAMS });
+      const completion = await groq.chat.completions.create(
+        { model, messages, ...FINDER_PARAMS },
+        { timeout: Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, timeLeft)) },
+      );
       meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
       meta.completionTokens += completion.usage?.completion_tokens ?? 0;
       parsed = parseModelJson(completion.choices?.[0]?.message?.content);

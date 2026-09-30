@@ -9,7 +9,8 @@ import payosPaymentRouter from "./routes/payosPayment.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
-import { askFinder } from "./lib/finderAnswer.js";
+import { askFinder, CHAT_BUDGET_MS } from "./lib/finderAnswer.js";
+import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
 
 const app = express();
@@ -82,7 +83,12 @@ const paymentLimiter = rateLimit({
 app.use("/api/payment/payos/create", paymentLimiter);
 app.use("/api/payment/payos", payosPaymentRouter);
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+// maxRetries 0: mặc định SDK tự thử lại 2 lần khi gặp 429, giữ request hàng chục giây. Gặp 429
+// thì báo "AI đang bận" và hoàn lượt ngay. Timeout từng lần gọi do askFinder tự đặt theo ngân
+// sách thời gian của request (CHAT_BUDGET_MS = 40 giây, xem lib/finderAnswer.js) — ngân sách đó
+// PHẢI nhỏ hơn timeout 45 giây của frontend (FormulaFinder.jsx), nếu không học sinh có thể mất
+// lượt mà không thấy câu trả lời.
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY, maxRetries: 0 });
 
 // Trần độ dài input — chặn việc nhồi prompt khổng lồ để đốt token của Groq. Câu hỏi toán THPT
 // thực tế hiếm khi vượt 2000 ký tự; mỗi lượt history cũng cắt bớt thay vì gửi nguyên văn.
@@ -124,6 +130,8 @@ function computeIsPremium(userRow) {
 }
 
 app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
+  // Tính từ lúc request tới, gồm cả thời gian xác thực và đọc DB phía dưới.
+  const requestDeadline = Date.now() + CHAT_BUDGET_MS;
   try {
     const { message, history = [] } = req.body;
 
@@ -176,31 +184,6 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     }
     const isPremium = computeIsPremium(userRow);
 
-    // Premium: bỏ qua hoàn toàn bước đếm quota. Free: tăng bộ đếm TRƯỚC khi gọi Groq (RPC
-    // increment_ai_usage là tăng nguyên tử, không có khoảng hở race condition) — nếu vượt hạn
-    // mức thì từ chối ngay, không gọi Groq. Nếu Groq lỗi Ở BƯỚC SAU (mạng, Groq quá tải...), lượt
-    // vừa tăng vẫn bị tính mất — chấp nhận được vì đây là trường hợp hiếm và tăng-trước-gọi-sau
-    // là cách duy nhất tránh race condition (đọc-rồi-tăng có khoảng hở, 2 request đồng thời có
-    // thể cùng vượt hạn mức).
-    let remaining = null;
-    if (!isPremium) {
-      const { data: usageCount, error: usageError } = await supabaseAdmin.rpc("increment_ai_usage", {
-        p_google_id: googleId,
-      });
-      if (usageError) {
-        // Fail closed: không kiểm tra được quota thì từ chối, KHÔNG cho qua như còn lượt.
-        console.error("[FormulaX Backend] increment_ai_usage lỗi:", usageError.message);
-        return res.status(503).json({ error: "Không kiểm tra được hạn mức AI, thử lại sau." });
-      }
-      if (usageCount > FREE_AI_DAILY_LIMIT) {
-        return res.status(429).json({
-          error: `Bạn đã dùng hết ${FREE_AI_DAILY_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`,
-          remaining: 0,
-        });
-      }
-      remaining = FREE_AI_DAILY_LIMIT - usageCount;
-    }
-
     // Chuyển lịch sử sang format OpenAI-compatible
     const chatHistory = (Array.isArray(history) ? history : [])
       .filter(h => h && (h.sender === "user" || h.sender === "bot"))
@@ -212,9 +195,48 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
 
     // Chọn công thức ứng viên → gọi model → parse JSON → kiểm tra id, ngoặc, số lạ. Xem
     // lib/finderAnswer.js; câu trả lời trả về đây đã qua bộ lọc, không cần tin model.
-    const { answer, reply, meta } = await askFinder({ groq, message, history: chatHistory });
-    logFinderEvents(message, answer, meta);
+    // delivered = false khi JSON hỏng cả 2 lần và phải trả câu mẫu — không tính là đã trả lời.
+    const ask = async () => {
+      const out = await askFinder({ groq, message, history: chatHistory, deadline: requestDeadline });
+      logFinderEvents(message, out.answer, out.meta);
+      return { ...out, delivered: !out.meta.jsonFailed };
+    };
 
+    // Premium: không đếm lượt. Free: xem lib/quotaFlow.js — tăng lượt TRƯỚC khi gọi Groq (RPC
+    // nguyên tử, không có khoảng hở race condition), rồi HOÀN lượt (refund_ai_usage, migration
+    // 007) trong mọi trường hợp không giao được câu trả lời: vượt hạn mức, Groq 429, Groq lỗi
+    // khác/timeout, JSON hỏng. Bộ đếm luôn bằng đúng số câu trả lời đã giao.
+    let outcome;
+    if (isPremium) {
+      outcome = { result: await ask(), remaining: null };
+    } else {
+      outcome = await runWithQuota({
+        limit: FREE_AI_DAILY_LIMIT,
+        reserve: async () => {
+          const { data, error } = await supabaseAdmin.rpc("increment_ai_usage", { p_google_id: googleId });
+          // Fail closed: không kiểm tra được quota thì từ chối (503 ở khối catch), KHÔNG gọi AI.
+          if (error) throw Object.assign(new Error(error.message), { quotaUnavailable: true });
+          return data;
+        },
+        refund: async () => {
+          const { data, error } = await supabaseAdmin.rpc("refund_ai_usage", { p_google_id: googleId });
+          if (error) throw new Error(error.message);
+          return data;
+        },
+        run: ask,
+        onRefundError: (err) => console.error("[FormulaX Backend] refund_ai_usage lỗi:", err.message),
+      });
+      if (outcome.limited) {
+        return res.status(429).json({
+          error: `Bạn đã dùng hết ${FREE_AI_DAILY_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`,
+          code: "quota_exceeded",
+          remaining: 0,
+        });
+      }
+    }
+
+    const { answer, reply } = outcome.result;
+    const remaining = outcome.remaining;
     res.json({
       type: answer.type,
       formulaIds: answer.formulaIds,
@@ -229,14 +251,24 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     });
 
   } catch (error) {
+    if (error.quotaUnavailable) {
+      console.error("[FormulaX Backend] increment_ai_usage lỗi:", error.message);
+      return res.status(503).json({ error: "Không kiểm tra được hạn mức AI, thử lại sau." });
+    }
     console.error("[FormulaX Backend] Groq error:", error.message);
+    // Lượt đã được hoàn trong runWithQuota; gửi kèm số lượt còn lại để frontend cập nhật bộ đếm.
+    const remainingInfo = typeof error.remaining === "number" ? { remaining: error.remaining } : {};
     const status = error.status || error.statusCode || 500;
+    // Groq 429 = gói miễn phí hết token/phút cho cả app, không phải lỗi của học sinh. code
+    // "ai_busy" để frontend phân biệt với 429 hết lượt (code "quota_exceeded").
+    if (status === 429) {
+      return res.status(429).json({ error: "AI đang bận, bạn thử lại sau ít phút nhé", code: "ai_busy", ...remainingInfo });
+    }
     let errorMsg = "Không thể kết nối AI";
-    if (status === 429) errorMsg = "AI đang bận, thử lại sau vài giây";
-    else if (status === 401) errorMsg = "Lỗi cấu hình phía máy chủ, vui lòng thử lại sau";
+    if (status === 401) errorMsg = "Lỗi cấu hình phía máy chủ, vui lòng thử lại sau";
     // Chỉ trả thông điệp chung cho client — error.message của SDK có thể chứa chi tiết nội bộ
     // (endpoint, tên model, một phần API key trong thông báo xác thực). Chi tiết đã có ở log server.
-    res.status(status >= 400 && status < 600 ? status : 500).json({ error: errorMsg });
+    res.status(status >= 400 && status < 600 ? status : 500).json({ error: errorMsg, ...remainingInfo });
   }
 });
 

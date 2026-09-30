@@ -41,6 +41,9 @@
 --                      trả 429 ngay, KHÔNG gọi Groq (đỡ tốn phí Groq cho request chắc chắn bị
 --                      chặn). Đây là tăng-rồi-kiểm-tra, không phải đọc-rồi-mới-tăng, để 2 request
 --                      đồng thời của cùng 1 user không bao giờ đếm thiếu.
+--                      Từ migration 007: mọi trường hợp đã tăng mà không giao được câu trả lời
+--                      (vượt hạn mức, Groq 429, Groq lỗi khác/timeout, JSON hỏng) đều gọi
+--                      refund_ai_usage() để hoàn lượt — xem backend/lib/quotaFlow.js.
 --   GET  /api/chat/usage → CHỈ gọi get_ai_usage() (không tăng đếm) để hiển thị số lượt còn lại
 --                      khi người dùng mới vào trang, chưa hỏi gì.
 -- =============================================================================
@@ -106,8 +109,8 @@ grant select, insert, update on public.ai_usage_daily to service_role;
 -- ghi, nên 2 request đồng thời của cùng 1 user không bao giờ đếm thiếu (race condition). Ngày
 -- tính theo giờ Việt Nam ngay trong hàm, không nhận date từ tham số, để backend không cần tự
 -- tính timezone (dễ sai lệch múi giờ server). Backend đọc giá trị trả về: nếu > 10 thì từ chối
--- (429) và KHÔNG gọi Groq — nghĩa là lượt "vượt hạn mức" vẫn bị cộng vào bộ đếm, nhưng vô hại
--- vì đằng nào cũng đã vượt, không ảnh hưởng logic chặn.
+-- (429) và KHÔNG gọi Groq, rồi hoàn lại đúng lượt vừa cộng bằng refund_ai_usage() (migration
+-- 007) — bộ đếm dừng ở 10, không cộng dồn theo số lần bị chặn.
 create or replace function public.increment_ai_usage(p_google_id text)
 returns int
 language plpgsql
