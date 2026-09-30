@@ -81,17 +81,49 @@ const str = (v, max) => (typeof v === "string" ? fixOverEscaped(v.trim()).slice(
 const BARE_DELTA = /(?<![\\A-Za-z])Delta(?![A-Za-z])/g;
 export const fixBareDeltaInMath = (math) => math.replace(BARE_DELTA, "\\Delta");
 export const fixBareDeltaInText = (s) => s.replace(/(\$\$?)([^$]+)(\$\$?)/g, (_, open, math, close) => open + fixBareDeltaInMath(math) + close);
-const text = (v, max) => fixBareDeltaInText(str(v, max));
+
+// \' và \" không phải lệnh LaTeX dùng được trong chế độ toán — KaTeX báo lỗi và in cả biểu thức
+// màu đỏ ("y\' = 3x^2 - 6x - 9"). Model viết thừa \ trước dấu phẩy trên/nháy kép. Các escape hợp
+// lệ khác (\, \; \! \{ \} \% \_ ...) giữ nguyên.
+export const fixStrayQuoteEscapes = (s) => s.replace(/\\(['"])/g, "$1");
+
+/** Áp `fn` lên phần CÂU CHỮ (ngoài $...$ / $$...$$), giữ nguyên phần toán. */
+const mapProse = (s, fn) => s.split(/(\$\$[^$]*\$\$|\$[^$]*\$)/).map((part, i) => (i % 2 === 0 ? fn(part) : part)).join("");
+
+// Lệnh LaTeX viết thẳng trong câu chữ, ngoài $...$ ("để tính \Delta và viết nghiệm", "\sqrt{\Delta}")
+// hiện nguyên văn → bọc lại bằng $...$. Một cụm = lệnh + các nhóm {...} (lồng 1 tầng) + chỉ số ^ _.
+const LOOSE_COMMAND = /\\[A-Za-z]+(?:\s*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})*(?:\s*[_^](?:\{[^{}]*\}|[A-Za-z0-9]))*/g;
+export const wrapLooseLatex = (s) => mapProse(s, (prose) => prose.replace(LOOSE_COMMAND, (cmd) => `$${cmd.trim()}$`));
+
+// Id công thức model chép vào lời giải ("quy tắc đạo hàm của tổng (gt11-daoham-tonghieu)"). Id có
+// thật thì: nằm trong ngoặc ngay sau chính tên công thức → bỏ; còn lại → thay bằng tên công thức.
+// Id không có thật giữ nguyên (không đoán).
+const FORMULA_ID = /[a-z]{2,3}\d{2}-[a-z0-9-]*[a-z0-9]/gi;
+export function replaceFormulaIds(s, isValidId, nameOf) {
+  if (!isValidId || !nameOf) return s;
+  return mapProse(s, (prose) => prose
+    .replace(new RegExp(String.raw`\s*\(\s*(${FORMULA_ID.source})\s*\)`, "gi"), (m, id, offset, whole) => {
+      if (!isValidId(id)) return m;
+      const name = nameOf(id) || "";
+      const before = whole.slice(0, offset).trimEnd().toLowerCase();
+      return name && !before.endsWith(name.toLowerCase()) ? ` (${name})` : "";
+    })
+    .replace(new RegExp(String.raw`(?<![\w-])(${FORMULA_ID.source})(?![\w-])`, "gi"), (m, id) => (isValidId(id) ? nameOf(id) || "" : m)));
+}
+
+const cleanText = (s, isValidId, nameOf) => replaceFormulaIds(fixBareDeltaInText(wrapLooseLatex(fixStrayQuoteEscapes(s))), isValidId, nameOf);
 
 // expression phải là LaTeX thuần — bỏ $ bao ngoài nếu model lỡ thêm.
-const cleanExpression = (v) => fixBareDeltaInMath(str(v, LIMITS.expression).replace(/^\$+|\$+$/g, "").trim());
+const cleanExpression = (v) => fixBareDeltaInMath(fixStrayQuoteEscapes(str(v, LIMITS.expression).replace(/^\$+|\$+$/g, "").trim()));
 
 /**
  * Đưa đối tượng model trả về về đúng khung, bỏ mọi trường lạ (kể cả nếu model tự thêm "result").
- * `isValidId` kiểm tra id có thật trong thư viện; id không có thật bị loại.
+ * `isValidId` kiểm tra id có thật trong thư viện; id không có thật bị loại. `nameOf(id)` trả tên
+ * công thức — dùng để thay id model lỡ chép vào lời giải bằng tên (không truyền thì giữ nguyên).
  */
-export function normalizeAnswer(value, isValidId) {
+export function normalizeAnswer(value, isValidId, nameOf) {
   const obj = value && typeof value === "object" ? value : {};
+  const text = (v, max) => cleanText(str(v, max), isValidId, nameOf);
   const rawIds = Array.isArray(obj.formula_ids) ? obj.formula_ids : [];
   const formulaIds = [...new Set(rawIds.filter((id) => typeof id === "string" && isValidId(id)))].slice(0, LIMITS.formulaIds);
   const droppedIds = rawIds.filter((id) => !formulaIds.includes(id));

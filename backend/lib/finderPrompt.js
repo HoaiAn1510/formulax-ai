@@ -50,7 +50,7 @@ QUY TẮC BẮT BUỘC
 
 ĐỊNH DẠNG: chỉ trả về MỘT đối tượng JSON hợp lệ, không có chữ nào ngoài JSON, không xuống dòng bên trong chuỗi:
 {"type":"solution|no_formula|refuse_answer|off_topic","formula_ids":["..."],"intro":"...","steps":[{"title":"...","detail":"...","expression":"..."}],"reminder":"..."}
-- formula_ids: 1–4 id lấy ĐÚNG từ thư viện, liệt kê MỌI công thức dùng trong các bước, theo thứ tự dùng.
+- formula_ids: 1–4 id lấy ĐÚNG từ thư viện, liệt kê MỌI công thức dùng trong các bước, theo thứ tự dùng. Không viết id công thức trong lời giải (intro, steps, reminder).
 - steps: 2–6 bước. title ngắn, không đánh số. detail nói rõ cần làm gì và dùng công thức nào, toán viết trong $...$. expression là LaTeX thuần (không có $) của biểu thức sau khi thay số, CHƯA tính; để "" nếu bước không có biểu thức.
 - reminder: 1 câu ngắn nhắc học sinh tự tính.
 - Trong JSON, mọi dấu \ của LaTeX phải viết thành \\ (ví dụ "\\frac").

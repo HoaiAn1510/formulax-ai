@@ -106,6 +106,47 @@ test("normalize: 'Delta' thiếu dấu \\ trong phần toán thành \\Delta; ch�
   assert.equal(answer.reminder, "Bạn tính $\\Delta$ trước rồi xét dấu nhé!");
 });
 
+// Lỗi hiển thị thấy trên production (bài cực trị, 2026-09-30).
+const NAMES = {
+  "gt11-daoham-tonghieu": "Đạo hàm của tổng, hiệu hai hàm số",
+  "ds10-phuongtrinh-bac2": "Phương trình bậc hai & Biệt thức Delta",
+  "gt12-cuctrituoc": "Điều kiện cực trị của hàm số",
+};
+const realId = (id) => id in NAMES;
+const nameOf = (id) => NAMES[id];
+const normalizeWith = (steps, extra = {}) => normalizeAnswer({ type: "solution", formula_ids: ["gt12-cuctrituoc"], steps, ...extra }, realId, nameOf).answer;
+
+test("hiển thị: \\' và \\\" thừa trong phần toán bị bỏ dấu \\ (KaTeX không lỗi đỏ); escape hợp lệ giữ nguyên", () => {
+  const a = normalizeWith([{ title: "Tính $y\\'$", detail: "Ta có $y\\' = 0$ và $\\\"x\\\"$, cách $a\\,b$.", expression: "y\\' = 3x^2 - 6x - 9" }]);
+  assert.equal(a.steps[0].expression, "y' = 3x^2 - 6x - 9");
+  assert.equal(a.steps[0].title, "Tính $y'$");
+  assert.equal(a.steps[0].detail, "Ta có $y' = 0$ và $\"x\"$, cách $a\\,b$.");
+  assert.equal(normalizeWith([{ detail: "a", expression: "\\{x\\} \\cup \\{1\\}, 50\\%" }]).steps[0].expression, "\\{x\\} \\cup \\{1\\}, 50\\%");
+});
+
+test("hiển thị: id công thức trong lời giải → bỏ nếu ngay sau tên, còn lại thay bằng tên; id không có thật giữ nguyên", () => {
+  const a = normalizeWith([
+    { title: "Tính đạo hàm", detail: "Áp dụng Đạo hàm của tổng, hiệu hai hàm số (gt11-daoham-tonghieu):", expression: "y' = 3x^2 - 6x - 9" },
+    { title: "Giải y' = 0", detail: "Dùng công thức nghiệm (ds10-phuongtrinh-bac2) cho $y' = 0$.", expression: "" },
+    { title: "Kết luận", detail: "Theo gt12-cuctrituoc, xét dấu $y'$; tham khảo xx99-khong-co.", expression: "" },
+  ], { intro: "Bài này dùng gt12-cuctrituoc.", reminder: "Xem thẻ (ds10-phuongtrinh-bac2) nhé!" });
+  assert.equal(a.steps[0].detail, "Áp dụng Đạo hàm của tổng, hiệu hai hàm số:");
+  assert.equal(a.steps[1].detail, "Dùng công thức nghiệm (Phương trình bậc hai & Biệt thức Delta) cho $y' = 0$.");
+  assert.equal(a.steps[2].detail, "Theo Điều kiện cực trị của hàm số, xét dấu $y'$; tham khảo xx99-khong-co.");
+  assert.equal(a.intro, "Bài này dùng Điều kiện cực trị của hàm số.");
+  assert.equal(a.reminder, "Xem thẻ (Phương trình bậc hai & Biệt thức Delta) nhé!");
+});
+
+test("hiển thị: lệnh LaTeX ngoài $...$ trong câu chữ được bọc lại; phần đã trong $...$ giữ nguyên", () => {
+  const a = normalizeWith([
+    { title: "Tính \\Delta", detail: "Thay vào công thức để tính \\Delta và viết nghiệm \\frac{-b \\pm \\sqrt{\\Delta}}{2a}; giữ $\\Delta > 0$.", expression: "" },
+    { title: "Nghiệm", detail: "Ta có x_1 < x_2 và \\sqrt{\\Delta} > 0, \\pi xấp xỉ.", expression: "" },
+  ]);
+  assert.equal(a.steps[0].title, "Tính $\\Delta$");
+  assert.equal(a.steps[0].detail, "Thay vào công thức để tính $\\Delta$ và viết nghiệm $\\frac{-b \\pm \\sqrt{\\Delta}}{2a}$; giữ $\\Delta > 0$.");
+  assert.equal(a.steps[1].detail, "Ta có x_1 < x_2 và $\\sqrt{\\Delta}$ > 0, $\\pi$ xấp xỉ.");
+});
+
 test("normalize: type lạ / thiếu trường vẫn ra khung an toàn", () => {
   assert.equal(normalizeAnswer({}, isValid).answer.type, "no_formula");
   assert.equal(normalizeAnswer({ type: "hack", formula_ids: ["ds11-csc-tong"], steps: [{ detail: "a" }] }, isValid).answer.type, "solution");

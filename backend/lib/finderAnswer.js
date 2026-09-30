@@ -136,7 +136,7 @@ export function numberSourceTexts(message, recentUserTexts = []) {
  * ngoặc, lọc bước có số lạ. Tách riêng khỏi lời gọi Groq để test và chấm lại offline được.
  */
 export function finalizeAnswer(parsed, { message, recentUserTexts = [] }) {
-  const { answer: normalized, droppedIds, aiNote } = normalizeAnswer(parsed, isValidFormulaId);
+  const { answer: normalized, droppedIds, aiNote } = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
   const chosen = withBraces.formulaIds.map(getFormula);
   const { answer, removedSteps, replaced } = applyNumberGuard(withBraces, {
