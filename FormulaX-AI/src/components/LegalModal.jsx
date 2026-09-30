@@ -9,14 +9,13 @@ import { X } from "lucide-react";
  * về bảo vệ dữ liệu cá nhân yêu cầu phải công bố rõ thu thập gì, dùng làm gì, chia sẻ với ai,
  * lưu bao lâu, và người dùng yêu cầu xoá bằng cách nào.
  *
- * ⚠️ Đây là bản nháp do lập trình viên soạn, KHÔNG phải tư vấn pháp lý. Trước khi mở bán rộng
- * nên nhờ người có chuyên môn đọc lại, và phải điền EMAIL LIÊN HỆ thật ở hằng số bên dưới —
- * thiếu kênh liên hệ thì cam kết "quyền yêu cầu xoá dữ liệu" không thực hiện được.
+ * ⚠️ Đây là bản do nhóm phát triển soạn, KHÔNG phải tư vấn pháp lý — trước khi mở bán rộng nên
+ * nhờ người có chuyên môn đọc lại. Chỉ ghi đúng những gì code thật sự làm: sửa luồng dữ liệu
+ * (đăng nhập, chế độ khách, AI Finder, thanh toán) thì phải sửa văn bản này theo.
  */
 
-// TODO: thay bằng email hỗ trợ thật trước khi deploy.
-const CONTACT_EMAIL = "[email liên hệ của bạn]";
-const LAST_UPDATED = "23/07/2026";
+const CONTACT_EMAIL = "nguyenduonghoaian7966@gmail.com";
+const LAST_UPDATED = "30/09/2026";
 
 function Section({ title, children }) {
   return (
@@ -45,6 +44,12 @@ function Terms() {
           mình và cho mọi hoạt động diễn ra dưới tài khoản đó. Vui lòng không chia sẻ tài khoản
           Premium cho người khác dùng chung.
         </p>
+        <p>
+          Bạn cũng có thể <strong>dùng thử không cần đăng nhập</strong> (chế độ khách): tra cứu công
+          thức và làm Quiz với số lượt giới hạn mỗi ngày. Chế độ khách không dùng được trợ lý AI,
+          không lưu tiến độ học lên máy chủ và không mua được gói Premium — đăng nhập Google để dùng
+          đầy đủ tính năng.
+        </p>
       </Section>
 
       <Section title="3. Nội dung học liệu">
@@ -62,7 +67,7 @@ function Terms() {
       <Section title="4. Thanh toán, gia hạn và hoàn tiền">
         <p>
           Gói Premium được thanh toán một lần cho mỗi kỳ hạn (theo tháng hoặc 6 tháng) qua cổng
-          thanh toán PayOS. Dịch vụ <strong>không tự động gia hạn</strong> và không tự trừ tiền
+          thanh toán payOS. Dịch vụ <strong>không tự động gia hạn</strong> và không tự trừ tiền
           kỳ tiếp theo; hết hạn thì tài khoản trở về gói miễn phí.
         </p>
         <p>
@@ -107,17 +112,26 @@ function Privacy() {
     <>
       <Section title="1. Chúng tôi thu thập gì">
         <p>
-          <strong>Từ tài khoản Google:</strong> họ tên, địa chỉ email và ảnh đại diện. Chúng tôi
-          không bao giờ nhận được mật khẩu Google của bạn.
+          <strong>Khi đăng nhập bằng Google:</strong> Google cung cấp cho chúng tôi họ tên, địa chỉ
+          email và ảnh đại diện của bạn. Các thông tin này được lưu trong hệ thống xác thực
+          (Supabase) để nhận diện tài khoản và hiển thị trong ứng dụng. Chúng tôi không bao giờ nhận
+          được mật khẩu Google của bạn.
         </p>
         <p>
-          <strong>Từ quá trình học:</strong> công thức bạn đánh dấu, ghi chú cá nhân, bộ thẻ ghi
-          nhớ và tiến độ ôn tập, kết quả bài kiểm tra, lịch sử tìm kiếm và lịch sử hỏi trợ lý AI.
+          <strong>Khi dùng thử không cần đăng nhập (chế độ khách):</strong> hệ thống tạo một phiên ẩn
+          danh với mã ngẫu nhiên, không gắn với tên hay email. Ở chế độ này, dữ liệu học tập không
+          được lưu lên máy chủ; số lượt làm Quiz trong ngày và câu Thử thách hôm nay chỉ lưu trên
+          trình duyệt của thiết bị bạn đang dùng. Chế độ khách không dùng được trợ lý AI.
         </p>
         <p>
-          <strong>Khi thanh toán:</strong> mã đơn hàng, số tiền và trạng thái giao dịch. Thông tin
-          thẻ hoặc tài khoản ngân hàng do cổng thanh toán PayOS xử lý —{" "}
-          <strong>chúng tôi không lưu trữ và không nhìn thấy</strong> những thông tin đó.
+          <strong>Từ quá trình học (tài khoản Google):</strong> công thức bạn đánh dấu, ghi chú cá
+          nhân, bộ thẻ ghi nhớ và tiến độ ôn tập, kết quả bài kiểm tra, lịch sử tìm kiếm, lịch sử hỏi
+          trợ lý AI và số lượt hỏi AI mỗi ngày.
+        </p>
+        <p>
+          <strong>Khi thanh toán:</strong> mã đơn hàng, gói đã mua, số tiền, trạng thái và mã tham
+          chiếu giao dịch. Việc thanh toán do cổng <strong>payOS</strong> xử lý — FormulaX{" "}
+          <strong>không lưu và không nhìn thấy</strong> thông tin thẻ hay tài khoản ngân hàng của bạn.
         </p>
       </Section>
 
@@ -137,21 +151,25 @@ function Privacy() {
         <ul className="list-disc pl-5 flex flex-col gap-1">
           <li><strong>Google</strong> — đăng nhập</li>
           <li><strong>Supabase</strong> — lưu trữ cơ sở dữ liệu</li>
-          <li><strong>PayOS</strong> — xử lý thanh toán</li>
+          <li><strong>payOS</strong> — xử lý thanh toán</li>
           <li><strong>Groq</strong> — xử lý câu hỏi gửi tới trợ lý AI</li>
           <li><strong>Vercel, Render</strong> — vận hành ứng dụng và máy chủ</li>
         </ul>
         <p>
-          Nội dung câu hỏi bạn gửi cho trợ lý AI được chuyển tới Groq để tạo câu trả lời. Vì vậy
-          đừng nhập thông tin cá nhân nhạy cảm vào khung chat.
+          <strong>Trợ lý AI:</strong> câu hỏi bạn gửi, kèm tối đa 10 tin nhắn gần nhất trong cuộc
+          trò chuyện, được chuyển tới Groq để tạo câu trả lời. Nội dung gửi đi{" "}
+          <strong>không kèm tên, email hay mã tài khoản</strong> của bạn. Một số câu hỏi (tối đa
+          150 ký tự đầu) được ghi vào nhật ký máy chủ để cải thiện chất lượng trả lời, không kèm
+          thông tin định danh. Vì vậy, đừng nhập thông tin cá nhân vào khung chat.
         </p>
       </Section>
 
       <Section title="4. Lưu trong bao lâu">
         <p>
-          Dữ liệu học tập được giữ trong suốt thời gian tài khoản còn hoạt động. Khi bạn yêu cầu
-          xoá tài khoản, chúng tôi xoá dữ liệu học tập trong vòng 30 ngày. Riêng bản ghi giao dịch
-          thanh toán được giữ lâu hơn theo yêu cầu về chứng từ kế toán.
+          Dữ liệu học tập được giữ trong suốt thời gian tài khoản còn hoạt động. Khi nhận được yêu
+          cầu xoá, chúng tôi xoá dữ liệu học tập của bạn trong vòng 30 ngày kể từ ngày nhận yêu
+          cầu. Riêng bản ghi giao dịch thanh toán được giữ lại trong thời gian cần thiết để đối
+          soát giao dịch và giải quyết khiếu nại.
         </p>
       </Section>
 
@@ -162,8 +180,8 @@ function Privacy() {
           xoá dữ liệu; rút lại sự đồng ý; và khiếu nại tới cơ quan có thẩm quyền.
         </p>
         <p>
-          Trong ứng dụng, mục Cài đặt cho phép bạn xoá dữ liệu học tập bất cứ lúc nào. Để yêu cầu
-          xoá toàn bộ tài khoản, gửi email tới <strong>{CONTACT_EMAIL}</strong>.
+          Để yêu cầu xem, sửa hoặc xoá dữ liệu, hay xoá toàn bộ tài khoản, hãy gửi email tới{" "}
+          <strong>{CONTACT_EMAIL}</strong> từ địa chỉ email của tài khoản cần xử lý.
         </p>
       </Section>
 
@@ -176,15 +194,18 @@ function Privacy() {
         </p>
       </Section>
 
-      <Section title="7. Trẻ em">
+      <Section title="7. Học sinh dưới 16 tuổi">
         <p>
-          Dịch vụ hướng tới học sinh THPT. Nếu bạn dưới 16 tuổi, hãy hỏi ý kiến cha mẹ hoặc người
-          giám hộ trước khi tạo tài khoản.
+          FormulaX dành cho học sinh THPT. Chúng tôi khuyến nghị học sinh dưới 16 tuổi chỉ sử dụng
+          khi đã có sự đồng ý của cha mẹ hoặc người giám hộ.
         </p>
       </Section>
 
       <Section title="8. Liên hệ">
-        <p>Mọi câu hỏi về dữ liệu cá nhân, vui lòng gửi tới <strong>{CONTACT_EMAIL}</strong>.</p>
+        <p>
+          Mọi câu hỏi và yêu cầu về dữ liệu cá nhân, vui lòng gửi tới{" "}
+          <strong>{CONTACT_EMAIL}</strong>.
+        </p>
       </Section>
     </>
   );
