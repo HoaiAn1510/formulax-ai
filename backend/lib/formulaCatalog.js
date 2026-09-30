@@ -31,9 +31,11 @@ const STOP_WORDS = new Set(
   "cho tinh cua va la co cac mot bang voi trong nhung duoc biet hay minh ban nay do khi thi de bai sau".split(" ")
 );
 
+// NFKD (không phải NFD): ngoài bỏ dấu tiếng Việt còn đưa chỉ số trên/dưới về chữ thường — học
+// sinh hay gõ "x³", "log₂", "eˣ" bằng bàn phím điện thoại.
 function normalize(text) {
   return String(text || "")
-    .normalize("NFD")
+    .normalize("NFKD")
     .replace(/[̀-ͯ]/g, "")
     .replace(/[đĐ]/g, "d")
     .toLowerCase();
@@ -41,8 +43,49 @@ function normalize(text) {
 
 function tokenize(text) {
   return normalize(text)
+    .replace(/([a-z])(\d)/g, "$1 $2") // "log2" → "log 2", để vẫn khớp "logarit"
     .split(/[^a-z0-9]+/)
     .filter((t) => t.length >= 2 && !STOP_WORDS.has(t) && !/^\d+$/.test(t));
+}
+
+// ─── Nhóm công thức theo dạng bài ───────────────────────────────────────────
+// So khớp từ khóa chỉ tìm được công thức có tên giống câu hỏi. Bài giải theo PHƯƠNG PHÁP cần cả
+// công thức "phụ" không hề được nhắc tới trong đề: tìm cực trị cần công thức đạo hàm, diện tích
+// hình phẳng cần nguyên hàm + Newton–Leibniz... Thiếu chúng, AI hoặc báo "thư viện chưa có" hoặc
+// tự tính đạo hàm ngoài thư viện. Dạng bài nào khớp thì cả nhóm được ghim lên đầu danh sách ứng
+// viên (vẫn tối đa `limit` công thức nên số token gửi đi không tăng).
+// Mọi id ở đây phải có trong formulas.js — test/formulaCatalog.test.js kiểm tra.
+const DERIVATIVE = ["gt12-daoham-basic", "gt11-daoham-tonghieu"];
+const OXYZ = /oxyz|\(\s*-?\d+\s*;\s*-?\d+\s*;\s*-?\d+\s*\)|x.*y.*z.*=/;
+export const METHOD_GROUPS = [
+  { match: /cuc tri|cuc dai|cuc tieu/, ids: ["gt12-cuctrituoc", ...DERIVATIVE, "ds10-phuongtrinh-bac2"] },
+  { match: /tiep tuyen/, unless: /duong tron/, ids: ["gt11-tieptuyen-phuongtrinh", ...DERIVATIVE] },
+  { match: /don dieu|dong bien|nghich bien/, ids: ["gt12-tinhdondieu-daoham", ...DERIVATIVE, "ds10-phuongtrinh-bac2"] },
+  { match: /gtln|gtnn|gia tri lon nhat|gia tri nho nhat/, ids: ["gt12-gtln-gtnn", ...DERIVATIVE] },
+  { match: /dien tich hinh phang/, ids: ["gt12-tichphan-dientich", "gt12-nguyenham-basic", "gt12-tichphan-newtonleibniz"] },
+  { match: /tich phan/, ids: ["gt12-tichphan-newtonleibniz", "gt12-nguyenham-basic", "gt12-nguyenham-bangtable", "gt12-tichphan-tinhchat"] },
+  { match: /\blog|logarit/, ids: ["gt12-logarit", "gt11-logarit-dinhnghia", "gt11-logarit-quytac-thuong-luythua", "gt12-mu-log-phuongtrinh"] },
+  { match: /lai kep|lai suat|gui tiet kiem|gui ngan hang/, ids: ["gt11-laikep", "mr-taichinh-dautu", "gt11-logarit-dinhnghia"] },
+  // Phương trình / bất phương trình mũ: có lũy thừa với số mũ chứa x (3^x, 3^(2x), 2^{x+1}).
+  { match: /phuong trinh/, and: /\d\s*\^\s*[({]?\s*\d*\s*x/, ids: ["gt12-mu-log-phuongtrinh", "gt11-batptmu-coban", "ds10-bpt-bac2", "ds10-phuongtrinh-bac2"] },
+  { match: /phuong trinh/, and: /sin|cos|tan|cot/, ids: ["gt11-ptluonggiac-sincos", "lg11-goc-dacbiet", "ds11-luonggiac-cong", "ds10-phuongtrinh-bac2"] },
+  { match: /hinh chop|khoi chop/, ids: ["hh12-thetich-chopsen"] },
+  { match: /mat phang/, and: OXYZ, ids: ["hh12-oxyz-matphang", "hh12-oxyz-khoangcach"] },
+  { match: /mat cau/, and: OXYZ, ids: ["hh12-oxyz-matcau", "hh12-oxyz-khoangcach"] },
+  { match: /xac suat/, ids: ["xs11-xacsuat", "xs10-xacsuat-bienco-doi", "xs11-tohop"] },
+  { match: /khai trien|he so cua/, ids: ["ds10-heso-xk-khaitrien-axb", "ds11-nhi-thuc-newton", "xs11-tohop"] },
+];
+const MAX_PINNED = 10; // chừa chỗ cho công thức khớp từ khóa
+
+/** Id các công thức cần ghim cho một đoạn văn bản, theo thứ tự nhóm khớp. */
+export function methodGroupIds(text) {
+  const t = normalize(text);
+  const ids = [];
+  for (const g of METHOD_GROUPS) {
+    if (!g.match.test(t) || (g.and && !g.and.test(t)) || (g.unless && g.unless.test(t))) continue;
+    for (const id of g.ids) if (!ids.includes(id)) ids.push(id);
+  }
+  return ids;
 }
 
 function firstLine(text) {
@@ -72,10 +115,20 @@ const SEARCH_INDEX = formulas.map((f) => ({
 }));
 
 /**
- * Trả về tối đa `limit` công thức liên quan nhất tới các đoạn văn bản (câu hỏi hiện tại + vài
- * câu hỏi trước để hiểu câu hỏi nối tiếp). Công thức không khớp từ nào thì không được chọn.
+ * Trả về tối đa `limit` công thức liên quan nhất tới các đoạn văn bản (câu hỏi hiện tại ĐỨNG ĐẦU,
+ * sau đó vài câu hỏi trước để hiểu câu hỏi nối tiếp). Nhóm công thức theo dạng bài (METHOD_GROUPS)
+ * được ghim lên đầu — của câu hiện tại trước, của câu trước sau; phần còn lại xếp theo số từ khóa
+ * khớp. Công thức không khớp từ nào và không thuộc nhóm nào thì không được chọn.
  */
 export function shortlistFormulas(texts, limit = 15) {
+  const pinned = [];
+  for (const text of texts.filter(Boolean)) for (const id of methodGroupIds(text)) if (!pinned.includes(id)) pinned.push(id);
+  const pinnedFormulas = pinned.slice(0, Math.min(MAX_PINNED, limit)).map(getFormula).filter(Boolean);
+  const byKeywords = rankByKeywords(texts).filter((f) => !pinnedFormulas.includes(f));
+  return [...pinnedFormulas, ...byKeywords].slice(0, limit);
+}
+
+function rankByKeywords(texts) {
   const joined = texts.filter(Boolean).join(" ");
   const ordered = tokenize(joined);
   // "x^2 - 7x + 10 = 0" không có chữ nào để so khớp — với câu hỏi về phương trình thì thêm từ
@@ -97,6 +150,5 @@ export function shortlistFormulas(texts, limit = 15) {
     })
     .filter((x) => x.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
     .map((x) => x.formula);
 }
