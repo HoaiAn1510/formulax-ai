@@ -49,6 +49,23 @@ function firstLine(text) {
   return String(text || "").split("\n")[0];
 }
 
+// Ghi chú ngắn cho prompt: gộp các dòng giải thích ký hiệu thành 1 dòng, tối đa 160 ký tự. Cần
+// thiết vì nhiều công thức để phần quan trọng ở đây — ví dụ công thức nghiệm của phương trình
+// bậc hai nằm trong explanation của mục "Biệt thức Delta", không nằm trong latex.
+function noteForPrompt(f) {
+  const lines = String(f.explanation || "")
+    .split("\n")
+    .map((l) => l.replace(/^\s*-\s*/, "").trim())
+    .filter((l) => l && !/^trong đó:?$/i.test(l));
+  const note = lines.join("; ").replace(/\s+/g, " ");
+  return note.length > 160 ? `${note.slice(0, 157)}...` : note;
+}
+
+/** Một dòng thư viện trong prompt: "id | tên | công thức | ghi chú". */
+export function formatForPrompt(f) {
+  return `${f.id} | ${f.name} | ${f.latex} | ${noteForPrompt(f)}`;
+}
+
 const SEARCH_INDEX = formulas.map((f) => ({
   formula: f,
   text: ` ${normalize([f.name, f.topic, ...(f.tags || []), firstLine(f.example), firstLine(f.explanation)].join(" "))} `,

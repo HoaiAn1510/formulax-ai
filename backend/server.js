@@ -8,7 +8,9 @@ import Groq from "groq-sdk";
 import payosPaymentRouter from "./routes/payosPayment.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
-import { FORMULA_COUNT, shortlistFormulas, isValidFormulaId } from "./lib/formulaCatalog.js";
+import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
+import { askFinder } from "./lib/finderAnswer.js";
+import { FINDER_MODEL } from "./lib/finderPrompt.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -82,106 +84,6 @@ app.use("/api/payment/payos", payosPaymentRouter);
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// Danh sách ứng viên được chọn theo từng câu hỏi (lib/formulaCatalog.js) — xem giải thích ở đó.
-const buildSystemPrompt = (candidates) => String.raw`Bạn là FormulaX AI — trợ lý toán THPT Việt Nam. Trả lời tiếng Việt, thân thiện.
-
-NHIỆM VỤ: Xác định công thức → chỉ ra dấu hiệu nhận biết → giải từng bước (nếu có số) hoặc giải thích cách dùng (nếu không có số).
-
-TOÁN: Dùng $...$ (inline) và $$...$$ (block). Không dùng \[...\] hay \(...\).
-
-KHI CÓ CÔNG THỨC, trả lời theo cấu trúc:
-**Dấu hiệu nhận biết:** Dùng khi...
-- [từ khóa / điều kiện đề cho]
-- [yêu cầu tìm gì]
-**Bước 1:** ... **Bước 2:** ... **Kết quả:** ...
-
-NGOÀI TOÁN: Nếu câu hỏi hoàn toàn không liên quan đến toán học, từ chối lịch sự trong 1 câu và trả ID:null.
-
-CÔNG THỨC THƯ VIỆN — chỉ dùng các ID này:
-${candidates.length ? candidates.map(f => `${f.id}: ${f.name}`).join('\n') : "(không có công thức nào khớp câu hỏi)"}
-
-QUY TẮC XÁC ĐỊNH ID (quan trọng):
-1. Câu hỏi dùng trực tiếp công thức nào → trả về ID đó.
-2. Công thức cần dùng ĐƯỢC SUY RA TRỰC TIẾP từ công thức trong thư viện → trả về ID công thức gốc.
-   Ví dụ: "nghiệm kép" suy từ biệt thức Delta → ID của Delta; "diện tích mặt cầu" suy từ công thức bán kính cầu → ID liên quan.
-3. Bài toán liên quan đến nhiều công thức → chọn công thức CHỦ ĐẠO nhất.
-4. Chỉ trả null nếu hoàn toàn không liên quan đến bất kỳ công thức nào trong thư viện.
-KHÔNG được bịa ID không có trong danh sách trên.
-
-ĐỊNH DẠNG TRẢ LỜI (bắt buộc):
-REPLY_START
-[nội dung]
-REPLY_END
-ID:[id hoặc null]
-
-VÍ DỤ:
-REPLY_START
-**Dấu hiệu nhận biết:** Dùng khi...
-- Đề cho bán kính $R$ của khối cầu/hình cầu
-- Yêu cầu tính thể tích
-
-Áp dụng: $$V = \frac{4}{3}\pi R^3$$
-**Bước 1:** Thay $R=5$: $V=\frac{4}{3}\pi\cdot125=\frac{500\pi}{3}$
-**Kết quả:** $V\approx523{,}6\text{ cm}^3$
-REPLY_END
-ID:hh12-matcau-thetich`;
-
-// Chuẩn hóa ký hiệu LaTeX để KaTeX render đúng
-function normalizeMath(text) {
-  if (!text) return text;
-
-  // 1. \[...\] block → $$...$$
-  text = text.replace(/\\\[/g, '$$').replace(/\\\]/g, '$$');
-
-  // 2. \(...\) inline → $...$
-  text = text.replace(/\\\(/g, '$').replace(/\\\)/g, '$');
-
-  // 3. Wrap các dòng LaTeX bare (không có $) với $$...$$
-  text = text.split('\n').map(line => {
-    const t = line.trim();
-    // Bỏ qua: rỗng, đã có $, markdown bullet/header
-    if (!t || t.includes('$') || /^[*#>\-•]/.test(t)) return line;
-    // Dòng bắt đầu bằng lệnh LaTeX: \Delta, \frac, \sqrt...
-    if (/^\\[A-Za-z]/.test(t)) return `$$${t}$$`;
-    // Dòng dạng "x=\frac...", "=\frac...", "x_1=..."
-    if (/^[a-zA-Z_]?\w*\s*=\s*\\/.test(t)) return `$$${t}$$`;
-    if (/^=\\/.test(t)) return `$$${t}$$`;
-    return line;
-  }).join('\n');
-
-  return text;
-}
-
-// Parse định dạng REPLY_START...REPLY_END\nID:xxx
-function parseReplyFormat(text) {
-  if (!text) return null;
-
-  const idMatch = text.match(/^ID:\s*(.+)$/m);
-  const rawId = idMatch ? idMatch[1].trim() : 'null';
-  const formulaId = rawId === 'null' ? null : rawId;
-
-  // Case 1: đúng format REPLY_START...REPLY_END
-  const fullMatch = text.match(/REPLY_START\s*([\s\S]*?)\s*REPLY_END/);
-  if (fullMatch) {
-    return { reply: fullMatch[1].trim(), formulaId };
-  }
-
-  // Case 2: AI bỏ REPLY_START nhưng có REPLY_END
-  const endOnlyMatch = text.match(/^([\s\S]*?)\s*REPLY_END/);
-  if (endOnlyMatch) {
-    return { reply: endOnlyMatch[1].trim(), formulaId };
-  }
-
-  // Case 3: AI bỏ hết markers — clean toàn bộ markers rồi dùng text còn lại
-  const cleaned = text
-    .replace(/REPLY_START\n?/g, '')
-    .replace(/\n?REPLY_END[\s\S]*/g, '')
-    .replace(/^ID:.*$/m, '')
-    .trim();
-
-  return cleaned ? { reply: cleaned, formulaId } : null;
-}
-
 // Trần độ dài input — chặn việc nhồi prompt khổng lồ để đốt token của Groq. Câu hỏi toán THPT
 // thực tế hiếm khi vượt 2000 ký tự; mỗi lượt history cũng cắt bớt thay vì gửi nguyên văn.
 const MAX_MESSAGE_CHARS = 2000;
@@ -191,6 +93,26 @@ const MAX_HISTORY_ITEM_CHARS = 1500;
 // Google Free: 10 lượt/ngày (xem CLAUDE.md). Premium: không giới hạn. Khách ẩn danh: 0 — AI
 // Finder bắt buộc đăng nhập Google, xem verifySupabaseUser + kiểm tra is_anonymous bên dưới.
 const FREE_AI_DAILY_LIMIT = 10;
+
+// Ghi log để theo dõi chất lượng AI Finder: câu hỏi bị báo "thư viện chưa có" và các lần bộ
+// lọc phải can thiệp. CHỈ ghi nội dung câu hỏi (tối đa 150 ký tự), type và id công thức —
+// không ghi google_id, email, tên hay token.
+function logFinderEvents(message, answer, meta) {
+  const base = { q: String(message).slice(0, 150), type: answer.type, ids: answer.formulaIds };
+  if (answer.type === "no_formula") console.log("[finder:no_formula]", JSON.stringify(base));
+  if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
+  const filtered = meta.removedSteps?.length || meta.replaced?.length || meta.droppedIds?.length || meta.droppedExpressions;
+  if (filtered) {
+    console.warn("[finder:guard]", JSON.stringify({
+      ...base,
+      removedSteps: meta.removedSteps.length,
+      leaked: [...new Set(meta.removedSteps.flatMap((st) => st.leaked))],
+      replaced: meta.replaced,
+      droppedIds: meta.droppedIds,
+      droppedExpressions: meta.droppedExpressions,
+    }));
+  }
+}
 
 function computeIsPremium(userRow) {
   if (!userRow?.is_premium) return false;
@@ -288,35 +210,21 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
         content: String(h.text || "").slice(0, MAX_HISTORY_ITEM_CHARS)
       }));
 
-    // Chọn công thức ứng viên theo câu hỏi hiện tại + 2 câu hỏi trước (để hiểu câu hỏi nối tiếp
-    // kiểu "bước 2 làm sao?"). Chỉ các công thức này được đưa vào prompt.
-    const recentUserTexts = chatHistory.filter(h => h.role === "user").slice(-2).map(h => h.content);
-    const candidates = shortlistFormulas([message, ...recentUserTexts]);
-
-    const completion = await groq.chat.completions.create({
-      model: "openai/gpt-oss-20b",
-      messages: [
-        { role: "system", content: buildSystemPrompt(candidates) },
-        ...chatHistory,
-        { role: "user", content: message }
-      ],
-      temperature: 0.2,
-      max_tokens: 1800,
-    });
-
-    const rawText = completion.choices[0].message.content.trim();
-
-    // Parse định dạng REPLY_START...REPLY_END\nID:xxx
-    const parsed = parseReplyFormat(rawText) || { reply: rawText, formulaId: null };
-
-    // Đảm bảo formulaId phải thuộc danh sách hợp lệ
-    if (parsed.formulaId && !isValidFormulaId(parsed.formulaId)) {
-      parsed.formulaId = null;
-    }
+    // Chọn công thức ứng viên → gọi model → parse JSON → kiểm tra id, ngoặc, số lạ. Xem
+    // lib/finderAnswer.js; câu trả lời trả về đây đã qua bộ lọc, không cần tin model.
+    const { answer, reply, meta } = await askFinder({ groq, message, history: chatHistory });
+    logFinderEvents(message, answer, meta);
 
     res.json({
-      reply: normalizeMath(parsed.reply || rawText),
-      formulaId: parsed.formulaId || null,
+      type: answer.type,
+      formulaIds: answer.formulaIds,
+      intro: answer.intro,
+      steps: answer.steps,
+      reminder: answer.reminder,
+      // reply + formulaId giữ cho bản PWA cũ còn cache ở máy học sinh (chỉ đọc 2 trường này) và
+      // làm lịch sử hội thoại gửi lại model ở câu sau.
+      reply,
+      formulaId: answer.formulaIds[0] ?? null,
       remaining, // null = Premium (không giới hạn), số = lượt Free còn lại sau câu hỏi này
     });
 
@@ -391,7 +299,7 @@ app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    model: "openai/gpt-oss-20b (Groq)",
+    model: `${FINDER_MODEL} (Groq)`,
     formulasLoaded: FORMULA_COUNT
   });
 });
