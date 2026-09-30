@@ -1,3 +1,5 @@
+import { MathElement } from "../utils/katexHelper";
+
 /**
  * Nền trang đăng nhập — thiết kế riêng của FormulaX: nền navy, hình học toán phát sáng xanh
  * dương / xanh ngọc ở 4 góc, công thức mờ, chấm sáng như bầu trời sao. Vẽ hoàn toàn bằng SVG
@@ -12,6 +14,10 @@
  * tĩnh (xem CLAUDE.md mục Hiệu năng). Thư viện chưa có định lý Pythagore dạng a² + b² = c², nên
  * hình tam giác vuông đi kèm định lý Côsin (hh10-cosin) — không tự viết công thức ngoài thư viện.
  *
+ * Lớp phụ (SecondaryLayer): mờ ~50% lớp chính, nét mảnh, lấp các khoảng trống quanh thẻ — sóng
+ * sin, hình chóp khung dây, lưới phối cảnh, parabol, vectơ. Công thức của lớp phụ là chuỗi LaTeX
+ * chép nguyên văn từ formulas.js, vẽ bằng KaTeX.
+ *
  * Hiệu ứng: phát sáng rất chậm và chấm sao lấp lánh nhẹ (CSS trong index.css), tắt hẳn khi người
  * dùng bật "giảm chuyển động" (prefers-reduced-motion).
  */
@@ -24,6 +30,15 @@ const FORMULAS = {
   derivative: "(xⁿ)′ = n · xⁿ⁻¹", //             gt12-daoham-basic
   trig: "sin²x + cos²x = 1", //                  lg11-congthuc-coban
   sphere: "V = ⁴⁄₃ π R³", //                     hh12-matcau-thetich
+};
+
+// Công thức của lớp phụ: chuỗi LaTeX CHÉP NGUYÊN VĂN từ trường `latex` trong formulas.js, hiển thị
+// bằng KaTeX (ký hiệu vectơ, phân số không vẽ được đúng bằng ký tự Unicode thường).
+const SUB_LATEX = {
+  sine: String.raw`y = \sin x:\; T=2\pi,\; [-1;1]`, //                                    lg11-hamso-luonggiac (vế đầu)
+  parabola: String.raw`I\!\left(-\dfrac{b}{2a}\,;\,-\dfrac{\Delta}{4a}\right), \quad x = -\dfrac{b}{2a}`, // hh10-parabola
+  dot: String.raw`\vec{u} \cdot \vec{v} = |\vec{u}| \cdot |\vec{v}| \cdot \cos(\vec{u}, \vec{v})`, // hh10-goc-tichvohuong-dinhnghia
+  pyramid: String.raw`V = \frac{1}{3} B \cdot h`, //                                         hh12-thetich-chopsen
 };
 
 const BLUE = "#38BDF8";
@@ -75,6 +90,104 @@ function FormulaText({ x, y, children, anchor = "start", size = 17 }) {
 
 const CORNER = "absolute w-[clamp(130px,32vw,420px)] h-auto";
 
+// ─── Lớp phụ: mờ hơn (~50% độ sáng lớp chính), nét mảnh hơn, không phát sáng ─────────────────
+// Neo theo THẺ ĐĂNG NHẬP chứ không theo mép màn hình: thẻ + dòng điều khoản luôn nằm giữa, cao
+// khoảng 454px, tức từ (50% − 227px) tới (50% + 227px). Các hình phụ đặt cách mép đó ≥ 20px nên
+// không bao giờ chạm thẻ, ở mọi chiều cao màn hình. Hình nào không đủ chỗ thì ẩn theo breakpoint.
+const THIN = { fill: "none", strokeWidth: 1.1, vectorEffect: "non-scaling-stroke" };
+const SUB_FORMULA = "absolute whitespace-nowrap italic text-[11px] md:text-[12.5px] text-[#7DD3FC] opacity-35 font-[Inter,system-ui,sans-serif]";
+
+// Sóng y = sin x, 2 chu kỳ, trên khung 0..760 × 0..80 (co giãn ngang).
+const SINE_PATH = Array.from({ length: 121 }, (_, i) => {
+  const x = 20 + (i / 120) * 720;
+  return `${i ? "L" : "M"}${x.toFixed(1)} ${(42 - 24 * Math.sin((i / 120) * 4 * Math.PI)).toFixed(1)}`;
+}).join(" ");
+
+// Lưới phối cảnh ở đáy: các đường dọc hội tụ về điểm tụ phía trên, đường ngang dày dần xuống dưới.
+const GRID_VERTICALS = Array.from({ length: 21 }, (_, i) => -800 + i * 160);
+const GRID_HORIZONTALS = [18, 40, 68, 102, 142, 188];
+
+function SecondaryLayer() {
+  return (
+    // Lớp ngoài giữ độ mờ 50% cố định; lớp trong mới chạy hiệu ứng phát sáng (animation ghi đè
+    // opacity của chính phần tử, nên không đặt hai thứ trên cùng một thẻ).
+    <div data-login-layer="secondary" className="absolute inset-0" style={{ opacity: 0.5 }}>
+    <div className="login-fx-glow login-fx-delay absolute inset-0">
+      {/* Lưới phối cảnh ở đáy màn hình (mọi kích thước) — dưới dòng điều khoản ít nhất 20px */}
+      <svg className="absolute inset-x-0 bottom-0 w-full h-[min(16vh,180px)]" viewBox="0 0 1600 200" preserveAspectRatio="none">
+        <g {...THIN} stroke={BLUE} opacity="0.4">
+          {GRID_VERTICALS.map((x) => <line key={x} x1="800" y1="-160" x2={x} y2="200" vectorEffect="non-scaling-stroke" />)}
+          {GRID_HORIZONTALS.map((y) => <line key={y} x1="0" y1={y} x2="1600" y2={y} vectorEffect="non-scaling-stroke" />)}
+        </g>
+      </svg>
+
+      {/* Sóng sin phía trên thẻ — chỉ khi màn đủ cao (≥ 800px) để không chạm hình góc */}
+      <div className="hidden [@media(min-height:800px)]:block absolute left-1/2 -translate-x-1/2 w-[clamp(240px,44vw,760px)] h-[64px] md:h-[80px] top-[calc(50%-247px-64px)] md:top-[calc(50%-247px-80px)]">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 760 80" preserveAspectRatio="none">
+          <line x1="0" y1="42" x2="760" y2="42" stroke={BLUE} strokeDasharray="3 7" opacity="0.6" {...THIN} />
+          <path d={SINE_PATH} stroke={TEAL} {...THIN} />
+          {/* Đánh dấu chu kỳ T: hai đỉnh liên tiếp nối bằng nét đứt */}
+          {[110, 470].map((x) => <line key={x} x1={x} y1="18" x2={x} y2="42" stroke={BLUE} strokeDasharray="2 5" {...THIN} />)}
+          <line x1="110" y1="12" x2="470" y2="12" stroke={BLUE} strokeDasharray="2 5" opacity="0.7" {...THIN} />
+        </svg>
+        {[["14.5%", "22%"], ["61.8%", "22%"]].map(([l, t], i) => (
+          <span key={i} className="absolute w-[5px] h-[5px] rounded-full bg-[#2DD4BF] opacity-70 -translate-x-1/2 -translate-y-1/2" style={{ left: l, top: t }} />
+        ))}
+        <span className={`${SUB_FORMULA} right-0 -top-4 md:-top-5`}><MathElement math={SUB_LATEX.sine} /></span>
+      </div>
+
+      {/* Hình chóp khung dây phía dưới dòng điều khoản — chỉ khi màn đủ cao */}
+      <div className="hidden [@media(min-height:800px)]:block absolute left-1/2 -translate-x-1/2 top-[calc(50%+247px)] w-[96px] h-[80px] md:w-[120px] md:h-[100px]">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 120 100">
+          <g {...THIN} stroke={TEAL}>
+            <polyline points="20,78 64,94 104,76 60,4 20,78" />
+            <line x1="64" y1="94" x2="60" y2="4" />
+            <line x1="104" y1="76" x2="60" y2="4" />
+          </g>
+          <g {...THIN} stroke={BLUE} strokeDasharray="3 4" opacity="0.8">
+            <polyline points="20,78 60,64 104,76" />
+            <line x1="60" y1="64" x2="60" y2="4" />
+          </g>
+          <circle cx="60" cy="4" r="2.2" fill={TEAL} />
+        </svg>
+        <span className={`${SUB_FORMULA} left-full ml-2 top-1/2 -translate-y-1/2`}><MathElement math={SUB_LATEX.pyramid} /></span>
+      </div>
+
+      {/* Parabol (trái thẻ) và vectơ (phải thẻ) — chỉ màn rất rộng (≥ 1536px), nơi dải hai bên thẻ trống */}
+      <div className="hidden 2xl:block absolute w-[240px] h-[220px] right-[calc(50%+250px)] top-[calc(50%-150px)]">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 240 200">
+          <g {...THIN} stroke={BLUE} opacity="0.7">
+            <line x1="10" y1="160" x2="230" y2="160" />
+            <line x1="120" y1="190" x2="120" y2="8" strokeDasharray="3 5" />
+          </g>
+          <path d="M40 30 Q120 250 200 30" stroke={TEAL} {...THIN} />
+          <circle cx="120" cy="140" r="2.6" fill={TEAL} />
+          <line x1="120" y1="140" x2="30" y2="140" stroke={BLUE} strokeDasharray="2 5" {...THIN} />
+        </svg>
+        <span className={`${SUB_FORMULA} left-0 -bottom-1`}><MathElement math={SUB_LATEX.parabola} /></span>
+      </div>
+      <div className="hidden 2xl:block absolute w-[240px] h-[220px] left-[calc(50%+250px)] top-[calc(50%-150px)]">
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 240 200">
+          <defs>
+            <marker id="login-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0 0 L10 5 L0 10 z" fill={TEAL} />
+            </marker>
+          </defs>
+          <g {...THIN} stroke={TEAL} markerEnd="url(#login-arrow)">
+            <line x1="40" y1="170" x2="200" y2="120" />
+            <line x1="40" y1="170" x2="110" y2="30" />
+          </g>
+          <path d="M78 158 A40 40 0 0 0 62 128" stroke={BLUE} {...THIN} />
+          <line x1="110" y1="30" x2="129" y2="143" stroke={BLUE} strokeDasharray="2 5" {...THIN} />
+          <circle cx="40" cy="170" r="2.6" fill={TEAL} />
+        </svg>
+        <span className={`${SUB_FORMULA} right-0 -bottom-1`}><MathElement math={SUB_LATEX.dot} /></span>
+      </div>
+    </div>
+    </div>
+  );
+}
+
 export default function LoginBackground() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -93,6 +206,9 @@ export default function LoginBackground() {
           />
         ))}
       </svg>
+
+      {/* Lớp phụ (mờ hơn, nằm dưới 4 hình góc) */}
+      <SecondaryLayer />
 
       {/* Góc trên trái — tam giác vuông với hình vuông dựng trên ba cạnh (hình Pythagore) */}
       <svg className={`${CORNER} top-0 left-0`} viewBox="0 0 400 400">
