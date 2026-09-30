@@ -75,8 +75,16 @@ export function parseModelJson(raw) {
 const fixOverEscaped = (s) => s.replace(/\\\\(?=[A-Za-z])/g, "\\");
 const str = (v, max) => (typeof v === "string" ? fixOverEscaped(v.trim()).slice(0, max) : "");
 
+// "Delta" thiếu dấu \ trong phần toán → KaTeX in chữ "Delta" nghiêng thay vì Δ. Chỉ sửa trong phần
+// toán ($...$ của câu chữ, và toàn bộ expression); chữ "Delta" trong câu văn ("Tính biệt thức
+// Delta") giữ nguyên.
+const BARE_DELTA = /(?<![\\A-Za-z])Delta(?![A-Za-z])/g;
+export const fixBareDeltaInMath = (math) => math.replace(BARE_DELTA, "\\Delta");
+export const fixBareDeltaInText = (s) => s.replace(/(\$\$?)([^$]+)(\$\$?)/g, (_, open, math, close) => open + fixBareDeltaInMath(math) + close);
+const text = (v, max) => fixBareDeltaInText(str(v, max));
+
 // expression phải là LaTeX thuần — bỏ $ bao ngoài nếu model lỡ thêm.
-const cleanExpression = (v) => str(v, LIMITS.expression).replace(/^\$+|\$+$/g, "").trim();
+const cleanExpression = (v) => fixBareDeltaInMath(str(v, LIMITS.expression).replace(/^\$+|\$+$/g, "").trim());
 
 /**
  * Đưa đối tượng model trả về về đúng khung, bỏ mọi trường lạ (kể cả nếu model tự thêm "result").
@@ -90,13 +98,13 @@ export function normalizeAnswer(value, isValidId) {
 
   const steps = (Array.isArray(obj.steps) ? obj.steps : [])
     .filter((st) => st && typeof st === "object")
-    .map((st) => ({ title: str(st.title, LIMITS.title), detail: str(st.detail, LIMITS.detail), expression: cleanExpression(st.expression) }))
+    .map((st) => ({ title: text(st.title, LIMITS.title), detail: text(st.detail, LIMITS.detail), expression: cleanExpression(st.expression) }))
     .filter((st) => st.detail || st.expression)
     .slice(0, LIMITS.steps);
 
   let type = ANSWER_TYPES.includes(obj.type) ? obj.type : steps.length ? "solution" : "no_formula";
-  let intro = str(obj.intro, LIMITS.intro);
-  let reminder = str(obj.reminder, LIMITS.reminder);
+  let intro = text(obj.intro, LIMITS.intro);
+  let reminder = text(obj.reminder, LIMITS.reminder);
 
   // Lời giải mà không còn công thức hợp lệ nào = không dựa trên thư viện → không được hiển thị.
   if (type === "solution" && formulaIds.length === 0) {

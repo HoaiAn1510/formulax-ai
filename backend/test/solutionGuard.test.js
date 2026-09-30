@@ -88,6 +88,24 @@ test("normalize: no_formula không nêu tên phương pháp còn thiếu cho h�
   assert.equal(normalizeAnswer({ type: "solution", formula_ids: ["ds11-csc-tong"], intro: "Dùng CSC.", steps: [{ detail: "a" }] }, isValid).aiNote, "");
 });
 
+test("normalize: 'Delta' thiếu dấu \\ trong phần toán thành \\Delta; chữ Delta trong câu văn giữ nguyên", () => {
+  const { answer } = normalizeAnswer({
+    type: "solution", formula_ids: ["ds11-csc-tong"], intro: "Bài này dùng biệt thức Delta.",
+    steps: [
+      { title: "Tính biệt thức Delta", detail: "Thay vào $Delta = b^2 - 4ac$, xét $Delta > 0$ và $\\Delta' = 0$:", expression: "Delta = (-6)^2 - 4 \\cdot 3 \\cdot (-9)" },
+      { title: "Nghiệm", detail: "Giữ $x_{1,2} = \\frac{6 \\pm \\sqrt{Delta}}{2 \\cdot 3}$.", expression: "x_{1,2} = \\frac{6 \\pm \\sqrt{Delta}}{6}" },
+    ],
+    reminder: "Bạn tính $Delta$ trước rồi xét dấu nhé!",
+  }, isValid);
+  assert.equal(answer.intro, "Bài này dùng biệt thức Delta."); // câu văn: giữ nguyên
+  assert.equal(answer.steps[0].title, "Tính biệt thức Delta");
+  assert.equal(answer.steps[0].detail, "Thay vào $\\Delta = b^2 - 4ac$, xét $\\Delta > 0$ và $\\Delta' = 0$:");
+  assert.equal(answer.steps[0].expression, "\\Delta = (-6)^2 - 4 \\cdot 3 \\cdot (-9)");
+  assert.equal(answer.steps[1].detail, "Giữ $x_{1,2} = \\frac{6 \\pm \\sqrt{\\Delta}}{2 \\cdot 3}$.");
+  assert.equal(answer.steps[1].expression, "x_{1,2} = \\frac{6 \\pm \\sqrt{\\Delta}}{6}");
+  assert.equal(answer.reminder, "Bạn tính $\\Delta$ trước rồi xét dấu nhé!");
+});
+
 test("normalize: type lạ / thiếu trường vẫn ra khung an toàn", () => {
   assert.equal(normalizeAnswer({}, isValid).answer.type, "no_formula");
   assert.equal(normalizeAnswer({ type: "hack", formula_ids: ["ds11-csc-tong"], steps: [{ detail: "a" }] }, isValid).answer.type, "solution");
