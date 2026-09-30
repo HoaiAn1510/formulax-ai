@@ -32,7 +32,7 @@ const CASES = [
 for (const [q, need] of CASES) {
   test(`shortlist đủ công thức: ${q}`, () => {
     const list = ids([q]);
-    assert.ok(list.length <= 15);
+    assert.ok(list.length <= 10);
     assert.deepEqual(need.filter((id) => !list.includes(id)), []);
   });
 }

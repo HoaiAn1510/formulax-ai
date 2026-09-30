@@ -181,7 +181,7 @@ AI trình bày cách giải dựa trên công thức trong thư viện, **học 
 **Không có mục "Kết quả"**, không trường kết quả nào trong dữ liệu.
 
 **Luồng backend** (`POST /api/chat` trong `backend/server.js`):
-1. `lib/formulaCatalog.js` lọc tối đa 15 công thức ứng viên từ `formulas.js`: nhóm công thức theo
+1. `lib/formulaCatalog.js` lọc tối đa 10 công thức ứng viên từ `formulas.js`: nhóm công thức theo
    dạng bài (`METHOD_GROUPS` — cực trị kéo theo công thức đạo hàm...) được ghim trước, còn lại theo
    từ khóa câu hỏi. Thêm dạng bài mới thì thêm nhóm + test trong `test/formulaCatalog.test.js`.
 2. `lib/finderPrompt.js` dựng system prompt (danh sách ứng viên + 3 ví dụ mẫu) và khai báo

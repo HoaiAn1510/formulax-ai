@@ -120,7 +120,9 @@ const SEARCH_INDEX = formulas.map((f) => ({
  * được ghim lên đầu — của câu hiện tại trước, của câu trước sau; phần còn lại xếp theo số từ khóa
  * khớp. Công thức không khớp từ nào và không thuộc nhóm nào thì không được chọn.
  */
-export function shortlistFormulas(texts, limit = 15) {
+// limit 10 (trước là 15): mỗi dòng công thức ~128 token. Chấm 2026-09-30 trên 20 câu: 10 ứng viên
+// giảm ~11% token/câu (5.123 → 4.574), no_formula và lộ giá trị số không đổi (2/20, 0).
+export function shortlistFormulas(texts, limit = 10) {
   const pinned = [];
   for (const text of texts.filter(Boolean)) for (const id of methodGroupIds(text)) if (!pinned.includes(id)) pinned.push(id);
   const pinnedFormulas = pinned.slice(0, Math.min(MAX_PINNED, limit)).map(getFormula).filter(Boolean);
