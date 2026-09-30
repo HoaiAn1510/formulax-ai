@@ -1,4 +1,4 @@
-import { MathElement, RichTextRenderer } from "../utils/katexHelper";
+import { MathElement, RichTextRenderer, InlineRichText } from "../utils/katexHelper";
 
 const SECTION_TITLE = "text-[0.7rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-[#94A3B8] mb-2";
 
@@ -58,7 +58,7 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0]">
-                    Bước {i + 1}{st.title ? ` — ${st.title}` : ""}
+                    Bước {i + 1}{st.title && <> — <InlineRichText text={st.title} /></>}
                   </div>
                   {st.detail && (
                     <div className="chat-bot-text text-[0.85rem] leading-[1.6] mt-0.5 max-w-full overflow-x-auto">

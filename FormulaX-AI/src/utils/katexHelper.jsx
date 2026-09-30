@@ -125,6 +125,16 @@ const parseMarkdownLine = (lineContent, keyPrefix) => {
 };
 
 /**
+ * Một dòng chữ có xen toán $...$ / **đậm**, hiển thị NGAY TRÊN DÒNG (chỉ <span>, không <div>) —
+ * dùng cho tiêu đề bước của AI Finder ("Giải phương trình $y' = 0$"). RichTextRenderer bọc mỗi
+ * dòng trong <div> nên đặt sau "Bước 2 — " sẽ bị xuống dòng. Xuống dòng trong text gộp thành dấu cách.
+ */
+export const InlineRichText = ({ text = "", className = "" }) => {
+  if (!text) return null;
+  return <span className={className}>{parseMarkdownLine(String(text).replace(/\s*\n\s*/g, " "), "inline")}</span>;
+};
+
+/**
  * Helper to replace $...$ and $$...$$ in markdown-like text with rendered KaTeX nodes.
  * Specifically used for explanations and examples.
  */
