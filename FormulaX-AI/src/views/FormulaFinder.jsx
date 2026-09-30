@@ -4,6 +4,7 @@ import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
+import StepAnswer from "../components/StepAnswer";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -225,19 +226,15 @@ export default function FormulaFinder({
     }
   }, [messages, sessionsKey]);
 
-  const findRelatedFormulas = (formulaId, targetFormula) => {
-    if (!targetFormula) return [];
-    return formulas
-      .filter(f => f.id !== formulaId && (f.topic === targetFormula.topic || f.grade === targetFormula.grade))
-      .slice(0, 2);
-  };
-
   const callAI = async (userMessage, messageHistory) => {
     // Timeout chủ động — không có dòng này, backend treo/mạng rớt sẽ khiến fetch không bao
     // giờ resolve/reject, isAnalyzing kẹt true mãi mãi và nút gửi tin nhắn "chết" vĩnh viễn
     // cho tới khi tải lại trang.
+    // 45 giây PHẢI lớn hơn ngân sách 40 giây/request của backend (CHAT_BUDGET_MS trong
+    // backend/lib/finderAnswer.js). Nếu frontend bỏ cuộc trước, backend vẫn giao câu trả lời và
+    // không hoàn lượt — học sinh mất lượt mà không thấy gì.
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
     // Backend bắt buộc token để biết ai đang hỏi (đếm hạn mức, kiểm tra Premium, chặn khách).
     const token = await getAccessToken();
     let response;
@@ -261,7 +258,9 @@ export default function FormulaFinder({
       const errData = await response.json().catch(() => ({}));
       const err = new Error(errData.error || `HTTP ${response.status}`);
       err.status = response.status;
-      // Có `remaining` nghĩa là 429 do hết hạn mức, phân biệt với 429 "AI đang bận" từ Groq.
+      // code: "quota_exceeded" (hết lượt) | "ai_busy" (Groq quá tải) — cùng là HTTP 429.
+      // remaining: số lượt còn lại SAU khi backend đã hoàn lượt cho request không thành công.
+      err.code = errData.code;
       err.remaining = errData.remaining;
       throw err;
     }
@@ -307,31 +306,45 @@ export default function FormulaFinder({
 
     setIsAnalyzing(true);
     try {
+      // Tin hệ thống (lỗi, hết lượt, "AI đang bận") vẫn lưu trong phiên để hiển thị lại nhưng
+      // KHÔNG gửi lên AI làm lịch sử — chúng không phải lời AI nói, gửi lên chỉ gây nhiễu.
       const historyForAPI = updatedMessages
-        .filter(m => !m.isImage && !m.isFile)
+        .filter(m => !m.isImage && !m.isFile && !m.isError && !m.isLimitHit && !m.isNotice)
         .slice(-6)
         .map(m => ({ sender: m.sender, text: m.text }));
-      const { reply, formulaId, remaining } = await callAI(textToSend, historyForAPI.slice(0, -1));
+      const data = await callAI(textToSend, historyForAPI.slice(0, -1));
       // remaining = null với Premium (không giới hạn) → giữ nguyên, không hiện bộ đếm.
-      if (typeof remaining === "number") setAiQueriesLeft(remaining);
-      const matchedFormula = formulaId ? formulas.find(f => f.id === formulaId) : null;
-      const relatedFormulas = matchedFormula ? findRelatedFormulas(formulaId, matchedFormula) : [];
+      if (typeof data.remaining === "number") setAiQueriesLeft(data.remaining);
+      // Chỉ lưu id công thức (không lưu cả object như trước) để chat_sessions không giữ bản sao
+      // cũ của công thức — thẻ luôn lấy dữ liệu mới nhất từ formulas.js khi hiển thị. `text` là
+      // bản văn bản của câu trả lời, dùng làm lịch sử gửi lại cho AI ở câu sau.
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: "bot",
-        text: reply,
-        aiResult: matchedFormula || null,
-        related: relatedFormulas
+        text: data.reply || data.intro || "",
+        answer: {
+          type: data.type,
+          formulaIds: Array.isArray(data.formulaIds) ? data.formulaIds : [],
+          intro: data.intro || "",
+          steps: Array.isArray(data.steps) ? data.steps : [],
+          reminder: data.reminder || "",
+        },
       }]);
     } catch (error) {
-      if (error.status === 429 && error.remaining === 0) {
+      if (typeof error.remaining === "number") setAiQueriesLeft(error.remaining);
+      if (error.code === "quota_exceeded" || (error.status === 429 && error.remaining === 0)) {
         setAiQueriesLeft(0);
         pushLimitHitMessage(error.message);
         return;
       }
+      if (error.code === "ai_busy") {
+        // Không phải lỗi của học sinh và đã được hoàn lượt — báo nhẹ nhàng, không gắn "Lỗi AI".
+        setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text: error.message, isNotice: true }]);
+        return;
+      }
       const isConn = error.message.includes("fetch") || error.message.includes("Failed");
       const errorMsg = isConn
-        ? "Không thể kết nối tới backend. Hãy chắc chắn server đang chạy tại localhost:3001."
+        ? "Không kết nối được tới máy chủ AI. Bạn kiểm tra mạng rồi thử lại nhé."
         : `Lỗi AI: ${error.message}`;
       setApiError(errorMsg);
       setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text: errorMsg, isError: true }]);
@@ -644,8 +657,10 @@ export default function FormulaFinder({
                 const isUser = msg.sender === "user";
                 const bubbleStateClass = msg.isError
                   ? "bg-[rgba(239,68,68,0.06)] border border-[rgba(239,68,68,0.2)] text-[#b91c1c]"
-                  : msg.isLimitHit
-                    ? "bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.3)] text-[#92400E]"
+                  : msg.isLimitHit || msg.isNotice
+                    // `!` ở dark: để thắng dark:bg/border chung của bong bóng bot bên dưới — không có
+                    // thì ở dark mode thông báo trông y như bong bóng thường.
+                    ? "bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.3)] text-[#92400E] dark:text-[#FCD34D] dark:!bg-[rgba(245,158,11,0.1)] dark:!border-[rgba(245,158,11,0.35)]"
                     : (msg.isImage || msg.isFile)
                       ? "p-2 bg-white border border-[#E2E8F0] text-[#1E3A5F]"
                       : isUser
@@ -654,7 +669,7 @@ export default function FormulaFinder({
                 return (
                   <div
                     key={msg.id}
-                    className={`max-w-[85%] ${!isUser ? "md:max-w-[92%]" : ""} py-3 px-4 rounded-xl text-[0.85rem] leading-[1.5] break-words ${
+                    className={`${msg.answer ? "w-full max-w-full" : "max-w-[85%]"} ${!isUser ? "md:max-w-[92%]" : ""} min-w-0 py-3 px-4 rounded-xl text-[0.85rem] leading-[1.5] break-words ${
                       isUser
                         ? "self-end rounded-br-[2px] shadow-[0_4px_10px_rgba(217,119,6,0.15)]"
                         : "self-start rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] dark:bg-[#1E293B]"
@@ -689,7 +704,21 @@ export default function FormulaFinder({
                       </div>
                     )}
 
-                    {!msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && (
+                    {/* Câu trả lời dạng mới (có answer): công thức → các bước → lời nhắc. Tin nhắn
+                        cũ trong chat_sessions không có answer vẫn hiển thị bằng nhánh văn bản
+                        bên dưới + thẻ aiResult, không lỗi. */}
+                    {msg.answer && (
+                      <StepAnswer answer={msg.answer} formulas={formulas} onViewDetail={onViewDetail} />
+                    )}
+
+                    {/* Thông báo (vd "AI đang bận") — chữ thường, không qua .chat-bot-text vì CSS dark
+                        mode của lớp đó ghi đè màu amber. Cờ isNotice được lưu cùng phiên nên mở lại
+                        phiên cũ vẫn hiện đúng kiểu thông báo. */}
+                    {msg.isNotice && (
+                      <span className="text-[0.88rem]">{msg.text}</span>
+                    )}
+
+                    {!msg.answer && !msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && !msg.isNotice && (
                       <div className="chat-bot-text leading-[1.65] text-[0.88rem]">
                         {msg.sender === "bot"
                           ? <RichTextRenderer text={msg.text || ""} />
@@ -714,8 +743,8 @@ export default function FormulaFinder({
                       </div>
                     )}
 
-                    {/* Formula card */}
-                    {msg.sender === "bot" && msg.aiResult && (
+                    {/* Thẻ công thức của tin nhắn định dạng cũ (lưu cả object công thức) */}
+                    {msg.sender === "bot" && !msg.answer && msg.aiResult && (
                       <div className="finder-ai-card mt-3.5 bg-white dark:bg-[#1E293B] border-[1.5px] border-[#e2e8f0] dark:border-[#334155] border-l-4 border-l-accent rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
                         <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5 before:content-['✨'] before:text-[0.95rem]">{msg.aiResult.name}</div>
                         <div className="bg-[#f8fafc] dark:bg-[#0F172A]/60 border border-secondary/15 dark:border-[#334155] rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)] !text-[#1E3A5F] dark:!text-[#E2E8F0]">
@@ -833,7 +862,7 @@ export default function FormulaFinder({
               <textarea
                 ref={textareaRef}
                 className="flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] bg-transparent py-2 px-2 outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]"
-                placeholder="Hỏi AI về bất kỳ công thức toán nào..."
+                aria-label="Hỏi AI về công thức"
                 rows={1}
                 onChange={(e) => {
                   setQuery(e.target.value);
