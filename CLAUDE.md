@@ -213,6 +213,11 @@ Quy tắc khi sửa:
   so với 5/12, không lỗi hiển thị LaTeX (20b: 3), không lỗi JSON 400 (20b: 2); đổi lại chậm hơn
   (~2,5s so với 1,4s). Đổi model hoặc thêm ví dụ vào prompt thì chấm lại trên bộ câu thử, chỉ giữ
   nếu giảm lộ số rõ rệt (ví dụ đạo hàm đã thử và bị bỏ vì không cải thiện).
+- **Chấm / thử nghiệm model CHỈ dùng `GROQ_EVAL_API_KEY`** (key ở tài khoản Groq riêng, khai báo
+  trong `backend/.env`). Script chấm thiếu biến này thì phải DỪNG, tuyệt đối không dùng
+  `GROQ_API_KEY`: gói miễn phí giới hạn 200k token/ngày cho `gpt-oss-120b` (~44 câu hỏi/ngày cho
+  cả app), một lượt chấm 20 câu tốn ~90k token — chấm bằng key production là ăn vào hạn mức của
+  học sinh thật (đã xảy ra ngày 2026-09-30).
 - **Thời gian:** backend có ngân sách 40s/request (`CHAT_BUDGET_MS` trong `lib/finderAnswer.js`),
   mỗi lần gọi Groq timeout = min(25s, thời gian còn lại), JSON hỏng chỉ gọi lại khi còn ≥ 8s.
   Timeout frontend (`callAI` trong `FormulaFinder.jsx`) là 45s và **PHẢI lớn hơn** ngân sách
