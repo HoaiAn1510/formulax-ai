@@ -336,6 +336,10 @@ test("không lọc oan: toạ độ có dấu phẩy, điều kiện Δ > 0 / f'
   assert.deepEqual(leaksOf(R`x = 2`, "Viết phương trình tiếp tuyến của y = x³ − 2x + 1 tại điểm có hoành độ 2"), []);
   assert.deepEqual(leaksOf(R`f(-1), f(3), x = -1, x = 3`, "Tìm GTLN, GTNN của y = x⁴ − 8x² + 3 trên đoạn [−1; 3]"), []);
   assert.ok(leaksOf(R`x = 2`, "Tìm GTLN, GTNN của y = x⁴ − 8x² + 3 trên đoạn [−1; 3]").length > 0); // điểm dừng, không phải đầu mút
+  const planeQ = "Viết phương trình mặt phẳng qua A(1;2;3) vuông góc đường thẳng có VTCP u = (2;−1;1)";
+  const planeStep = applyNumberGuard(derivAnswer([{ title: "Thay A", detail: "Thay $x=1$, $y=2$, $z=3$ vào $2x - y + z + D = 0$.", expression: R`2\cdot1 - 1\cdot2 + 1\cdot3 + D = 0` }]),
+    { sourceTexts: [planeQ], formulaTexts: [] });
+  assert.equal(planeStep.removedSteps.length, 0); // toạ độ điểm A đề cho, không phải nghiệm
   assert.deepEqual(leaksOf(R`\log_2((x+1)(x-1)) = 3 \text{ (công thức gt12-logarit)}`, "Giải phương trình log₂(x + 1) + log₂(x − 1) = 3"), []);
   const { removedSteps } = applyNumberGuard(derivAnswer([{ title: "Thay x", detail: "Thay x = 2 vào y' (theo công thức gt11-tieptuyen-phuongtrinh).", expression: "" }]),
     { sourceTexts: ["Viết phương trình tiếp tuyến của y = x³ − 2x + 1 tại điểm có hoành độ 2"], formulaTexts: [] });

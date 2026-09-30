@@ -224,6 +224,8 @@ function givenXValues(question) {
   const out = [];
   for (const m of q.matchAll(/hoành độ\s*(?:bằng\s*|là\s*|x_?0?\s*=\s*)?(-?\d+(?:[.,]\d+)?)/gi)) out.push(m[1]);
   for (const m of q.matchAll(/[[(]\s*(-?\d+(?:[.,]\d+)?)\s*;\s*(-?\d+(?:[.,]\d+)?)\s*[\])]/g)) out.push(m[1], m[2]);
+  // Hoành độ của điểm đề cho trong Oxyz: A(1;2;3) → "thay x = 1".
+  for (const m of q.matchAll(/\(\s*(-?\d+(?:[.,]\d+)?)\s*;\s*-?\d+(?:[.,]\d+)?\s*;\s*-?\d+(?:[.,]\d+)?\s*\)/g)) out.push(m[1]);
   return out.map((v) => v.replace(",", "."));
 }
 const letterTokens = (s) => s.replace(COMMANDS, "").replace(/\\(?:sin|cos|tan|cot|log|ln)(?![a-zA-Z])/g, "#").match(/\\?[a-zA-Z]+/g) || [];
