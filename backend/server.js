@@ -102,10 +102,11 @@ const FREE_AI_DAILY_LIMIT = 10;
 
 // Ghi log để theo dõi chất lượng AI Finder: câu hỏi bị báo "thư viện chưa có" và các lần bộ
 // lọc phải can thiệp. CHỈ ghi nội dung câu hỏi (tối đa 150 ký tự), type và id công thức —
-// không ghi google_id, email, tên hay token.
+// không ghi google_id, email, tên hay token. Riêng no_formula ghi thêm aiNote: lời giải thích
+// của model (≤ 150 ký tự) về công thức/phương pháp còn thiếu — học sinh KHÔNG thấy câu này.
 function logFinderEvents(message, answer, meta) {
   const base = { q: String(message).slice(0, 150), type: answer.type, ids: answer.formulaIds };
-  if (answer.type === "no_formula") console.log("[finder:no_formula]", JSON.stringify(base));
+  if (answer.type === "no_formula") console.log("[finder:no_formula]", JSON.stringify({ ...base, aiNote: meta.aiNote || "" }));
   if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
   const filtered = meta.removedSteps?.length || meta.replaced?.length || meta.droppedIds?.length || meta.droppedExpressions;
   if (filtered) {

@@ -71,21 +71,25 @@ test("numberSourceTexts: câu hỏi nối tiếp không có số (kể cả 'bư
   assert.deepEqual(numberSourceTexts("Giải thích lại bước 2 giúp mình", prev), ["Giải thích lại bước 2 giúp mình", ...prev]);
 });
 
-test("đề mới sau bài khối cầu R = 6: số 6 của đề trước KHÔNG còn làm lọt y' = 3x^2 - 6x - 9", async () => {
+test("đề mới sau bài khối cầu R = 9: số 9 của đề trước KHÔNG còn làm lọt d = 9/3", async () => {
   const clock = { t: 0 };
   const reply = JSON.stringify({
-    type: "solution", formula_ids: ["gt12-cuctrituoc"], intro: "Bài này dùng điều kiện cực trị.",
+    type: "solution", formula_ids: ["hh12-oxyz-khoangcach"], intro: "Bài này dùng công thức khoảng cách.",
     steps: [
-      { title: "Xác định hàm số", detail: "Hàm số $y = x^3 - 3x^2 - 9x + 5$.", expression: "" },
-      { title: "Tính đạo hàm", detail: "Lấy đạo hàm:", expression: "y' = 3x^2 - 6x - 9" },
+      { title: "Thay số", detail: "Thay tọa độ $M$ và hệ số mặt phẳng:", expression: "d = \\frac{|2 \\cdot 1 - (-2) + 2 \\cdot 3 - 1|}{\\sqrt{2^2 + (-1)^2 + 2^2}}" },
+      { title: "Tính", detail: "Ta được:", expression: "d = \\frac{9}{3}" },
     ],
-    reminder: "Bạn tự xét dấu nhé!",
+    reminder: "Bạn tự tính nhé!",
   });
+  const history = [
+    { role: "user", content: "Tính thể tích khối cầu bán kính 9 cm" },
+    { role: "assistant", content: "Bài này dùng công thức thể tích khối cầu nhé. $$V = \\frac{4}{3}\\pi \\cdot 9^3$$" },
+  ];
   const groq = fakeGroq([reply], clock, 1000);
-  const { answer, meta } = await askFinder({ groq, message: "Tìm cực trị của hàm số y = x^3 - 3x^2 - 9x + 5", history: SPHERE_HISTORY, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  const { meta } = await askFinder({ groq, message: "Tính khoảng cách từ M(1;−2;3) đến mặt phẳng 2x − y + 2z − 1 = 0", history, now: () => clock.t, deadline: CHAT_BUDGET_MS });
   assert.equal(meta.removedSteps.length, 1);
-  assert.deepEqual(meta.removedSteps[0].leaked, ["6"]);
-  assert.ok(!JSON.stringify(answer.steps).includes("6x"));
+  assert.equal(meta.removedSteps[0].title, "Tính");
+  assert.deepEqual(meta.removedSteps[0].leaked, ["9"]);
 });
 
 test("câu hỏi nối tiếp không có số: nhắc lại số của đề trước (R = 6) vẫn được giữ", async () => {

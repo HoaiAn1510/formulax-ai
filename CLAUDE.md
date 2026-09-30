@@ -181,16 +181,27 @@ AI trình bày cách giải dựa trên công thức trong thư viện, **học 
 **Không có mục "Kết quả"**, không trường kết quả nào trong dữ liệu.
 
 **Luồng backend** (`POST /api/chat` trong `backend/server.js`):
-1. `lib/formulaCatalog.js` lọc tối đa 15 công thức ứng viên từ `formulas.js` theo từ khóa câu hỏi.
+1. `lib/formulaCatalog.js` lọc tối đa 15 công thức ứng viên từ `formulas.js`: nhóm công thức theo
+   dạng bài (`METHOD_GROUPS` — cực trị kéo theo công thức đạo hàm...) được ghim trước, còn lại theo
+   từ khóa câu hỏi. Thêm dạng bài mới thì thêm nhóm + test trong `test/formulaCatalog.test.js`.
 2. `lib/finderPrompt.js` dựng system prompt (danh sách ứng viên + 3 ví dụ mẫu) và khai báo
    model/tham số. AI trả JSON: `type` (`solution | no_formula | refuse_answer | off_topic`),
    `formula_ids`, `intro`, `steps[{title, detail, expression}]`, `reminder`.
 3. `lib/solutionGuard.js`: sửa escape LaTeX (chỉ nhân đôi `\` chưa escape), bỏ id không có
-   thật (solution mà không còn id hợp lệ → `no_formula`), **bộ lọc số**: bước nào chứa số không
-   có trong đề, lịch sử hỏi hay công thức đã chọn (tức là AI đã tự tính) bị lọc — chuỗi bước
-   liên tiếp có biểu thức gộp thành một bước trung tính "Thay số vào công thức", bước chỉ có chữ
-   thì bỏ. Không tính chỉ số dưới (`x_{1,2}`), số mũ đơn vị (`cm^3`), "bước n". Có test trong
+   thật (solution mà không còn id hợp lệ → `no_formula`), **bộ lọc "không tính"** (định nghĩa
+   2026-09-30): ĐƯỢC rút gọn biểu thức còn chứa biến ($y' = 3x^2 - 6x - 9$ — số mới là hệ số
+   hoặc số mũ của biến) và thay số chưa tính vào công thức nghiệm (mọi số có sẵn); CẤM mọi giá
+   trị số cụ thể — nghiệm ($x = 3$, kể cả khi 3 có trong đề), giá trị tại một điểm, Δ = số, phép
+   tính ra kết quả, hằng số mới đứng riêng, tích = 0 có nhân tử $(x \pm số)$ (lộ nghiệm), và đại
+   lượng đề hỏi (V, S, d, P, h, R) viết ở dạng đã rút gọn theo tham số ($V = \frac{a^3\sqrt{2}}{3}$ —
+   phải dừng ở $V = \frac{1}{3} \cdot a^2 \cdot a\sqrt{2}$). "Số có sẵn" = số
+   trong đề (+ câu hỏi trước nếu tin nhắn không có số riêng) + công thức đã chọn + hệ số hợp lệ
+   của các bước trước. Bước vi phạm bị lọc — chuỗi bước liên tiếp có biểu thức gộp thành một bước
+   trung tính "Thay số vào công thức", bước chỉ có chữ thì bỏ. Giới hạn đã biết: hằng số tính ra
+   trùng số trong đề vẫn lọt (vd $D = -3$ khi đề có điểm $(1;2;3)$). Có test trong
    `backend/test/` — sửa guard thì chạy `npm test`.
+   `no_formula`: học sinh chỉ thấy câu mặc định, KHÔNG nêu tên công thức/phương pháp còn thiếu;
+   lời giải thích của model chỉ ghi vào log `[finder:no_formula]` (trường `aiNote`).
 4. Trả về `{type, formulaIds, intro, steps, reminder, reply, remaining}`.
 
 Quy tắc khi sửa:
