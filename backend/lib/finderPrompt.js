@@ -5,6 +5,12 @@ import { formatForPrompt } from "./formulaCatalog.js";
 // chậm hơn khoảng 1 giây mỗi câu.
 export const FINDER_MODEL = "openai/gpt-oss-120b";
 
+// Model dự phòng khi FINDER_MODEL hết hạn mức NGÀY của gói Groq miễn phí (200k token/ngày). Hạn
+// mức tính riêng từng model — đã kiểm chứng 2026-09-30: 120b bị chặn TPD, 20b vẫn trả lời cùng câu.
+// 20b kém hơn (lộ số 5/12 so với 2/12 khi chấm), nhưng bộ lọc vẫn chặn phần lộ số — tốt hơn báo
+// "AI đang bận" suốt phần còn lại của ngày.
+export const FINDER_FALLBACK_MODEL = "openai/gpt-oss-20b";
+
 // Tham số gọi Groq cho AI Finder. reasoning_effort "low" nhanh hơn nhưng khi thử nghiệm chọn sai
 // công thức nhiều (báo "thư viện chưa có" dù công thức nằm ngay trong danh sách ứng viên) —
 // giữ "medium". max_completion_tokens tính cả phần suy luận của model, không chỉ JSON trả về.

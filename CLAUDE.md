@@ -213,6 +213,10 @@ Quy tắc khi sửa:
   so với 5/12, không lỗi hiển thị LaTeX (20b: 3), không lỗi JSON 400 (20b: 2); đổi lại chậm hơn
   (~2,5s so với 1,4s). Đổi model hoặc thêm ví dụ vào prompt thì chấm lại trên bộ câu thử, chỉ giữ
   nếu giảm lộ số rõ rệt (ví dụ đạo hàm đã thử và bị bỏ vì không cải thiện).
+- **Model dự phòng `openai/gpt-oss-20b`** (`FINDER_FALLBACK_MODEL`): hạn mức gói miễn phí tính
+  RIÊNG từng model (kiểm chứng 2026-09-30). Khi 120b trả 429 do hết hạn mức NGÀY (TPD/RPD), backend
+  gọi lại bằng 20b và nhớ mốc bị chặn để các câu sau vào thẳng 20b; 429 theo phút vẫn báo "AI đang
+  bận". Mỗi câu dùng dự phòng có một dòng log `[finder:fallback]`.
 - **Chấm / thử nghiệm model CHỈ dùng `GROQ_EVAL_API_KEY`** (key ở tài khoản Groq riêng, khai báo
   trong `backend/.env`). Script chấm thiếu biến này thì phải DỪNG, tuyệt đối không dùng
   `GROQ_API_KEY`: gói miễn phí giới hạn 200k token/ngày cho `gpt-oss-120b` (~44 câu hỏi/ngày cho

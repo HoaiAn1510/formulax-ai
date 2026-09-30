@@ -108,6 +108,9 @@ function logFinderEvents(message, answer, meta) {
   const base = { q: String(message).slice(0, 150), type: answer.type, ids: answer.formulaIds };
   if (answer.type === "no_formula") console.log("[finder:no_formula]", JSON.stringify({ ...base, aiNote: meta.aiNote || "" }));
   if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
+  // Câu trả lời do model dự phòng (20b) soạn vì model chính hết hạn mức ngày — đếm số dòng này
+  // trong Render Logs để biết mỗi ngày bao nhiêu câu phải dùng dự phòng.
+  if (meta.fallback) console.warn("[finder:fallback]", JSON.stringify({ ...base, from: meta.fallback.from, to: meta.fallback.to, reason: meta.fallback.reason }));
   const filtered = meta.removedSteps?.length || meta.replaced?.length || meta.droppedIds?.length || meta.droppedExpressions;
   if (filtered) {
     console.warn("[finder:guard]", JSON.stringify({

@@ -1,5 +1,5 @@
 import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalog.js";
-import { buildSystemPrompt, FINDER_MODEL, FINDER_PARAMS } from "./finderPrompt.js";
+import { buildSystemPrompt, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS } from "./finderPrompt.js";
 import {
   parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, toReplyText, extractNumbers, DEFAULT_TEXT,
 } from "./solutionGuard.js";
@@ -15,6 +15,28 @@ const PER_CALL_TIMEOUT_MS = 25_000;
 // chừng, vừa tốn token (8k/phút cho cả app) vừa không đổi được kết quả. Khi chấm, 120b trả lời
 // chậm nhất khoảng 4,4 giây — 8 giây là đủ dư.
 const MIN_CALL_MS = 8_000;
+
+// ─── Model dự phòng khi model chính hết hạn mức NGÀY ────────────────────────
+// Chỉ chuyển khi 429 là do hạn mức ngày (TPD/RPD). 429 theo phút (TPM/RPM) chỉ cần chờ vài giây,
+// vẫn báo "AI đang bận" như cũ. Nhớ mốc model chính bị chặn để các câu sau vào thẳng model dự
+// phòng, không phải chờ một lần 429 nữa. Trạng thái nằm trong bộ nhớ tiến trình: backend khởi động
+// lại thì thử model chính lại từ đầu — chỉ tốn một lần 429.
+const DEFAULT_DAILY_BLOCK_MS = 10 * 60_000;
+export const fallbackState = { primaryBlockedUntil: 0 };
+
+/** Thời gian (ms) model chính còn bị chặn nếu lỗi là 429 hết hạn mức NGÀY; null nếu không phải. */
+export function dailyLimitBlockMs(err) {
+  if (err?.status !== 429) return null;
+  const text = String(err?.error?.error?.message || err?.message || "");
+  const header = err?.headers?.get?.("retry-after") ?? err?.headers?.["retry-after"];
+  const retryAfterS = Number(header);
+  const inText = text.match(/try again in (?:(\d+)h)?(?:(\d+)m)?(?:([\d.]+)s)?/);
+  const textMs = inText ? ((+inText[1] || 0) * 3600 + (+inText[2] || 0) * 60 + (+inText[3] || 0)) * 1000 : 0;
+  const isDaily = /per day \((?:TPD|RPD)\)/.test(text) || (Number.isFinite(retryAfterS) && retryAfterS >= 120);
+  if (!isDaily) return null;
+  if (Number.isFinite(retryAfterS) && retryAfterS > 0) return retryAfterS * 1000;
+  return textMs > 0 ? textMs : DEFAULT_DAILY_BLOCK_MS;
+}
 
 /**
  * Hỏi AI Finder một câu và trả về câu trả lời ĐÃ KIỂM TRA. Toàn bộ luồng nằm ở đây để server.js
@@ -40,6 +62,12 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
   ];
 
   const meta = { model, candidates: candidates.map((f) => f.id), attempts: 0, promptTokens: 0, completionTokens: 0 };
+  let activeModel = model;
+  const canFallBack = model === FINDER_MODEL;
+  if (canFallBack && now() < fallbackState.primaryBlockedUntil) {
+    activeModel = FINDER_FALLBACK_MODEL;
+    meta.fallback = { from: model, to: activeModel, reason: "daily_limit_known" };
+  }
   let parsed = null;
   while (!parsed && meta.attempts < MAX_ATTEMPTS) {
     const timeLeft = deadline - now();
@@ -50,13 +78,24 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
     meta.attempts++;
     try {
       const completion = await groq.chat.completions.create(
-        { model, messages, ...FINDER_PARAMS },
+        { model: activeModel, messages, ...FINDER_PARAMS },
         { timeout: Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, timeLeft)) },
       );
       meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
       meta.completionTokens += completion.usage?.completion_tokens ?? 0;
       parsed = parseModelJson(completion.choices?.[0]?.message?.content);
     } catch (err) {
+      // Model chính hết hạn mức NGÀY → chuyển sang model dự phòng (chỉ một lần mỗi request, và chỉ
+      // khi còn đủ thời gian). Lần bị 429 không tính là một lần gọi (không có câu trả lời nào).
+      const blockMs = canFallBack && activeModel === FINDER_MODEL ? dailyLimitBlockMs(err) : null;
+      if (blockMs !== null) {
+        fallbackState.primaryBlockedUntil = now() + blockMs;
+        if (deadline - now() < MIN_CALL_MS) throw err;
+        activeModel = FINDER_FALLBACK_MODEL;
+        meta.fallback = { from: model, to: activeModel, reason: "daily_limit" };
+        meta.attempts--;
+        continue;
+      }
       // Ở chế độ json_object, Groq tự kiểm tra JSON và trả 400 json_validate_failed nếu model
       // viết lệnh LaTeX thiếu escape (\cdot, \sqrt...) — chính lỗi mà parseModelJson sửa được.
       // Văn bản thô nằm trong failed_generation; cứu từ đó trước khi phải gọi lại. Lỗi khác
@@ -68,6 +107,7 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
     }
   }
 
+  meta.model = activeModel;
   if (!parsed) {
     const answer = { type: "unavailable", formulaIds: [], intro: DEFAULT_TEXT.unavailable, steps: [], reminder: "" };
     return { answer, reply: answer.intro, meta: { ...meta, jsonFailed: true } };

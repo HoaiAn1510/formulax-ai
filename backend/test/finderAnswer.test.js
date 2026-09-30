@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { askFinder, numberSourceTexts, CHAT_BUDGET_MS } from "../lib/finderAnswer.js";
+import { askFinder, numberSourceTexts, dailyLimitBlockMs, fallbackState, CHAT_BUDGET_MS } from "../lib/finderAnswer.js";
+import { FINDER_MODEL, FINDER_FALLBACK_MODEL } from "../lib/finderPrompt.js";
 
 // Groq giả + đồng hồ giả: mỗi lần gọi "tốn" `costMs` và trả lần lượt các nội dung trong `replies`.
 function fakeGroq(replies, clock, costMs) {
@@ -103,4 +104,89 @@ test("câu hỏi nối tiếp không có số: nhắc lại số của đề tr�
   const { answer, meta } = await askFinder({ groq, message: "Mình chưa hiểu, giải thích lại giúp mình", history: SPHERE_HISTORY, now: () => clock.t, deadline: CHAT_BUDGET_MS });
   assert.equal(meta.removedSteps.length, 0);
   assert.equal(answer.steps[0].expression, "V = \\frac{4}{3}\\pi \\cdot 6^3");
+});
+
+// ─── Model dự phòng khi model chính hết hạn mức NGÀY ────────────────────────
+// Lỗi 429 giống groq-sdk: status, error.error.message, headers (Headers).
+function groq429(message, retryAfter) {
+  const err = new Error(`429 ${message}`);
+  err.status = 429;
+  err.error = { error: { message, type: "tokens", code: "rate_limit_exceeded" } };
+  err.headers = new Headers(retryAfter ? { "retry-after": String(retryAfter) } : {});
+  return err;
+}
+const TPD = (s) => `Rate limit reached for model \`openai/gpt-oss-120b\` in organization \`org_x\` service tier \`on_demand\` on tokens per day (TPD): Limit 200000, Used 198566, Requested 3896. Please try again in ${s}.`;
+const TPM = "Rate limit reached for model `openai/gpt-oss-120b` in organization `org_x` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6385, Requested 3519. Please try again in 14.28s.";
+
+/** Groq giả theo model: `behavior[model]` là lỗi để ném, hoặc nội dung trả về. */
+function modelGroq(behavior, clock) {
+  const calls = [];
+  return {
+    calls,
+    chat: { completions: { create: async (body) => {
+      calls.push(body.model);
+      clock.t += 500;
+      const b = behavior[body.model];
+      if (b instanceof Error) throw b;
+      return { choices: [{ message: { content: b } }], usage: { prompt_tokens: 1, completion_tokens: 1 } };
+    } } },
+  };
+}
+
+test("dailyLimitBlockMs: nhận 429 hết hạn mức NGÀY (TPD/RPD, retry-after dài), bỏ qua 429 theo phút", () => {
+  assert.equal(dailyLimitBlockMs(groq429(TPD("17m43.584s"))), (17 * 60 + 43.584) * 1000);
+  assert.equal(dailyLimitBlockMs(groq429(TPD("17m43.584s"), 1064)), 1064 * 1000);
+  assert.equal(dailyLimitBlockMs(groq429("Rate limit ... requests per day (RPD): Limit 1000. Please try again in 1h2m3s.")), (3600 + 120 + 3) * 1000);
+  assert.equal(dailyLimitBlockMs(groq429(TPM, 15)), null);
+  assert.equal(dailyLimitBlockMs({ status: 500, message: "server error" }), null);
+});
+
+test("model chính hết hạn mức ngày → trả lời bằng model dự phòng, câu sau vào thẳng dự phòng tới khi hết hạn chặn", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const groq = modelGroq({ [FINDER_MODEL]: groq429(TPD("10m0s")), [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  const first = await askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.equal(first.answer.type, "solution");
+  assert.deepEqual(groq.calls, [FINDER_MODEL, FINDER_FALLBACK_MODEL]);
+  assert.deepEqual(first.meta.fallback, { from: FINDER_MODEL, to: FINDER_FALLBACK_MODEL, reason: "daily_limit" });
+  assert.equal(first.meta.model, FINDER_FALLBACK_MODEL);
+  assert.equal(first.meta.attempts, 1);
+
+  const second = await askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.deepEqual(groq.calls.slice(2), [FINDER_FALLBACK_MODEL]); // không thử lại model chính
+  assert.equal(second.meta.fallback.reason, "daily_limit_known");
+
+  clock.t += 11 * 60_000; // hết 10 phút bị chặn → thử lại model chính
+  const groqOk = modelGroq({ [FINDER_MODEL]: GOOD, [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  const third = await askFinder({ groq: groqOk, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.deepEqual(groqOk.calls, [FINDER_MODEL]);
+  assert.equal(third.meta.fallback, undefined);
+  fallbackState.primaryBlockedUntil = 0;
+});
+
+test("429 theo PHÚT không chuyển model dự phòng — ném lỗi cho server báo 'AI đang bận' và hoàn lượt", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const groq = modelGroq({ [FINDER_MODEL]: groq429(TPM, 15), [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  await assert.rejects(askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS }), (e) => e.status === 429);
+  assert.deepEqual(groq.calls, [FINDER_MODEL]);
+  assert.equal(fallbackState.primaryBlockedUntil, 0);
+});
+
+test("model dự phòng cũng hết hạn mức → ném lỗi (server báo 'AI đang bận' và hoàn lượt)", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const groq = modelGroq({ [FINDER_MODEL]: groq429(TPD("10m0s")), [FINDER_FALLBACK_MODEL]: groq429(TPD("5m0s").replace("120b", "20b")) }, clock);
+  await assert.rejects(askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS }), (e) => e.status === 429);
+  assert.deepEqual(groq.calls, [FINDER_MODEL, FINDER_FALLBACK_MODEL]);
+  fallbackState.primaryBlockedUntil = 0;
+});
+
+test("không còn đủ thời gian để gọi model dự phòng → ném lỗi 429 ban đầu", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 35_000 }; // còn 5s < 8s tối thiểu
+  const groq = modelGroq({ [FINDER_MODEL]: groq429(TPD("10m0s")), [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  await assert.rejects(askFinder({ groq, message: Q, now: () => clock.t, deadline: CHAT_BUDGET_MS }), (e) => e.status === 429);
+  assert.deepEqual(groq.calls, [FINDER_MODEL]);
+  fallbackState.primaryBlockedUntil = 0;
 });
