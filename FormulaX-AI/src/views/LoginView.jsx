@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AlertCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import LegalModal from "../components/LegalModal";
+import LoginBackground from "../components/LoginBackground";
 
 // Google icon SVG
 function GoogleIcon() {
@@ -63,10 +64,13 @@ export default function LoginView() {
   };
 
   return (
-    <div className="relative overflow-hidden flex flex-col items-center justify-center min-h-screen w-full bg-page-gradient dark:bg-[#0F172A] p-5">
+    // Nền navy + hình học phát sáng dùng chung cho light và dark mode (LoginBackground.jsx); thẻ
+    // đăng nhập giữ nguyên, chỉ thêm bóng đổ đậm hơn để tách khỏi nền tối.
+    <div className="relative overflow-hidden flex flex-col items-center justify-center min-h-screen w-full bg-login-navy p-5">
+      <LoginBackground />
 
       {/* Card */}
-      <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] relative z-[1] max-w-[400px] w-full py-8 px-7 flex flex-col gap-5">
+      <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] relative z-[1] max-w-[400px] w-full py-8 px-7 flex flex-col gap-5 !shadow-[0_18px_50px_rgba(2,6,23,0.55)]">
         {/* Logo */}
         <div className="text-center flex flex-col items-center gap-2.5">
           <img src="/favicon.svg" alt="FormulaX" className="w-[52px] h-[52px] rounded-2xl shadow-[0_2px_6px_rgba(15,23,42,0.05)]" />
@@ -103,7 +107,7 @@ export default function LoginView() {
         {/* Divider */}
         <div className="flex items-center gap-2.5">
           <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-[#334155]" />
-          <span className="text-[0.72rem] text-[#94A3B8] font-medium">hoặc</span>
+          <span className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] font-medium">hoặc</span>
           <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-[#334155]" />
         </div>
 
@@ -119,7 +123,7 @@ export default function LoginView() {
             {loadingAction === "guest" && <Spinner />}
             <span>{loadingAction === "guest" ? "Đang vào..." : "Dùng thử không cần đăng nhập"}</span>
           </button>
-          <p className="text-[0.72rem] text-[#94A3B8] text-center leading-[1.5] m-0">
+          <p className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] text-center leading-[1.5] m-0">
             Chế độ khách: tra cứu đầy đủ và 10 lượt Quiz mỗi ngày. Đăng nhập Google để dùng AI và lưu tiến độ.
           </p>
         </div>

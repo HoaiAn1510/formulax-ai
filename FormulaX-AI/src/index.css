@@ -36,6 +36,29 @@
   background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
 }
 
+/* Nền trang đăng nhập (LoginBackground.jsx) — navy đậm, sáng nhẹ ở giữa. Dùng chung cho light và
+   dark mode của trang đăng nhập. */
+@utility bg-login-navy {
+  background: radial-gradient(ellipse at center, #13284A 0%, #0B1630 55%, #060C1A 100%);
+}
+
+/* Hiệu ứng nền đăng nhập: phát sáng rất chậm + chấm sao lấp lánh nhẹ. Chỉ chạy khi người dùng
+   KHÔNG bật "giảm chuyển động" — bật thì nền đứng yên hoàn toàn (giữ độ sáng trung bình). */
+.login-fx-glow { opacity: 0.76; }
+@media (prefers-reduced-motion: no-preference) {
+  .login-fx-glow { animation: login-fx-glow 9s ease-in-out infinite; }
+  .login-fx-delay { animation-delay: -4.5s; }
+  .login-fx-twinkle { animation: login-fx-twinkle 7s ease-in-out infinite; }
+}
+@keyframes login-fx-glow {
+  0%, 100% { opacity: 0.62; }
+  50% { opacity: 0.9; }
+}
+@keyframes login-fx-twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.85; }
+}
+
 /* Banner chuỗi học (streak) trên Dashboard — dùng đúng #F97316 đã dùng cho Flame icon/
    StreakChart trong ProgressDashboard.jsx, tách riêng khỏi bg-banner-orange (đó là màu
    upsell Premium, không phải streak). */
