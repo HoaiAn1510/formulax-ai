@@ -8,7 +8,7 @@ Web app giúp học sinh THPT (lớp 10–12) tra cứu, ghi nhớ và luyện t
 - **Backend:** Node.js + Express, tại `backend/`
 - **Auth:** Google OAuth **qua Supabase Auth** (`supabase.auth.signInWithOAuth`) trong `context/AuthContext.jsx` — luồng redirect cả trang, không phải popup. Nguồn sự thật là phiên Supabase; `localStorage.formulax_user` chỉ còn là bộ nhớ đệm hiển thị, không dùng để xác thực. Gói `@react-oauth/google` vẫn còn trong `package.json` nhưng **không còn được import ở đâu** — giữ tạm làm đường lùi, gỡ sau khi luồng mới chạy ổn trên production. Đổi cách đăng nhập = phá RLS, xem `backend/migrations/003_rls_supabase_auth.sql` trước khi động vào.
 - **Database:** Supabase — mọi thao tác đọc/ghi đi qua `src/lib/supabase.js`, không viết query Supabase trực tiếp trong component
-- **AI:** Groq API, model `openai/gpt-oss-20b` — provider duy nhất. SDK Gemini (`@google/generative-ai`) trước đây cài sẵn nhưng không dùng, đã gỡ khỏi `backend/package.json` (2026-07-23) để hết nhầm lẫn. Nếu cần đổi provider, xác nhận với người dùng trước, không tự đổi.
+- **AI:** Groq API, model `openai/gpt-oss-120b` (AI Finder, khai báo ở `backend/lib/finderPrompt.js`; đổi từ `gpt-oss-20b` ngày 2026-09-30 sau khi chấm so sánh — xem mục AI Finder) — provider duy nhất. SDK Gemini (`@google/generative-ai`) trước đây cài sẵn nhưng không dùng, đã gỡ khỏi `backend/package.json` (2026-07-23) để hết nhầm lẫn. Nếu cần đổi provider, xác nhận với người dùng trước, không tự đổi.
 - **Render công thức:** KaTeX qua `utils/katexHelper.jsx` (`MathElement`, `RichTextRenderer`)
 
 ## Lệnh thường dùng
@@ -19,9 +19,14 @@ cd FormulaX-AI && npm run build    # build production
 cd FormulaX-AI && npm run lint     # eslint
 cd backend && npm run dev          # backend dev (node --watch)
 cd backend && npm start            # backend production
+cd backend && npm test             # test backend (node --test): bộ lọc số, JSON, hoàn lượt, thời gian
 ```
 
 ## Schema `formulas.js` — bắt buộc tuân thủ khi thêm/sửa công thức
+
+**`formulas.js` là nguồn công thức DUY NHẤT của cả app lẫn AI Finder** — backend import thẳng file này (`backend/lib/formulaCatalog.js` → `../../FormulaX-AI/src/data/formulas.js`), không còn danh sách công thức chép tay nào khác. Vì vậy:
+- `formulas.js` **KHÔNG được import bất kỳ thứ gì** (ảnh, component, hàm tiện ích, thư viện frontend…) — chỉ export dữ liệu thuần. Node không hiểu import ảnh/JSX/alias của Vite, và gói chỉ cài ở frontend thì backend không có → backend sập ngay lúc khởi động.
+- Sửa/thêm công thức ở đây là AI Finder nhận luôn sau khi backend deploy lại; `/api/health` báo số công thức đã nạp (`formulasLoaded`, hiện 246).
 
 ```js
 {
@@ -77,7 +82,7 @@ Quy tắc riêng cho `questions.js`:
 
 - Không tự bịa hoặc suy đoán công thức toán. Nếu không chắc chắn một công thức đúng 100% với chương trình GDPT 2018, dừng lại và hỏi người dùng thay vì đoán rồi ghi vào database.
 - Mọi công thức mới thêm vào `formulas.js` phải có nguồn tham chiếu thật (SGK, tài liệu chuyên đề đã được người dùng xác minh) — ghi rõ vào `sgk_source`.
-- Formula Finder (AI chat) khi trả lời phải ưu tiên trỏ về công thức có sẵn trong `formulas.js`; không tự sinh công thức mới ngay trong câu trả lời chat.
+- Formula Finder (AI chat) chỉ được dùng công thức có trong `formulas.js`, không tự sinh công thức mới trong câu trả lời, và không tính ra kết quả thay học sinh — quy tắc chi tiết ở mục "AI Finder" bên dưới.
 - Chương trình GDPT 2018 (SGK Kết Nối Tri Thức) **không có chủ đề "Số phức"** — đây không phải thiếu sót, đừng thêm nếu không được yêu cầu rõ.
 
 ## Xếp lớp đã xác nhận qua đối chiếu mục lục SGK thật — theo đúng bảng này, không tự đoán lại
@@ -169,6 +174,86 @@ Chi tiết đầy đủ ở `docs/SECURITY.md` và `docs/PERFORMANCE.md`. Nhữn
   `/payos/webhook` (chặn nhầm webhook = người dùng trả tiền nhưng không được cấp Premium).
 - Lỗi trả về client không kèm `error.message` của SDK; chi tiết chỉ ghi vào log server.
 
+## AI Finder — hướng dẫn các bước, không tính kết quả (từ 2026-09-30)
+
+AI trình bày cách giải dựa trên công thức trong thư viện, **học sinh tự tính**. Câu trả lời gồm:
+"Công thức sử dụng" (thẻ công thức) → "Các bước giải" (Bước 1..n) → một câu nhắc tự tính.
+**Không có mục "Kết quả"**, không trường kết quả nào trong dữ liệu.
+
+**Luồng backend** (`POST /api/chat` trong `backend/server.js`):
+1. `lib/formulaCatalog.js` lọc tối đa 15 công thức ứng viên từ `formulas.js` theo từ khóa câu hỏi.
+2. `lib/finderPrompt.js` dựng system prompt (danh sách ứng viên + 3 ví dụ mẫu) và khai báo
+   model/tham số. AI trả JSON: `type` (`solution | no_formula | refuse_answer | off_topic`),
+   `formula_ids`, `intro`, `steps[{title, detail, expression}]`, `reminder`.
+3. `lib/solutionGuard.js`: sửa escape LaTeX (chỉ nhân đôi `\` chưa escape), bỏ id không có
+   thật (solution mà không còn id hợp lệ → `no_formula`), **bộ lọc số**: bước nào chứa số không
+   có trong đề, lịch sử hỏi hay công thức đã chọn (tức là AI đã tự tính) bị lọc — chuỗi bước
+   liên tiếp có biểu thức gộp thành một bước trung tính "Thay số vào công thức", bước chỉ có chữ
+   thì bỏ. Không tính chỉ số dưới (`x_{1,2}`), số mũ đơn vị (`cm^3`), "bước n". Có test trong
+   `backend/test/` — sửa guard thì chạy `npm test`.
+4. Trả về `{type, formulaIds, intro, steps, reminder, reply, remaining}`.
+
+Quy tắc khi sửa:
+- **Thẻ công thức lấy tên + LaTeX từ `formulas.js` theo id**, không lấy chữ nào của AI. AI chỉ
+  được đổi tên điểm/cạnh/biến cho khớp đề (vd định lý côsin cho cạnh c), ngoài ra giữ nguyên.
+- Thư viện không có công thức phù hợp → `no_formula`, nói rõ thư viện chưa có; không gợi ý công
+  thức hay tài liệu ngoài.
+- **Model `openai/gpt-oss-120b`**, chọn sau khi chấm cùng bộ câu với `gpt-oss-20b`: lộ số 2/12
+  so với 5/12, không lỗi hiển thị LaTeX (20b: 3), không lỗi JSON 400 (20b: 2); đổi lại chậm hơn
+  (~2,5s so với 1,4s). Đổi model hoặc thêm ví dụ vào prompt thì chấm lại trên bộ câu thử, chỉ giữ
+  nếu giảm lộ số rõ rệt (ví dụ đạo hàm đã thử và bị bỏ vì không cải thiện).
+- **Thời gian:** backend có ngân sách 40s/request (`CHAT_BUDGET_MS` trong `lib/finderAnswer.js`),
+  mỗi lần gọi Groq timeout = min(25s, thời gian còn lại), JSON hỏng chỉ gọi lại khi còn ≥ 8s.
+  Timeout frontend (`callAI` trong `FormulaFinder.jsx`) là 45s và **PHẢI lớn hơn** ngân sách
+  backend — frontend bỏ cuộc trước thì backend vẫn tính lượt mà học sinh không thấy gì.
+- **Đếm lượt:** Free 10/ngày (bảng `ai_usage_daily`, RPC `increment_ai_usage` — migration 006),
+  Premium không giới hạn, khách (Supabase anonymous) bị chặn 403. Lượt được tăng TRƯỚC khi gọi
+  Groq rồi **hoàn lại** (`refund_ai_usage` — migration 007, qua `lib/quotaFlow.js`) trong mọi
+  trường hợp không giao được câu trả lời: vượt hạn mức, Groq 429 (trả `code: "ai_busy"`), Groq
+  lỗi/timeout, JSON hỏng.
+- **Log:** chỉ ghi nội dung câu hỏi (cắt ≤ 150 ký tự), `type`, id công thức. KHÔNG ghi
+  google_id, email, tên hay token.
+- **Frontend:** `components/StepAnswer.jsx` hiển thị câu trả lời (dùng chung cho 2 ví dụ tĩnh của
+  khách). Tin nhắn chỉ lưu `answer.formulaIds`, không lưu cả object công thức; tin định dạng cũ
+  trong `chat_sessions` (`aiResult`) vẫn phải hiển thị được. Tin hệ thống (`isError`,
+  `isLimitHit`, `isNotice`) được lưu trong phiên nhưng **không gửi lên AI làm lịch sử**.
+  Biểu thức KaTeX dài cuộn ngang trong khung riêng, không làm tràn trang trên mobile.
+
+### Hướng phát triển đợt 2 — suy ra công thức (CHƯA làm, chưa có thiết kế được duyệt)
+
+Hiện AI chỉ được dùng công thức thư viện đúng như đang viết (được đổi tên biến). Dạng bài cần
+biến đổi công thức — vd biết thể tích khối cầu, tìm bán kính — thì AI chỉ có thể hướng dẫn thay
+số vào công thức gốc để học sinh tự giải ngược, hoặc trả `no_formula`. Đợt 2 dự kiến cho phép
+một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc phải giữ khi làm:
+- **Phạm vi ban đầu:** chỉ biến đổi MỘT công thức thư viện để tìm đại lượng khác (vd từ
+  $V = \frac{4}{3}\pi R^3$ suy ra $R$). Không ghép nhiều công thức trong một lần suy ra.
+- **Backend BẮT BUỘC kiểm chứng bằng số trước khi trả về:** AI trả thêm công thức gốc và công
+  thức suy ra ở dạng biểu thức máy đọc được; backend thay nhiều bộ giá trị ngẫu nhiên vào công
+  thức gốc rồi kiểm tra công thức suy ra cho ra lại đúng giá trị. Sai hoặc không kiểm được thì
+  bỏ phần suy ra, trả `no_formula`. Không có bước kiểm chứng này thì không được bật tính năng.
+- Công thức suy ra chỉ xuất hiện như một bước biến đổi trong "Các bước giải", luôn gắn với id
+  công thức gốc; thẻ "Công thức sử dụng" vẫn chỉ hiện công thức gốc từ `formulas.js`.
+- **Giao diện đánh dấu rõ "Suy ra từ: <tên công thức gốc>"**, trình bày khác thẻ công thức thư
+  viện để học sinh không nhầm công thức suy ra là công thức có sẵn trong thư viện.
+- Không tự ghi công thức suy ra vào `formulas.js`. Muốn thêm thành công thức riêng thì theo quy
+  tắc chống hallucination: có nguồn SGK, điền `sgk_source`, người dùng xác nhận.
+- Phép biến đổi cũng không được tính ra số (bộ lọc số vẫn áp dụng).
+- Trước khi triển khai: đề xuất thiết kế, chấm trên bộ câu thử (tỉ lệ suy ra sai, lộ số, chặn
+  nhầm) như đợt 1, rồi chờ người dùng duyệt.
+
+## Deploy — thứ tự bắt buộc
+
+- **Migration Supabase chạy TRƯỚC khi deploy backend** dùng tới nó (vd 006 `ai_usage_daily` +
+  `increment_ai_usage`, 007 `refund_ai_usage`). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
+  để hoàn tác. Migration đã chạy trên Supabase thì không sửa dòng SQL nào, chỉ được sửa comment.
+- **Render — Root Directory / Build Filters:** backend import `FormulaX-AI/src/data/formulas.js`
+  (ngoài thư mục `backend/`). Nếu service trên Render đặt Root Directory = `backend` thì phải thêm
+  `FormulaX-AI/src/data/formulas.js` vào **Build Filters → Included Paths**, nếu không sửa công
+  thức sẽ không kích hoạt deploy lại backend và AI Finder dùng dữ liệu cũ.
+- Sau deploy kiểm tra `GET /api/health` → `formulasLoaded` phải bằng số công thức trong
+  `formulas.js` (hiện 246). Bằng 0 hoặc lỗi = backend không đọc được file.
+- Backend bắt buộc `NODE_ENV=production` (xem mục Hiệu năng & bảo mật).
+
 ## Quy ước code khác
 
 - Props destructuring rõ ràng ở đầu function component.
@@ -176,9 +261,11 @@ Chi tiết đầy đủ ở `docs/SECURITY.md` và `docs/PERFORMANCE.md`. Nhữn
 
 ## Giới hạn tài khoản Free đang áp dụng — kiểm tra code trước khi đổi số
 
-- Formula Finder (AI): 10 lượt hỏi/ngày
+- Formula Finder (AI): 10 lượt hỏi/ngày, đếm ở backend (`ai_usage_daily`, ngày theo giờ Việt Nam) — bộ đếm "Còn x/10" ở frontend chỉ để hiển thị
 - Quiz: chỉ dạng trắc nghiệm cơ bản; điền đáp án + dạng kết hợp yêu cầu Premium
 - ProgressDashboard: một phần nội dung bị làm mờ cho tài khoản free
+
+Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"): tra cứu công thức + Quiz 10 lượt/ngày (đếm ở localStorage `formulax_guest_quiz`, `utils/guestQuiz.js`); **không** dùng AI Finder (chỉ xem 2 ví dụ tĩnh); mọi tính năng cá nhân hóa (bookmark, ghi chú, flashcard, tiến độ, lịch sử chat, Premium) bị khóa qua `utils/useGuestGate.js`. Backend nhận diện khách bằng claim `is_anonymous` trong JWT đã xác minh, không tin client.
 
 ## Việc không nên làm
 
