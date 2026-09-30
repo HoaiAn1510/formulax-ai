@@ -17,7 +17,8 @@ const MATH_KEYWORDS = [
   "tọa độ", "đường thẳng", "đường tròn", "mặt phẳng",
   "nguyên hàm", "giới hạn", "căn", "lũy thừa", "cực trị",
   "bài toán", "chứng minh", "định lý", "số phức", "parabol",
-  "tiếp tuyến", "bán kính", "chu vi", "tổng", "hiệu", "tích", "thương"
+  "tiếp tuyến", "bán kính", "chu vi", "tổng", "hiệu", "tích", "thương",
+  "đáp án", "kết quả", "bước"
 ];
 
 const isMathRelated = (msg) => {
@@ -320,11 +321,19 @@ export default function FormulaFinder({
     }
     if (onAddSearchHistory) onAddSearchHistory(textToSend);
 
-    if (!isMathRelated(textToSend)) {
+    // Bộ lọc từ khóa chỉ áp cho tin đầu của phiên, để câu lạc đề không tốn lượt. Khi phiên đã có
+    // câu trả lời thật của AI (answer, hoặc aiResult ở tin định dạng cũ), câu hỏi tiếp theo như
+    // "Cho mình đáp án luôn nhé" hay "Mình chưa hiểu bước này" thường không có từ khóa toán nào —
+    // gửi thẳng lên backend, AI tự phân loại refuse_answer / off_topic dựa trên lịch sử.
+    const hasAiAnswer = messages.some(m => m.sender === "bot" && (m.answer || m.aiResult));
+    if (!hasAiAnswer && !isMathRelated(textToSend)) {
+      // isNotice: câu mẫu của app, không phải lời AI — hiện kiểu thông báo và không gửi lên AI
+      // làm lịch sử.
       setMessages(prev => [...prev, {
         id: Date.now() + 1,
         sender: "bot",
-        text: "Mình chỉ hỗ trợ các câu hỏi liên quan đến toán học THPT thôi nhé! Bạn thử hỏi về công thức, bài toán, hoặc giải phương trình xem."
+        text: "Mình chỉ hỗ trợ các câu hỏi liên quan đến toán học THPT thôi nhé! Bạn thử hỏi về công thức, bài toán, hoặc giải phương trình xem.",
+        isNotice: true,
       }]);
       return;
     }
