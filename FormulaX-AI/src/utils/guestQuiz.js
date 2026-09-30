@@ -2,13 +2,10 @@
 // xoá localStorage là reset được, chấp nhận vì đây là giới hạn mềm cho người chưa đăng nhập.
 // Tài khoản Google Free dùng cơ chế riêng (bảng quiz_daily), không đi qua file này.
 
+import { vietnamToday } from "./vietnamDate";
+
 export const GUEST_QUIZ_DAILY_LIMIT = 10;
 const STORAGE_KEY = "formulax_guest_quiz";
-
-// "YYYY-MM-DD" theo giờ Việt Nam — nếu dùng UTC thì lượt sẽ reset lúc 7h sáng thay vì nửa đêm.
-function vietnamToday() {
-  return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" });
-}
 
 // Luôn đọc lại từ localStorage, không cache: tab mở qua nửa đêm vẫn nhận đúng ngày mới.
 function usedToday() {

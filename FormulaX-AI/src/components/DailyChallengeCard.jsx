@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Sparkles, CheckCircle2, XCircle, X, RotateCcw } from "lucide-react";
 import { RichTextRenderer } from "../utils/katexHelper";
+import { vietnamToday } from "../utils/vietnamDate";
 
 // Số ngẫu nhiên có seed riêng cho Thử thách hôm nay — độc lập với seededRandom() của
 // Dashboard.jsx (dùng cho "Gợi ý hôm nay") để 2 tính năng không tương quan/chọn trùng logic.
@@ -15,7 +16,8 @@ function storageKey(user, today) {
 }
 
 export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
-  const today = new Date().toISOString().slice(0, 10);
+  // Ngày theo giờ Việt Nam: câu thử thách đổi lúc nửa đêm, không phải 7h sáng (UTC).
+  const today = vietnamToday();
 
   // questions.js nặng ~356 KB nguồn. Thẻ này nằm trên Dashboard nên nạp tĩnh sẽ kéo cả ngân
   // hàng câu hỏi vào bundle đầu tiên, dù chỉ dùng đúng 1 câu mỗi ngày. Tải động sau khi
