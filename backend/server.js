@@ -332,11 +332,16 @@ app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
 });
 
 // Health check endpoint
+// commit: bản code đang chạy — Render tự đặt RENDER_GIT_COMMIT khi deploy. Dùng để xác nhận sau
+// khi push rằng Render đã chạy bản mới (các trường còn lại thường không đổi giữa hai bản).
+const DEPLOYED_COMMIT = (process.env.RENDER_GIT_COMMIT || "").slice(0, 7) || "local";
+
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
     model: `${FINDER_MODEL} (Groq)`,
-    formulasLoaded: FORMULA_COUNT
+    formulasLoaded: FORMULA_COUNT,
+    commit: DEPLOYED_COMMIT
   });
 });
 
