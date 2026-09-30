@@ -47,6 +47,43 @@
   /* Transitions */
   --trans-fast: 0.2s ease;
   --trans-normal: 0.2s ease;
+
+  /* Thanh cuộn — đổi theo theme (giá trị dark ở khối .dark-mode) */
+  --scrollbar-thumb: #CBD5E1;
+  --scrollbar-thumb-hover: #94A3B8;
+
+  /* Thanh cuộn gốc, ô nhập, date picker... của trình duyệt theo giao diện sáng */
+  color-scheme: light;
+}
+
+/* ==========================================
+   THANH CUỘN — mảnh, bo tròn, màu theo theme
+   Không đổi hành vi cuộn, không ẩn thanh cuộn (chỗ nào cố ý ẩn như .filter-row vẫn giữ).
+   Firefox: scrollbar-width / scrollbar-color. Chrome, Edge, Safari: ::-webkit-scrollbar.
+   (Chrome/Edge bản mới ưu tiên scrollbar-color nếu có — hai cách cho cùng màu.)
+   ========================================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover);
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
 }
 
 /* Base App Layout */
@@ -1849,12 +1886,11 @@
 }
 
 .failed-questions-list::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: var(--radius-full);
+  background: transparent;
 }
 
 .failed-questions-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--scrollbar-thumb);
   border-radius: var(--radius-full);
 }
 
@@ -1870,12 +1906,11 @@
 }
 
 .review-questions-list::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: var(--radius-full);
+  background: transparent;
 }
 
 .review-questions-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--scrollbar-thumb);
   border-radius: var(--radius-full);
 }
 
@@ -2867,6 +2902,9 @@
   --bg-card: rgba(30, 41, 59, 0.95);
   --border-slate: #334155;
   --text-muted: #94A3B8;
+  --scrollbar-thumb: #475569;
+  --scrollbar-thumb-hover: #64748B;
+  color-scheme: dark; /* thanh cuộn gốc của trình duyệt tối theo */
   background-color: #0F172A;
   color: #E2E8F0;
 }
