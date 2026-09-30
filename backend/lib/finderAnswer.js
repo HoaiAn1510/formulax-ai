@@ -1,7 +1,7 @@
 import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalog.js";
 import { buildSystemPrompt, FINDER_MODEL, FINDER_PARAMS } from "./finderPrompt.js";
 import {
-  parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, toReplyText, DEFAULT_TEXT,
+  parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, toReplyText, extractNumbers, DEFAULT_TEXT,
 } from "./solutionGuard.js";
 
 const MAX_ATTEMPTS = 2; // lần 2 chỉ khi JSON hỏng không cứu được
@@ -73,11 +73,31 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
     return { answer, reply: answer.intro, meta: { ...meta, jsonFailed: true } };
   }
 
+  const checked = finalizeAnswer(parsed, { message, recentUserTexts });
+  return { answer: checked.answer, reply: checked.reply, meta: { ...meta, ...checked.meta } };
+}
+
+/**
+ * Những đoạn văn bản mà con số trong đó được coi là "có sẵn" (không phải do AI tự tính).
+ * Câu hỏi nối tiếp không có số riêng ("giải thích lại bước này giúp mình") thì lấy thêm số của các
+ * câu hỏi trước. Nhưng tin nhắn đã có số riêng là một ĐỀ MỚI: chỉ tính số của chính nó — nếu lấy
+ * cả số của đề trước, bài cực trị hỏi ngay sau bài "khối cầu bán kính 6cm" sẽ lọt được
+ * y' = 3x^2 - 6x - 9 và cả nghiệm x = 3, x = -1 (số 6 lấy từ đề trước, 3 và 1 trùng số trong đề).
+ */
+export function numberSourceTexts(message, recentUserTexts = []) {
+  return extractNumbers(message).length ? [message] : [message, ...recentUserTexts];
+}
+
+/**
+ * Kiểm tra đối tượng JSON model trả về: chuẩn hoá khung, bỏ id không có thật, bỏ biểu thức lệch
+ * ngoặc, lọc bước có số lạ. Tách riêng khỏi lời gọi Groq để test và chấm lại offline được.
+ */
+export function finalizeAnswer(parsed, { message, recentUserTexts = [] }) {
   const { answer: normalized, droppedIds } = normalizeAnswer(parsed, isValidFormulaId);
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
   const chosen = withBraces.formulaIds.map(getFormula);
   const { answer, removedSteps, replaced } = applyNumberGuard(withBraces, {
-    sourceTexts: [message, ...recentUserTexts],
+    sourceTexts: numberSourceTexts(message, recentUserTexts),
     formulaTexts: chosen.map((f) => `${f.latex}\n${f.explanation || ""}`),
     formulaNames: chosen.map((f) => f.name),
   });
@@ -85,6 +105,6 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
   return {
     answer,
     reply: toReplyText(answer, getFormula),
-    meta: { ...meta, rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, removedSteps, replaced },
+    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, removedSteps, replaced },
   };
 }

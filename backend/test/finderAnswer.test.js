@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { askFinder, CHAT_BUDGET_MS } from "../lib/finderAnswer.js";
+import { askFinder, numberSourceTexts, CHAT_BUDGET_MS } from "../lib/finderAnswer.js";
 
 // Groq giả + đồng hồ giả: mỗi lần gọi "tốn" `costMs` và trả lần lượt các nội dung trong `replies`.
 function fakeGroq(replies, clock, costMs) {
@@ -52,4 +52,51 @@ test("thời gian đã bị các bước trước (xác thực, DB) dùng bớt 
   const groq = fakeGroq([GOOD], clock, 1000);
   await askFinder({ groq, message: Q, now: () => clock.t, deadline: CHAT_BUDGET_MS });
   assert.deepEqual(groq.calls, [10_000]);
+});
+
+// ─── Số "có sẵn" khi có lịch sử chat ────────────────────────────────────────
+const SPHERE_HISTORY = [
+  { role: "user", content: "Tính thể tích khối cầu bán kính 6cm" },
+  { role: "assistant", content: "Bài này dùng công thức thể tích khối cầu nhé. $$V = \\frac{4}{3}\\pi \\cdot 6^3$$" },
+];
+
+test("numberSourceTexts: tin nhắn có số riêng là đề mới → chỉ lấy số của chính nó", () => {
+  assert.deepEqual(numberSourceTexts("Tìm cực trị của y = x^3 - 3x^2 - 9x + 5", ["Tính thể tích khối cầu bán kính 6cm"]),
+    ["Tìm cực trị của y = x^3 - 3x^2 - 9x + 5"]);
+});
+
+test("numberSourceTexts: câu hỏi nối tiếp không có số (kể cả 'bước 2') → lấy thêm số của câu trước", () => {
+  const prev = ["Tính thể tích khối cầu bán kính 6cm"];
+  assert.deepEqual(numberSourceTexts("Mình chưa hiểu, giải thích lại giúp mình", prev), ["Mình chưa hiểu, giải thích lại giúp mình", ...prev]);
+  assert.deepEqual(numberSourceTexts("Giải thích lại bước 2 giúp mình", prev), ["Giải thích lại bước 2 giúp mình", ...prev]);
+});
+
+test("đề mới sau bài khối cầu R = 6: số 6 của đề trước KHÔNG còn làm lọt y' = 3x^2 - 6x - 9", async () => {
+  const clock = { t: 0 };
+  const reply = JSON.stringify({
+    type: "solution", formula_ids: ["gt12-cuctrituoc"], intro: "Bài này dùng điều kiện cực trị.",
+    steps: [
+      { title: "Xác định hàm số", detail: "Hàm số $y = x^3 - 3x^2 - 9x + 5$.", expression: "" },
+      { title: "Tính đạo hàm", detail: "Lấy đạo hàm:", expression: "y' = 3x^2 - 6x - 9" },
+    ],
+    reminder: "Bạn tự xét dấu nhé!",
+  });
+  const groq = fakeGroq([reply], clock, 1000);
+  const { answer, meta } = await askFinder({ groq, message: "Tìm cực trị của hàm số y = x^3 - 3x^2 - 9x + 5", history: SPHERE_HISTORY, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(meta.removedSteps.length, 1);
+  assert.deepEqual(meta.removedSteps[0].leaked, ["6"]);
+  assert.ok(!JSON.stringify(answer.steps).includes("6x"));
+});
+
+test("câu hỏi nối tiếp không có số: nhắc lại số của đề trước (R = 6) vẫn được giữ", async () => {
+  const clock = { t: 0 };
+  const reply = JSON.stringify({
+    type: "solution", formula_ids: ["hh12-matcau-thetich"], intro: "Mình nhắc lại cách làm nhé.",
+    steps: [{ title: "Thay số", detail: "Thay $R = 6$ vào công thức:", expression: "V = \\frac{4}{3}\\pi \\cdot 6^3" }],
+    reminder: "Bạn tự tính nhé!",
+  });
+  const groq = fakeGroq([reply], clock, 1000);
+  const { answer, meta } = await askFinder({ groq, message: "Mình chưa hiểu, giải thích lại giúp mình", history: SPHERE_HISTORY, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(meta.removedSteps.length, 0);
+  assert.equal(answer.steps[0].expression, "V = \\frac{4}{3}\\pi \\cdot 6^3");
 });
