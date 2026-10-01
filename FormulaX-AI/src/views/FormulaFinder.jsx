@@ -157,17 +157,11 @@ export default function FormulaFinder({
         if (cloudSessions === null) {
           // Lỗi kết nối → giữ local
           setSessions(loadSessionsFromStorage(sessionsKey));
-        } else if (cloudSessions.length > 0) {
-          // Cloud có data → dùng cloud (source of truth)
+        } else {
+          // Cloud là nguồn sự thật, kể cả khi rỗng. Trước đây cloud rỗng thì đẩy bản lưu ở máy
+          // lên lại — xoá hết cuộc trò chuyện trên laptop rồi mở điện thoại là chúng sống lại.
           setSessions(cloudSessions);
           saveSessionsToStorage(sessionsKey, cloudSessions);
-        } else {
-          // Cloud rỗng → upload local sessions lên (lần đầu sync)
-          const localSessions = loadSessionsFromStorage(sessionsKey);
-          if (localSessions.length > 0) {
-            localSessions.forEach(s => upsertChatSession(user.googleId, s).catch(console.error));
-            setSessions(localSessions);
-          }
         }
       });
     } else {
