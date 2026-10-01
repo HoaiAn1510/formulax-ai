@@ -144,7 +144,7 @@ Từ 2026-07-04, toàn bộ app chuyển từ phong cách Glassmorphism (tím/h�
 - **Button primary:** nền `--accent` (amber), hover `--accent-hover`, không dùng `filter:brightness()` nữa mà đổi thẳng màu nền lúc hover.
 - **Progress bar:** track xám, thanh chạy màu amber. Progress ring (nếu có): navy.
 - **Font:** chỉ dùng **Inter** cho toàn bộ hệ thống (đã bỏ Be Vietnam Pro).
-- **Dark mode:** toggle qua class `.dark-mode` trên `<html>` (state ở `App.jsx`, lưu `localStorage.formulax_dark`) — là tính năng thật đang hoạt động, không phải CSS thừa. **Dark mode GIỮ NGUYÊN không đổi** khi chuyển sang Navy+Amber (quyết định 2026-07-04) — bản thân dark mode vốn đã dùng tông slate-navy riêng (`#0F172A`/`#1E293B`/`#334155`), không xung đột với bảng màu mới nên không cần làm lại. Card kính chuyển sang nền slate đặc (`#1E293B`/`#334155`) thay vì hiệu ứng kính khi ở dark mode — hành vi này không đổi. Bất kỳ view nào migrate sang Tailwind đều phải giữ đúng hành vi dark mode này bằng `dark:` variant, không được bỏ sót.
+- **Dark mode:** toggle qua class `.dark-mode` trên `<html>` (state ở `App.jsx`; lưu theo tài khoản ở `learning_stats.preferences`, `localStorage.formulax_dark` chỉ là bộ đệm của máy + nơi lưu cho khách — xem mục "Đồng bộ nhiều thiết bị") — là tính năng thật đang hoạt động, không phải CSS thừa. **Dark mode GIỮ NGUYÊN không đổi** khi chuyển sang Navy+Amber (quyết định 2026-07-04) — bản thân dark mode vốn đã dùng tông slate-navy riêng (`#0F172A`/`#1E293B`/`#334155`), không xung đột với bảng màu mới nên không cần làm lại. Card kính chuyển sang nền slate đặc (`#1E293B`/`#334155`) thay vì hiệu ứng kính khi ở dark mode — hành vi này không đổi. Bất kỳ view nào migrate sang Tailwind đều phải giữ đúng hành vi dark mode này bằng `dark:` variant, không được bỏ sót.
 
 Quy ước kỹ thuật: dự án đang **chuyển dần từ inline style sang Tailwind CSS v4** (cài qua `@tailwindcss/vite`, cấu hình theo kiểu CSS-first của v4 — token khai báo trong `@theme`/`@utility` ở `src/index.css`, không dùng `tailwind.config.js` kiểu cũ). Giá trị màu chuẩn nằm ở `@theme` trong `src/index.css` + `:root` trong `src/App.css` (file tham khảo cũ `src/styles/theme.js` đã xoá vì không nơi nào import). Khi tạo/sửa view hoặc component:
 - Ưu tiên dùng class Tailwind (`className="..."`) thay vì `style={{...}}` cho code mới.
@@ -263,8 +263,9 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 
 ## Deploy — thứ tự bắt buộc
 
-- **Migration Supabase chạy TRƯỚC khi deploy backend** dùng tới nó (vd 006 `ai_usage_daily` +
-  `increment_ai_usage`, 007 `refund_ai_usage`). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
+- **Migration Supabase chạy TRƯỚC khi deploy backend/frontend** dùng tới nó (vd 006 `ai_usage_daily` +
+  `increment_ai_usage`, 007 `refund_ai_usage`, 008 cột đồng bộ cài đặt trên `learning_stats` —
+  frontend dùng). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
   để hoàn tác. Migration đã chạy trên Supabase thì không sửa dòng SQL nào, chỉ được sửa comment.
 - **Render — Root Directory / Build Filters:** backend import `FormulaX-AI/src/data/formulas.js`
   (ngoài thư mục `backend/`). Nếu service trên Render đặt Root Directory = `backend` thì phải thêm
@@ -273,6 +274,22 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 - Sau deploy kiểm tra `GET /api/health` → `formulasLoaded` phải bằng số công thức trong
   `formulas.js` (hiện 246). Bằng 0 hoặc lỗi = backend không đọc được file.
 - Backend bắt buộc `NODE_ENV=production` (xem mục Hiệu năng & bảo mật).
+
+## Đồng bộ nhiều thiết bị (từ 2026-10-01)
+
+Mọi dữ liệu của tài khoản Google phải nằm trên Supabase; `localStorage` chỉ được dùng làm bộ đệm
+(vẽ đúng ngay lúc mở app) hoặc cho khách. Khi thêm cài đặt/trạng thái mới, KHÔNG lưu chỉ ở máy.
+- Cài đặt `{ darkMode, grade, notifPrefs, onboarded }` → cột `learning_stats.preferences` (jsonb,
+  migration 008), ghi nguyên object qua `syncPreferences()` trong `App.jsx`. Thêm cài đặt mới thì
+  thêm khoá vào object này. Gộp khi tải: giá trị trên tài khoản thắng, khoá tài khoản chưa có thì
+  lấy giá trị ở máy rồi đẩy lên. App hiện lại (`visibilitychange`) thì đọc lại `preferences`.
+- Công thức đã xem → `learning_stats.viewed_formula_ids`; Thử thách hôm nay → `daily_challenge`.
+- Lịch sử chat: server là nguồn sự thật kể cả khi rỗng — không đẩy bản ở máy lên lại (đã từng làm
+  cuộc trò chuyện đã xoá sống lại trên máy khác).
+- Còn chỉ ở máy, có chủ đích: lượt Quiz của khách, cờ "đã báo huy hiệu" (`formulax_badges_seen_*`,
+  chỉ để không báo toast trùng), cache Premium/tên/thống kê (đều có bản gốc trên server).
+- Không dùng khoá localStorage chung cho cả máy cho dữ liệu của tài khoản (`formulax_display_name`
+  chung đã làm tài khoản sau nhận nhầm tên của người trước) — luôn gắn `_${googleId}`.
 
 ## Quy ước code khác
 

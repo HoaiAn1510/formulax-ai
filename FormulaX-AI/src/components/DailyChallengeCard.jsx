@@ -15,7 +15,7 @@ function storageKey(user, today) {
   return `formulax_daily_challenge_${user?.googleId || "guest"}_${today}`;
 }
 
-export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
+export default function DailyChallengeCard({ user, userGrade, savedRecord, onSave, onAnswered }) {
   // Ngày theo giờ Việt Nam: câu thử thách đổi lúc nửa đêm, không phải 7h sáng (UTC).
   const today = vietnamToday();
 
@@ -50,43 +50,52 @@ export default function DailyChallengeCard({ user, userGrade, onAnswered }) {
   const [answer, setAnswer] = useState(null); // { selectedLetter, isCorrect }
   const [collapsed, setCollapsed] = useState(false);
 
+  // Bản ghi của tài khoản (savedRecord, đồng bộ qua server) thắng bản ghi ở máy: trả lời trên
+  // laptop thì mở điện thoại thấy ngay đáp án đã chọn, không trả lời lại được.
+  const accountRecord = savedRecord?.date === today && savedRecord?.questionId === question?.id
+    ? savedRecord : null;
+
   useEffect(() => {
     if (!question) return;
-    const raw = localStorage.getItem(storageKey(user, today));
-    if (raw) {
+    let saved = accountRecord;
+    if (!saved) {
       try {
-        const saved = JSON.parse(raw);
-        if (saved.questionId === question.id) {
-          setAnswer({ selectedLetter: saved.selectedLetter, isCorrect: saved.isCorrect });
-          setCollapsed(!!saved.collapsed);
-          onAnswered?.();
+        const local = JSON.parse(localStorage.getItem(storageKey(user, today)) || "null");
+        if (local?.questionId === question.id) {
+          saved = local;
+          // Trả lời trên máy này trước khi có đồng bộ → đẩy lên tài khoản một lần.
+          if (user?.googleId) onSave?.({ date: today, ...local });
         }
       } catch { /* ignore malformed cache */ }
+    }
+    if (saved) {
+      setAnswer({ selectedLetter: saved.selectedLetter, isCorrect: saved.isCorrect });
+      setCollapsed(!!saved.collapsed);
+      onAnswered?.();
     } else {
       setAnswer(null);
       setCollapsed(false);
     }
-  }, [question?.id, user?.googleId]);
+  }, [question?.id, user?.googleId, accountRecord?.selectedLetter, accountRecord?.collapsed]);
 
   if (!question) return null;
+
+  const persist = (record) => {
+    localStorage.setItem(storageKey(user, today), JSON.stringify(record));
+    if (user?.googleId) onSave?.({ date: today, ...record });
+  };
 
   const handleSelect = (option) => {
     if (answer) return;
     const isCorrect = !!option.isCorrect;
     setAnswer({ selectedLetter: option.letter, isCorrect });
-    localStorage.setItem(
-      storageKey(user, today),
-      JSON.stringify({ questionId: question.id, selectedLetter: option.letter, isCorrect, collapsed: false })
-    );
+    persist({ questionId: question.id, selectedLetter: option.letter, isCorrect, collapsed: false });
     onAnswered?.();
   };
 
   const handleCollapse = () => {
     setCollapsed(true);
-    localStorage.setItem(
-      storageKey(user, today),
-      JSON.stringify({ questionId: question.id, selectedLetter: answer.selectedLetter, isCorrect: answer.isCorrect, collapsed: true })
-    );
+    persist({ questionId: question.id, selectedLetter: answer.selectedLetter, isCorrect: answer.isCorrect, collapsed: true });
   };
 
   if (answer && collapsed) {

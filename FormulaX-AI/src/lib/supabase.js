@@ -95,6 +95,11 @@ export async function loadUserData(googleId) {
   return {
     bookmarkedIds, userNotes, stats, searchHistory, remainingQuizzes,
     displayName: displayNameFromDB,
+    // Cài đặt/trạng thái theo tài khoản (migration 008). null/{} = tài khoản chưa lưu lần nào,
+    // App.jsx khi đó đẩy giá trị đang có ở máy lên.
+    preferences: statsRow?.preferences ?? null,
+    viewedFormulaIds: statsRow?.viewed_formula_ids ?? null,
+    dailyChallenge: statsRow?.daily_challenge ?? null,
     todayQuizCount: todayQRes.count ?? 0,
     todayFlashcardCount: todayFRes.count ?? 0,
   };
@@ -158,6 +163,43 @@ export async function saveDisplayName(googleId, displayName) {
     { onConflict: "google_id" }
   );
   throwIfError("Lưu tên hiển thị", error);
+}
+
+// ─── Cài đặt & trạng thái đồng bộ theo tài khoản (migration 008) ─────────────
+// Cùng dòng learning_stats với stats/display_name. Upsert chỉ ghi đúng cột có trong payload nên
+// không đè số liệu học tập.
+
+/** Ghi toàn bộ object cài đặt { darkMode, grade, notifPrefs, onboarded } */
+export async function savePreferences(googleId, preferences) {
+  const { error } = await supabase.from("learning_stats").upsert(
+    { google_id: googleId, preferences, updated_at: new Date().toISOString() },
+    { onConflict: "google_id" }
+  );
+  throwIfError("Lưu cài đặt", error);
+}
+
+/** Đọc riêng cài đặt — dùng khi app được mở lại (máy khác có thể vừa đổi). */
+export async function loadPreferences(googleId) {
+  const { data, error } = await supabase.from("learning_stats").select("preferences")
+    .eq("google_id", googleId).order("updated_at", { ascending: false }).limit(1);
+  if (error) { console.error("[Supabase] loadPreferences:", error); return null; }
+  return data?.[0]?.preferences ?? null;
+}
+
+export async function saveViewedFormulaIds(googleId, ids) {
+  const { error } = await supabase.from("learning_stats").upsert(
+    { google_id: googleId, viewed_formula_ids: ids, updated_at: new Date().toISOString() },
+    { onConflict: "google_id" }
+  );
+  throwIfError("Lưu công thức đã xem", error);
+}
+
+export async function saveDailyChallenge(googleId, dailyChallenge) {
+  const { error } = await supabase.from("learning_stats").upsert(
+    { google_id: googleId, daily_challenge: dailyChallenge, updated_at: new Date().toISOString() },
+    { onConflict: "google_id" }
+  );
+  throwIfError("Lưu thử thách hôm nay", error);
 }
 
 export async function resetStats(googleId) {

@@ -11,6 +11,7 @@ import {
   addSearchHistoryEntry,
   saveQuizDaily,
   saveDisplayName,
+  savePreferences, loadPreferences, saveViewedFormulaIds, saveDailyChallenge,
   loadFlashcardDecks, upsertFlashcardDeck, deleteFlashcardDeck as deleteFlashcardDeckDB,
   loadFlashcardProgress, upsertFlashcardProgress,
   checkAndGenerateNotifications, getNotifications, markAllNotificationsRead,
@@ -101,13 +102,14 @@ export default function App() {
   }, []);
 
   // ─── Preferences ─────────────────────────────────────────────────────────
+  // Nguồn sự thật là cột learning_stats.preferences của tài khoản (migration 008) — đổi trên máy
+  // này thì máy khác nhận khi tải dữ liệu hoặc khi app được mở lại. localStorage chỉ còn là bộ
+  // nhớ đệm để vẽ đúng ngay lúc mở app (trước khi tải xong) và cho khách, vốn không có tài khoản.
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("formulax_dark") === "true");
   const [displayName, setDisplayName] = useState(() => {
     const saved = localStorage.getItem("formulax_user");
     const gId = saved ? JSON.parse(saved)?.googleId : null;
-    return (gId && localStorage.getItem(`formulax_display_name_${gId}`))
-      || localStorage.getItem("formulax_display_name")
-      || "";
+    return (gId && localStorage.getItem(`formulax_display_name_${gId}`)) || "";
   });
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [userGrade, setUserGrade] = useState(() => {
@@ -116,10 +118,17 @@ export default function App() {
     const stored = gId && localStorage.getItem(`formulax_grade_${gId}`);
     return stored ? Number(stored) : null;
   });
-  const [notifPrefs, setNotifPrefs] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("formulax_notif_prefs")) || {}; }
-    catch { return {}; }
-  });
+  const [notifPrefs, setNotifPrefs] = useState({});
+
+  // Bản cài đặt của tài khoản đang đăng nhập, ghi nguyên object mỗi lần đổi. Chỉ ghi sau khi đã
+  // tải + gộp xong (prefsReadyRef), để một thao tác trong lúc đang tải không đè cài đặt trên server.
+  const prefsRef = useRef({});
+  const prefsReadyRef = useRef(false);
+  const syncPreferences = (patch) => {
+    if (!user?.googleId || !prefsReadyRef.current) return;
+    prefsRef.current = { ...prefsRef.current, ...patch };
+    savePreferences(user.googleId, prefsRef.current).catch(console.error);
+  };
 
   useEffect(() => {
     if (darkMode) document.documentElement.classList.add("dark-mode");
@@ -127,23 +136,29 @@ export default function App() {
     localStorage.setItem("formulax_dark", darkMode);
   }, [darkMode]);
 
+  // Khách vẫn đổi được giao diện (chỉ lưu ở máy); tài khoản Google thì lưu kèm lên server.
+  const handleSetDarkMode = (value) => {
+    setDarkMode(value);
+    syncPreferences({ darkMode: value });
+  };
+
   const handleSetUserGrade = (grade) => {
     if (!requireGoogle()) return;
     setUserGrade(grade);
     if (user?.googleId) localStorage.setItem(`formulax_grade_${user.googleId}`, String(grade));
+    syncPreferences({ grade });
   };
 
   const handleSetNotifPrefs = (prefs) => {
     if (!requireGoogle()) return;
     setNotifPrefs(prefs);
-    localStorage.setItem("formulax_notif_prefs", JSON.stringify(prefs));
+    syncPreferences({ notifPrefs: prefs });
   };
 
   const handleSetDisplayName = (name) => {
     if (!requireGoogle()) return;
     setDisplayName(name);
     if (user?.googleId) localStorage.setItem(`formulax_display_name_${user.googleId}`, name);
-    localStorage.setItem("formulax_display_name", name);
     if (user?.googleId) saveDisplayName(user.googleId, name).catch(console.error);
   };
 
@@ -160,6 +175,10 @@ export default function App() {
   const setQuizzesLeft = isGuest ? setGuestQuizzesLeft : setRemainingQuizzes;
   const [searchHistory, setSearchHistory]     = useState([]);
   const [viewedFormulaIds, setViewedFormulaIds] = useState([]);
+  const lastSavedViewedRef = useRef(null); // danh sách đã xem lần cuối ghi lên server
+  const viewedTimer = useRef(null);
+  // Câu trả lời Thử thách hôm nay của tài khoản { date, questionId, selectedLetter, isCorrect, collapsed }
+  const [dailyChallenge, setDailyChallenge] = useState(null);
   const [flashcardDecks, setFlashcardDecks] = useState([]);
   const [flashcardProgress, setFlashcardProgress] = useState({});
   const [addFormulaModal, setAddFormulaModal] = useState(null); // { formula } | null
@@ -173,9 +192,14 @@ export default function App() {
 
   // ─── Load data khi user đăng nhập / đổi tài khoản ────────────────────────
   useEffect(() => {
+    // Đổi tài khoản/đăng xuất: không được ghi cài đặt của người trước lên tài khoản mới.
+    prefsReadyRef.current = false;
+    prefsRef.current = {};
     if (!user?.googleId) {
       dataLoadedRef.current = false; // reset khi logout
       setViewedFormulaIds([]);
+      setDailyChallenge(null);
+      setNotifPrefs({});
       setNotifications([]);
       setRecommendationContext({ weakTopics: [], recentTopic: null });
       setFlashcardProgress({});
@@ -201,9 +225,46 @@ export default function App() {
         }
         setRemainingQuizzes(finalQuizzes);
         setActiveTab("dashboard");
-        // Load danh sách công thức đã xem từ localStorage
-        const storedViewed = localStorage.getItem(`formulax_viewed_${user.googleId}`);
-        setViewedFormulaIds(storedViewed ? JSON.parse(storedViewed) : []);
+
+        // Cài đặt: giá trị đã lưu trên tài khoản thắng; mục nào tài khoản chưa từng lưu thì lấy
+        // giá trị đang có ở máy này (người dùng cũ không mất cài đặt) rồi đẩy lên server.
+        const gId = user.googleId;
+        const fromDB = data.preferences && typeof data.preferences === "object" ? data.preferences : {};
+        const localDark = localStorage.getItem("formulax_dark");
+        const localGrade = Number(localStorage.getItem(`formulax_grade_${gId}`)) || null;
+        let localNotif = null;
+        try { localNotif = JSON.parse(localStorage.getItem("formulax_notif_prefs")); } catch { /* bỏ qua */ }
+        const prefs = {
+          darkMode: typeof fromDB.darkMode === "boolean" ? fromDB.darkMode
+            : localDark !== null ? localDark === "true" : undefined,
+          grade: fromDB.grade ?? localGrade ?? undefined,
+          notifPrefs: fromDB.notifPrefs ?? localNotif ?? undefined,
+          onboarded: Boolean(fromDB.onboarded || localStorage.getItem(`formulax_onboarded_${gId}`)),
+        };
+        Object.keys(prefs).forEach((k) => prefs[k] === undefined && delete prefs[k]);
+        if (typeof prefs.darkMode === "boolean") setDarkMode(prefs.darkMode);
+        if (prefs.grade) {
+          setUserGrade(prefs.grade);
+          localStorage.setItem(`formulax_grade_${gId}`, String(prefs.grade));
+        }
+        setNotifPrefs(prefs.notifPrefs || {});
+        if (prefs.onboarded) localStorage.setItem(`formulax_onboarded_${gId}`, "1");
+        prefsRef.current = prefs;
+        prefsReadyRef.current = true;
+        if (JSON.stringify(prefs) !== JSON.stringify(fromDB)) {
+          savePreferences(gId, prefs).catch(console.error);
+        }
+
+        // Công thức đã xem: gộp danh sách trên tài khoản với danh sách cũ còn ở máy này.
+        let localViewed = [];
+        try { localViewed = JSON.parse(localStorage.getItem(`formulax_viewed_${gId}`)) || []; } catch { /* bỏ qua */ }
+        const dbViewed = Array.isArray(data.viewedFormulaIds) ? data.viewedFormulaIds : [];
+        const mergedViewed = [...new Set([...dbViewed, ...localViewed])];
+        lastSavedViewedRef.current = dbViewed;
+        setViewedFormulaIds(mergedViewed);
+
+        // Thử thách hôm nay: chỉ giữ bản ghi của đúng hôm nay (giờ Việt Nam).
+        setDailyChallenge(data.dailyChallenge?.date === today ? data.dailyChallenge : null);
         dataLoadedRef.current = true;
         // Load flashcard decks from Supabase
         loadFlashcardDecks(user.googleId).then(cloudDecks => {
@@ -212,22 +273,21 @@ export default function App() {
         // Load lịch spaced-repetition của flashcard
         loadFlashcardProgress(user.googleId).then(setFlashcardProgress);
         // Sinh thông báo mới (nếu có) rồi tải danh sách thông báo hiện tại
-        checkAndGenerateNotifications(user.googleId, notifPrefs)
+        checkAndGenerateNotifications(user.googleId, prefs.notifPrefs || {})
           .then(() => getNotifications(user.googleId))
           .then(setNotifications)
           .catch(console.error);
         // Dữ liệu để tính "Gợi ý hôm nay" trên Dashboard (chủ đề yếu + chủ đề vừa học)
         getRecommendationContext(user.googleId).then(setRecommendationContext).catch(console.error);
-        // Sync display name: ưu tiên Supabase, fallback localStorage (user-specific → shared)
+        // Sync display name: ưu tiên Supabase, fallback bản lưu ở máy CỦA ĐÚNG tài khoản này.
+        // Không đọc khoá chung formulax_display_name nữa: trên máy dùng chung, tài khoản mới sẽ
+        // nhận nhầm tên của người đăng nhập trước rồi còn đẩy tên đó lên server.
         const nameFromDB = data.displayName;
-        const nameFromLocal =
-          localStorage.getItem(`formulax_display_name_${user.googleId}`) ||
-          localStorage.getItem("formulax_display_name") || "";
+        const nameFromLocal = localStorage.getItem(`formulax_display_name_${user.googleId}`) || "";
         const finalName = nameFromDB || nameFromLocal;
+        setDisplayName(finalName);
         if (finalName) {
-          setDisplayName(finalName);
           localStorage.setItem(`formulax_display_name_${user.googleId}`, finalName);
-          localStorage.setItem("formulax_display_name", finalName);
           // Upload lên Supabase nếu local có tên mà DB chưa có
           if (!nameFromDB && nameFromLocal) {
             saveDisplayName(user.googleId, nameFromLocal).catch(console.error);
@@ -235,14 +295,13 @@ export default function App() {
         }
         // Force sync stats + display name vào Supabase
         saveStats(user.googleId, data.stats, finalName || undefined).catch(console.error);
-        // Hiện onboarding nếu user thực sự chưa có dữ liệu nào (kiểm tra Supabase lẫn localStorage)
-        const onboardedLocal = localStorage.getItem(`formulax_onboarded_${user.googleId}`);
+        // Hiện onboarding nếu tài khoản chưa xem hướng dẫn (ở bất kỳ máy nào) và chưa có dữ liệu
         const hasAnyData = data.bookmarkedIds.length > 0
           || data.searchHistory.length > 0
           || data.stats.formulasViewed > 0
           || data.stats.flashcardsStudied > 0
           || data.stats.quizzesCompleted > 0;
-        if (!onboardedLocal && !hasAnyData) setShowOnboarding(true);
+        if (!prefs.onboarded && !hasAnyData) setShowOnboarding(true);
       })
       .catch((err) => console.error("[Supabase] loadUserData:", err))
       .finally(() => setIsLoadingData(false));
@@ -302,6 +361,45 @@ export default function App() {
     return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [user?.googleId, stats]);
 
+  // ─── Công thức đã xem — lưu máy ngay + Supabase (gộp các lần mở liên tiếp, 1,5s) ──
+  useEffect(() => {
+    if (!user?.googleId || !dataLoadedRef.current) return;
+    localStorage.setItem(`formulax_viewed_${user.googleId}`, JSON.stringify(viewedFormulaIds));
+    if (JSON.stringify(viewedFormulaIds) === JSON.stringify(lastSavedViewedRef.current)) return;
+    const googleId = user.googleId;
+    clearTimeout(viewedTimer.current);
+    viewedTimer.current = setTimeout(() => {
+      lastSavedViewedRef.current = viewedFormulaIds;
+      saveViewedFormulaIds(googleId, viewedFormulaIds).catch(console.error);
+    }, 1500);
+    return () => clearTimeout(viewedTimer.current);
+  }, [viewedFormulaIds, user?.googleId]);
+
+  // ─── Cài đặt đổi trên máy khác — tải lại khi app được mở lại ────────────
+  // App (nhất là bản cài trên điện thoại) thường chỉ bị ẩn chứ không tải lại trang, nên đổi chế
+  // độ tối trên laptop xong mở điện thoại lên sẽ không thấy. Mỗi lần app hiện lại thì đọc riêng
+  // cột preferences (một dòng, rất nhẹ) và áp dụng nếu khác.
+  useEffect(() => {
+    if (!user?.googleId) return;
+    const googleId = user.googleId;
+    const handleVisible = () => {
+      if (document.visibilityState !== "visible" || !prefsReadyRef.current) return;
+      loadPreferences(googleId).then((fromDB) => {
+        if (!fromDB || !prefsReadyRef.current) return;
+        if (JSON.stringify(fromDB) === JSON.stringify(prefsRef.current)) return;
+        prefsRef.current = { ...prefsRef.current, ...fromDB };
+        if (typeof fromDB.darkMode === "boolean") setDarkMode(fromDB.darkMode);
+        if (fromDB.grade) {
+          setUserGrade(fromDB.grade);
+          localStorage.setItem(`formulax_grade_${googleId}`, String(fromDB.grade));
+        }
+        if (fromDB.notifPrefs) setNotifPrefs(fromDB.notifPrefs);
+      });
+    };
+    document.addEventListener("visibilitychange", handleVisible);
+    return () => document.removeEventListener("visibilitychange", handleVisible);
+  }, [user?.googleId]);
+
   // ─── Quiz daily — lưu localStorage ngay + Supabase (chỉ sau khi load xong)
   useEffect(() => {
     if (!user?.googleId || !dataLoadedRef.current) return;
@@ -337,14 +435,15 @@ export default function App() {
     setSelectedFormula(formula);
     setStats((prev) => ({ ...prev, formulasViewed: prev.formulasViewed + 1 }));
     // Thêm vào danh sách "đã xem" (dedup, công thức mới nhất lên đầu)
-    setViewedFormulaIds((prev) => {
-      if (prev.includes(formula.id)) return prev;
-      const updated = [formula.id, ...prev];
-      if (user?.googleId) {
-        localStorage.setItem(`formulax_viewed_${user.googleId}`, JSON.stringify(updated));
-      }
-      return updated;
-    });
+    // (effect "Công thức đã xem" phía trên lưu xuống máy + lên tài khoản)
+    setViewedFormulaIds((prev) => (prev.includes(formula.id) ? prev : [formula.id, ...prev]));
+  };
+
+  // Thử thách hôm nay — DailyChallengeCard tự lưu ở máy; tài khoản Google thì lưu kèm lên server
+  // để máy khác thấy đã làm (và đáp án đã chọn), không làm lại được câu khác đáp án.
+  const handleSaveDailyChallenge = (record) => {
+    setDailyChallenge(record);
+    if (user?.googleId) saveDailyChallenge(user.googleId, record).catch(console.error);
   };
 
   const handleAddSearchHistory = (query) => {
@@ -370,6 +469,7 @@ export default function App() {
   useEffect(() => {
     // Khoá chung cũ không gắn tài khoản — xoá để không còn nơi nào đọc nhầm.
     localStorage.removeItem("formulax_premium");
+    localStorage.removeItem("formulax_display_name");
     if (!user?.googleId || premiumState.googleId !== user.googleId) return;
     localStorage.setItem(`formulax_premium_${user.googleId}`, String(premiumState.value));
   }, [premiumState, user?.googleId]);
@@ -464,13 +564,15 @@ export default function App() {
   // ─── Onboarding ───────────────────────────────────────────────────────────
   const handleOnboardingFinish = (grade) => {
     setShowOnboarding(false);
-    if (user?.googleId) {
-      localStorage.setItem(`formulax_onboarded_${user.googleId}`, "1");
+    if (!user?.googleId) return;
+    localStorage.setItem(`formulax_onboarded_${user.googleId}`, "1");
+    // Lưu lớp ưu tiên nếu người dùng chọn. Gộp một lần ghi: hai lần ghi liền nhau có thể về
+    // server sai thứ tự và lần về sau (thiếu grade) đè mất lần trước.
+    if (grade) {
+      setUserGrade(grade);
+      localStorage.setItem(`formulax_grade_${user.googleId}`, String(grade));
     }
-    // Lưu lớp ưu tiên nếu người dùng chọn
-    if (grade && user?.googleId) {
-      handleSetUserGrade(grade);
-    }
+    syncPreferences(grade ? { onboarded: true, grade } : { onboarded: true });
   };
 
   // ─── Loading screen ───────────────────────────────────────────────────────
@@ -525,6 +627,8 @@ export default function App() {
             weakTopics={recommendationContext.weakTopics}
             recentTopic={recommendationContext.recentTopic}
             viewedFormulaIds={viewedFormulaIds}
+            dailyChallenge={dailyChallenge}
+            onSaveDailyChallenge={handleSaveDailyChallenge}
           />
         );
       case "library":
@@ -609,7 +713,7 @@ export default function App() {
             user={user}
             setActiveTab={setActiveTab}
             darkMode={darkMode}
-            setDarkMode={setDarkMode}
+            setDarkMode={handleSetDarkMode}
             displayName={displayName}
             onSetDisplayName={handleSetDisplayName}
             userGrade={userGrade}
@@ -635,6 +739,8 @@ export default function App() {
             weakTopics={recommendationContext.weakTopics}
             recentTopic={recommendationContext.recentTopic}
             viewedFormulaIds={viewedFormulaIds}
+            dailyChallenge={dailyChallenge}
+            onSaveDailyChallenge={handleSaveDailyChallenge}
           />
         );
     }

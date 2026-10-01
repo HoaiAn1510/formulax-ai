@@ -58,6 +58,8 @@ export default function Dashboard({
   weakTopics,
   recentTopic,
   viewedFormulaIds,
+  dailyChallenge,
+  onSaveDailyChallenge,
 }) {
   // Khách: chuỗi ngày học, nhiệm vụ, thống kê là tiến độ cá nhân → khóa. Gợi ý công thức và
   // thử thách hằng ngày là nội dung → vẫn mở.
@@ -211,7 +213,7 @@ export default function Dashboard({
             )}
           </div>
 
-          <DailyChallengeCard user={user} userGrade={userGrade} onAnswered={() => setDailyChallengeDone(true)} />
+          <DailyChallengeCard user={user} userGrade={userGrade} savedRecord={dailyChallenge} onSave={onSaveDailyChallenge} onAnswered={() => setDailyChallengeDone(true)} />
 
           <Confetti active={showGoalConfetti} />
 
