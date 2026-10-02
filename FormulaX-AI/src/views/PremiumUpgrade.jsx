@@ -2,7 +2,7 @@ import React, { useState, useEffect, lazy, Suspense } from "react";
 import { Crown, Check, X, ShieldCheck, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useGuestGate } from "../utils/useGuestGate";
-import { supabase } from "../lib/supabase";
+import { supabase, checkPremiumStatus } from "../lib/supabase";
 import { showToast } from "../components/Toast";
 
 // three.js/@react-three/fiber/@react-three/drei chỉ tải khi người dùng thực sự mở trang
@@ -46,6 +46,11 @@ const GEM_FALLBACK = (
 );
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+
+// Sau khi PayOS trả về payment=success: kiểm tra lại trạng thái Premium mỗi 3 giây, tối đa 10 lần
+// (khoảng 30 giây) chờ webhook, rồi mới báo "đang cập nhật".
+const PAYMENT_RECHECK_MS = 3000;
+const PAYMENT_RECHECK_MAX = 10;
 
 // Nguồn giá duy nhất — dùng chung cho banner hero và Gold card để không bao giờ lệch nhau.
 // Khớp PLAN_CONFIG thật ở backend/lib/payos.js.
@@ -105,58 +110,58 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   const { isGuest, promptLogin } = useGuestGate();
   const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending", text }
+  const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending" | "checking", text }
   const [selectedPlan, setSelectedPlan] = useState("monthly");
   const expiryInfo = formatExpiry(premiumExpiry);
 
-  // Xử lý khi PayOS redirect người dùng quay lại qua /api/payment/payos/return
+  // Kết quả PayOS trả về qua /api/payment/payos/return → /?payment=success|failed (App.jsx mở thẳng
+  // trang này khi URL có tham số đó). Đọc MỘT lần lúc khởi tạo: effect bên dưới xoá tham số khỏi URL
+  // ngay, và StrictMode (dev) chạy effect hai lần — lần sau vẫn phải biết kết quả.
+  const [paymentReturn] = useState(() => new URLSearchParams(window.location.search).get("payment"));
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const paymentStatus = params.get("payment");
-    if (!paymentStatus) return;
+    if (!paymentReturn) return;
 
-    const cleanUrl = () => {
-      const url = new URL(window.location.href);
-      url.searchParams.delete("payment");
-      url.searchParams.delete("orderId");
-      url.searchParams.delete("message");
-      window.history.replaceState({}, "", url.pathname + url.search);
-    };
+    // Xoá tham số ngay để tải lại trang không hiện lại thông báo.
+    const url = new URL(window.location.href);
+    ["payment", "orderId", "message"].forEach((k) => url.searchParams.delete(k));
+    window.history.replaceState({}, "", url.pathname + url.search);
 
-    if (paymentStatus === "failed") {
+    if (paymentReturn === "failed") {
       setPaymentNotice({ type: "error", text: "Thanh toán không thành công hoặc đã bị hủy. Bạn có thể thử lại." });
-      cleanUrl();
       return;
     }
+    if (paymentReturn !== "success" || !user?.googleId) return;
 
-    if (paymentStatus === "success") {
-      if (!user?.googleId) {
-        cleanUrl();
+    // Nguồn sự thật là webhook PayOS ghi bảng users — không tự bật Premium chỉ vì có payment=success.
+    // Webhook có thể về sau người dùng vài giây: kiểm tra ngay, rồi lại mỗi 3 giây (tối đa 10 lần)
+    // trước khi báo "đang cập nhật".
+    let cancelled = false;
+    let timer = null;
+    let rechecks = 0;
+    setPaymentNotice({ type: "checking", text: "Đang xác nhận thanh toán với payOS…" });
+    const check = async () => {
+      const result = await checkPremiumStatus(user.googleId).catch(() => null);
+      if (cancelled) return;
+      if (result?.isPremium) {
+        setIsPremium(true);
+        setPremiumExpiry?.(result.premiumExpiry);
+        setPaymentNotice({ type: "success", text: "Thanh toán thành công! Tài khoản của bạn đã được nâng cấp lên Premium." });
         return;
       }
-      (async () => {
-        // Kiểm tra trạng thái is_premium mới nhất từ Supabase — nguồn sự thật là webhook từ PayOS,
-        // không tự setIsPremium(true) chỉ vì redirect về có payment=success.
-        const { data, error } = await supabase
-          .from("users")
-          .select("is_premium, premium_expiry")
-          .eq("google_id", user.googleId)
-          .single();
-
-        if (!error && data?.is_premium) {
-          setIsPremium(true);
-          setPremiumExpiry?.(data.premium_expiry);
-          setPaymentNotice({ type: "success", text: "Thanh toán thành công! Tài khoản của bạn đã được nâng cấp lên Premium." });
-        } else {
-          setPaymentNotice({
-            type: "pending",
-            text: "Hệ thống đã ghi nhận giao dịch, đang cập nhật tài khoản Premium. Nếu sau vài phút vẫn chưa thấy cập nhật, hãy tải lại trang này.",
-          });
-        }
-        cleanUrl();
-      })();
-    }
-  }, [user?.googleId, setIsPremium, setPremiumExpiry]);
+      if (rechecks >= PAYMENT_RECHECK_MAX) {
+        setPaymentNotice({
+          type: "pending",
+          text: "Hệ thống đã ghi nhận giao dịch, đang cập nhật tài khoản Premium. Nếu sau vài phút vẫn chưa thấy cập nhật, hãy tải lại trang này.",
+        });
+        return;
+      }
+      rechecks++;
+      timer = setTimeout(check, PAYMENT_RECHECK_MS);
+    };
+    check();
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [paymentReturn, user?.googleId, setIsPremium, setPremiumExpiry]);
 
   const handleUpgrade = async (plan = "monthly") => {
     if (isGuest) {
@@ -313,15 +318,18 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             {/* Payment notice — hiện sau khi PayOS redirect người dùng quay lại */}
             {paymentNotice && (
               <div
+                role="status"
                 className={`flex items-center gap-2.5 py-3 px-4 rounded-xl text-[0.85rem] font-semibold ${paymentNotice.type === "success"
                     ? "bg-success/10 text-success border border-success/20"
-                    : paymentNotice.type === "pending"
+                    : paymentNotice.type === "pending" || paymentNotice.type === "checking"
                       ? "bg-premium/10 text-[#92400E] border border-premium/20"
                       : "bg-error/10 text-error border border-error/20"
                   }`}
               >
                 {paymentNotice.type === "success" ? (
                   <CheckCircle2 size={18} className="shrink-0" />
+                ) : paymentNotice.type === "checking" ? (
+                  <Loader2 size={18} className="shrink-0 animate-spin" />
                 ) : paymentNotice.type === "pending" ? (
                   <Clock size={18} className="shrink-0" />
                 ) : (

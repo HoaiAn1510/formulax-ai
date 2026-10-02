@@ -63,6 +63,17 @@ export default function App() {
   const { isGuest, requireGoogle } = useGuestGate();
 
   const [activeTab, setActiveTab]   = useState("dashboard");
+  // payOS trả người dùng về /?payment=success|failed (backend/routes/payosPayment.js → /return).
+  // Thông báo kết quả nằm ở trang Premium, nên lần tải dữ liệu đầu tiên mở thẳng trang đó thay vì
+  // Dashboard. Đọc một lần lúc khởi tạo; PremiumUpgrade tự xoá tham số khỏi URL.
+  const paymentReturnRef = useRef(new URLSearchParams(window.location.search).has("payment"));
+  // Xoá cờ khi người dùng đã ở trang Premium rồi chuyển sang tab khác. Không xoá ngay sau lần tải
+  // đầu: StrictMode (dev) chạy effect tải dữ liệu hai lần, lần sau sẽ đưa về Dashboard.
+  const premiumShownRef = useRef(false);
+  useEffect(() => {
+    if (activeTab === "premium") premiumShownRef.current = true;
+    else if (premiumShownRef.current) paymentReturnRef.current = false;
+  }, [activeTab]);
   // Cờ Premium được cache ở localStorage để khỏi nháy giao diện khi tải lại trang. Cache gắn
   // theo googleId và chỉ có hiệu lực khi trùng người đang đăng nhập — trước đây là một khoá
   // chung cho cả máy, nên tài khoản Free (hoặc khách) đăng nhập sau một tài khoản Premium trên
@@ -224,7 +235,7 @@ export default function App() {
           if (date === today) finalQuizzes = Math.min(data.remainingQuizzes, count);
         }
         setRemainingQuizzes(finalQuizzes);
-        setActiveTab("dashboard");
+        setActiveTab(paymentReturnRef.current ? "premium" : "dashboard");
 
         // Cài đặt: giá trị đã lưu trên tài khoản thắng; mục nào tài khoản chưa từng lưu thì lấy
         // giá trị đang có ở máy này (người dùng cũ không mất cài đặt) rồi đẩy lên server.
