@@ -452,8 +452,9 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                   )}
                 </button>
 
-                {/* Giả lập hạ cấp — công cụ test nội bộ, để nhỏ/phụ để không lẫn với luồng thanh toán thật */}
-                {isPremium && (
+                {/* Giả lập hạ cấp — công cụ test nội bộ, chỉ có ở `npm run dev`; bản build production
+                    loại hẳn nút này (import.meta.env.DEV = false), người dùng thật không thấy. */}
+                {import.meta.env.DEV && isPremium && (
                   <button
                     className="block mx-auto mt-3 bg-transparent border-none text-[0.72rem] text-[#94A3B8] underline cursor-pointer pointer-events-auto"
                     onClick={handleDowngrade}
