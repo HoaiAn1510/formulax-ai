@@ -74,6 +74,7 @@ cd backend && npm test             # test backend (node --test): bộ lọc số
 Quy tắc riêng cho `questions.js`:
 
 - `blankAnswer` là **đáp án người học gõ tay ở chế độ điền**, viết dạng chữ thường cho dễ nhập — KHÔNG phải bản sao LaTeX của option. Theo đúng dữ liệu hiện có: option `$y' = 3x^2$` → `blankAnswer: "3x^2"`; option `$36\pi \text{ cm}^3$` → `blankAnswer: "36pi"`. Không bao dấu `$`, tránh lệnh LaTeX (`\dfrac`, `\infty`…) vì người học không gõ được, và tuyệt đối không điền nhãn lựa chọn (`"A"`, `"D"`).
+- Chế độ "Điền đáp án" chấm theo `blankAnswer` qua `src/utils/fillAnswer.js` (chuẩn hoá cách viết, bỏ tiền tố biến ngắn, bỏ đơn vị cuối, so phân số chính xác — không phải CAS: `x+1` ≠ `1+x`). Câu có `blankAnswer` còn `\` hoặc là câu văn ≥ 3 từ thì không ra đề dạng điền (chỉ trắc nghiệm). Sửa `fillAnswer.js` hoặc `blankAnswer` thì chạy `npm run test:quiz` (gõ đúng `blankAnswer` phải chấm đúng 100%).
 - Chạy `npm run test:data` sau mỗi lần sửa `formulas.js`/`questions.js` — script kiểm tra id trùng, thiếu trường bắt buộc, sai enum topic/grade/difficulty, số dấu `$` lẻ, ngoặc LaTeX lệch, và số đáp án `isCorrect`.
 - Bài tập trích từ SGK phải giữ đúng số liệu/đề bài gốc, không tự đổi số cho "gọn" — nếu số liệu SGK phức tạp thì giữ nguyên, không đơn giản hóa.
 - 3 phương án sai (distractor) nên phản ánh lỗi sai thường gặp thực tế (nhầm dấu, quên hệ số...) nếu SGK có gợi ý, không tự bịa phương án sai vô nghĩa.

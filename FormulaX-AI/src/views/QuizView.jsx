@@ -8,6 +8,7 @@ import { showConfirm } from "../components/ConfirmDialog";
 import { showToast } from "../components/Toast";
 import { useGuestGate } from "../utils/useGuestGate";
 import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from "../utils/guestQuiz";
+import { checkFillAnswer, isFillEligible } from "../utils/fillAnswer";
 
 export default function QuizView({
   setActiveTab,
@@ -64,6 +65,8 @@ export default function QuizView({
     if (!allGradeMode && selectedGrades.length > 0) {
       list = list.filter(q => selectedGrades.includes(q.grade));
     }
+    // Chế độ Điền đáp án chỉ ra đề từ câu gõ được đáp án (isFillEligible — utils/fillAnswer.js).
+    if (quizType === "fill-in") list = list.filter(isFillEligible);
     return list;
   };
 
@@ -72,7 +75,7 @@ export default function QuizView({
     const max = getFilteredQuestions().length;
     const cur = parseInt(questionCountInput) || 1;
     if (cur > max) setQuestionCountInput(String(max));
-  }, [allMode, selectedTopics, allGradeMode, selectedGrades]);
+  }, [allMode, selectedTopics, allGradeMode, selectedGrades, quizType]);
 
   // Timer Effect
   useEffect(() => {
@@ -131,13 +134,14 @@ export default function QuizView({
     setQuizState("active");
   };
 
-  // True if question at idx should be fill-in style
+  // Câu ở vị trí idx có làm dạng điền không. Kết hợp: câu chẵn (thứ 2, 4…) là điền, nhưng câu không
+  // gõ được đáp án (isFillEligible) thì giữ dạng trắc nghiệm.
   const isFillQuestion = (idx) =>
-    quizType === "fill-in" || (quizType === "hybrid" && idx % 2 === 1);
+    (quizType === "fill-in" || (quizType === "hybrid" && idx % 2 === 1)) && isFillEligible(questions[idx]);
 
-  // Normalize strings for fill-in comparison
-  const normalizeAnswer = (s) =>
-    (s || "").trim().toLowerCase().replace(/\s+/g, "").replace(/π/g, "pi").replace(/√/g, "sqrt");
+  // Chấm theo blankAnswer (checkFillAnswer), không so với chữ của phương án đúng — chữ đó có $ và
+  // LaTeX nên trước đây gõ đúng vẫn bị chấm sai ở 405/428 câu.
+  const isFillCorrect = (q, userInput) => (userInput || "").trim() !== "" && checkFillAnswer(userInput, q);
 
   const handleSelectOption = (option) => {
     setUserAnswers(prev => ({
@@ -163,11 +167,7 @@ export default function QuizView({
 
     questions.forEach((q, idx) => {
       if (isFillQuestion(idx)) {
-        const userInput = fillInputs[idx] || "";
-        const correctOpt = q.options.find(o => o.isCorrect);
-        const isCorrect = userInput.trim() !== "" &&
-          normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
-        if (isCorrect) finalScore += 1;
+        if (isFillCorrect(q, fillInputs[idx])) finalScore += 1;
       } else {
         const selected = userAnswers[idx];
         if (selected && selected.isCorrect) finalScore += 1;
@@ -759,8 +759,7 @@ export default function QuizView({
                       // Fill-in review
                       if (isFillQ) {
                         const userInput = fillInputs[idx] || "";
-                        const isCorrect = userInput.trim() !== "" &&
-                          normalizeAnswer(userInput) === normalizeAnswer(correctOpt?.text || "");
+                        const isCorrect = isFillCorrect(q, userInput);
                         const cardClass = !userInput.trim() ? "border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#1E293B]"
                           : isCorrect ? "border-success/20 bg-success/[0.03] dark:bg-success/10" : "border-error/20 bg-error/[0.03] dark:bg-error/10";
                         const statusLabel = !userInput.trim() ? "Chưa trả lời" : isCorrect ? "Đúng" : "Sai";
@@ -780,9 +779,13 @@ export default function QuizView({
                                 <span className="text-text-muted dark:text-[#94A3B8] font-semibold">Bạn trả lời: </span>
                                 <span className={`font-bold ${isCorrect ? "text-success" : "text-error"}`}>{userInput || "(bỏ qua)"}</span>
                               </div>
-                              <div className="text-[0.82rem]">
+                              <div className="text-[0.82rem] flex flex-wrap items-baseline gap-x-1">
                                 <span className="text-text-muted dark:text-[#94A3B8] font-semibold">Đáp án đúng: </span>
-                                <span className="font-bold text-success">{correctOpt?.text}</span>
+                                <span className="quiz-question-text font-bold text-success min-w-0 overflow-x-auto"><RichTextRenderer text={correctOpt?.text || ""} /></span>
+                              </div>
+                              <div className="text-[0.78rem]">
+                                <span className="text-text-muted dark:text-[#94A3B8] font-semibold">Cách gõ: </span>
+                                <code className="font-mono font-semibold text-primary dark:text-[#E2E8F0] bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-px break-all">{q.blankAnswer}</code>
                               </div>
                             </div>
                             <div className="formula-explanation-prose bg-white dark:bg-[#0F172A]/40 border border-dashed border-[rgba(30,58,95,0.15)] dark:border-[#475569] rounded-lg p-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
