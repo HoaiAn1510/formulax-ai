@@ -924,7 +924,7 @@ export default function FlashcardView({
                     onClick={() => handlePdfExport()}
                   >
                     <FileDown size={16} />
-                    <span>Xuất tài liệu ôn tập PDF/Ảnh</span>
+                    <span>Xuất bộ thẻ ra PDF</span>
                     {!isPremium && <Lock size={14} className="ml-1 text-premium" />}
                   </button>
                   {!isPremium && (

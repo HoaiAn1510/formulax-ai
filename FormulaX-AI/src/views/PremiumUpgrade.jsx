@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
-import { Crown, Check, X, ShieldCheck, Sparkles, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown, Lock } from "lucide-react";
+import { Crown, Check, X, ShieldCheck, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useGuestGate } from "../utils/useGuestGate";
 import { supabase, checkPremiumStatus } from "../lib/supabase";
@@ -66,29 +66,19 @@ const SIX_MONTH_SAVINGS_PERCENT = Math.round((1 - SIX_MONTH_PRICE / (MONTHLY_PRI
 // mỗi lần render, (2) dùng làm dependency ổn định cho effect bơm JSON-LD FAQPage bên dưới.
 const FAQS = [
   {
-    q: "Tôi có thể hủy gói đăng ký bất cứ lúc nào không?",
-    a: "Có, bạn hoàn toàn có thể hủy gia hạn gói Premium bất cứ lúc nào trong mục Cài đặt tài khoản mà không bị phạt hay tính thêm bất kỳ khoản phí ẩn nào.",
+    q: "Gói Premium có tự động gia hạn không?",
+    a: "FormulaX không tự động gia hạn: bạn chỉ trả khi tự mua gói. Hết hạn, tài khoản về gói Free và dữ liệu học tập được giữ nguyên.",
     icon: XCircle
   },
   {
-    q: "Tài liệu PDF/Ảnh kết xuất ra có giới hạn số lượng không?",
-    a: "Hoàn toàn không. Tài khoản Premium cho phép bạn xuất không giới hạn số lượng thẻ ghi nhớ cá nhân ra định dạng tệp PDF/Ảnh độ nét cao để ôn thi offline.",
+    q: "Xuất PDF bộ thẻ có giới hạn số lượng không?",
+    a: "Không. Tài khoản Premium xuất được mọi bộ thẻ của bạn ra trang in, rồi lưu thành PDF bằng chức năng in của trình duyệt.",
     icon: FileDown
   },
   {
-    q: "Trợ lý Finder AI hỗ trợ những môn học nào khác ngoài Toán không?",
-    a: "Hiện tại FormulaX AI tối ưu hóa dữ liệu chuyên sâu cho chương trình Toán THPT (Đại số, Giải tích, Hình học, Xác suất). Các môn Vật lý và Hóa học dự kiến sẽ ra mắt trong quý sau.",
-    icon: Sparkles
-  },
-  {
     q: "Cách thanh toán và nhận tài khoản Premium thế nào?",
-    a: "Bạn thanh toán qua PayOS — hỗ trợ chuyển khoản ngân hàng và quét mã VietQR. Tài khoản sẽ được nâng cấp lên Premium ngay lập tức sau khi giao dịch hoàn tất.",
+    a: "Bạn thanh toán qua payOS — chuyển khoản ngân hàng hoặc quét mã VietQR. Premium được bật sau khi hệ thống nhận xác nhận từ payOS, thường trong vài phút. Nếu chậm, tải lại trang hoặc liên hệ nguyenduonghoaian7966@gmail.com.",
     icon: Landmark
-  },
-  {
-    q: "Tôi có thể dùng chung tài khoản trên nhiều thiết bị không?",
-    a: "Có, tài khoản Premium hỗ trợ đăng nhập và đồng bộ dữ liệu ôn tập trên 3 thiết bị cùng một lúc (Điện thoại, Máy tính bảng, Máy tính cá nhân).",
-    icon: Smartphone
   }
 ];
 
@@ -231,25 +221,25 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
     {
       icon: Target,
       title: "Hiểu sâu bản chất",
-      desc: "Finder AI phân tích ngữ nghĩa, giải thích chi tiết ý nghĩa từng ký hiệu và ví dụ minh họa trực quan.",
+      desc: "Finder AI chỉ ra công thức phù hợp trong thư viện và hướng dẫn từng bước để bạn tự giải — Premium hỏi không giới hạn lượt.",
       color: "secondary"
     },
     {
       icon: Zap,
       title: "Tối ưu hóa thời gian",
-      desc: "Học tập thông minh hơn, rút ngắn 50% thời gian ôn luyện ghi nhớ công thức toán học phổ thông.",
+      desc: "Ôn đúng chỗ yếu: trang Tiến độ chỉ ra chủ đề dưới 60% đúng và gợi ý công thức cần xem lại.",
       color: "premium"
     },
     {
       icon: Award,
       title: "Luyện đề không giới hạn",
-      desc: "Ngân hàng đề thi trắc nghiệm phong phú, tự do tùy biến cấu trúc đề theo lớp và chủ đề ôn thi.",
+      desc: "Làm Quiz không giới hạn lượt mỗi ngày, thêm dạng Điền đáp án và Kết hợp; tự chọn chủ đề, lớp, số câu và thời gian.",
       color: "success"
     },
     {
       icon: Smartphone,
       title: "Xuất PDF & Offline",
-      desc: "Kết xuất flashcard ra file PDF/Ảnh chất lượng cao phục vụ in ấn học tập offline mọi lúc mọi nơi.",
+      desc: "Xuất bộ thẻ Flashcard (tên, công thức, giải thích) ra trang in và lưu thành PDF để ôn ngoài ứng dụng.",
       color: "error"
     }
   ];
@@ -264,12 +254,13 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
     accent: "bg-accent/8 text-accent",
   };
 
+  // free === "Khóa" hiện dấu ✗, premium === "Mở" hiện dấu ✓.
   const features = [
-    { name: "Luyện đề trắc nghiệm", free: "Giới hạn 10 câu/ngày", premium: "Không giới hạn câu hỏi" },
-    { name: "Độ khó tự chọn & Điền đáp án", free: "Khóa", premium: "Mở khóa toàn bộ" },
-    { name: "Trợ lý giải toán Finder AI", free: "Tra cứu công thức cơ bản", premium: "Giải chi tiết từng bước & gợi ý nâng cao" },
-    { name: "Thống kê tiến trình học tập", free: "Thống kê cơ bản", premium: "Phân tích chi tiết điểm yếu & thế mạnh" },
-    { name: "Xuất PDF/Ảnh Flashcard", free: "Khóa", premium: "Tải về chất lượng cao" }
+    { name: "Luyện đề trắc nghiệm", free: "Quiz: 10 lượt/ngày", premium: "Quiz: không giới hạn" },
+    { name: "Trợ lý giải toán Finder AI", free: "10 lượt hỏi mỗi ngày", premium: "Không giới hạn lượt hỏi" },
+    { name: "Quiz Điền đáp án, Kết hợp", free: "Khóa", premium: "Mở" },
+    { name: "Trang Tiến độ: Hiệu suất theo chủ đề, Coach", free: "Khóa", premium: "Mở" },
+    { name: "Xuất bộ thẻ Flashcard ra PDF", free: "Khóa", premium: "Mở" }
   ];
 
   // Bơm JSON-LD FAQPage vào <head> khi mở trang Premium — giúp Google có thể hiện thẳng
@@ -433,7 +424,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 <p className="text-[0.85rem] text-[#CBD5E1] max-w-[480px] mx-auto mb-5 leading-[1.5]">
                   {isPremium
                     ? "Cảm ơn bạn đã đồng hành cùng FormulaX AI! Gia hạn sớm để việc ôn tập không bị gián đoạn."
-                    : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý giải toán AI đắc lực."}
+                    : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý AI hướng dẫn cách giải."}
                 </p>
 
                 <button
@@ -531,7 +522,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                           )}
                         </td>
                         <td className="text-center py-4 px-5 border-b border-[#f1f5f9] dark:border-[#334155] align-middle leading-[1.5] bg-premium/[0.015] font-bold text-primary dark:text-[#E2E8F0]">
-                          {feat.premium === "Mở khóa toàn bộ" || feat.premium === "Tải về chất lượng cao" ? (
+                          {feat.premium === "Mở" ? (
                             <div className="inline-flex items-center justify-center bg-success/8 text-success w-6 h-6 rounded-full mx-auto">
                               <Check size={12} />
                             </div>
@@ -562,7 +553,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                       </div>
                       <div className="flex-1 rounded-lg bg-premium/8 border border-premium/20 p-2.5">
                         <div className="text-[0.62rem] font-extrabold text-[#D97706] uppercase tracking-wide mb-1">Bản Pro</div>
-                        {feat.premium === "Mở khóa toàn bộ" || feat.premium === "Tải về chất lượng cao" ? (
+                        {feat.premium === "Mở" ? (
                           <div className="flex items-center gap-1.5 text-success font-bold text-[0.8rem]">
                             <Check size={13} /> <span>{feat.premium}</span>
                           </div>
@@ -597,19 +588,19 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                   <div className="flex flex-col gap-2.5 mb-5">
                     <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
                       <Check size={14} className="text-success shrink-0" />
-                      <span>Tra cứu & Giải toán Finder AI không giới hạn</span>
+                      <span>Hỏi AI Finder không giới hạn lượt</span>
                     </div>
                     <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
                       <Check size={14} className="text-success shrink-0" />
-                      <span>Mở khóa toàn bộ ngân hàng câu hỏi trắc nghiệm tự điền</span>
+                      <span>Quiz không giới hạn lượt, thêm dạng Điền đáp án và Kết hợp</span>
                     </div>
                     <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
                       <Check size={14} className="text-success shrink-0" />
-                      <span>Không có quảng cáo & ưu tiên máy chủ AI tốc độ cao</span>
+                      <span>Xem Hiệu suất theo chủ đề và Coach gợi ý ôn tập</span>
                     </div>
                     <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
                       <Check size={14} className="text-success shrink-0" />
-                      <span>Xuất PDF/Ảnh Flashcard chất lượng cao ôn offline</span>
+                      <span>Xuất bộ thẻ Flashcard ra PDF để in hoặc ôn ngoài ứng dụng</span>
                     </div>
                   </div>
 
