@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { Send, ArrowLeft, History, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
+import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import StepAnswer from "../components/StepAnswer";
@@ -869,22 +870,27 @@ export default function FormulaFinder({
           ) : (
           <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
             <div className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] flex items-center gap-2 py-1.5 px-3">
-              <button type="button" onClick={() => setCameraOpen(true)}
-                className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-1 pl-2"
-                title="Quét đề bài bằng Camera AI"
-              >
-                <Camera size={18} />
-              </button>
-              <button type="button" onClick={() => fileInputRef.current?.click()}
-                className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-2 pl-1"
-                title="Tải đề bài lên từ máy tính"
-              >
-                <Paperclip size={18} />
-              </button>
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,.pdf,.txt,.docx" />
+              {/* Nhập đề bằng ảnh/tệp — đang ẩn qua cờ FINDER_IMAGE_INPUT_ENABLED (config/features.js) */}
+              {FINDER_IMAGE_INPUT_ENABLED && (
+                <>
+                  <button type="button" onClick={() => setCameraOpen(true)}
+                    className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-1 pl-2"
+                    title="Quét đề bài bằng Camera AI"
+                  >
+                    <Camera size={18} />
+                  </button>
+                  <button type="button" onClick={() => fileInputRef.current?.click()}
+                    className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-2 pl-1"
+                    title="Tải đề bài lên từ máy tính"
+                  >
+                    <Paperclip size={18} />
+                  </button>
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,.pdf,.txt,.docx" />
+                </>
+              )}
               <textarea
                 ref={textareaRef}
-                className="flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] bg-transparent py-2 px-2 outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]"
+                className={`flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] bg-transparent dark:bg-transparent! py-2 ${FINDER_IMAGE_INPUT_ENABLED ? "px-2" : "pl-1 pr-2"} outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]`}
                 aria-label="Hỏi AI về công thức"
                 rows={1}
                 onChange={(e) => {

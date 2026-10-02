@@ -238,6 +238,8 @@ Quy tắc khi sửa:
   trong `chat_sessions` (`aiResult`) vẫn phải hiển thị được. Tin hệ thống (`isError`,
   `isLimitHit`, `isNotice`) được lưu trong phiên nhưng **không gửi lên AI làm lịch sử**.
   Biểu thức KaTeX dài cuộn ngang trong khung riêng, không làm tràn trang trên mobile.
+- **Nhập đề bằng ảnh/tệp (nút máy ảnh + ghim giấy) đang ẩn** bằng cờ `FINDER_IMAGE_INPUT_ENABLED = false`
+  trong `src/config/features.js` (2026-10-02, chưa ổn định) — code xử lý vẫn giữ, bật lại thì đổi cờ thành `true`.
 
 ### Hướng phát triển đợt 2 — suy ra công thức (CHƯA làm, chưa có thiết kế được duyệt)
 
