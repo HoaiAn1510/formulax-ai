@@ -1,0 +1,3 @@
+# Hook git là script shell — luôn xuống dòng LF, kể cả khi checkout trên Windows (core.autocrlf=true),
+# nếu không dòng "#!/bin/sh" thành "#!/bin/sh\r" và hook không chạy được.
+.githooks/* text eol=lf

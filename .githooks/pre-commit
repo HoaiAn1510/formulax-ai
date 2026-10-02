@@ -1,0 +1,5 @@
+#!/bin/sh
+# Chặn commit có khóa bí mật — xem scripts/check-secrets.mjs.
+# Bật cho repo này (chỉ ghi vào .git/config, không đụng cấu hình toàn cục):
+#   git config core.hooksPath .githooks
+exec node "$(git rev-parse --show-toplevel)/scripts/check-secrets.mjs"

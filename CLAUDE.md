@@ -173,6 +173,10 @@ Chi tiết đầy đủ ở `docs/SECURITY.md` và `docs/PERFORMANCE.md`. Nhữn
 - **Rate limit** ở `backend/server.js` áp cho `/api/chat` và `/payos/create`, **không** áp cho
   `/payos/webhook` (chặn nhầm webhook = người dùng trả tiền nhưng không được cấp Premium).
 - Lỗi trả về client không kèm `error.message` của SDK; chi tiết chỉ ghi vào log server.
+- **Khóa bí mật chỉ nằm trong `.env` (đã ignore); file `*.example` để trống giá trị.** Hook
+  `.githooks/pre-commit` → `scripts/check-secrets.mjs` chặn commit có `gsk_`, JWT, `sb_secret_`,
+  `*_KEY/_SECRET/_TOKEN=` có giá trị trong `*.example`, hoặc file `.env` thật. Mỗi bản clone bật
+  một lần: `git config core.hooksPath .githooks`. Không commit bằng `--no-verify` để lách hook.
 
 ## AI Finder — hướng dẫn các bước, không tính kết quả (từ 2026-09-30)
 
