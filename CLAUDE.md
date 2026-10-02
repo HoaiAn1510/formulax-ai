@@ -319,3 +319,12 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 - Không đổi AI provider mà không xác nhận với người dùng trước. Hiện chỉ còn đúng một SDK trong `backend/package.json` là `groq-sdk` — đừng cài thêm SDK provider khác "để sẵn đó".
 - Không sửa hàng loạt `formulas.js`/`questions.js` mà không có bước xác nhận riêng — đây là dữ liệu lõi cho USP "chống hallucination" của sản phẩm, sai ở đây ảnh hưởng trực tiếp uy tín dự án.
 - **Không truy vấn database production (Supabase thật) khi chưa hỏi người dùng — kể cả truy vấn chỉ đọc**, kể cả bằng `SUPABASE_SERVICE_ROLE_KEY` có sẵn trong `backend/.env`. Khi được phép: chỉ in **số liệu tổng hợp** (số bản ghi, số tài khoản, tỉ lệ…), không in `google_id`, email, tên hay bất kỳ dữ liệu cá nhân nào; script chỉ đọc, không ghi/xoá.
+
+## Việc sau
+
+- **Gia hạn khi còn Premium — ngày hết hạn hiển thị có thể là ngày cũ** cho tới lần tải sau
+  (2026-10-02). Sau khi payOS trả về `payment=success`, `PremiumUpgrade.jsx` kiểm tra lại trạng
+  thái qua `checkPremiumStatus` (mỗi 3 giây, tối đa 10 lần); tài khoản đang còn hạn thì lần kiểm tra
+  đầu đã thấy Premium nên báo thành công ngay, có thể trước khi webhook cộng thêm hạn. Client không
+  đọc được bảng `payments` (RLS), nên cần **endpoint backend đọc trạng thái đơn hàng theo
+  `orderId`** (xác thực người dùng, chỉ trả đơn của chính họ) để chờ đúng đơn vừa thanh toán.
