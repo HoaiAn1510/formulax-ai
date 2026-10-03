@@ -1,7 +1,7 @@
 import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalog.js";
 import { buildSystemPrompt, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS } from "./finderPrompt.js";
 import {
-  parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, toReplyText, extractNumbers, DEFAULT_TEXT,
+  parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, dropNumericSubstitutions, toReplyText, extractNumbers, DEFAULT_TEXT,
 } from "./solutionGuard.js";
 
 const MAX_ATTEMPTS = 2; // lần 2 chỉ khi JSON hỏng không cứu được
@@ -181,6 +181,9 @@ function retryInstruction(violations) {
   return [
     `Câu trả lời vừa rồi còn giá trị số tính sẵn hoặc lộ nghiệm: ${violations.slice(0, 8).join("; ")}.`,
     "Viết lại TOÀN BỘ câu trả lời (cùng type, cùng formula_ids) theo quy tắc ô trống: chỗ ra kết quả viết ?, ở các bước sau gọi kết quả bằng ký hiệu (x_1, x_2, BC, S_n...), không viết khoảng hay giá trị hàm có chứa nghiệm (viết các khoảng chia bởi x_1, x_2; f(x_1)).",
+    // Lần hỏi lại gửi lại nguyên system prompt (đủ quy tắc + ví dụ); câu dưới nhắc riêng lỗi 20b đã mắc
+    // khi viết lại (2026-10-04): viết biểu thức đã thay số.
+    "Viết công thức ký hiệu kèm dữ kiện (V = \\frac{1}{3}Bh, với B = a^2, h = 2a \\Rightarrow V = ?), không viết biểu thức đã thay số (8^2 + 5^2 - 2 \\cdot 8 \\cdot 5).",
     "Chỉ trả về JSON.",
   ].join(" ");
 }
@@ -204,16 +207,20 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
   const { answer: normalized, droppedIds, aiNote } = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
   const chosen = withBraces.formulaIds.map(getFormula);
-  const { answer, removedSteps, maskedSteps, replaced } = applyNumberGuard(withBraces, {
-    sourceTexts: numberSourceTexts(message, recentUserTexts),
+  const sourceTexts = numberSourceTexts(message, recentUserTexts);
+  const { answer: guarded, removedSteps, maskedSteps, replaced } = applyNumberGuard(withBraces, {
+    sourceTexts,
     formulaTexts: chosen.map((f) => `${f.latex}\n${f.explanation || ""}`),
     formulaNames: chosen.map((f) => f.name),
     mask,
   });
+  // Làm sạch cuối: bỏ dòng biểu thức đã thay số (8^2 + 5^2 - 2·8·5…), giữ chữ của bước. Không tính
+  // là vi phạm phải hỏi lại — không lộ đáp số, chỉ trái quy tắc "thay dữ kiện, không thay số".
+  const { answer, dropped: droppedSubstitutions } = dropNumericSubstitutions(guarded, sourceTexts.join("\n"));
 
   return {
     answer,
     reply: toReplyText(answer, getFormula),
-    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, removedSteps, maskedSteps, replaced, aiNote },
+    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, droppedSubstitutions, removedSteps, maskedSteps, replaced, aiNote },
   };
 }

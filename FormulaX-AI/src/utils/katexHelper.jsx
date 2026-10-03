@@ -59,6 +59,10 @@ export const MathElement = ({ math, block = false, className = "" }) => {
         window.katex.render(math, containerRef.current, {
           displayMode: block,
           throwOnError: false,
+          // Chữ tiếng Việt có dấu trong \text{…} (vd "\text{ với }" của AI Finder) hiển thị đúng nhưng
+          // KaTeX mặc định (strict "warn") ghi cảnh báo "Unrecognized Unicode character" ra console
+          // cho từng chữ. "ignore" chỉ tắt cảnh báo về độ tương thích LaTeX, không đổi cách hiển thị.
+          strict: "ignore",
           trust: katexTrust,
           maxExpand: 1000, // chặn macro tự nhân bản kiểu "billion laughs" làm treo tab trình duyệt
         });

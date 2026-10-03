@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import {
   repairLatexEscapes, parseModelJson, normalizeAnswer, extractNumbers,
   applyNumberGuard, mathLeaks, neutralStep, hasBalancedBraces, dropBrokenExpressions, toReplyText, DEFAULT_TEXT,
-  maskMathLeaks, maskTextLeaks, fixSymbolicBlank,
+  maskMathLeaks, maskTextLeaks, fixSymbolicBlank, isNumericSubstitution, dropNumericSubstitutions, wrapLooseLatex,
 } from "../lib/solutionGuard.js";
 import { buildSystemPrompt } from "../lib/finderPrompt.js";
 
@@ -629,4 +629,62 @@ test("parse: xuống dòng thật bên trong chuỗi JSON (không dùng JSON mod
   const v = parseModelJson(raw);
   assert.equal(v.intro, "Dòng 1 Dòng 2");
   assert.equal(v.steps[0].detail, R`$\angle A = 60^\circ$`);
+});
+
+// ─── Lần chấm thật 2026-10-04 (12 lượt) ─────────────────────────────────────
+test("LaTeX: khối \\begin{cases}…\\end{cases} viết ngoài $ được bọc NGUYÊN KHỐI (câu thô lượt 5)", () => {
+  // Nguyên văn trường detail model trả về (JSON thô) ở lượt 5 — đề cực trị.
+  const raw = R`{"type":"solution","formula_ids":["gt12-cuctrituoc"],"steps":[{"title":"Xét dấu $y'$ qua các điểm dừng","detail":"Xét dấu $y'$ trên các khoảng $(-\\infty, x_1)$, $(x_1, x_2)$, $(x_2, \\infty)$. Dùng công thức \\begin{cases} f'(x_0)=0 \\\\ f'\\text{ đổi dấu qua }x_0 \\end{cases} để xác định cực đại, cực tiểu.","expression":""}]}`;
+  const { answer } = normalizeAnswer(parseModelJson(raw), () => true);
+  const detail = answer.steps[0].detail;
+  assert.ok(detail.includes(R`$\begin{cases} f'(x_0)=0 \\ f'\text{ đổi dấu qua }x_0 \end{cases}$`), detail);
+  // Không còn đoạn $\begin{cases}$ / $\end{cases}$ bị cắt rời.
+  assert.doesNotMatch(detail, /\$\\begin\{cases\}\$|\$\\end\{cases\}\$/);
+  // Lệnh rời bên ngoài khối vẫn được bọc như cũ.
+  assert.equal(wrapLooseLatex(R`Tính \Delta trước`), R`Tính $\Delta$ trước`);
+});
+
+test("làm sạch cuối: biểu thức đã thay số bị bỏ dòng (lượt 2); không bắt (20-1)d, x_2^2, 60^\\circ", () => {
+  const nums = (q) => new Set(extractNumbers(q).map((n) => String(Number(n))));
+  // Lượt 2 (bản hỏi lại bằng 20b): thay số vào định lý côsin.
+  assert.equal(isNumericSubstitution(R`a^{2}=8^{2}+5^{2}-2\cdot8\cdot5\cos 60^{\circ} \Rightarrow a^{2}= ?`, nums(COSIN_Q)), true);
+  assert.equal(isNumericSubstitution(R`\Delta = 3^2 - 4 \cdot 2 \cdot (-7) = ?`, nums("Giải phương trình 2x^2 + 3x - 7 = 0")), true);
+  assert.equal(isNumericSubstitution(R`y(0) = 0^{4} - 2\cdot 0^{2} + 3 = ?`, nums(GTLN_Q)), true);
+  // KHÔNG bắt: lượt 3, lượt 12, công thức ký hiệu kèm dữ kiện, đạo hàm, góc.
+  for (const ok of [
+    R`u_{20} = u_1 + (20-1)d, \text{ với } u_1 = 3, d = 4 \Rightarrow u_{20} = ?`,
+    R`S = \left[ x^2 - \frac{x^3}{3} \right]_{x_1}^{x_2} = (x_2^2 - \frac{x_2^3}{3}) - (x_1^2 - \frac{x_1^3}{3}) \Rightarrow S = ?`,
+    R`a^{2}=b^{2}+c^{2}-2bc\cos A, \text{ với } b=8,\; c=5,\; A=60^{\circ} \Rightarrow a^{2}= ?`,
+    R`y' = 4x^3 - 4x`, R`3x^2 - 12 = 0 \Rightarrow x^2 = ?`, R`V = \frac{4}{3}\pi R^3, \text{ với } R = 5 \Rightarrow V = ?`,
+  ]) {
+    assert.equal(isNumericSubstitution(ok, nums(`${COSIN_Q} ${CSC_Q} ${GTLN_Q}`)), false, ok);
+  }
+  // Bỏ dòng biểu thức, giữ chữ; bước chỉ có biểu thức (không có chữ) thì bỏ hẳn.
+  const { answer, dropped } = dropNumericSubstitutions(derivAnswer([
+    { title: "Rút gọn", detail: "Bạn tự tính $a^{2}$.", expression: R`a^{2}=8^{2}+5^{2}-2\cdot8\cdot5\cos 60^{\circ} \Rightarrow a^{2}= ?` },
+    { title: "Chỉ biểu thức", detail: "", expression: R`BC^2 = 8^2 + 5^2` },
+    { title: "Giữ", detail: "Lấy căn.", expression: R`a = \sqrt{a^{2}} \Rightarrow a = ?` },
+  ]), COSIN_Q);
+  assert.equal(dropped, 2);
+  assert.deepEqual(answer.steps.map((s) => [s.title, s.expression]), [["Rút gọn", ""], ["Giữ", R`a = \sqrt{a^{2}} \Rightarrow a = ?`]]);
+});
+
+test("ô trống (4): '⇒ F(x) = ?' sau nguyên hàm đã viết, '= ?' sau tích phân bị bỏ; 'S = … ⇒ S = ?' giữ", () => {
+  // Nguyên văn lượt 11.
+  assert.equal(fixSymbolicBlank(R`F(x)=\int (2x - x^{2})\,dx = x^{2} - \frac{x^{3}}{3} \Rightarrow F(x)= ?`),
+    R`F(x)=\int (2x - x^{2})\,dx = x^{2} - \frac{x^{3}}{3}`);
+  assert.equal(fixSymbolicBlank(R`F(x) = x^2 - \frac{x^3}{3} \Rightarrow F(x) = ?`), R`F(x) = x^2 - \frac{x^3}{3}`);
+  assert.equal(fixSymbolicBlank(R`\int (2x - x^2)\,dx = x^2 - \frac{x^3}{3} + C = ?`), R`\int (2x - x^2)\,dx = x^2 - \frac{x^3}{3} + C`);
+  // Giữ: đại lượng đề hỏi (S), F(x) chưa từng được viết ra, nguyên hàm chưa tính.
+  for (const keep of [
+    R`S = \left[ x^2 - \frac{x^3}{3} \right]_{x_1}^{x_2} = (x_2^2 - \frac{x_2^3}{3}) - (x_1^2 - \frac{x_1^3}{3}) \Rightarrow S = ?`,
+    R`S = F(x_2) - F(x_1) \Rightarrow S = ?`, R`F(x) = ?`, R`\int (2x - x^2)\,dx = ?`,
+  ]) {
+    assert.equal(fixSymbolicBlank(keep), keep);
+  }
+});
+
+test("prompt (5): giữ đúng dạng công thức thư viện, đổi dạng phải nêu lý do bằng ký hiệu", () => {
+  const prompt = buildSystemPrompt([]);
+  assert.match(prompt, /giữ nguyên dạng công thức của thư viện; nếu đổi dạng[^\n]*lý do bằng ký hiệu, không dùng số/);
 });

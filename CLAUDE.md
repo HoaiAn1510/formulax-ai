@@ -169,7 +169,8 @@ Chi tiết đầy đủ ở `docs/SECURITY.md` và `docs/PERFORMANCE.md`. Nhữn
 - **KaTeX** nạp bằng `<script defer>` từ CDN. `MathElement` có cơ chế chờ `window.katex` rồi
   render bù — đừng bỏ, vì nếu CDN chậm thì effect không tự chạy lại và công thức mất hẳn.
 - **KaTeX `trust`:** không bao giờ đặt lại `trust: true`. Chuỗi LaTeX có thể đến từ câu trả lời
-  AI hoặc ghi chú người dùng, `\href{javascript:...}` là XSS thật.
+  AI hoặc ghi chú người dùng, `\href{javascript:...}` là XSS thật. `strict: "ignore"` (không phải
+  bảo mật): chỉ tắt cảnh báo console cho chữ tiếng Việt có dấu trong `\text{…}`.
 - **Backend bắt buộc `NODE_ENV=production` khi deploy** — thiếu biến này thì route DEV
   `/payos/simulate-success` (cấp Premium, bỏ qua xác minh chữ ký PayOS) vẫn mở.
 - **Rate limit** ở `backend/server.js` áp cho `/api/chat` và `/payos/create`, **không** áp cho
@@ -215,7 +216,9 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
    **hỏi lại AI một lần** (kèm danh sách giá trị lộ; model chính bị 429 theo phút thì hỏi lại bằng
    model dự phòng), vẫn lộ hoặc không hỏi lại được → **thay đúng con số lộ bằng `?`**
    (`maskMathLeaks`/`maskTextLeaks`); chỉ khi không thay sạch được mới gộp thành bước trung tính
-   "Thay số vào công thức". Giới hạn đã biết: hằng số tính ra trùng số trong đề vẫn lọt (vd
+   "Thay số vào công thức". Làm sạch cuối (`dropNumericSubstitutions`, 2026-10-04): dòng biểu thức
+   đã thay số (lũy thừa / tích của số có trong đề: `8^2 + 5^2 - 2 \cdot 8 \cdot 5…`) bị bỏ, giữ chữ của
+   bước — không tính là vi phạm phải hỏi lại; không bắt `(20-1)d`, `x_2^2`. Giới hạn đã biết: hằng số tính ra trùng số trong đề vẫn lọt (vd
    $D = -3$ khi đề có điểm $(1;2;3)$); giá trị lượng giác đã thay (`\frac{1}{2}` thay cho
    `\cos 60^\circ`) chỉ được prompt chặn, bộ lọc không bắt. Có test trong `backend/test/` — sửa
    guard thì chạy `npm test`.

@@ -100,13 +100,29 @@ test("câu hỏi nối tiếp không có số: nhắc lại số của đề tr�
   const clock = { t: 0 };
   const reply = JSON.stringify({
     type: "solution", formula_ids: ["hh12-matcau-thetich"], intro: "Mình nhắc lại cách làm nhé.",
-    steps: [{ title: "Thay số", detail: "Thay $R = 6$ vào công thức:", expression: "V = \\frac{4}{3}\\pi \\cdot 6^3" }],
+    steps: [{ title: "Thay dữ kiện", detail: "Dùng công thức với $R = 6$:", expression: "V = \\frac{4}{3}\\pi R^3, \\text{ với } R = 6 \\Rightarrow V = ?" }],
     reminder: "Bạn tự tính nhé!",
   });
   const groq = fakeGroq([reply], clock, 1000);
   const { answer, meta } = await askFinder({ groq, message: "Mình chưa hiểu, giải thích lại giúp mình", history: SPHERE_HISTORY, now: () => clock.t, deadline: CHAT_BUDGET_MS });
   assert.equal(meta.removedSteps.length, 0);
-  assert.equal(answer.steps[0].expression, "V = \\frac{4}{3}\\pi \\cdot 6^3");
+  assert.equal(answer.steps[0].expression, "V = \\frac{4}{3}\\pi R^3, \\text{ với } R = 6 \\Rightarrow V = ?");
+  assert.equal(answer.steps[0].detail, "Dùng công thức với $R = 6$:");
+});
+
+test("làm sạch cuối: biểu thức đã thay số (6^3, số của đề trước) bị bỏ dòng biểu thức, giữ chữ; không hỏi lại", async () => {
+  const clock = { t: 0 };
+  const reply = JSON.stringify({
+    type: "solution", formula_ids: ["hh12-matcau-thetich"], intro: "Mình nhắc lại cách làm nhé.",
+    steps: [{ title: "Thay số", detail: "Thay $R = 6$ vào công thức, bạn tự tính.", expression: "V = \\frac{4}{3}\\pi \\cdot 6^3 = ?" }],
+    reminder: "Bạn tự tính nhé!",
+  });
+  const groq = fakeGroq([reply], clock, 1000);
+  const { answer, meta } = await askFinder({ groq, message: "Mình chưa hiểu, giải thích lại giúp mình", history: SPHERE_HISTORY, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(groq.calls.length, 1); // không tính là vi phạm phải hỏi lại
+  assert.equal(meta.droppedSubstitutions, 1);
+  assert.equal(answer.steps[0].expression, "");
+  assert.equal(answer.steps[0].detail, "Thay $R = 6$ vào công thức, bạn tự tính.");
 });
 
 test("meta.cachedTokens lấy từ usage.prompt_tokens_details.cached_tokens (thiếu trường thì 0)", async () => {

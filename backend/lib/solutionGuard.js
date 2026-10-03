@@ -105,7 +105,14 @@ const mapProse = (s, fn) => s.split(/(\$\$[^$]*\$\$|\$[^$]*\$)/).map((part, i) =
 // Lệnh LaTeX viết thẳng trong câu chữ, ngoài $...$ ("để tính \Delta và viết nghiệm", "\sqrt{\Delta}")
 // hiện nguyên văn → bọc lại bằng $...$. Một cụm = lệnh + các nhóm {...} (lồng 1 tầng) + chỉ số ^ _.
 const LOOSE_COMMAND = /\\[A-Za-z]+(?:\s*\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\})*(?:\s*[_^](?:\{[^{}]*\}|[A-Za-z0-9]))*/g;
-export const wrapLooseLatex = (s) => mapProse(s, (prose) => prose.replace(LOOSE_COMMAND, (cmd) => `$${cmd.trim()}$`));
+// Khối môi trường viết ngoài $...$ ("Dùng công thức \begin{cases} f'(x_0)=0 \\ f'\text{ đổi dấu qua }x_0
+// \end{cases}", lần chấm 2026-10-04): bọc CẢ KHỐI trong một đoạn $...$ trước. Bọc từng lệnh như
+// LOOSE_COMMAND sẽ cắt khối thành "$\begin{cases}$ … $\end{cases}$" — KaTeX báo lỗi cả hai đoạn.
+const ENV_BLOCK = /\\begin\{([a-zA-Z*]+)\}[\s\S]*?\\end\{\1\}/g;
+export const wrapLooseLatex = (s) => mapProse(
+  mapProse(s, (prose) => prose.replace(ENV_BLOCK, (block) => `$${block.trim()}$`)),
+  (prose) => prose.replace(LOOSE_COMMAND, (cmd) => `$${cmd.trim()}$`),
+);
 
 // Id công thức model chép vào lời giải ("quy tắc đạo hàm của tổng (gt11-daoham-tonghieu)"). Id có
 // thật thì: nằm trong ngoặc ngay sau chính tên công thức → bỏ; còn lại → thay bằng tên công thức.
@@ -128,29 +135,71 @@ const cleanText = (s, isValidId, nameOf) => fixSymbolicBlankInText(replaceFormul
 // Ô trống đặt sai chỗ (quy tắc ô trống 2026-10-03), sửa từng mệnh đề (ngăn bởi , ; \\ ở tầng ngoài):
 //   "y' = 4x^3 - 4x = ?"           → "y' = 4x^3 - 4x"  (đạo hàm / hàm số là biểu thức ký hiệu, không có ô ?)
 //   "y(x_1) = x_1^3 - 3x_1 + 2 = ?" → "y(x_1) = ?"      (giá trị tại nghiệm ký hiệu chỉ để ô trống)
-// Chỉ áp khi vế trái là đạo hàm, y / f(x), hoặc y(x_k) — "\max\{y(0), y(x_1)\} = ?" giữ nguyên.
+//   "F(x) = \int(2x - x^2)dx = x^2 - \frac{x^3}{3} \Rightarrow F(x) = ?" → bỏ "\Rightarrow F(x) = ?"
+//   "\int (2x - x^2)\,dx = x^2 - \frac{x^3}{3} = ?"                    → bỏ " = ?"
+// Chỉ áp khi vế trái là biểu thức KÝ HIỆU của hàm: đạo hàm, y / f(x), nguyên hàm F(x), tích phân
+// \int…, hoặc y(x_k) — "\max\{y(0), y(x_1)\} = ?", "S = F(x_2) - F(x_1) = ?" (đại lượng đề hỏi) giữ nguyên.
+const isFunctionExpr = (lhs) => isDerivative(lhs) || /^(?:y|f\(x\)|F\(x\))$/.test(lhs) || /^\\int/.test(lhs);
 export function fixSymbolicBlank(latex) {
   const s = String(latex || "");
   if (!s.includes("?")) return s;
-  const sep = (t, j) => (t[j] === "," || t[j] === ";" ? 1 : t.startsWith("\\\\", j) ? 2
+  // "\," "\;" (khoảng trắng LaTeX, vd "\,dx") không phải dấu ngăn mệnh đề.
+  const sep = (t, j) => ((t[j] === "," || t[j] === ";") && t[j - 1] !== "\\" ? 1 : t.startsWith("\\\\", j) ? 2
     : /^\\q?quad(?![a-zA-Z])/.test(t.slice(j)) ? t.slice(j).match(/^\\q?quad/)[0].length : 0);
+  const hasUnknown = (part) => letterTokens(normalizeMath(part)).some((l) => /^[xt]$/.test(l));
   return splitTopLevel(s, sep).map((clause, i) => {
     if (i % 2 === 1) return clause;
     const parts = splitRelationsRaw(clause);
     const n = parts.length;
-    if (n < 5 || parts[n - 2] !== "=" || parts[n - 1].trim() !== "?" || parts[n - 4] !== "=") return clause;
+    const tail = clause.match(/\s*$/)[0];
+    if (n < 5 || parts[n - 2] !== "=" || parts[n - 1].trim() !== "?") return clause;
+    // "… \Rightarrow F(x) = ?" mà đầu mệnh đề đã viết F(x) = <biểu thức còn chứa biến> → bỏ phần đuôi.
+    if (!isChainOp(parts[n - 4])) {
+      const target = compact(normalizeMath(parts[n - 3]));
+      const definedBefore = compact(normalizeMath(parts[0])) === target
+        && parts.slice(2, n - 4).some((p, k) => k % 2 === 0 && hasUnknown(p));
+      return isFunctionExpr(target) && definedBefore ? parts.slice(0, n - 4).join("").replace(/\s+$/, "") + tail : clause;
+    }
+    if (parts[n - 4] !== "=") return clause;
     if (n > 5 && isChainOp(parts[n - 6]) && parts[n - 6] !== "=") return clause;
     const lhs = compact(normalizeMath(parts[n - 5]));
-    const expr = normalizeMath(parts[n - 3]);
-    const hasUnknown = letterTokens(expr).some((l) => /^[xt]$/.test(l));
     if (/^[fgFhy](?:\\?'|\^\{?\\prime\}?)*\([xt]_\{?\w+\}?\)$/.test(lhs)) {
-      return parts.slice(0, n - 4).join("") + "= ?" + clause.match(/\s*$/)[0];
+      return parts.slice(0, n - 4).join("") + "= ?" + tail;
     }
-    if (hasUnknown && (isDerivative(lhs) || /^(?:y|f\(x\))$/.test(lhs))) {
-      return parts.slice(0, n - 2).join("").replace(/\s+$/, "") + clause.match(/\s*$/)[0];
+    if (hasUnknown(parts[n - 3]) && isFunctionExpr(lhs)) {
+      return parts.slice(0, n - 2).join("").replace(/\s+$/, "") + tail;
     }
     return clause;
   }).join("");
+}
+
+// ─── Biểu thức đã thay số (bước làm sạch cuối, 2026-10-04) ──────────────────
+// Quy tắc "thay dữ kiện, không thay số": AI viết công thức ký hiệu kèm dữ kiện, KHÔNG viết biểu thức
+// đã thay số ("a^2 = 8^2 + 5^2 - 2 \cdot 8 \cdot 5 \cos 60^\circ" — bản hỏi lại bằng 20b, 2026-10-04).
+// Biểu thức như vậy không lộ đáp số nên không bị bộ lọc số bắt; ở bước làm sạch cuối, bỏ DÒNG BIỂU
+// THỨC đó, giữ phần chữ của bước. Không tính vào lý do phải hỏi lại (đỡ tốn token).
+// Dấu hiệu (sau khi bỏ chỉ số dưới, nên x_2^2 thành x^2 — không bắt):
+//   - lũy thừa của một số: 8^2, 0^{4} (cơ số là số có trong đề);
+//   - tích hai số: 2 \cdot 8, 4 \cdot 2 \cdot (-7) (ít nhất một thừa số có trong đề).
+// Không bắt "(20 - 1)d", "u_1 + (n - 1)d", "3x^2 - 12", "60^\circ", "\frac{4}{3}\pi R^3".
+const NUM_POWER = /(?<![\w.\\}])(\d+(?:\.\d+)?)\s*\^\s*\{?\s*\d/g;
+const NUM_PRODUCT = /(?<![\w.\\}^])(\d+(?:\.\d+)?)\s*\*\s*\(?\s*(-?\d+(?:\.\d+)?)(?![\d.]*[a-zA-Z(\\])/g;
+export function isNumericSubstitution(latex, questionNumbers) {
+  const s = normalizeMath(latex).replace(/_\{[^{}]*\}/g, "").replace(/_[0-9a-zA-Z]/g, "");
+  const fromQuestion = (n) => questionNumbers.has(String(Number(n)));
+  for (const m of s.matchAll(NUM_POWER)) if (fromQuestion(m[1])) return true;
+  for (const m of s.matchAll(NUM_PRODUCT)) if (fromQuestion(m[1]) || fromQuestion(m[2].replace(/^-/, ""))) return true;
+  return false;
+}
+/** Bỏ dòng biểu thức đã thay số ở mọi bước (giữ phần chữ). Trả về số biểu thức đã bỏ. */
+export function dropNumericSubstitutions(answer, questionText) {
+  const questionNumbers = new Set(extractNumbers(questionText).map((n) => String(Number(n))));
+  let dropped = 0;
+  const steps = answer.steps.map((st) => {
+    if (st.expression && isNumericSubstitution(st.expression, questionNumbers)) { dropped++; return { ...st, expression: "" }; }
+    return st;
+  }).filter((st) => st.detail || st.expression);
+  return { answer: { ...answer, steps }, dropped };
 }
 const fixSymbolicBlankInText = (s) => s.replace(/(\$\$?)([^$]+)(\$\$?)/g, (_, open, math, close) => open + fixSymbolicBlank(math) + close);
 
@@ -700,7 +749,7 @@ export function maskMathLeaks(latex, allowed, questionText = "", symbolFor = mak
   const parts = splitRelationsRaw(s);
   // y(x_1) = 1^4 - 2 \cdot 1^2 + 3: đối số đã thay nhưng vế phải vẫn thay chính nghiệm đó → vế phải
   // thành "?", tới hết mệnh đề (dấu phẩy, ;, xuống dòng \\ hoặc \quad ở tầng ngoài, hoặc dấu suy ra).
-  const clauseSep = (t, j) => (t[j] === "," || t[j] === ";" ? 1 : t.startsWith("\\\\", j) ? 2 : /^\\q?quad(?![a-zA-Z])/.test(t.slice(j)) ? t.slice(j).match(/^\\q?quad/)[0].length : 0);
+  const clauseSep = (t, j) => ((t[j] === "," || t[j] === ";") && t[j - 1] !== "\\" ? 1 : t.startsWith("\\\\", j) ? 2 : /^\\q?quad(?![a-zA-Z])/.test(t.slice(j)) ? t.slice(j).match(/^\\q?quad/)[0].length : 0);
   let afterMaskedCall = false;
   for (let i = 0; i < parts.length; i++) {
     if (i % 2 === 1) { if (!isChainOp(parts[i])) afterMaskedCall = false; continue; }
