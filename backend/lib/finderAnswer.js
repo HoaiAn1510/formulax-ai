@@ -116,8 +116,73 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
     return { answer, reply: answer.intro, meta: { ...meta, jsonFailed: true } };
   }
 
-  const checked = finalizeAnswer(parsed, { message, recentUserTexts });
+  // Quy tắc "ô trống": câu trả lời còn giá trị số tính sẵn → yêu cầu AI viết lại MỘT lần (nếu còn
+  // đủ thời gian). Lần viết lại vẫn lộ, hoặc không gọi lại được (hết giờ, 429 theo phút, JSON hỏng)
+  // → thay đúng con số lộ bằng "?" (mask). Chỉ khi không thay sạch được mới bỏ bước.
+  const first = finalizeAnswer(parsed, { message, recentUserTexts, mask: false });
+  const violations = leakList(first.meta);
+  let checked = null;
+  if (violations.length && deadline - now() >= MIN_CALL_MS) {
+    meta.retriedForLeaks = { leaked: violations };
+    const retryMessages = [
+      ...messages,
+      { role: "assistant", content: JSON.stringify(parsed) },
+      { role: "user", content: retryInstruction(violations) },
+    ];
+    const callRetry = async (retryModel) => {
+      meta.attempts++;
+      const completion = await groq.chat.completions.create(
+        { model: retryModel, messages: retryMessages, ...FINDER_PARAMS },
+        { timeout: Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, deadline - now())) },
+      );
+      meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
+      meta.completionTokens += completion.usage?.completion_tokens ?? 0;
+      meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
+      return parseModelJson(completion.choices?.[0]?.message?.content);
+    };
+    try {
+      let reparsed;
+      try {
+        reparsed = await callRetry(activeModel);
+      } catch (err) {
+        // Gói Groq miễn phí: 8k token/PHÚT mỗi model, lần đầu đã tốn ~5k nên lần hỏi lại ngay sau
+        // gần như luôn 429 theo phút (chấm 2026-10-03: 3/3 lần). Hạn mức tính RIÊNG từng model →
+        // hỏi lại bằng model dự phòng. 429 theo ngày / lỗi khác thì thôi, dùng bản đầu đã thay "?".
+        const perMinute = err?.status === 429 && dailyLimitBlockMs(err) === null;
+        if (!perMinute || activeModel !== FINDER_MODEL || deadline - now() < MIN_CALL_MS) throw err;
+        meta.retriedForLeaks.model = FINDER_FALLBACK_MODEL;
+        reparsed = await callRetry(FINDER_FALLBACK_MODEL);
+      }
+      if (reparsed && reparsed.type === parsed.type) {
+        checked = finalizeAnswer(reparsed, { message, recentUserTexts, mask: true });
+        meta.retriedForLeaks.stillLeaked = leakList(checked.meta);
+      } else {
+        meta.retriedForLeaks.error = reparsed ? "type_changed" : "json_failed";
+      }
+    } catch (err) {
+      // Lần gọi lại không bắt buộc: lỗi gì (429, mạng, timeout) cũng dùng bản đầu đã thay "?",
+      // không biến một câu trả lời dùng được thành lỗi.
+      meta.retriedForLeaks.error = `${err?.status || ""} ${err?.code || err?.name || "error"}`.trim();
+    }
+  }
+  if (!checked) checked = finalizeAnswer(parsed, { message, recentUserTexts, mask: true });
   return { answer: checked.answer, reply: checked.reply, meta: { ...meta, ...checked.meta } };
+}
+
+/** Danh sách giá trị bị bắt trong một lần kiểm tra (bước lọc, bước mask, intro/reminder). */
+function leakList(checkedMeta) {
+  const steps = [...(checkedMeta.removedSteps || []), ...(checkedMeta.maskedSteps || [])];
+  const where = (checkedMeta.replaced || []).map((r) => (r === "intro" ? "(số trong câu mở đầu)" : "(số trong lời nhắc)"));
+  return [...new Set([...steps.flatMap((st) => st.leaked), ...where])];
+}
+
+/** Lời nhắc gửi lại model khi câu trả lời còn lộ số. Chỉ model thấy, học sinh không thấy. */
+function retryInstruction(violations) {
+  return [
+    `Câu trả lời vừa rồi còn giá trị số tính sẵn hoặc lộ nghiệm: ${violations.slice(0, 8).join("; ")}.`,
+    "Viết lại TOÀN BỘ câu trả lời (cùng type, cùng formula_ids) theo quy tắc ô trống: chỗ ra kết quả viết ?, ở các bước sau gọi kết quả bằng ký hiệu (x_1, x_2, BC, S_n...), không viết khoảng hay giá trị hàm có chứa nghiệm (viết các khoảng chia bởi x_1, x_2; f(x_1)).",
+    "Chỉ trả về JSON.",
+  ].join(" ");
 }
 
 /**
@@ -135,19 +200,20 @@ export function numberSourceTexts(message, recentUserTexts = []) {
  * Kiểm tra đối tượng JSON model trả về: chuẩn hoá khung, bỏ id không có thật, bỏ biểu thức lệch
  * ngoặc, lọc bước có số lạ. Tách riêng khỏi lời gọi Groq để test và chấm lại offline được.
  */
-export function finalizeAnswer(parsed, { message, recentUserTexts = [] }) {
+export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = false }) {
   const { answer: normalized, droppedIds, aiNote } = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
   const chosen = withBraces.formulaIds.map(getFormula);
-  const { answer, removedSteps, replaced } = applyNumberGuard(withBraces, {
+  const { answer, removedSteps, maskedSteps, replaced } = applyNumberGuard(withBraces, {
     sourceTexts: numberSourceTexts(message, recentUserTexts),
     formulaTexts: chosen.map((f) => `${f.latex}\n${f.explanation || ""}`),
     formulaNames: chosen.map((f) => f.name),
+    mask,
   });
 
   return {
     answer,
     reply: toReplyText(answer, getFormula),
-    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, removedSteps, replaced, aiNote },
+    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, removedSteps, maskedSteps, replaced, aiNote },
   };
 }

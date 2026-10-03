@@ -87,10 +87,13 @@ test("đề mới sau bài khối cầu R = 9: số 9 của đề trước KHÔN
     { role: "assistant", content: "Bài này dùng công thức thể tích khối cầu nhé. $$V = \\frac{4}{3}\\pi \\cdot 9^3$$" },
   ];
   const groq = fakeGroq([reply], clock, 1000);
-  const { meta } = await askFinder({ groq, message: "Tính khoảng cách từ M(1;−2;3) đến mặt phẳng 2x − y + 2z − 1 = 0", history, now: () => clock.t, deadline: CHAT_BUDGET_MS });
-  assert.equal(meta.removedSteps.length, 1);
-  assert.equal(meta.removedSteps[0].title, "Tính");
-  assert.deepEqual(meta.removedSteps[0].leaked, ["9"]);
+  const { answer, meta } = await askFinder({ groq, message: "Tính khoảng cách từ M(1;−2;3) đến mặt phẳng 2x − y + 2z − 1 = 0", history, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  // Vẫn bị bắt (9 không có trong đề mới). Từ 2026-10-03: hỏi lại AI một lần (ở đây không có câu trả
+  // lời thứ hai → lỗi), rồi thay đúng con số lộ bằng "?" thay vì bỏ cả bước.
+  assert.deepEqual(meta.retriedForLeaks.leaked, ["9"]);
+  assert.equal(meta.maskedSteps.length, 1);
+  assert.equal(meta.maskedSteps[0].title, "Tính");
+  assert.equal(answer.steps[1].expression, "d = ?");
 });
 
 test("câu hỏi nối tiếp không có số: nhắc lại số của đề trước (R = 6) vẫn được giữ", async () => {
@@ -200,4 +203,85 @@ test("không còn đủ thời gian để gọi model dự phòng → ném lỗi
   await assert.rejects(askFinder({ groq, message: Q, now: () => clock.t, deadline: CHAT_BUDGET_MS }), (e) => e.status === 429);
   assert.deepEqual(groq.calls, [FINDER_MODEL]);
   fallbackState.primaryBlockedUntil = 0;
+});
+
+// ─── Ô trống: hỏi lại AI một lần khi lộ số, vẫn lộ / không hỏi lại được → thay bằng "?" ──────
+const CUCTRI = "Tìm cực trị của hàm số y = x³ − 3x + 2.";
+const leakyReply = (expr) => JSON.stringify({
+  type: "solution", formula_ids: ["gt12-daoham-basic"], intro: "Dùng đạo hàm.",
+  steps: [{ title: "Giải y' = 0", detail: "Giải $y' = 0$. Bạn tự tính $x^2$.", expression: expr }], reminder: "Bạn tự tính nhé!",
+});
+/** Groq giả trả lần lượt `replies`; phần tử là Error thì ném. Ghi lại messages của từng lần gọi. */
+function seqGroq(replies, clock) {
+  const bodies = [];
+  return {
+    bodies,
+    chat: { completions: { create: async (body) => {
+      bodies.push(body);
+      clock.t += 1000;
+      const r = replies[bodies.length - 1];
+      if (r instanceof Error) throw r;
+      return { choices: [{ message: { content: r } }], usage: { prompt_tokens: 1, completion_tokens: 1 } };
+    } } },
+  };
+}
+
+test("ô trống: không lộ số → chỉ 1 lần gọi, không hỏi lại", async () => {
+  const clock = { t: 0 };
+  const groq = seqGroq([leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = ?")], clock);
+  const { answer, meta } = await askFinder({ groq, message: CUCTRI, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(groq.bodies.length, 1);
+  assert.equal(meta.retriedForLeaks, undefined);
+  assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
+});
+
+test("ô trống: lộ số → hỏi lại 1 lần kèm danh sách giá trị lộ; bản viết lại sạch được dùng", async () => {
+  const clock = { t: 0 };
+  const groq = seqGroq([leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = 1"), leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = ?")], clock);
+  const { answer, meta } = await askFinder({ groq, message: CUCTRI, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(groq.bodies.length, 2);
+  const retryMsgs = groq.bodies[1].messages;
+  assert.equal(retryMsgs.at(-2).role, "assistant");
+  assert.match(retryMsgs.at(-1).content, /x\^2=1/);
+  assert.deepEqual(meta.retriedForLeaks.stillLeaked, []);
+  assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
+});
+
+test("ô trống: bản viết lại vẫn lộ → thay đúng con số bằng ?", async () => {
+  const clock = { t: 0 };
+  const groq = seqGroq([leakyReply("x^2 = 1"), leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = 1")], clock);
+  const { answer, meta } = await askFinder({ groq, message: CUCTRI, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(groq.bodies.length, 2);
+  assert.ok(meta.retriedForLeaks.stillLeaked.length > 0);
+  assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
+});
+
+test("ô trống: hỏi lại bằng model chính bị 429 theo phút → hỏi lại bằng model dự phòng", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const groq = seqGroq([leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = 1"), groq429(TPM), leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = ?")], clock);
+  const { answer, meta } = await askFinder({ groq, message: CUCTRI, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.deepEqual(groq.bodies.map((b) => b.model), [FINDER_MODEL, FINDER_MODEL, FINDER_FALLBACK_MODEL]);
+  assert.equal(meta.retriedForLeaks.model, FINDER_FALLBACK_MODEL);
+  assert.deepEqual(meta.retriedForLeaks.stillLeaked, []);
+  assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
+});
+
+test("ô trống: model dự phòng cũng 429 → không báo lỗi, dùng bản đầu đã thay ?", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const groq = seqGroq([leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = 1"), groq429(TPM), groq429(TPM)], clock);
+  const { answer, meta } = await askFinder({ groq, message: CUCTRI, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.match(meta.retriedForLeaks.error, /429/);
+  assert.equal(answer.type, "solution");
+  assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
+});
+
+test("ô trống: không còn đủ thời gian → không hỏi lại, thay ? ngay", async () => {
+  const clock = { t: 34_000 };
+  const groq = seqGroq([leakyReply("3x^2 - 3 = 0 \\Rightarrow x^2 = 1")], clock);
+  const { answer, meta } = await askFinder({ groq, message: CUCTRI, now: () => clock.t, deadline: CHAT_BUDGET_MS });
+  assert.equal(groq.bodies.length, 1);
+  assert.equal(meta.retriedForLeaks, undefined);
+  assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
 });

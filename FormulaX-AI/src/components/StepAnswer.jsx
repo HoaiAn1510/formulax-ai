@@ -2,6 +2,27 @@ import { MathElement, RichTextRenderer, InlineRichText } from "../utils/katexHel
 
 const SECTION_TITLE = "text-[0.7rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-[#94A3B8] mb-2";
 
+// Ô trống "?" — chỗ học sinh tự tính (quy tắc AI Finder từ 2026-10-03). Vẽ thành ô viền amber
+// nền amber nhạt ngay trong KaTeX (\fcolorbox, \textcolor không cần bật `trust`). Màu viết thẳng
+// vì là tham số của lệnh LaTeX, không dùng được class/token CSS.
+const BLANK_BOX = String.raw`\fcolorbox{#D97706}{#FEF3C7}{\textcolor{#92400E}{\textbf{\,?\,}}}`;
+/** "?" trong một biểu thức LaTeX → ô trống. */
+const markBlanksInMath = (latex) => String(latex || "").replace(/\?/g, BLANK_BOX);
+/**
+ * Câu chữ có xen $...$: "?" trong phần toán → ô trống; "= ?" viết ngoài $...$ (model quên bọc) cũng
+ * thành ô trống. Dấu hỏi kết thúc câu hỏi thường ("…chưa?") giữ nguyên.
+ */
+const markBlanksInText = (text) => String(text || "")
+  .split(/(\$\$[^$]*\$\$|\$[^$]*\$)/)
+  .map((part, i) => {
+    if (i % 2 === 1) {
+      const fence = part.startsWith("$$") ? "$$" : "$";
+      return fence + markBlanksInMath(part.slice(fence.length, -fence.length)) + fence;
+    }
+    return part.replace(/(=\s*)\?(?=[\s.,;:)]|$)/g, (_, eq) => `${eq}$${BLANK_BOX}$`);
+  })
+  .join("");
+
 /**
  * Câu trả lời dạng "hướng dẫn tự giải" của AI Finder: công thức sử dụng → các bước → lời nhắc tự
  * tính. KHÔNG có phần kết quả. Thẻ công thức lấy tên + LaTeX từ formulas.js theo id (không lấy
@@ -18,7 +39,7 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
     <div className="flex flex-col gap-3 min-w-0">
       {answer.intro && (
         <div className="chat-bot-text text-[0.88rem] leading-[1.6] min-w-0 overflow-x-auto">
-          <RichTextRenderer text={answer.intro} />
+          <RichTextRenderer text={markBlanksInText(answer.intro)} />
         </div>
       )}
 
@@ -58,16 +79,16 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0]">
-                    Bước {i + 1}{st.title && <> — <InlineRichText text={st.title} /></>}
+                    Bước {i + 1}{st.title && <> — <InlineRichText text={markBlanksInText(st.title)} /></>}
                   </div>
                   {st.detail && (
                     <div className="chat-bot-text text-[0.85rem] leading-[1.6] mt-0.5 max-w-full overflow-x-auto">
-                      <RichTextRenderer text={st.detail} />
+                      <RichTextRenderer text={markBlanksInText(st.detail)} />
                     </div>
                   )}
                   {st.expression && (
                     <div className="mt-1.5 max-w-full overflow-x-auto rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 !text-[#1E3A5F] dark:!text-[#E2E8F0]">
-                      <MathElement math={st.expression} block={true} />
+                      <MathElement math={markBlanksInMath(st.expression)} block={true} />
                     </div>
                   )}
                 </div>
@@ -81,7 +102,7 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
           #334155 (không đổi theo dark mode ngoài .chat-bot-text) → ép kế thừa màu amber của khung. */}
       {answer.reminder && (
         <div className="text-[0.82rem] font-semibold leading-[1.5] text-[#92400E] dark:text-[#FCD34D] [&_.detail-paragraph-line]:!text-inherit bg-accent-light/70 dark:bg-accent/10 rounded-lg px-3 py-2 min-w-0 overflow-x-auto">
-          <RichTextRenderer text={answer.reminder} />
+          <RichTextRenderer text={markBlanksInText(answer.reminder)} />
         </div>
       )}
     </div>

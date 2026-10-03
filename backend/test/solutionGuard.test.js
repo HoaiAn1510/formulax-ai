@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import {
   repairLatexEscapes, parseModelJson, normalizeAnswer, extractNumbers,
   applyNumberGuard, mathLeaks, neutralStep, hasBalancedBraces, dropBrokenExpressions, toReplyText, DEFAULT_TEXT,
+  maskMathLeaks, maskTextLeaks, fixSymbolicBlank,
 } from "../lib/solutionGuard.js";
+import { buildSystemPrompt } from "../lib/finderPrompt.js";
 
 // String.raw giữ nguyên dấu \ — mỗi chuỗi dưới đây chính là văn bản JSON thô model trả về.
 const parseExpr = (rawJson) => parseModelJson(rawJson)?.e;
@@ -458,4 +460,173 @@ test("không tính — phần trăm trong đề được đổi sang thập phâ
   const { removedSteps } = applyNumberGuard(derivAnswer([{ title: "Lập", detail: "Ta có:", expression: R`100(1 + 0.06)^n \ge 150` }]),
     { sourceTexts: ["Gửi 100 triệu, lãi kép 6%/năm, sau bao nhiêu năm được ít nhất 150 triệu?"], formulaTexts: [] });
   assert.equal(removedSteps.length, 0);
+});
+
+// ─── Ô trống "?" (2026-10-03) ────────────────────────────────────────────────
+const COSIN_Q = "Cho tam giác ABC có AB = 5, AC = 8, góc A = 60°. Tính độ dài cạnh BC.";
+const CSC_Q = "Cho cấp số cộng có u₁ = 3, công sai d = 4. Tính tổng 20 số hạng đầu.";
+const CUCTRI2_Q = "Tìm cực trị của hàm số y = x³ − 3x + 2.";
+const GTLN_Q = "Tìm giá trị lớn nhất và nhỏ nhất của hàm số y = x⁴ − 2x² + 3 trên đoạn [0; 2].";
+
+test("ô trống — ĐƯỢC: kết thúc bằng ?, gán dữ kiện (b = AC = 8), biểu thức ký hiệu, khoảng chia bởi x_1, x_2", () => {
+  assert.deepEqual(leaksOf(R`3x^2 - 3 = 0 \Rightarrow x^2 = ?`, CUCTRI2_Q), []);
+  assert.deepEqual(leaksOf(R`BC^2 = 8^2 + 5^2 - 2 \cdot 8 \cdot 5 \cdot \cos 60^\circ = ?`, COSIN_Q), []);
+  assert.deepEqual(leaksOf(R`b = AC = 8,\ c = AB = 5,\ A = 60^\circ`, COSIN_Q), []);
+  // 2: số trong công thức S_n (khi chạy thật được tính là "có sẵn"); 19 = 20 − 1 phải viết (20 - 1).
+  assert.deepEqual(leaksOf(R`S_{20} = \frac{20 \cdot [2 \cdot 3 + (20 - 1) \cdot 4]}{2} = ?`, CSC_Q, ["2"]), []);
+  assert.deepEqual(leaksOf(R`(-\infty; x_1),\ (x_1; x_2),\ (x_2; +\infty)`, CUCTRI2_Q), []);
+  // Đầu mút đoạn đề cho và điểm ký hiệu được viết giá trị hàm.
+  assert.deepEqual(leaksOf(R`\max\{y(0), y(x_1), y(2)\} = ?`, GTLN_Q), []);
+  // Tại x = 2 (đề cho) thì y'(2) được viết.
+  assert.deepEqual(leaksOf(R`y'(2) = 5 \cdot 2^4`, "Tính đạo hàm của y = x^5 tại x = 2", ["4"]), []); // 4: số mũ n − 1 của bước trước
+});
+
+test("ô trống — CẤM: kết quả sau dấu = cuối, x^2 = 1 (1 luôn 'có sẵn'), khoảng/giá trị hàm lộ nghiệm", () => {
+  assert.notDeepEqual(leaksOf(R`3x^2 - 3 = 0 \Rightarrow x^2 = 1`, CUCTRI2_Q), []);
+  assert.notDeepEqual(leaksOf(R`BC^2 = 8^2 + 5^2 - 2 \cdot 8 \cdot 5 \cdot \cos 60^\circ = 49`, COSIN_Q), []);
+  assert.notDeepEqual(leaksOf(R`S_{20} = 820`, CSC_Q), []);
+  assert.notDeepEqual(leaksOf(R`f(1) = 1^4 - 2 \cdot 1^2 + 3 = 2`, GTLN_Q), []);
+  // Ví dụ thật (đề cực trị): khoảng xét dấu lộ nghiệm ±1.
+  assert.notDeepEqual(leaksOf(R`(-\infty, -1),\ (-1, 1),\ (1, \infty)`, CUCTRI2_Q), []);
+  assert.notDeepEqual(leaksOf(R`x \in \left(-1; 1\right)`, CUCTRI2_Q), []);
+  // y(1): 1 là nghiệm trong đoạn [0; 2], không phải đầu mút đề cho.
+  assert.notDeepEqual(leaksOf(R`\max\{y(0), y(1), y(2)\}`, GTLN_Q), []);
+  assert.notDeepEqual(leaksOf(R`S = \{-1; 1\}`, CUCTRI2_Q), []);
+});
+
+test("ô trống — câu chữ: 'x = ±1', khoảng có nghiệm trong lời văn cũng bị bắt", () => {
+  const ctx = { sourceTexts: [CUCTRI2_Q], formulaTexts: [] };
+  const { removedSteps } = applyNumberGuard(derivAnswer([
+    { title: "Nghiệm", detail: "Ta được x = ±1.", expression: "" },
+    { title: "Xét dấu", detail: "Xét dấu y' trên các khoảng (−∞; −1), (−1; 1), (1; +∞).", expression: "" },
+    { title: "Xét dấu đúng", detail: "Xét dấu $y'$ trên các khoảng chia bởi $x_1, x_2$.", expression: "" },
+  ]), ctx);
+  assert.deepEqual(removedSteps.map((s) => s.title), ["Nghiệm", "Xét dấu"]);
+});
+
+test("ô trống — mask: thay đúng con số lộ bằng ?, giữ nguyên biểu thức ký hiệu và phần thay số", () => {
+  const allowedFor = (q, extra = []) => new Set(["0", "1", ...extractNumbers(q), ...extra]);
+  assert.equal(maskMathLeaks(R`3x^2 - 3 = 0 \Rightarrow x^2 = 1`, allowedFor(CUCTRI2_Q), CUCTRI2_Q), R`3x^2 - 3 = 0 \Rightarrow x^2 = ?`);
+  assert.equal(maskMathLeaks(R`BC^2 = 8^2 + 5^2 - 2 \cdot 8 \cdot 5 \cdot \cos 60^\circ = 49`, allowedFor(COSIN_Q), COSIN_Q),
+    R`BC^2 = 8^2 + 5^2 - 2 \cdot 8 \cdot 5 \cdot \cos 60^\circ = ?`);
+  assert.equal(maskMathLeaks(R`S_{20} = \frac{20(3 + 79)}{2} = 820`, allowedFor(CSC_Q, ["2"]), CSC_Q), R`S_{20} = \frac{20(3 + ?)}{2} = ?`);
+  // Nghiệm lộ qua y(số) được thay bằng KÝ HIỆU, không bằng "?" (không sinh ra y(?)).
+  assert.equal(maskMathLeaks(R`\max\{y(0), y(1), y(2)\} = ?`, allowedFor(GTLN_Q), GTLN_Q), R`\max\{y(0), y(x_1), y(2)\} = ?`);
+  // Ví dụ thật (đề GTLN): y(1) = 1^4 - … vẫn thay nghiệm ở vế phải → y(x_1) = ? (không còn "? = ?"),
+  // giữ nguyên mệnh đề kế tiếp (ngăn bằng dấu phẩy hoặc xuống dòng \\).
+  assert.equal(maskMathLeaks(R`y(0)=0^{4}-2\cdot0^{2}+3 = ?,\; y(1)=1^{4}-2\cdot1^{2}+3 = ?,\; y(2)=2^{4}-2\cdot2^{2}+3 = ?`, allowedFor(GTLN_Q, ["4"]), GTLN_Q),
+    R`y(0)=0^{4}-2\cdot0^{2}+3 = ?,\; y(x_1)=?,\; y(2)=2^{4}-2\cdot2^{2}+3 = ?`);
+  assert.equal(maskMathLeaks(R`y(1) = 1^{4} - 2\cdot1^{2} + 3 = ?\\ y(2) = 2^{4} - 2\cdot2^{2} + 3 = ?`, allowedFor(GTLN_Q, ["4"]), GTLN_Q),
+    R`y(x_1) = ?\\ y(2) = 2^{4} - 2\cdot2^{2} + 3 = ?`);
+  // Khoảng xét dấu lộ nghiệm ±1 → khoảng chia bởi x_1, x_2 (cùng giá trị → cùng ký hiệu).
+  assert.equal(maskMathLeaks(R`(-\infty; -1),\ (-1; 1),\ (1; +\infty)`, allowedFor(CUCTRI2_Q), CUCTRI2_Q),
+    R`(-\infty; x_1),\ (x_1; x_2),\ (x_2; +\infty)`);
+  assert.equal(maskTextLeaks("Khi x = 1 thì $y' = 0$.", allowedFor(CUCTRI2_Q), CUCTRI2_Q), "Khi x = ? thì $y' = 0$.");
+  // Đã sạch thì trả nguyên văn.
+  assert.equal(maskMathLeaks(R`y' = 3x^2 - 3`, allowedFor(CUCTRI2_Q), CUCTRI2_Q), R`y' = 3x^2 - 3`);
+});
+
+test("ô trống — applyNumberGuard mask: bước lộ được thay ? thay vì bỏ; mask tắt thì bỏ như cũ", () => {
+  const ctx = { sourceTexts: [CUCTRI2_Q], formulaTexts: [], formulaNames: ["Đạo hàm"] };
+  const steps = [
+    { title: "Tính đạo hàm", detail: "Ta có:", expression: R`y' = 3x^2 - 3` },
+    { title: "Giải y' = 0", detail: "Giải $y' = 0$. Bạn tự tính $x^2$.", expression: R`3x^2 - 3 = 0 \Rightarrow x^2 = 1` },
+  ];
+  const off = applyNumberGuard(derivAnswer(steps), ctx);
+  assert.equal(off.removedSteps.length, 1);
+  const on = applyNumberGuard(derivAnswer(steps), { ...ctx, mask: true });
+  assert.equal(on.removedSteps.length, 0);
+  assert.equal(on.maskedSteps.length, 1);
+  assert.equal(on.answer.steps[1].expression, R`3x^2 - 3 = 0 \Rightarrow x^2 = ?`);
+  assert.equal(on.answer.steps[1].title, "Giải y' = 0");
+});
+
+test("ô trống — ví dụ thật (đề GTLN, lần chấm 2026-10-03): danh sách x = 0,1,2 và mục ngăn bằng ;", () => {
+  const allowed = new Set(["0", "1", "4", ...extractNumbers(GTLN_Q)]);
+  // "0,1,2" là danh sách giá trị x (không phải 0.1); 1 là nghiệm, không phải đầu mút đề cho.
+  assert.deepEqual(extractNumbers(R`x=0,1,2`), ["0", "1", "2"]);
+  assert.deepEqual(extractNumbers("lãi 0,06 mỗi năm"), ["0.06"]);
+  assert.deepEqual(extractNumbers(R`x \in [0,2]`), ["0", "2"]); // khoảng, không phải 0.2
+  assert.ok(leaksOf(R`x=0,1,2`, GTLN_Q).includes("x=1"));
+  assert.ok(leaksOf(R`x = 0, 1, 2`, GTLN_Q).includes("x=1"));
+  assert.deepEqual(leaksOf(R`x = 0, 2`, GTLN_Q), []); // chỉ đầu mút đề cho
+  assert.equal(maskMathLeaks(R`x=0,1,2`, allowed, GTLN_Q), R`x=0,x_1,2`);
+  assert.equal(maskMathLeaks(R`y(0) = 0^{4} - 2\cdot 0^{2} + 3 = ?;\; y(1) = 1^{4} - 2\cdot 1^{2} + 3 = ?;\; y(2) = 2^{4} - 2\cdot 2^{2} + 3 = ?`, allowed, GTLN_Q),
+    R`y(0) = 0^{4} - 2\cdot 0^{2} + 3 = ?;\; y(x_1) = ?;\; y(2) = 2^{4} - 2\cdot 2^{2} + 3 = ?`);
+  const { answer, removedSteps, maskedSteps } = applyNumberGuard(derivAnswer([
+    { title: "Tính giá trị hàm tại các điểm cần xét", detail: R`Thay $x=0,1,2$ vào hàm số. Bạn tự tính các giá trị $y(0),\,y(1),\,y(2)$.`,
+      expression: R`y(0) = 0^{4} - 2\cdot 0^{2} + 3 = ?;\; y(1) = 1^{4} - 2\cdot 1^{2} + 3 = ?;\; y(2) = 2^{4} - 2\cdot 2^{2} + 3 = ?` },
+  ]), { sourceTexts: [GTLN_Q], formulaTexts: ["4"], mask: true });
+  assert.equal(removedSteps.length, 0);
+  assert.equal(maskedSteps.length, 1);
+  // Cùng một nghiệm (1) ở câu chữ và biểu thức → cùng ký hiệu x_1 trong cả bước.
+  assert.equal(answer.steps[0].detail, R`Thay $x=0,x_1,2$ vào hàm số. Bạn tự tính các giá trị $y(0),\,y(x_1),\,y(2)$.`);
+  assert.equal(answer.steps[0].expression, R`y(0) = 0^{4} - 2\cdot 0^{2} + 3 = ?;\; y(x_1) = ?;\; y(2) = 2^{4} - 2\cdot 2^{2} + 3 = ?`);
+});
+
+// ─── Bổ sung 2026-10-03 (lần 2): x^2 = a, "= ?" thừa, ký hiệu nghiệm, thay dữ kiện ──────────
+test("ô trống (1): dạng x^2 = a viết thẳng ⇒ x^2 = ? — hợp lệ; prompt cấm dùng Δ cho dạng này", () => {
+  assert.deepEqual(leaksOf(R`3x^2 - 12 = 0 \Rightarrow x^2 = ?`, "Tìm cực trị của hàm số y = x^3 - 12x + 1"), []);
+  assert.deepEqual(leaksOf(R`3x^2 - 3 = 0 \Rightarrow x^2 = ?`, CUCTRI2_Q), []);
+  const prompt = buildSystemPrompt([]);
+  assert.match(prompt, /dạng x\^2 = a[^\n]*KHÔNG dùng \\Delta/);
+  assert.match(prompt, /Chỉ dùng \\Delta khi phương trình bậc hai có đủ hạng tử bậc nhất/);
+});
+
+test("ô trống (2): biểu thức ký hiệu không có '= ?' phía sau — tự bỏ; ô trống hợp lệ giữ nguyên", () => {
+  assert.equal(fixSymbolicBlank(R`y' = 4x^{3} - 4x = ?`), R`y' = 4x^{3} - 4x`);
+  assert.equal(fixSymbolicBlank(R`f'(x) = 3x^2 - 12 = ?`), R`f'(x) = 3x^2 - 12`);
+  assert.equal(fixSymbolicBlank(R`y(x_1) = x_1^3 - 3x_1 + 2 = ?,\; y(x_2) = ?`), R`y(x_1) = ?,\; y(x_2) = ?`);
+  // Ví dụ thật (đề cực trị): hai mệnh đề ngăn bằng \quad.
+  assert.equal(fixSymbolicBlank(R`y(x_1) = x_1^3 - 3x_1 + 2 = ? \quad y(x_2) = x_2^3 - 3x_2 + 2 = ?`), R`y(x_1) = ? \quad y(x_2) = ?`);
+  // Giữ nguyên: ô trống của đại lượng cần tìm, của max/min, của biểu thức số.
+  for (const keep of [R`x^2 = ?`, R`V = ?`, R`\max\{y(0), y(x_1), y(2)\} = ?`, R`\max_{[0;2]} y = \max\{y(0), y(x_1), y(2)\} = ?`,
+    R`x_{1,2} = \frac{-b \pm \sqrt{\Delta}}{2a} = ?`, R`3x^2 - 3 = 0 \Rightarrow x^2 = ?`]) {
+    assert.equal(fixSymbolicBlank(keep), keep);
+  }
+  // Qua normalizeAnswer (expression và $...$ trong câu chữ).
+  const { answer } = normalizeAnswer({ type: "solution", formula_ids: ["gt12-daoham-basic"], steps: [
+    { title: "Đạo hàm", detail: R`Ta có $y' = 4x^3 - 4x = ?$.`, expression: R`y' = 4x^3 - 4x = ?` },
+  ] }, () => true);
+  assert.equal(answer.steps[0].expression, R`y' = 4x^3 - 4x`);
+  assert.equal(answer.steps[0].detail, R`Ta có $y' = 4x^3 - 4x$.`);
+});
+
+test("ô trống (3): giá trị tại nhiều điểm — nghiệm lộ thành ký hiệu, khớp tên AI đã đặt (x_2 = 1 → x_2)", () => {
+  const ctx = { sourceTexts: [GTLN_Q], formulaTexts: ["4"], mask: true };
+  const { answer } = applyNumberGuard(derivAnswer([
+    { title: "Tìm nghiệm", detail: R`Trên $[0;2]$ có $x_1 = 0$, $x_2 = 1$.`, expression: R`x_{1}=0,\; x_{2}=1` },
+    { title: "Giá trị", detail: "Tính các giá trị.", expression: R`y(0) = ?,\; y(1) = ?,\; y(2) = ?` },
+    { title: "Kết luận", detail: R`So sánh $y(0), y(1), y(2)$.`, expression: R`\max\{y(0), y(1), y(2)\} = ?` },
+  ]), ctx);
+  const all = answer.steps.map((s) => `${s.detail} ${s.expression}`).join(" ");
+  assert.equal(answer.steps[1].expression, R`y(0) = ?,\; y(x_2) = ?,\; y(2) = ?`);
+  assert.equal(answer.steps[2].expression, R`\max\{y(0), y(x_2), y(2)\} = ?`);
+  assert.doesNotMatch(all, /y\(\?\)|\?\s*=\s*\?|0,\s*\?,\s*2/);
+});
+
+test("ô trống (5): thay dữ kiện vào công thức ký hiệu (với b = AC = 8 …) — không bị coi là lộ số", () => {
+  assert.deepEqual(leaksOf(R`BC^2 = b^2 + c^2 - 2bc\cos A,\ \text{với } b = AC = 8,\ c = AB = 5,\ A = 60^\circ \Rightarrow BC = ?`, COSIN_Q), []);
+  assert.deepEqual(leaksOf(R`S_n = \frac{n[2u_1 + (n - 1)d]}{2},\ \text{với } n = 20,\ u_1 = 3,\ d = 4 \Rightarrow S_{20} = ?`, CSC_Q, ["2"]), []);
+  assert.deepEqual(leaksOf(R`V = \frac{4}{3}\pi R^3, \text{ với } R = 5 \Rightarrow V = ?`, "Tính thể tích khối cầu có bán kính R = 5 cm", ["4", "3"]), []);
+  // Vẫn bắt nếu AI viết kết quả sau ⇒.
+  assert.notDeepEqual(leaksOf(R`BC^2 = b^2 + c^2 - 2bc\cos A,\ \text{với } b = AC = 8,\ c = AB = 5 \Rightarrow BC = 7`, COSIN_Q), []);
+  // Prompt có quy tắc "thay dữ kiện, không thay số" và ví dụ đúng/sai.
+  const prompt = buildSystemPrompt([]);
+  assert.match(prompt, /THAY DỮ KIỆN, KHÔNG THAY SỐ/);
+  assert.match(prompt, /Sai: "V = \\frac\{4\}\{3\}\\pi \\cdot 5\^3 = \?"/);
+});
+
+test("escape thừa trước ngoặc nhọn: \\\\{ … \\\\} (ví dụ thật) thu về \\{ … \\}", () => {
+  const { answer } = normalizeAnswer({ type: "solution", formula_ids: ["gt12-gtln-gtnn"], steps: [
+    { title: "Kết luận", detail: "x", expression: R`y_{max}=\max\\{y(0),y(x_1)\\}=?\\ y_{min}=?` },
+  ] }, () => true);
+  assert.equal(answer.steps[0].expression, R`y_{max}=\max\{y(0),y(x_1)\}=?\\ y_{min}=?`);
+});
+
+test("parse: xuống dòng thật bên trong chuỗi JSON (không dùng JSON mode) vẫn parse được", () => {
+  const raw = '{"type":"solution","intro":"Dòng 1\nDòng 2","steps":[{"title":"A","detail":"$\\angle A = 60^\\circ$","expression":"x^2 = ?"}]}';
+  const v = parseModelJson(raw);
+  assert.equal(v.intro, "Dòng 1 Dòng 2");
+  assert.equal(v.steps[0].detail, R`$\angle A = 60^\circ$`);
 });

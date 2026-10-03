@@ -111,12 +111,16 @@ function logFinderEvents(message, answer, meta) {
   // Câu trả lời do model dự phòng (20b) soạn vì model chính hết hạn mức ngày — đếm số dòng này
   // trong Render Logs để biết mỗi ngày bao nhiêu câu phải dùng dự phòng.
   if (meta.fallback) console.warn("[finder:fallback]", JSON.stringify({ ...base, from: meta.fallback.from, to: meta.fallback.to, reason: meta.fallback.reason }));
-  const filtered = meta.removedSteps?.length || meta.replaced?.length || meta.droppedIds?.length || meta.droppedExpressions;
+  const filtered = meta.removedSteps?.length || meta.maskedSteps?.length || meta.replaced?.length || meta.droppedIds?.length || meta.droppedExpressions || meta.retriedForLeaks;
   if (filtered) {
     console.warn("[finder:guard]", JSON.stringify({
       ...base,
+      // retried: AI bị yêu cầu viết lại một lần vì lộ số (leaked = các giá trị lần đầu, stillLeaked =
+      // lần viết lại vẫn lộ → đã thay bằng "?", error = không gọi lại được).
+      retried: meta.retriedForLeaks || null,
       removedSteps: meta.removedSteps.length,
-      leaked: [...new Set(meta.removedSteps.flatMap((st) => st.leaked))],
+      maskedSteps: meta.maskedSteps?.length || 0,
+      leaked: [...new Set([...meta.removedSteps, ...(meta.maskedSteps || [])].flatMap((st) => st.leaked))],
       replaced: meta.replaced,
       droppedIds: meta.droppedIds,
       droppedExpressions: meta.droppedExpressions,

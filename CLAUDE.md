@@ -84,6 +84,7 @@ Quy tắc riêng cho `questions.js`:
 - Không tự bịa hoặc suy đoán công thức toán. Nếu không chắc chắn một công thức đúng 100% với chương trình GDPT 2018, dừng lại và hỏi người dùng thay vì đoán rồi ghi vào database.
 - Mọi công thức mới thêm vào `formulas.js` phải có nguồn tham chiếu thật (SGK, tài liệu chuyên đề đã được người dùng xác minh) — ghi rõ vào `sgk_source`.
 - Formula Finder (AI chat) chỉ được dùng công thức có trong `formulas.js`, không tự sinh công thức mới trong câu trả lời, và không tính ra kết quả thay học sinh — quy tắc chi tiết ở mục "AI Finder" bên dưới.
+- **Ô trống — không thay số ra kết quả, không lộ nghiệm** (từ 2026-10-03): AI dẫn học sinh tới đúng chỗ cần tính rồi để dấu `?` (`3x^2 - 3 = 0 \Rightarrow x^2 = ?`, `BC^2 = b^2 + c^2 - 2bc\cos A, \text{ với } b = AC = 8, c = AB = 5, A = 60^\circ \Rightarrow BC = ?`), học sinh tự tính. Viết công thức KÝ HIỆU kèm dữ kiện, không viết biểu thức đã thay số. Sau dấu `=`/`\Rightarrow` cuối cùng của mỗi biểu thức chỉ được là `?` (hoặc biểu thức còn chứa biến), không bao giờ là một con số tính ra; biểu thức ký hiệu (đạo hàm) không có `= ?` phía sau. Dạng `x^2 = a` viết thẳng `\Rightarrow x^2 = ?`, chỉ dùng Δ khi phương trình bậc hai có đủ hạng tử bậc nhất. Kết quả của ô `?` ở các bước sau chỉ gọi bằng ký hiệu (`x_1`, `x_2`, `BC`, `S_{20}`, `f(x_1)`) — kể cả khi xét dấu ("các khoảng chia bởi $x_1, x_2$", không viết khoảng có số), và không viết giá trị hàm tại nghiệm (`y(1)`) hay thay nghiệm vào biểu thức (`1^4 - 2 \cdot 1^2 + 3`). Giá trị tại nhiều điểm: `y(0) = ?, y(x_1) = ?, y(2) = ?` — bộ lọc cũng thay nghiệm lộ bằng ký hiệu (không sinh `y(?)`, `? = ?`, `x = 0, ?, 2`). Giá trị lượng giác giữ dạng `\cos 60^\circ`. Không nới quy tắc này khi sửa prompt hay bộ lọc.
 - Chương trình GDPT 2018 (SGK Kết Nối Tri Thức) **không có chủ đề "Số phức"** — đây không phải thiếu sót, đừng thêm nếu không được yêu cầu rõ.
 
 ## Xếp lớp đã xác nhận qua đối chiếu mục lục SGK thật — theo đúng bảng này, không tự đoán lại
@@ -184,16 +185,21 @@ Chi tiết đầy đủ ở `docs/SECURITY.md` và `docs/PERFORMANCE.md`. Nhữn
 ## AI Finder — hướng dẫn các bước, không tính kết quả (từ 2026-09-30)
 
 AI trình bày cách giải dựa trên công thức trong thư viện, **học sinh tự tính**. Câu trả lời gồm:
-"Công thức sử dụng" (thẻ công thức) → "Các bước giải" (Bước 1..n) → một câu nhắc tự tính.
-**Không có mục "Kết quả"**, không trường kết quả nào trong dữ liệu.
+"Công thức sử dụng" (thẻ công thức) → "Các bước giải" (Bước 1..n, chỗ cần tính để ô `?`) → một
+câu nhắc tự tính. **Không có mục "Kết quả"**, không trường kết quả nào trong dữ liệu. Frontend
+(`StepAnswer.jsx`) vẽ mỗi `?` trong phần toán thành ô viền amber (`\fcolorbox`, không cần `trust`).
 
 **Luồng backend** (`POST /api/chat` trong `backend/server.js`):
 1. `lib/formulaCatalog.js` lọc tối đa 10 công thức ứng viên từ `formulas.js`: nhóm công thức theo
    dạng bài (`METHOD_GROUPS` — cực trị kéo theo công thức đạo hàm...) được ghim trước, còn lại theo
    từ khóa câu hỏi. Thêm dạng bài mới thì thêm nhóm + test trong `test/formulaCatalog.test.js`.
-2. `lib/finderPrompt.js` dựng system prompt (danh sách ứng viên + 3 ví dụ mẫu) và khai báo
+2. `lib/finderPrompt.js` dựng system prompt (danh sách ứng viên + 4 ví dụ mẫu — cố ý KHÔNG dùng
+   chính các đề trong bộ câu kiểm thử, để lần chấm còn đo được) và khai báo
    model/tham số. AI trả JSON: `type` (`solution | no_formula | refuse_answer | off_topic`),
-   `formula_ids`, `intro`, `steps[{title, detail, expression}]`, `reminder`.
+   `formula_ids`, `intro`, `steps[{title, detail, expression}]`, `reminder`. **Không dùng
+   `response_format` (json_object/json_schema)**: chế độ ràng buộc JSON của Groq chặn lệnh LaTeX viết
+   với một dấu `\` (`\angle`, `\circ`, `\mathbb` — escape JSON không hợp lệ) nên học sinh thấy
+   "60circ", "mathbbR" (kiểm 47 câu trả lời thô, 2026-10-03). Nhận văn bản tự do rồi tự sửa escape.
 3. `lib/solutionGuard.js`: sửa escape LaTeX (chỉ nhân đôi `\` chưa escape), bỏ id không có
    thật (solution mà không còn id hợp lệ → `no_formula`), **bộ lọc "không tính"** (định nghĩa
    2026-09-30): ĐƯỢC rút gọn biểu thức còn chứa biến ($y' = 3x^2 - 6x - 9$ — số mới là hệ số
@@ -203,10 +209,16 @@ AI trình bày cách giải dựa trên công thức trong thư viện, **học 
    lượng đề hỏi (V, S, d, P, h, R) viết ở dạng đã rút gọn theo tham số ($V = \frac{a^3\sqrt{2}}{3}$ —
    phải dừng ở $V = \frac{1}{3} \cdot a^2 \cdot a\sqrt{2}$). "Số có sẵn" = số
    trong đề (+ câu hỏi trước nếu tin nhắn không có số riêng) + công thức đã chọn + hệ số hợp lệ
-   của các bước trước. Bước vi phạm bị lọc — chuỗi bước liên tiếp có biểu thức gộp thành một bước
-   trung tính "Thay số vào công thức", bước chỉ có chữ thì bỏ. Giới hạn đã biết: hằng số tính ra
-   trùng số trong đề vẫn lọt (vd $D = -3$ khi đề có điểm $(1;2;3)$). Có test trong
-   `backend/test/` — sửa guard thì chạy `npm test`.
+   của các bước trước. Từ 2026-10-03 (ô trống) còn CẤM: `x^2 = 1`/`2x = 6` (vế trái chứa ẩn, kể cả
+   khi số "có sẵn"), `y(1)` với 1 không phải điểm đề cho, khoảng/tập hợp có đầu mút là số không có
+   trong đề (`(-\infty; -1)`), danh sách `x = 0, 1, 2` có nghiệm. Cách xử lý vi phạm (`askFinder`):
+   **hỏi lại AI một lần** (kèm danh sách giá trị lộ; model chính bị 429 theo phút thì hỏi lại bằng
+   model dự phòng), vẫn lộ hoặc không hỏi lại được → **thay đúng con số lộ bằng `?`**
+   (`maskMathLeaks`/`maskTextLeaks`); chỉ khi không thay sạch được mới gộp thành bước trung tính
+   "Thay số vào công thức". Giới hạn đã biết: hằng số tính ra trùng số trong đề vẫn lọt (vd
+   $D = -3$ khi đề có điểm $(1;2;3)$); giá trị lượng giác đã thay (`\frac{1}{2}` thay cho
+   `\cos 60^\circ`) chỉ được prompt chặn, bộ lọc không bắt. Có test trong `backend/test/` — sửa
+   guard thì chạy `npm test`.
    `no_formula`: học sinh chỉ thấy câu mặc định, KHÔNG nêu tên công thức/phương pháp còn thiếu;
    lời giải thích của model chỉ ghi vào log `[finder:no_formula]` (trường `aiNote`).
 4. Trả về `{type, formulaIds, intro, steps, reminder, reply, remaining}`.

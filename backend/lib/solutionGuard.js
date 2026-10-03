@@ -25,11 +25,18 @@ export const DEFAULT_TEXT = {
 // Quy tắc: chỉ nhân đôi dấu \ CHƯA được escape (không đứng sau một dấu \ khác). Một \ được
 // giữ nguyên khi nó là escape JSON hợp lệ: \\ \" \/ \uXXXX, hoặc \b \f \n \r \t KHÔNG theo sau
 // bởi chữ cái (theo sau bởi chữ cái thì đó là lệnh LaTeX như \frac, \neq, \times, \beta).
+//
+// Ngoài ra: ký tự xuống dòng/tab THẬT nằm trong chuỗi JSON (model viết khi không bị ràng buộc
+// JSON mode) làm JSON.parse lỗi → thay bằng dấu cách (nội dung hiển thị luôn là một dòng).
 export function repairLatexEscapes(raw) {
   const s = String(raw ?? "");
   let out = "";
+  let inString = false;
   for (let i = 0; i < s.length; i++) {
     const c = s[i];
+    // Dấu " đi tới đây luôn là dấu chưa escape (cặp \" được chép nguyên ở nhánh dưới).
+    if (c === '"') { inString = !inString; out += c; continue; }
+    if (inString && (c === "\n" || c === "\r" || c === "\t")) { out += " "; continue; }
     if (c !== "\\") { out += c; continue; }
     const next = s[i + 1];
     if (next === "\\" || next === '"' || next === "/") {
@@ -72,8 +79,13 @@ export function parseModelJson(raw) {
 // Chiều ngược lại của lỗi escape: model đôi khi viết "\\\\cdot" nên sau khi parse còn "\\cdot" —
 // KaTeX hiểu "\\" là xuống dòng rồi in chữ "cdot". Nội dung ở đây luôn là 1 dòng, nên "\\" đứng
 // ngay trước chữ cái chắc chắn là lệnh LaTeX bị escape thừa → thu về 1 dấu \.
-const fixOverEscaped = (s) => s.replace(/\\\\(?=[A-Za-z])/g, "\\");
-const str = (v, max) => (typeof v === "string" ? fixOverEscaped(v.trim()).slice(0, max) : "");
+// Cùng lý do với "\\{" / "\\}" (model muốn viết ngoặc nhọn \{ \} của tập hợp): "\\" trước "{"/"}" là
+// xuống dòng + nhóm, KaTeX mất cả dấu ngoặc nhọn. "\\" đứng trước dấu cách (xuống dòng thật) giữ nguyên.
+const fixOverEscaped = (s) => s.replace(/\\\\(?=[A-Za-z])/g, "\\").replace(/\\\\(?=[{}])/g, "\\");
+// \frac12 (viết tắt của \frac{1}{2}, KaTeX hiển thị y hệt) → dạng đầy đủ, để bộ lọc đọc đúng hai số
+// 1 và 2 thay vì "12".
+const expandFracShorthand = (s) => s.replace(/\\([dt]?frac)\s*(\d)\s*(\d)/g, "\\$1{$2}{$3}");
+const str = (v, max) => (typeof v === "string" ? expandFracShorthand(fixOverEscaped(v.trim())).slice(0, max) : "");
 
 // "Delta" thiếu dấu \ trong phần toán → KaTeX in chữ "Delta" nghiêng thay vì Δ. Chỉ sửa trong phần
 // toán ($...$ của câu chữ, và toàn bộ expression); chữ "Delta" trong câu văn ("Tính biệt thức
@@ -111,10 +123,39 @@ export function replaceFormulaIds(s, isValidId, nameOf) {
     .replace(new RegExp(String.raw`(?<![\w-])(${FORMULA_ID.source})(?![\w-])`, "gi"), (m, id) => (isValidId(id) ? nameOf(id) || "" : m)));
 }
 
-const cleanText = (s, isValidId, nameOf) => replaceFormulaIds(fixBareDeltaInText(wrapLooseLatex(fixStrayQuoteEscapes(s))), isValidId, nameOf);
+const cleanText = (s, isValidId, nameOf) => fixSymbolicBlankInText(replaceFormulaIds(fixBareDeltaInText(wrapLooseLatex(fixStrayQuoteEscapes(s))), isValidId, nameOf));
+
+// Ô trống đặt sai chỗ (quy tắc ô trống 2026-10-03), sửa từng mệnh đề (ngăn bởi , ; \\ ở tầng ngoài):
+//   "y' = 4x^3 - 4x = ?"           → "y' = 4x^3 - 4x"  (đạo hàm / hàm số là biểu thức ký hiệu, không có ô ?)
+//   "y(x_1) = x_1^3 - 3x_1 + 2 = ?" → "y(x_1) = ?"      (giá trị tại nghiệm ký hiệu chỉ để ô trống)
+// Chỉ áp khi vế trái là đạo hàm, y / f(x), hoặc y(x_k) — "\max\{y(0), y(x_1)\} = ?" giữ nguyên.
+export function fixSymbolicBlank(latex) {
+  const s = String(latex || "");
+  if (!s.includes("?")) return s;
+  const sep = (t, j) => (t[j] === "," || t[j] === ";" ? 1 : t.startsWith("\\\\", j) ? 2
+    : /^\\q?quad(?![a-zA-Z])/.test(t.slice(j)) ? t.slice(j).match(/^\\q?quad/)[0].length : 0);
+  return splitTopLevel(s, sep).map((clause, i) => {
+    if (i % 2 === 1) return clause;
+    const parts = splitRelationsRaw(clause);
+    const n = parts.length;
+    if (n < 5 || parts[n - 2] !== "=" || parts[n - 1].trim() !== "?" || parts[n - 4] !== "=") return clause;
+    if (n > 5 && isChainOp(parts[n - 6]) && parts[n - 6] !== "=") return clause;
+    const lhs = compact(normalizeMath(parts[n - 5]));
+    const expr = normalizeMath(parts[n - 3]);
+    const hasUnknown = letterTokens(expr).some((l) => /^[xt]$/.test(l));
+    if (/^[fgFhy](?:\\?'|\^\{?\\prime\}?)*\([xt]_\{?\w+\}?\)$/.test(lhs)) {
+      return parts.slice(0, n - 4).join("") + "= ?" + clause.match(/\s*$/)[0];
+    }
+    if (hasUnknown && (isDerivative(lhs) || /^(?:y|f\(x\))$/.test(lhs))) {
+      return parts.slice(0, n - 2).join("").replace(/\s+$/, "") + clause.match(/\s*$/)[0];
+    }
+    return clause;
+  }).join("");
+}
+const fixSymbolicBlankInText = (s) => s.replace(/(\$\$?)([^$]+)(\$\$?)/g, (_, open, math, close) => open + fixSymbolicBlank(math) + close);
 
 // expression phải là LaTeX thuần — bỏ $ bao ngoài nếu model lỡ thêm.
-const cleanExpression = (v) => fixBareDeltaInMath(fixStrayQuoteEscapes(str(v, LIMITS.expression).replace(/^\$+|\$+$/g, "").trim()));
+const cleanExpression = (v) => fixSymbolicBlank(fixBareDeltaInMath(fixStrayQuoteEscapes(str(v, LIMITS.expression).replace(/^\$+|\$+$/g, "").trim())));
 
 /**
  * Đưa đối tượng model trả về về đúng khung, bỏ mọi trường lạ (kể cả nếu model tự thêm "result").
@@ -170,8 +211,9 @@ export function extractNumbers(text) {
   const cleaned = String(text || "")
     .replace(/\{,\}/g, ".") // 3{,}14 → 3.14
     // Dấu phẩy chỉ là dấu thập phân khi phần nguyên là 0 (0,06; 0,5). "A(1,2,3)", "(-1,1)" là
-    // toạ độ / khoảng — đọc thành 1.2, 1.1 sẽ thành "số lạ" và lọc oan.
-    .replace(/(^|[^\d.])0,(\d)/g, "$10.$2")
+    // toạ độ / khoảng — đọc thành 1.2, 1.1 sẽ thành "số lạ" và lọc oan. "x = 0,1,2" là danh sách
+    // (còn ",số" phía sau) và "[0,2]", "(0,1)" là khoảng (0 đứng ngay sau ngoặc) — không phải 0.1, 0.2.
+    .replace(/(^|[^\d.,[(])0,(\d+)(?!,\d)/g, "$10.$2")
     .replace(/(\d),(?=\d)/g, "$1 , ")
     // Id công thức model lỡ chép vào lời giải ("công thức gt12-logarit") không phải con số.
     .replace(/\b(?:gt|ds|hh|xs|lg|mr)\d{2}(?=[-\\_\s]|$)/gi, " ")
@@ -231,8 +273,54 @@ function normalizeMath(s) {
     .replace(/\\leq?(?![a-zA-Z])/g, "≤").replace(/\\geq?(?![a-zA-Z])/g, "≥")
     .replace(/\\neq?(?![a-zA-Z])/g, "≠").replace(/\\approx/g, "≈")
     // "x = 3 \text{ hoặc } x = -1", "\Rightarrow", "\Leftrightarrow": mỗi vế là một mệnh đề riêng
-    .replace(/\\text\{\s*(?:hoặc|hay|và|or|and)\s*\}/gi, ";")
-    .replace(/\\(?:Rightarrow|Leftrightarrow|Longrightarrow|Leftarrow|iff|implies|vee|wedge)(?![a-zA-Z])/g, ";");
+    // "... \text{ với } b = AC = 8": phần dữ kiện là mệnh đề riêng, không dính vào vế phải công thức.
+    .replace(/\\text\{\s*(?:hoặc|hay|và|với|khi|trong đó|or|and)\s*\}/gi, ";")
+    .replace(/\\(?:Rightarrow|Leftrightarrow|Longrightarrow|Leftarrow|iff|implies|vee|wedge)(?![a-zA-Z])/g, ";")
+    .replace(/[⇒⟹⇔]/g, ";")
+    // x \in (-1; 1): "\in" là chữ, đứng ngay trước khoảng thì khoảng bị coi là "điểm tên in(...)".
+    .replace(/\\in(?![a-zA-Z])/g, " ∈ ").replace(/\\cup(?![a-zA-Z])/g, " ∪ ");
+}
+
+// ─── 3c. Ô trống "?" và giá trị lộ ra ngoài dấu = ──────────────────────────
+// Quy tắc "ô trống" (2026-10-03): chỗ ra kết quả AI viết "?" cho học sinh tự tính; kết quả đó ở
+// các bước sau chỉ được gọi bằng ký hiệu. Ngoài cặp "vế = giá trị" (mathLeaks), nghiệm còn lộ qua:
+//   - giá trị hàm tại một số không có trong đề: y(1), f'(-1) (1, -1 là nghiệm của y' = 0);
+//   - đầu mút khoảng / phần tử tập hợp là số không có trong đề: xét dấu trên (-\infty; -1), S = \{1; 3\}.
+// "Có trong đề" = đầu mút đoạn đề cho, hoành độ đề cho (givenXValues), hoặc nguyên cụm có trong đề.
+const POINT_CALL = /(?<![A-Za-z\\])([fgFhy](?:\\?'|\^\{?\\prime\}?)*)\(\s*([+-]?\d+(?:\.\d+)?)\s*\)/g;
+const INTERVAL = /(?<![A-Za-z0-9_)\]}])([[(])([^()[\];,]+)([;,])([^()[\];,]+)([\])])/g;
+const SET = /\\\{([^{}]*)\\\}/g;
+const numericToken = (e) => {
+  const c = compact(e).replace(/^\+/, "");
+  return /^-?\d+(?:\.\d+)?$/.test(c) || /^-?\\frac\{\d+(?:\.\d+)?\}\{\d+(?:\.\d+)?\}$/.test(c) ? c : null;
+};
+function givenChecker(questionText) {
+  const given = new Set(givenXValues(questionText).map((v) => String(Number(v))));
+  const q = compact(normalizeMath(questionText));
+  return {
+    value: (v) => given.has(String(Number(v))),
+    phrase: (s) => q.includes(compact(s)),
+  };
+}
+/** Nghiệm / giá trị lộ qua y(số), khoảng hoặc tập hợp có số không có trong đề. `norm` đã qua normalizeMath. */
+function revealedValueLeaks(norm, questionText) {
+  const g = givenChecker(questionText);
+  const leaks = [];
+  for (const m of norm.matchAll(POINT_CALL)) {
+    if (!g.value(m[2]) && !g.phrase(m[0])) leaks.push(compact(`${m[1]}(${m[2]})`));
+  }
+  for (const m of norm.matchAll(INTERVAL)) {
+    if (g.phrase(m[0])) continue;
+    for (const e of [m[2], m[4]]) {
+      const v = numericToken(e);
+      if (v && !g.value(v)) leaks.push(`khoảng ${compact(m[0])}`);
+    }
+  }
+  for (const m of norm.matchAll(SET)) {
+    if (g.phrase(m[0])) continue;
+    if (m[1].split(/[;,]/).some((e) => { const v = numericToken(e); return v && !g.value(v); })) leaks.push(`tập ${compact(m[0])}`);
+  }
+  return [...new Set(leaks)];
 }
 
 /** Có biến (chữ cái không thuộc lệnh LaTeX) hay không. \text{cm} cũng tính là chữ (đơn vị). */
@@ -263,6 +351,8 @@ function givenXValues(question) {
   const q = String(question).replace(/−/g, "-");
   const out = [];
   for (const m of q.matchAll(/hoành độ\s*(?:bằng\s*|là\s*|x_?0?\s*=\s*)?(-?\d+(?:[.,]\d+)?)/gi)) out.push(m[1]);
+  // "tại x = 2", "khi x_0 = -1": điểm đề cho (y'(2), f(-1) được viết).
+  for (const m of q.matchAll(/(?<![A-Za-z])x(?:_?0|₀)?\s*=\s*(-?\d+(?:[.,]\d+)?)(?![\d.]*\s*[a-zA-Z(^*])/g)) out.push(m[1]);
   for (const m of q.matchAll(/[[(]\s*(-?\d+(?:[.,]\d+)?)\s*;\s*(-?\d+(?:[.,]\d+)?)\s*[\])]/g)) out.push(m[1], m[2]);
   // Hoành độ của điểm đề cho trong Oxyz: A(1;2;3) → "thay x = 1".
   for (const m of q.matchAll(/\(\s*(-?\d+(?:[.,]\d+)?)\s*;\s*-?\d+(?:[.,]\d+)?\s*;\s*-?\d+(?:[.,]\d+)?\s*\)/g)) out.push(m[1]);
@@ -350,8 +440,9 @@ function numberTokens(side) {
     .replace(/_\{[^{}]*\}/g, (m) => "_" + "#".repeat(m.length - 1))
     .replace(/_\d+/g, (m) => "_" + "#".repeat(m.length - 1))
     .replace(/(?:\\(?:text|mathrm)\{\s*)?(?:k|c|d|m)?m\s*\}?\s*\^\s*\{?\s*[23]\s*\}?/g, (m) => m.replace(/\d/g, "#"));
-  // Dấu phẩy thập phân chỉ khi phần nguyên là 0 (0,06) — (1,2,3) là toạ độ.
-  return [...masked.matchAll(/(?<![\d.])0,\d+|\d+(?:\.\d+)?/g)].map((m) => ({ text: m[0].replace(",", ".").replace(/^0+(?=\d)/, ""), index: m.index, end: m.index + m[0].length }));
+  // Dấu phẩy thập phân chỉ khi phần nguyên là 0 (0,06) — (1,2,3) là toạ độ, 0,1,2 là danh sách,
+  // [0,2] là khoảng.
+  return [...masked.matchAll(/(?<![\d.,[(])0,\d+(?!,\d)|\d+(?:\.\d+)?/g)].map((m) => ({ text: m[0].replace(",", ".").replace(/^0+(?=\d)/, ""), index: m.index, end: m.index + m[0].length }));
 }
 
 /** Nội dung nhóm ngoặc bắt đầu tại `open` ({ hoặc (), trả về chuỗi bên trong. */
@@ -399,6 +490,30 @@ export function mathLeaks(latex, allowed, questionText = "") {
   const q = compact(normalizeMath(questionText));
   const isClauseSep = (s, i) => (s[i] === ";" || (s[i] === "," && !(/\d/.test(s[i - 1] ?? "") && /\d/.test(s[i + 1] ?? ""))) ? 1 : 0);
   const clauses = splitTopLevel(normalizeMath(latex), isClauseSep).filter((p, i) => i % 2 === 0);
+  // Danh sách giá trị của ẩn: "x = 0, 1, 2" — mệnh đề "x = 0" rồi các mệnh đề chỉ là một số. Mỗi số
+  // trong danh sách phải có trong đề (đầu mút, hoành độ đề cho); không thì là nghiệm bị lộ.
+  let listVar = null;
+  for (const clause of clauses) {
+    const c = compact(clause);
+    const head = c.match(/^([^=]+)=(.+)$/);
+    // Viết liền "x=0,1,2" (dấu phẩy giữa hai chữ số không tách mệnh đề): xét từng giá trị.
+    const inline = head && isUnknown(head[1]) ? head[2].split(",") : [];
+    if (inline.length > 1 && inline.every((v) => isSingleValue(v))) {
+      for (const v of inline) {
+        const statement = `${head[1]}=${v}`;
+        if (!q.includes(statement) && !givenXValues(questionText).includes(v)) leaks.push(statement);
+      }
+      listVar = head[1];
+      continue;
+    }
+    if (head && isUnknown(head[1]) && isSingleValue(head[2])) { listVar = head[1]; continue; }
+    if (listVar && isSingleValue(c)) {
+      const statement = `${listVar}=${c}`;
+      if (!q.includes(statement) && !givenXValues(questionText).includes(c)) leaks.push(statement);
+      continue;
+    }
+    listVar = null;
+  }
   for (const clause of clauses) {
     const parts = splitTopLevel(clause, (s, i) => (s[i] === "=" ? 1 : 0));
     for (let k = 0; k + 2 < parts.length; k += 2) {
@@ -438,6 +553,11 @@ export function mathLeaks(latex, allowed, questionText = "") {
         if (newNums.length) leaks.push(newNums.join(",")); // điều kiện: Δ > 0, f'(x_0) = 0
       } else if (isPointValue(other) || (!hasVariable(other) && /\d/.test(other))) {
         leaks.push(newNums.length ? newNums.join(",") : statement); // f(2) = 5, Δ = 1, 3^2 - 4·2 = 1
+      } else if (op === "=" && compact(value) !== "0" && letterTokens(other).some((l) => /^[xt]$/.test(l))
+        && !q.includes(statement) && !givenXValues(questionText).includes(compact(value))) {
+        // x^2 = 1, 2x = 6: kết quả của phép giải — lộ dù con số có sẵn trong đề (1 luôn "có sẵn").
+        // Học sinh phải thấy x^2 = ?. Vế phải 0 là phương trình cần giải (x^2 - 1 = 0), không chặn.
+        leaks.push(statement);
       } else if (newNums.length) {
         leaks.push(newNums.join(",")); // V = 36π, x^2 - 1 = 8 (giá trị không có sẵn)
       }
@@ -456,8 +576,14 @@ export function mathLeaks(latex, allowed, questionText = "") {
       }
     }
   }
+  leaks.push(...revealedValueLeaks(normalizeMath(latex), questionText));
   return { leaks: [...new Set(leaks)], accepted: [...new Set(accepted)] };
 }
+
+// Nghiệm / Δ viết thẳng trong câu chữ, không có $: "Khi x = -1 thì...", "Δ = 1 > 0", "x = ±1".
+// Không bắt khi số là phần đầu của một biểu thức (x = 2x + 1, x = 3(...), x = 2^k): ngay sau số là
+// chữ/ngoặc/mũ, hoặc dấu cách rồi phép toán. "x = 1 thì..." (chữ thường sau dấu cách) vẫn bị bắt.
+const PROSE_VALUE = /(?<![A-Za-z])((?:[xt](?:_\{?[1-9][0-9,]*\}?)?)|Δ|\\Delta)\s*=\s*((?:[+\-−]|\\pm|±)?\d+(?:[.,]\d+)?)(?![\d.]*(?:[a-zA-Z(^*·]|\s*[+\-−*/^·]))/g;
 
 /** Lộ giá trị số trong một đoạn văn có xen toán $...$: phần chữ xét như cũ, phần $...$ xét như biểu thức. */
 function textLeaks(text, allowed, questionText) {
@@ -467,10 +593,13 @@ function textLeaks(text, allowed, questionText) {
   const leaks = extractNumbers(prose).filter((n) => !allowed.has(n));
   // Nghiệm / Δ viết thẳng trong câu chữ, không có $: "Khi x = -1 thì...", "Δ = 1 > 0".
   const q = compact(normalizeMath(questionText));
-  for (const m of prose.matchAll(/(?<![A-Za-z])((?:[xt](?:_\{?[1-9][0-9,]*\}?)?)|Δ|\\Delta)\s*=\s*([+-]?\d+(?:[.,]\d+)?)(?![\d.]*\s*[a-zA-Z(^*·])/g)) {
-    const given = q.includes(compact(`${m[1]}=${m[2]}`)) || (/^[xt]$/.test(m[1]) && givenXValues(questionText).includes(m[2].replace(",", ".")));
+  for (const m of prose.matchAll(PROSE_VALUE)) {
+    const value = m[2].replace(/^(?:\\pm|±)/, "");
+    const given = q.includes(compact(`${m[1]}=${m[2]}`)) || (/^[xt]$/.test(m[1]) && givenXValues(questionText).includes(value.replace(",", ".")));
     if (!given) leaks.push(compact(m[0]));
   }
+  // y(1), khoảng (−∞; −1), tập {1; 3} viết thẳng trong câu chữ.
+  leaks.push(...revealedValueLeaks(normalizeMath(prose), questionText));
   const accepted = [];
   for (const m of maths) {
     const r = mathLeaks(m, new Set([...allowed, ...accepted]), questionText);
@@ -478,6 +607,158 @@ function textLeaks(text, allowed, questionText) {
     accepted.push(...r.accepted);
   }
   return { leaks: [...new Set(leaks)], accepted };
+}
+
+// ─── 3d. Thay giá trị lộ bằng ô trống "?" ──────────────────────────────────
+// Dùng khi AI đã được yêu cầu viết lại một lần mà vẫn lộ (askFinder): thay đúng con số đó bằng
+// "?" thay vì bỏ cả bước. Chỉ đụng tới GIÁ TRỊ bị bắt (vế phải là một số, đối số y(1), đầu mút
+// khoảng, số lạ đứng riêng) — biểu thức ký hiệu và công thức xung quanh giữ nguyên. Không thay
+// được cho sạch (vẫn còn lộ sau khi thay) thì trả null để nơi gọi bỏ bước như cũ.
+const RELATION_TOKEN = /^(?:\\Leftrightarrow|\\Rightarrow|\\implies|\\approx(?![a-zA-Z])|\\neq?(?![a-zA-Z])|\\leq?(?![a-zA-Z])|\\geq?(?![a-zA-Z])|[⇒⟹⇔≤≥≠≈=<>])/;
+const isChainOp = (op) => !/Rightarrow|Leftrightarrow|implies|[⇒⟹⇔]/.test(op);
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+/** Tách LaTeX GỐC (chưa chuẩn hoá) theo dấu quan hệ / dấu suy ra ở tầng ngoài: [vế, dấu, vế, dấu, ...]. */
+function splitRelationsRaw(s) {
+  const out = [];
+  let depth = 0, start = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (c === "{" || c === "(" || c === "[") depth++;
+    else if (c === "}" || c === ")" || c === "]") depth = Math.max(0, depth - 1);
+    else if (depth === 0) {
+      const m = s.slice(i).match(RELATION_TOKEN);
+      // "\left" bắt đầu bằng "\le" — RELATION_TOKEN đã chặn bằng (?![a-zA-Z]).
+      if (m) { out.push(s.slice(start, i), m[0]); i += m[0].length - 1; start = i + 1; }
+    }
+  }
+  out.push(s.slice(start));
+  return out;
+}
+
+/**
+ * Ký hiệu cho các nghiệm bị lộ: y(1) → y(x_1), khoảng (-\infty; -1) → (-\infty; x_1), danh sách
+ * x = 0, 1, 2 → x = 0, x_1, 2. Dùng CHUNG cho cả câu trả lời để cùng một giá trị luôn ra cùng ký hiệu.
+ * Nếu AI đã đặt tên nghiệm ("x_2 = 1" ở bước trước) thì dùng đúng tên đó; không thì lấy x_k với k
+ * chưa có trong câu trả lời. Đầu mút / điểm đề cho không bao giờ bị thay.
+ */
+export function makeRootSymbols(texts, questionText = "") {
+  const g = givenChecker(questionText);
+  const all = texts.filter(Boolean).join(" ");
+  const used = new Set([...all.matchAll(/x_\{?(\d+)\}?/g)].map((m) => m[1]));
+  const map = new Map();
+  for (const m of all.matchAll(/(?<![A-Za-z])x_\{?(\d+)\}?\s*=\s*(-?\d+(?:[.,]\d+)?)(?![\d.])/g)) {
+    const v = String(Number(m[2].replace(",", ".")));
+    if (!g.value(v) && !map.has(v)) map.set(v, `x_${m[1]}`);
+  }
+  let k = 1;
+  return (value) => {
+    const n = Number(String(value).replace(/\s|\\,/g, "").replace("−", "-").replace(",", "."));
+    if (!Number.isFinite(n)) return "?";
+    const v = String(n);
+    if (!map.has(v)) {
+      while (used.has(String(k))) k++;
+      used.add(String(k));
+      map.set(v, `x_${k}`);
+    }
+    return map.get(v);
+  };
+}
+
+// Đánh dấu tạm quanh đối số đã thay của y(...) để nhận ra vế phải ngay sau nó (đã thay nghiệm) — bỏ ở cuối.
+const MARK = "\u0001";
+
+/** Thay nghiệm lộ qua y(số), khoảng, tập hợp bằng ký hiệu. `wrap`: bọc ký hiệu bằng $...$ (dùng trong câu chữ). */
+function maskRevealed(s, questionText, symbolFor, wrap = false) {
+  const g = givenChecker(questionText);
+  const sym = (v) => (wrap ? `$${symbolFor(v)}$` : symbolFor(v));
+  return s
+    // \left( \right) và \in( : chữ cái đứng sát dấu ngoặc làm INTERVAL bỏ qua khoảng → bỏ \left \right,
+    // chèn dấu cách sau \in (hiển thị không đổi đáng kể).
+    .replace(/\\left\s*([([])/g, "$1").replace(/\\right\s*([)\]])/g, "$1")
+    .replace(/\\in(?![a-zA-Z])\s*/g, "\\in ")
+    .replace(POINT_CALL, (m, name, arg) => (g.value(arg) || g.phrase(normalizeMath(m)) ? m : `${name}(${MARK}${sym(arg)}${MARK})`))
+    .replace(INTERVAL, (m, open, a, sep, b, close) => {
+      if (g.phrase(normalizeMath(m))) return m;
+      const fix = (e) => { const v = numericToken(normalizeMath(e)); return v && !g.value(v) ? `${e.match(/^\s*/)[0]}${sym(v)}` : e; };
+      return `${open}${fix(a)}${sep}${fix(b)}${close}`;
+    })
+    .replace(SET, (m, inner) => (g.phrase(normalizeMath(m)) ? m
+      : `\\{${inner.split(/([;,])/).map((e, i) => { if (i % 2) return e; const v = numericToken(normalizeMath(e)); return v && !g.value(v) ? `${e.match(/^\s*/)[0]}${sym(v)}` : e; }).join("")}\\}`));
+}
+
+/** "? = ?" (vế giữa đã thay, còn ô trống cuối) → một ô "?". */
+const collapseBlanks = (s) => s.replace(/\?(?:\s*=\s*\?)+/g, "?");
+
+/**
+ * Thay giá trị lộ trong MỘT biểu thức LaTeX. Kết quả (vế phải là một số) → "?"; nghiệm lộ qua y(số),
+ * khoảng, danh sách x → ký hiệu x_1, x_2 (`symbolFor`, mặc định đánh số riêng cho biểu thức này).
+ * Trả về chuỗi đã sạch, hoặc null.
+ */
+export function maskMathLeaks(latex, allowed, questionText = "", symbolFor = makeRootSymbols([latex], questionText)) {
+  let s = maskRevealed(String(latex || ""), questionText, symbolFor);
+  const parts = splitRelationsRaw(s);
+  // y(x_1) = 1^4 - 2 \cdot 1^2 + 3: đối số đã thay nhưng vế phải vẫn thay chính nghiệm đó → vế phải
+  // thành "?", tới hết mệnh đề (dấu phẩy, ;, xuống dòng \\ hoặc \quad ở tầng ngoài, hoặc dấu suy ra).
+  const clauseSep = (t, j) => (t[j] === "," || t[j] === ";" ? 1 : t.startsWith("\\\\", j) ? 2 : /^\\q?quad(?![a-zA-Z])/.test(t.slice(j)) ? t.slice(j).match(/^\\q?quad/)[0].length : 0);
+  let afterMaskedCall = false;
+  for (let i = 0; i < parts.length; i++) {
+    if (i % 2 === 1) { if (!isChainOp(parts[i])) afterMaskedCall = false; continue; }
+    if (afterMaskedCall) {
+      const pieces = splitTopLevel(parts[i], clauseSep);
+      if (pieces.length > 1) { parts[i] = " ?" + pieces.slice(1).join(""); afterMaskedCall = false; }
+      else parts[i] = parts[i].match(/^\s*/)[0] + "?" + parts[i].match(/\s*$/)[0];
+    }
+    const lastClause = splitTopLevel(parts[i], clauseSep).at(-1);
+    if (new RegExp(String.raw`\(${MARK}[^${MARK}]*${MARK}\)\s*$`).test(lastClause)) afterMaskedCall = true;
+  }
+  // Vế là một giá trị số mà cặp "vế trước <dấu> vế này" bị bắt → "?". Vế là danh sách giá trị của
+  // ẩn (x = 0, 1, 2) → thay từng giá trị không có trong đề bằng ký hiệu (x = 0, x_1, 2).
+  const g = givenChecker(questionText);
+  for (let i = 2; i < parts.length; i += 2) {
+    const op = parts[i - 1];
+    if (!isChainOp(op)) continue;
+    const items = splitTopLevel(parts[i], (t, j) => (t[j] === "," ? 1 : 0));
+    if (op === "=" && items.length > 1 && isUnknown(normalizeMath(parts[i - 2]).trim())
+      && items.every((it, k) => k % 2 === 1 || isSingleValue(normalizeMath(it)))) {
+      parts[i] = items.map((it, k) => (k % 2 === 1 || g.value(compact(normalizeMath(it))) ? it : it.match(/^\s*/)[0] + symbolFor(compact(normalizeMath(it))))).join("");
+      continue;
+    }
+    if (!isSingleValue(normalizeMath(parts[i]))) continue;
+    if (mathLeaks(`${parts[i - 2]}${op}${parts[i]}`, allowed, questionText).leaks.length) parts[i] = parts[i].match(/^\s*/)[0] + "?";
+  }
+  s = parts.join("");
+  // Số lạ còn lại (đứng riêng, không phải chỉ số/số mũ) → "?". Số ngay sau "{" vẫn thay được
+  // (\sqrt{89 - 80}, \frac{82}{2}) trừ khi "{" là của chỉ số/số mũ (_{20}, ^{2}).
+  for (const n of mathLeaks(s, allowed, questionText).leaks.filter((l) => /^-?\d+(?:\.\d+)?$/.test(l))) {
+    s = s.replace(new RegExp(String.raw`(?<![\d.^_a-zA-Z\\])(?<![\^_]\{)${escapeRe(n)}(?![\d.])`, "g"), "?");
+  }
+  s = collapseBlanks(s.split(MARK).join(""));
+  return mathLeaks(s, allowed, questionText).leaks.length ? null : s;
+}
+
+/** Như maskMathLeaks nhưng cho đoạn văn có xen $...$. Trả về chuỗi đã sạch, hoặc null. */
+export function maskTextLeaks(text, allowed, questionText = "", symbolFor = makeRootSymbols([text], questionText)) {
+  const s = String(text || "");
+  let failed = false;
+  const out = s.split(/(\$\$[^$]*\$\$|\$[^$]*\$)/).map((part, i) => {
+    if (i % 2 === 1) {
+      const fence = part.startsWith("$$") ? "$$" : "$";
+      const masked = maskMathLeaks(part.slice(fence.length, -fence.length), allowed, questionText, symbolFor);
+      if (masked === null) failed = true;
+      return masked === null ? part : `${fence}${masked}${fence}`;
+    }
+    let p = maskRevealed(part, questionText, symbolFor, true).split(MARK).join("").replace(PROSE_VALUE, (m, lhs, value) => {
+      const given = givenChecker(questionText);
+      return given.phrase(`${lhs}=${value}`) || given.value(value.replace(/^(?:\\pm|±)/, "").replace("−", "-")) ? m : `${lhs} = ?`;
+    });
+    for (const n of extractNumbers(p).filter((x) => !allowed.has(x))) {
+      p = p.replace(new RegExp(String.raw`(?<![\d.\p{L}])${escapeRe(n)}(?![\d.])`, "gu"), "?");
+    }
+    return p;
+  }).join("");
+  if (failed || textLeaks(out, allowed, questionText).leaks.length) return null;
+  return out;
 }
 
 /** Tập số "có sẵn": đề + công thức + 0, 1, và dạng thập phân của phần trăm trong đề (6% → 0.06). */
@@ -499,7 +780,7 @@ function allowedNumbers(sourceTexts, formulaTexts) {
  * của công thức đã chọn; `formulaNames`: tên công thức cho bước trung tính. Hệ số hợp lệ của một
  * bước được giữ (không bị lọc) thì dùng được ở các bước sau.
  */
-export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNames = [] }) {
+export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNames = [], mask = false }) {
   const allowed = allowedNumbers(sourceTexts, formulaTexts);
   const question = sourceTexts[0] || "";
   const leakedIn = (...texts) => {
@@ -528,9 +809,28 @@ export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNam
     }
     run = [];
   };
+  const maskedSteps = [];
+  // mask: thay giá trị lộ bằng "?" (maskTextLeaks / maskMathLeaks); chỉ khi không thay sạch được
+  // mới bỏ bước như cũ. Số "có sẵn" lúc thay = số có sẵn + hệ số hợp lệ của các bước trước.
+  // Một bảng ký hiệu cho cả câu trả lời: nghiệm 1 bị lộ ở bước 3 và bước 4 đều thành cùng x_k.
+  const symbolFor = makeRootSymbols(answer.steps.flatMap((st) => [st.detail, st.expression]), question);
+  const tryMask = (st) => {
+    const allowedNow = new Set(allowed);
+    const detail = maskTextLeaks(st.detail, allowedNow, question, symbolFor);
+    const expression = st.expression ? maskMathLeaks(st.expression, allowedNow, question, symbolFor) : "";
+    if (detail === null || expression === null) return null;
+    const recheck = leakedIn(detail, expression ? `$${expression}$` : "");
+    return recheck.leaks.length ? null : { step: { ...st, detail, expression }, accepted: recheck.accepted };
+  };
   for (const st of answer.steps) {
     const { leaks, accepted } = leakedIn(st.detail, st.expression ? `$${st.expression}$` : "");
-    if (leaks.length) {
+    const masked = leaks.length && mask ? tryMask(st) : null;
+    if (masked) {
+      flushRun();
+      maskedSteps.push({ ...st, leaked: leaks });
+      steps.push(masked.step);
+      for (const n of masked.accepted) allowed.add(n);
+    } else if (leaks.length) {
       removedSteps.push({ ...st, leaked: leaks });
       run.push(st);
     } else {
@@ -543,13 +843,20 @@ export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNam
 
   const replaced = [];
   let { intro, reminder } = answer;
-  if (leakedIn(intro).leaks.length) { replaced.push("intro"); intro = answer.type === "no_formula" ? DEFAULT_TEXT.noFormulaIntro : DEFAULT_TEXT.intro; }
-  if (leakedIn(reminder).leaks.length) { replaced.push("reminder"); reminder = answer.type === "solution" ? DEFAULT_TEXT.reminder : ""; }
+  const maskedOr = (text) => (mask ? maskTextLeaks(text, new Set(allowed), question, symbolFor) : null);
+  if (leakedIn(intro).leaks.length) {
+    replaced.push("intro");
+    intro = maskedOr(intro) ?? (answer.type === "no_formula" ? DEFAULT_TEXT.noFormulaIntro : DEFAULT_TEXT.intro);
+  }
+  if (leakedIn(reminder).leaks.length) {
+    replaced.push("reminder");
+    reminder = maskedOr(reminder) ?? (answer.type === "solution" ? DEFAULT_TEXT.reminder : "");
+  }
 
   if (answer.type === "solution" && answer.steps.length > 0 && steps.length === 0) {
     intro = DEFAULT_TEXT.allStepsRemoved;
   }
-  return { answer: { ...answer, intro, reminder, steps }, removedSteps, replaced };
+  return { answer: { ...answer, intro, reminder, steps }, removedSteps, maskedSteps, replaced };
 }
 
 // ─── 4. Kiểm tra ngoặc trong biểu thức ─────────────────────────────────────
