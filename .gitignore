@@ -21,3 +21,6 @@ docs/sgk-pdf/
 # bản đồ chỉ đường cho người muốn khai thác. Giữ ở máy, chia sẻ riêng khi cần.
 # docs/PERFORMANCE.md thì đẩy lên bình thường — chỉ có số đo, không có gì nhạy cảm.
 docs/SECURITY.md
+
+# Thư mục nháp ở máy (ảnh đề thử OCR có thể chứa chữ viết của học sinh) — không đưa lên GitHub.
+scratchpad/
