@@ -12,6 +12,8 @@ import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
 import { askFinder, CHAT_BUDGET_MS } from "./lib/finderAnswer.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
+import { decodeImagePayload, readProblemsFromImage, OcrError, OCR_BUDGET_MS, MAX_IMAGE_BYTES } from "./lib/ocrReader.js";
+import { createPerKeyLimiter } from "./lib/perKeyLimiter.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -47,7 +49,9 @@ app.use(helmet({
 app.use(cors({ origin: allowedOrigins, methods: ["GET", "POST"], maxAge: 86400 }));
 // Giới hạn kích thước body: request hợp lệ lớn nhất (message + 10 lượt history) chỉ vài KB,
 // mặc định 100kb của express là quá rộng cho endpoint gọi AI tính tiền theo token.
-app.use(express.json({ limit: "64kb" }));
+// Riêng POST /api/ocr nhận ảnh đề (base64) nên có parser riêng, giới hạn lớn hơn — xem route bên dưới.
+const smallJson = express.json({ limit: "64kb" });
+app.use((req, res, next) => (req.path === "/api/ocr" ? next() : smallJson(req, res, next)));
 
 // ─── Rate limit ────────────────────────────────────────────────────────────
 // Giới hạn 10 lượt hỏi/ngày của gói Free chỉ được kiểm tra ở client (localStorage) nên bỏ qua
@@ -349,6 +353,135 @@ app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
   }
 });
 
+// ─── POST /api/ocr — đọc ảnh đề bằng Gemini ────────────────────────────────
+// Học sinh chụp/chọn ảnh → frontend nén (cạnh dài ≤ 2000px, JPEG) → gửi { image: base64 } →
+// backend kiểm tra ảnh, gửi Gemini, trả danh sách bài để học sinh xác nhận/sửa rồi mới hỏi AI
+// Finder (mỗi bài hướng dẫn = 1 lượt AI Finder, tính ở /api/chat như câu hỏi gõ tay).
+// Quét ảnh KHÔNG tính lượt AI Finder, nhưng có giới hạn riêng để tránh lạm dụng hạn mức Gemini
+// dùng chung: Free 20 lần/ngày, Premium 50 lần/ngày (bảng ocr_usage_daily, migration 009), và tối
+// đa 5 lần/phút mỗi tài khoản. Không lưu ảnh, không ghi ảnh hay chữ trong đề vào log.
+const FREE_OCR_DAILY_LIMIT = 20;
+const PREMIUM_OCR_DAILY_LIMIT = 50;
+const ocrAccountLimiter = createPerKeyLimiter({ windowMs: 60 * 1000, max: 5 });
+// Chốt theo IP trước khi đọc body ảnh (rộng hơn giới hạn tài khoản vì nhiều học sinh chung IP).
+const ocrIpLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "Bạn quét ảnh hơi nhanh, chờ khoảng một phút rồi thử lại nhé.", code: "ocr_rate" },
+});
+// base64 lớn hơn ảnh gốc 4/3 — chừa thêm chỗ cho phần JSON bao quanh.
+const ocrJsonParser = express.json({ limit: Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 16 * 1024 });
+// Lỗi của parser (ảnh vượt giới hạn, body hỏng) trả JSON có code như mọi lỗi khác của route này,
+// thay vì trang lỗi HTML mặc định của express.
+const ocrJson = (req, res, next) => ocrJsonParser(req, res, (err) => {
+  if (!err) return next();
+  if (err.status === 413) {
+    return res.status(413).json({ error: "Ảnh quá lớn. Bạn chụp lại hoặc chọn ảnh nhỏ hơn nhé.", code: "image_too_large" });
+  }
+  res.status(400).json({ error: "Ảnh không đọc được.", code: "bad_image" });
+});
+
+app.post("/api/ocr", ocrIpLimiter, ocrJson, async (req, res) => {
+  const requestDeadline = Date.now() + OCR_BUDGET_MS;
+  try {
+    let authUser;
+    try {
+      authUser = await verifySupabaseUser(req);
+    } catch (err) {
+      return res.status(err.status || 401).json({ error: err.message });
+    }
+    if (authUser.is_anonymous) {
+      return res.status(403).json({ error: "Đăng nhập Google để dùng AI" });
+    }
+    const googleId = extractGoogleId(authUser);
+    if (!googleId) {
+      return res.status(403).json({ error: "Tài khoản chưa liên kết Google." });
+    }
+
+    const burst = ocrAccountLimiter.hit(googleId);
+    if (!burst.allowed) {
+      return res.status(429).json({ error: "Bạn quét ảnh hơi nhanh, chờ khoảng một phút rồi thử lại nhé.", code: "ocr_rate" });
+    }
+
+    // Kiểm tra ảnh trước khi đụng tới hạn mức — ảnh hỏng/quá lớn không tốn lượt.
+    const { buffer, mime } = decodeImagePayload(req.body?.image);
+
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("[FormulaX Backend] GEMINI_API_KEY chưa được cấu hình");
+      return res.status(500).json({ error: "Lỗi cấu hình phía máy chủ, vui lòng thử lại sau" });
+    }
+
+    const { data: userRow, error: userRowError } = await supabaseAdmin
+      .from("users")
+      .select("is_premium, premium_expiry")
+      .eq("google_id", googleId)
+      .maybeSingle();
+    if (userRowError) {
+      console.error("[FormulaX Backend] Đọc trạng thái Premium lỗi:", userRowError.message);
+      return res.status(503).json({ error: "Không xác thực được trạng thái tài khoản, thử lại sau." });
+    }
+    const limit = computeIsPremium(userRow) ? PREMIUM_OCR_DAILY_LIMIT : FREE_OCR_DAILY_LIMIT;
+
+    const startedAt = Date.now();
+    const outcome = await runWithQuota({
+      limit,
+      reserve: async () => {
+        const { data, error } = await supabaseAdmin.rpc("increment_ocr_usage", { p_google_id: googleId });
+        if (error) throw Object.assign(new Error(error.message), { quotaUnavailable: true });
+        return data;
+      },
+      refund: async () => {
+        const { data, error } = await supabaseAdmin.rpc("refund_ocr_usage", { p_google_id: googleId });
+        if (error) throw new Error(error.message);
+        return data;
+      },
+      run: async () => ({
+        delivered: true,
+        ...(await readProblemsFromImage({ apiKey: process.env.GEMINI_API_KEY, buffer, mime, deadline: requestDeadline })),
+      }),
+      onRefundError: (err) => console.error("[FormulaX Backend] refund_ocr_usage lỗi:", err.message),
+    });
+    if (outcome.limited) {
+      return res.status(429).json({
+        error: `Bạn đã quét hết ${limit} ảnh hôm nay. Bạn vẫn có thể gõ đề vào ô chat nhé.`,
+        code: "ocr_quota",
+        scansRemaining: 0,
+      });
+    }
+
+    const { problems, meta } = outcome.result;
+    // Chỉ số liệu — không ghi chữ trong đề (có thể là chữ viết của học sinh) hay thông tin tài khoản.
+    console.log("[ocr]", JSON.stringify({
+      model: meta.model,
+      attempts: meta.attempts,
+      fallback: meta.fallback,
+      errors: meta.errors,
+      ms: Date.now() - startedAt,
+      imageKB: Math.round(buffer.length / 1024),
+      problems: problems.length,
+      withFigure: problems.filter((p) => p.hasFigure).length,
+      unclear: problems.reduce((n, p) => n + p.unclear.length, 0),
+      promptTokens: meta.promptTokens,
+      outputTokens: meta.outputTokens,
+    }));
+    res.json({ problems, scansRemaining: outcome.remaining });
+  } catch (error) {
+    if (error.quotaUnavailable) {
+      console.error("[FormulaX Backend] increment_ocr_usage lỗi:", error.message);
+      return res.status(503).json({ error: "Không kiểm tra được hạn mức quét ảnh, thử lại sau." });
+    }
+    if (error instanceof OcrError) {
+      if (error.meta) console.warn("[ocr:failed]", JSON.stringify({ code: error.code, errors: error.meta.errors, attempts: error.meta.attempts }));
+      const remainingInfo = typeof error.remaining === "number" ? { scansRemaining: error.remaining } : {};
+      return res.status(error.status).json({ error: error.message, code: error.code, ...remainingInfo });
+    }
+    console.error("[FormulaX Backend] /api/ocr error:", error.message);
+    res.status(500).json({ error: "Chưa đọc được ảnh, bạn thử lại sau nhé.", code: "ocr_failed" });
+  }
+});
+
 // Health check endpoint
 // commit: bản code đang chạy — Render tự đặt RENDER_GIT_COMMIT khi deploy. Dùng để xác nhận sau
 // khi push rằng Render đã chạy bản mới (các trường còn lại thường không đổi giữa hai bản).
@@ -367,6 +500,7 @@ app.listen(PORT, () => {
   console.log(`\n🚀 FormulaX AI Backend đang chạy tại http://localhost:${PORT}`);
   console.log(`📚 Đã tải ${FORMULA_COUNT} công thức từ FormulaX-AI/src/data/formulas.js`);
   console.log(`🔑 Groq API Key: ${process.env.GROQ_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
+  console.log(`📷 Gemini (đọc ảnh đề): ${process.env.GEMINI_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — /api/ocr sẽ trả lỗi (.env)"}`);
   const payosOk = process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY;
   console.log(`💳 PayOS Payment: ${payosOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
   const supabaseOk = process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY.startsWith("CHUA_CAU_HINH");
