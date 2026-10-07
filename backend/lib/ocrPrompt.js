@@ -22,4 +22,4 @@ Chỉ trả về JSON đúng dạng sau, không thêm chữ nào khác:
       "unclear": []
     }
   ]
-}`;
+}`.replace(/\r\n/g, "\n"); // bản checkout CRLF trên Windows không được gửi Gemini câu lệnh có "\r"
