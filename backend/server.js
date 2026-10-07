@@ -104,14 +104,24 @@ const FREE_AI_DAILY_LIMIT = 10;
 // lọc phải can thiệp. CHỈ ghi nội dung câu hỏi (tối đa 150 ký tự), type và id công thức —
 // không ghi google_id, email, tên hay token. Riêng no_formula ghi thêm aiNote: lời giải thích
 // của model (≤ 150 ký tự) về công thức/phương pháp còn thiếu — học sinh KHÔNG thấy câu này.
-function logFinderEvents(message, answer, meta) {
+function logFinderEvents(message, answer, meta, ms) {
   const base = { q: String(message).slice(0, 150), type: answer.type, ids: answer.formulaIds };
+  // Mọi request: số token để theo dõi prompt caching của Groq (cached = phần prompt lấy từ cache,
+  // không tính vào hạn mức token/phút, token/ngày). Không ghi câu hỏi ở dòng này.
+  console.log("[finder:usage]", JSON.stringify({
+    model: meta.model,
+    attempts: meta.attempts,
+    promptTokens: meta.promptTokens,
+    cachedTokens: meta.cachedTokens,
+    completionTokens: meta.completionTokens,
+    ms,
+  }));
   if (answer.type === "no_formula") console.log("[finder:no_formula]", JSON.stringify({ ...base, aiNote: meta.aiNote || "" }));
   if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
   // Câu trả lời do model dự phòng (20b) soạn vì model chính hết hạn mức ngày — đếm số dòng này
   // trong Render Logs để biết mỗi ngày bao nhiêu câu phải dùng dự phòng.
   if (meta.fallback) console.warn("[finder:fallback]", JSON.stringify({ ...base, from: meta.fallback.from, to: meta.fallback.to, reason: meta.fallback.reason }));
-  const filtered = meta.removedSteps?.length || meta.maskedSteps?.length || meta.replaced?.length || meta.droppedIds?.length || meta.droppedExpressions || meta.retriedForLeaks;
+  const filtered = meta.removedSteps?.length || meta.maskedSteps?.length || meta.replaced?.length || meta.droppedIds?.length || meta.droppedExpressions || meta.retriedForLeaks || meta.choiceReveals?.length;
   if (filtered) {
     console.warn("[finder:guard]", JSON.stringify({
       ...base,
@@ -124,6 +134,9 @@ function logFinderEvents(message, answer, meta) {
       replaced: meta.replaced,
       droppedIds: meta.droppedIds,
       droppedExpressions: meta.droppedExpressions,
+      // Bài trắc nghiệm: các cụm "nói phương án đúng" đã bị bắt (lib/choiceGuard.js).
+      choiceReveals: meta.choiceReveals || [],
+      cachedTokens: meta.cachedTokens,
     }));
   }
 }
@@ -205,8 +218,9 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     // lib/finderAnswer.js; câu trả lời trả về đây đã qua bộ lọc, không cần tin model.
     // delivered = false khi JSON hỏng cả 2 lần và phải trả câu mẫu — không tính là đã trả lời.
     const ask = async () => {
+      const startedAt = Date.now();
       const out = await askFinder({ groq, message, history: chatHistory, deadline: requestDeadline });
-      logFinderEvents(message, out.answer, out.meta);
+      logFinderEvents(message, out.answer, out.meta, Date.now() - startedAt);
       return { ...out, delivered: !out.meta.jsonFailed };
     };
 

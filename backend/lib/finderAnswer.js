@@ -1,8 +1,9 @@
 import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalog.js";
-import { buildSystemPrompt, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS } from "./finderPrompt.js";
+import { buildFinderMessages, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS } from "./finderPrompt.js";
 import {
   parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, dropNumericSubstitutions, toReplyText, extractNumbers, DEFAULT_TEXT,
 } from "./solutionGuard.js";
+import { isMultipleChoiceQuestion, guardChoiceReveals } from "./choiceGuard.js";
 
 const MAX_ATTEMPTS = 2; // lần 2 chỉ khi JSON hỏng không cứu được
 
@@ -55,11 +56,9 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
   // Công thức ứng viên theo câu hỏi hiện tại + 2 câu hỏi trước (hiểu câu hỏi nối tiếp).
   const recentUserTexts = history.filter((h) => h.role === "user").slice(-2).map((h) => h.content);
   const candidates = shortlistFormulas([message, ...recentUserTexts]);
-  const messages = [
-    { role: "system", content: buildSystemPrompt(candidates) },
-    ...history,
-    { role: "user", content: message },
-  ];
+  // Thứ tự cố định → thư viện → lịch sử → câu hỏi: giữ phần đầu giống hệt nhau cho prompt caching
+  // của Groq (xem finderPrompt.js).
+  const messages = buildFinderMessages({ candidates, history, message });
 
   // cachedTokens: phần prompt Groq lấy từ cache (phần cố định của system prompt đứng đầu). Khi chấm
   // 2026-09-30, token cache KHÔNG bị tính vào hạn mức ngày — theo dõi để biết cache giúp được bao nhiêu.
@@ -173,13 +172,25 @@ export async function askFinder({ groq, message, history = [], model = FINDER_MO
 function leakList(checkedMeta) {
   const steps = [...(checkedMeta.removedSteps || []), ...(checkedMeta.maskedSteps || [])];
   const where = (checkedMeta.replaced || []).map((r) => (r === "intro" ? "(số trong câu mở đầu)" : "(số trong lời nhắc)"));
-  return [...new Set([...steps.flatMap((st) => st.leaked), ...where])];
+  const choices = (checkedMeta.choiceReveals || []).map((r) => `${CHOICE_PREFIX}"${r}")`);
+  return [...new Set([...steps.flatMap((st) => st.leaked), ...where, ...choices])];
 }
+
+const CHOICE_PREFIX = "(nói phương án đúng: ";
 
 /** Lời nhắc gửi lại model khi câu trả lời còn lộ số. Chỉ model thấy, học sinh không thấy. */
 function retryInstruction(violations) {
+  const choiceOnly = violations.every((v) => v.startsWith(CHOICE_PREFIX));
+  if (choiceOnly) {
+    return [
+      `Câu trả lời vừa rồi nói ra phương án trắc nghiệm đúng: ${violations.slice(0, 4).join("; ")}.`,
+      "Viết lại TOÀN BỘ câu trả lời (cùng type, cùng formula_ids): chỉ hướng dẫn cách giải, chỗ ra kết quả để ?, không nói phương án nào đúng hay sai, không viết \"đáp án A\", \"chọn B\", \"phương án C đúng\". Bước cuối nhắc học sinh tự tính rồi tự đối chiếu với các phương án.",
+      "Chỉ trả về JSON.",
+    ].join(" ");
+  }
   return [
     `Câu trả lời vừa rồi còn giá trị số tính sẵn hoặc lộ nghiệm: ${violations.slice(0, 8).join("; ")}.`,
+    ...(violations.some((v) => v.startsWith(CHOICE_PREFIX)) ? ["Đồng thời không được nói phương án trắc nghiệm nào đúng."] : []),
     "Viết lại TOÀN BỘ câu trả lời (cùng type, cùng formula_ids) theo quy tắc ô trống: chỗ ra kết quả viết ?, ở các bước sau gọi kết quả bằng ký hiệu (x_1, x_2, BC, S_n...), không viết khoảng hay giá trị hàm có chứa nghiệm (viết các khoảng chia bởi x_1, x_2; f(x_1)).",
     // Lần hỏi lại gửi lại nguyên system prompt (đủ quy tắc + ví dụ); câu dưới nhắc riêng lỗi 20b đã mắc
     // khi viết lại (2026-10-04): viết biểu thức đã thay số.
@@ -216,11 +227,16 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
   });
   // Làm sạch cuối: bỏ dòng biểu thức đã thay số (8^2 + 5^2 - 2·8·5…), giữ chữ của bước. Không tính
   // là vi phạm phải hỏi lại — không lộ đáp số, chỉ trái quy tắc "thay dữ kiện, không thay số".
-  const { answer, dropped: droppedSubstitutions } = dropNumericSubstitutions(guarded, sourceTexts.join("\n"));
+  const { answer: cleaned, dropped: droppedSubstitutions } = dropNumericSubstitutions(guarded, sourceTexts.join("\n"));
+  // Bài trắc nghiệm: không được nói phương án nào đúng (lib/choiceGuard.js). Lần kiểm tra đầu
+  // (mask = false) chỉ phát hiện để hỏi lại AI; bản cuối (mask = true) bỏ hẳn các câu đó.
+  const { answer, reveals: choiceReveals } = isMultipleChoiceQuestion(message)
+    ? guardChoiceReveals(cleaned, { strip: mask })
+    : { answer: cleaned, reveals: [] };
 
   return {
     answer,
     reply: toReplyText(answer, getFormula),
-    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, droppedSubstitutions, removedSteps, maskedSteps, replaced, aiNote },
+    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, droppedSubstitutions, removedSteps, maskedSteps, replaced, aiNote, choiceReveals },
   };
 }
