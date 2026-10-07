@@ -8,7 +8,7 @@ Web app giúp học sinh THPT (lớp 10–12) tra cứu, ghi nhớ và luyện t
 - **Backend:** Node.js + Express, tại `backend/`
 - **Auth:** Google OAuth **qua Supabase Auth** (`supabase.auth.signInWithOAuth`) trong `context/AuthContext.jsx` — luồng redirect cả trang, không phải popup. Nguồn sự thật là phiên Supabase; `localStorage.formulax_user` chỉ còn là bộ nhớ đệm hiển thị, không dùng để xác thực. Gói `@react-oauth/google` vẫn còn trong `package.json` nhưng **không còn được import ở đâu** — giữ tạm làm đường lùi, gỡ sau khi luồng mới chạy ổn trên production. Đổi cách đăng nhập = phá RLS, xem `backend/migrations/003_rls_supabase_auth.sql` trước khi động vào.
 - **Database:** Supabase — mọi thao tác đọc/ghi đi qua `src/lib/supabase.js`, không viết query Supabase trực tiếp trong component
-- **AI:** Groq API, model `openai/gpt-oss-120b` (AI Finder, khai báo ở `backend/lib/finderPrompt.js`; đổi từ `gpt-oss-20b` ngày 2026-09-30 sau khi chấm so sánh — xem mục AI Finder) — provider duy nhất. SDK Gemini (`@google/generative-ai`) trước đây cài sẵn nhưng không dùng, đã gỡ khỏi `backend/package.json` (2026-07-23) để hết nhầm lẫn. Nếu cần đổi provider, xác nhận với người dùng trước, không tự đổi.
+- **AI:** Groq API, model `openai/gpt-oss-120b` (AI Finder, khai báo ở `backend/lib/finderPrompt.js`; đổi từ `gpt-oss-20b` ngày 2026-09-30 sau khi chấm so sánh — xem mục AI Finder) — provider duy nhất cho phần hướng dẫn giải. **Gemini chỉ dùng để đọc ảnh đề** (OCR, từ 2026-10-07 — xem mục "Đọc ảnh đề"), gọi qua REST, không cài SDK (`@google/generative-ai` đã gỡ 2026-07-23, đừng cài lại). Nếu cần đổi provider, xác nhận với người dùng trước, không tự đổi.
 - **Render công thức:** KaTeX qua `utils/katexHelper.jsx` (`MathElement`, `RichTextRenderer`)
 
 ## Lệnh thường dùng
@@ -19,7 +19,8 @@ cd FormulaX-AI && npm run build    # build production
 cd FormulaX-AI && npm run lint     # eslint
 cd backend && npm run dev          # backend dev (node --watch)
 cd backend && npm start            # backend production
-cd backend && npm test             # test backend (node --test): bộ lọc số, JSON, hoàn lượt, thời gian
+cd backend && npm test             # test backend (node --test): bộ lọc số, JSON, hoàn lượt, thời gian, OCR
+cd FormulaX-AI && npm run test:ocr # hàm thuần của luồng ảnh đề (tô [?], tính lượt, gọi lần lượt từng bài)
 ```
 
 ## Schema `formulas.js` — bắt buộc tuân thủ khi thêm/sửa công thức
@@ -194,7 +195,11 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
 1. `lib/formulaCatalog.js` lọc tối đa 10 công thức ứng viên từ `formulas.js`: nhóm công thức theo
    dạng bài (`METHOD_GROUPS` — cực trị kéo theo công thức đạo hàm...) được ghim trước, còn lại theo
    từ khóa câu hỏi. Thêm dạng bài mới thì thêm nhóm + test trong `test/formulaCatalog.test.js`.
-2. `lib/finderPrompt.js` dựng system prompt (danh sách ứng viên + 4 ví dụ mẫu — cố ý KHÔNG dùng
+2. `lib/finderPrompt.js` dựng tin nhắn theo thứ tự CỐ ĐỊNH để Groq cache phần đầu (token lấy từ cache
+   không tính vào hạn mức token/phút, token/ngày): tin system #1 `FINDER_SYSTEM_PROMPT` (quy tắc + ví dụ,
+   giống hệt nhau từng byte ở mọi câu hỏi) → tin system #2 thư viện ứng viên → lịch sử → câu hỏi.
+   **Không chèn gì thay đổi theo câu hỏi/người dùng (ngày giờ, tên, lượt còn lại...) vào tin #1** —
+   `test/finderPrompt.test.js` giữ điều này. Phần cố định gồm 4 ví dụ mẫu — cố ý KHÔNG dùng
    chính các đề trong bộ câu kiểm thử, để lần chấm còn đo được) và khai báo
    model/tham số. AI trả JSON: `type` (`solution | no_formula | refuse_answer | off_topic`),
    `formula_ids`, `intro`, `steps[{title, detail, expression}]`, `reminder`. **Không dùng
@@ -222,6 +227,11 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
    $D = -3$ khi đề có điểm $(1;2;3)$); giá trị lượng giác đã thay (`\frac{1}{2}` thay cho
    `\cos 60^\circ`) chỉ được prompt chặn, bộ lọc không bắt. Có test trong `backend/test/` — sửa
    guard thì chạy `npm test`.
+   **Bài trắc nghiệm** (từ 2026-10-07, `lib/choiceGuard.js`, chỉ chạy khi đề có chữ "trắc nghiệm" hoặc
+   nhãn A. B. C.): AI hướng dẫn như bài thường, kết thúc bằng ô `?`, KHÔNG nói phương án nào đúng —
+   prompt quy tắc 3b + bộ lọc bắt "đáp án A", "chọn B", "phương án C đúng", "D là đáp án đúng" → hỏi
+   lại một lần, vẫn còn thì bỏ câu đó. Cố ý KHÔNG chặn dạng khoảng/giá trị của kết quả (quyết định
+   của chủ dự án).
    `no_formula`: học sinh chỉ thấy câu mặc định, KHÔNG nêu tên công thức/phương pháp còn thiếu;
    lời giải thích của model chỉ ghi vào log `[finder:no_formula]` (trường `aiNote`).
 4. Trả về `{type, formulaIds, intro, steps, reminder, reply, remaining}`.
@@ -254,14 +264,48 @@ Quy tắc khi sửa:
   trường hợp không giao được câu trả lời: vượt hạn mức, Groq 429 (trả `code: "ai_busy"`), Groq
   lỗi/timeout, JSON hỏng.
 - **Log:** chỉ ghi nội dung câu hỏi (cắt ≤ 150 ký tự), `type`, id công thức. KHÔNG ghi
-  google_id, email, tên hay token.
+  google_id, email, tên hay token. Mọi request có một dòng `[finder:usage]` (model, attempts,
+  promptTokens, cachedTokens, completionTokens, ms — không có câu hỏi) để theo dõi prompt caching;
+  `[finder:guard]` có thêm `cachedTokens`, `choiceReveals`.
 - **Frontend:** `components/StepAnswer.jsx` hiển thị câu trả lời (dùng chung cho 2 ví dụ tĩnh của
   khách). Tin nhắn chỉ lưu `answer.formulaIds`, không lưu cả object công thức; tin định dạng cũ
   trong `chat_sessions` (`aiResult`) vẫn phải hiển thị được. Tin hệ thống (`isError`,
   `isLimitHit`, `isNotice`) được lưu trong phiên nhưng **không gửi lên AI làm lịch sử**.
   Biểu thức KaTeX dài cuộn ngang trong khung riêng, không làm tràn trang trên mobile.
-- **Nhập đề bằng ảnh/tệp (nút máy ảnh + ghim giấy) đang ẩn** bằng cờ `FINDER_IMAGE_INPUT_ENABLED = false`
-  trong `src/config/features.js` (2026-10-02, chưa ổn định) — code xử lý vẫn giữ, bật lại thì đổi cờ thành `true`.
+- **Nhập đề bằng ảnh** bật/tắt bằng cờ `FINDER_IMAGE_INPUT_ENABLED` trong `src/config/features.js`
+  (bật từ 2026-10-07 — thay nút camera/ghim giấy giả lập cũ). Xem mục "Đọc ảnh đề" bên dưới.
+
+### Đọc ảnh đề — Gemini chỉ chép đề, Groq vẫn hướng dẫn (từ 2026-10-07)
+
+Luồng: nút ảnh trong ô nhập → bảng chọn **Chụp ảnh** (`capture="environment"`) / **Chọn ảnh** (KHÔNG
+có `capture` — trên Android `capture` buộc mở camera) kèm thông báo quyền riêng tư → nén ở trình
+duyệt (`utils/imageCompress.js`: cạnh dài ≤ 2000px, JPEG 0,82, xoay theo EXIF) → `POST /api/ocr` →
+màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từng bài (`ProblemTabs.jsx`).
+- **Backend** (`lib/ocrReader.js`): model `gemini-3.5-flash-lite`, dự phòng `gemini-3.1-flash-lite`
+  (429/5xx/timeout/JSON hỏng → dự phòng một lần; hạn mức tính riêng từng model). Chế độ JSON
+  (`responseMimeType`), **parse thường trước, chỉ sửa escape khi thất bại** — sửa escape trước làm
+  `\nA.` (xuống dòng trước phương án) thành chữ "\nA". Câu lệnh `lib/ocrPrompt.js` là **nguyên văn đã
+  duyệt** — không sửa chữ nào khi chưa hỏi; đổi thì chạy lại bài thử ảnh (`scratchpad/ocr-test`, đã
+  gitignore vì ảnh có chữ viết học sinh). Ảnh kiểm tra theo byte đầu (JPEG/PNG/WebP), tối đa 1,5 MB;
+  route có parser JSON riêng (các route khác giữ 64kb). Ngân sách 40s (`OCR_BUDGET_MS`) < timeout
+  frontend 45s (`callOcr` trong `FormulaFinder.jsx`).
+- **Giới hạn quét** (không tính vào 10 lượt AI Finder): Free 20/ngày, Premium 50/ngày (bảng
+  `ocr_usage_daily`, RPC `increment_ocr_usage`/`refund_ocr_usage` — migration 009, tăng trước rồi
+  hoàn khi lỗi qua `runWithQuota`), 5 lần/phút mỗi tài khoản (`lib/perKeyLimiter.js`, trong bộ nhớ),
+  30/phút mỗi IP. Khách 403. Ảnh không có đề (problems rỗng) vẫn tính lượt quét.
+- **Không lưu ảnh, không ghi ảnh hay chữ trong đề vào log** — `[ocr]` chỉ có số liệu (model, ms, KB,
+  số bài, số chỗ [?], token).
+- **Màn chọn bài:** chỗ `[?]` (Gemini không đọc rõ) tô đỏ — khác ô `?` amber của AI Finder; bài còn
+  `[?]` phải **Sửa đề** xong mới chọn được ("Hướng dẫn tất cả" bỏ qua bài đó). Ghi chú hình vẽ
+  (`figureNote`) hiện để học sinh kiểm tra và sửa được. Mỗi bài hướng dẫn = 1 lượt AI Finder; chọn
+  nhiều hơn số lượt còn lại thì báo trước, không gọi.
+- **Tab từng bài:** CHỈ gọi AI Finder cho tab đang mở, chưa có kết quả, và **không gọi song song** —
+  mở tab khác trong lúc chờ thì bắt đầu ngay khi bài trước xong (`nextGuidanceRequest`). Lỗi không tự
+  gọi lại (phải bấm Thử lại). Tin gửi AI = đề đã xác nhận + "(Hình vẽ cho biết: …)", không kèm lịch
+  sử; đề + câu trả lời được thêm vào cuộc trò chuyện hiện tại để lưu/đồng bộ như tin gõ tay.
+- **Thông báo quyền riêng tư** nằm ở hằng số `OCR_PRIVACY_NOTICE` (`src/config/features.js`). Đang dùng
+  gói Gemini MIỄN PHÍ — Google có thể dùng nội dung để cải thiện dịch vụ, câu thông báo phải nói thật
+  điều đó. Khi bật thanh toán cho key Gemini thì sửa câu này.
 
 ### Hướng phát triển đợt 2 — suy ra công thức (CHƯA làm, chưa có thiết kế được duyệt)
 
@@ -289,7 +333,7 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 
 - **Migration Supabase chạy TRƯỚC khi deploy backend/frontend** dùng tới nó (vd 006 `ai_usage_daily` +
   `increment_ai_usage`, 007 `refund_ai_usage`, 008 cột đồng bộ cài đặt trên `learning_stats` —
-  frontend dùng). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
+  frontend dùng, 009 `ocr_usage_daily` cho `/api/ocr`). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
   để hoàn tác. Migration đã chạy trên Supabase thì không sửa dòng SQL nào, chỉ được sửa comment.
 - **Render — Root Directory / Build Filters:** backend import `FormulaX-AI/src/data/formulas.js`
   (ngoài thư mục `backend/`). Nếu service trên Render đặt Root Directory = `backend` thì phải thêm
@@ -298,6 +342,7 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 - Sau deploy kiểm tra `GET /api/health` → `formulasLoaded` phải bằng số công thức trong
   `formulas.js` (hiện 246). Bằng 0 hoặc lỗi = backend không đọc được file.
 - Backend bắt buộc `NODE_ENV=production` (xem mục Hiệu năng & bảo mật).
+- Đọc ảnh đề cần `GEMINI_API_KEY` trên Render (thiếu thì `/api/ocr` trả 500, log khởi động báo ❌).
 
 ## Đồng bộ nhiều thiết bị (từ 2026-10-01)
 
@@ -322,7 +367,8 @@ Mọi dữ liệu của tài khoản Google phải nằm trên Supabase; `localS
 
 ## Giới hạn tài khoản Free đang áp dụng — kiểm tra code trước khi đổi số
 
-- Formula Finder (AI): 10 lượt hỏi/ngày, đếm ở backend (`ai_usage_daily`, ngày theo giờ Việt Nam) — bộ đếm "Còn x/10" ở frontend chỉ để hiển thị
+- Formula Finder (AI): 10 lượt hỏi/ngày, đếm ở backend (`ai_usage_daily`, ngày theo giờ Việt Nam) — bộ đếm "Còn x/10" ở frontend chỉ để hiển thị. Mỗi bài hướng dẫn từ ảnh tính 1 lượt.
+- Quét ảnh đề: 20 lần/ngày (Premium 50), không tính vào lượt AI Finder
 - Quiz: chỉ dạng trắc nghiệm cơ bản; điền đáp án + dạng kết hợp yêu cầu Premium
 - ProgressDashboard: một phần nội dung bị làm mờ cho tài khoản free
 
@@ -331,7 +377,7 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 ## Việc không nên làm
 
 - Không tự thêm thư viện UI/component ngoài Tailwind (đã duyệt, xem mục Giao diện) nếu không được yêu cầu — dự án đang tối giản có chủ đích.
-- Không đổi AI provider mà không xác nhận với người dùng trước. Hiện chỉ còn đúng một SDK trong `backend/package.json` là `groq-sdk` — đừng cài thêm SDK provider khác "để sẵn đó".
+- Không đổi AI provider mà không xác nhận với người dùng trước. Hiện chỉ còn đúng một SDK trong `backend/package.json` là `groq-sdk` (Gemini đọc ảnh gọi qua REST) — đừng cài thêm SDK provider khác "để sẵn đó".
 - Không sửa hàng loạt `formulas.js`/`questions.js` mà không có bước xác nhận riêng — đây là dữ liệu lõi cho USP "chống hallucination" của sản phẩm, sai ở đây ảnh hưởng trực tiếp uy tín dự án.
 - **Không truy vấn database production (Supabase thật) khi chưa hỏi người dùng — kể cả truy vấn chỉ đọc**, kể cả bằng `SUPABASE_SERVICE_ROLE_KEY` có sẵn trong `backend/.env`. Khi được phép: chỉ in **số liệu tổng hợp** (số bản ghi, số tài khoản, tỉ lệ…), không in `google_id`, email, tên hay bất kỳ dữ liệu cá nhân nào; script chỉ đọc, không ghi/xoá.
 

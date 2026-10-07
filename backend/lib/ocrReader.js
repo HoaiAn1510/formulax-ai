@@ -11,14 +11,14 @@ export const OCR_MODEL = "gemini-3.5-flash-lite";
 export const OCR_FALLBACK_MODEL = "gemini-3.1-flash-lite";
 const GEMINI_URL = (model) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
-// Ngân sách mỗi request /api/ocr. Timeout của frontend (OCR_TIMEOUT_MS trong
-// FormulaX-AI/src/lib/ocrApi.js, 45 giây) PHẢI lớn hơn, nếu không học sinh bị tính lượt quét mà
-// không thấy kết quả.
+// Ngân sách mỗi request /api/ocr. Timeout của frontend (callOcr trong
+// FormulaX-AI/src/views/FormulaFinder.jsx, 45 giây) PHẢI lớn hơn, nếu không học sinh bị tính lượt
+// quét mà không thấy kết quả.
 export const OCR_BUDGET_MS = 40_000;
 const PER_CALL_TIMEOUT_MS = 25_000;
 const MIN_CALL_MS = 6_000;
 
-// Ảnh đã nén ở trình duyệt (cạnh dài ≤ 1600px, JPEG 0,8) thường 200–600 KB. 1,5 MB là trần cho ảnh
+// Ảnh đã nén ở trình duyệt (cạnh dài ≤ 2000px, JPEG 0,82 — utils/imageCompress.js) thường 300–700 KB. 1,5 MB là trần cho ảnh
 // nén không được (trình duyệt cũ) — vượt thì 413, không gửi Gemini.
 export const MAX_IMAGE_BYTES = 1_500_000;
 export const MAX_PROBLEMS = 10;
