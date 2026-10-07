@@ -1,11 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, MessageSquare, Camera, X, Paperclip, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock } from "lucide-react";
+import { Send, ArrowLeft, History, MessageSquare, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import StepAnswer from "../components/StepAnswer";
+import ImageScanSheet from "../components/ImageScanSheet";
+import ImageProblemsPanel from "../components/ImageProblemsPanel";
+import ProblemTabs from "../components/ProblemTabs";
+import { compressImageFile } from "../utils/imageCompress";
+import { problemToFinderMessage, nextGuidanceRequest } from "../utils/ocrProblems";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -126,7 +131,12 @@ export default function FormulaFinder({
   const shiftHeldRef = useRef(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [cameraOpen, setCameraOpen] = useState(false);
+  // Luồng ảnh đề: null | { stage: "scanning" } | { stage: "error", message }
+  //   | { stage: "review", problems, selected } | { stage: "guide", items, activeKey, results }
+  const [scanSheetOpen, setScanSheetOpen] = useState(false);
+  const [ocr, setOcr] = useState(null);
+  const [inFlightKey, setInFlightKey] = useState(null);
+  const inFlightRef = useRef(null); // chặn gọi trùng khi StrictMode chạy effect 2 lần
   const [apiError, setApiError] = useState(null);
 
   // Session management
@@ -142,7 +152,6 @@ export default function FormulaFinder({
   const [savedPopup, setSavedPopup] = useState(null);
 
   const chatMessagesRef = useRef(null);
-  const fileInputRef = useRef(null);
   const renameInputRef = useRef(null);
 
   // Giữ sessionsRef luôn sync với state mới nhất
@@ -446,20 +455,130 @@ export default function FormulaFinder({
     }
   };
 
-  // ─── Camera / File ────────────────────────────────────────────────────────
+  // ─── Ảnh đề: chụp/chọn → Gemini đọc → chọn bài → hướng dẫn từng bài ───────
 
-  const handleCapturePhoto = () => {
-    setCameraOpen(false);
-    setMessages(prev => [...prev, { id: Date.now(), sender: "user", text: "Ảnh chụp đề bài từ Camera AI", isImage: true }]);
-    handleSend("Phân tích đề bài hình học: Cho mặt cầu bán kính R = 3cm. Tính thể tích V của khối cầu đó.");
+  // 45 giây PHẢI lớn hơn ngân sách 40 giây/request của backend (OCR_BUDGET_MS trong
+  // backend/lib/ocrReader.js), nếu không học sinh bị tính lượt quét mà không thấy kết quả.
+  const callOcr = async (base64) => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
+    const token = await getAccessToken();
+    let response;
+    try {
+      response = await fetch(`${BACKEND_URL}/api/ocr`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ image: base64 }),
+        signal: controller.signal,
+      });
+    } catch (err) {
+      if (err.name === "AbortError") throw new Error("Đọc ảnh lâu quá. Bạn thử lại nhé.", { cause: err });
+      throw new Error("Không kết nối được tới máy chủ. Bạn kiểm tra mạng rồi thử lại nhé.", { cause: err });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw Object.assign(new Error(data.error || "Chưa đọc được ảnh, bạn thử lại nhé."), { code: data.code });
+    return data;
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setMessages(prev => [...prev, { id: Date.now(), sender: "user", text: "Đã gửi tệp đính kèm", isFile: true, fileName: file.name }]);
-    handleSend(`Phân tích tài liệu đính kèm: ${file.name}.`);
+  const openScanSheet = () => {
+    // Quét ảnh không tính lượt, nhưng hết lượt thì cũng không hướng dẫn được bài nào — báo luôn.
+    if (!isPremium && aiQueriesLeft === 0) {
+      pushLimitHitMessage(`Bạn đã dùng hết ${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`);
+      return;
+    }
+    setScanSheetOpen(true);
   };
+
+  const handlePickImage = async (file) => {
+    setScanSheetOpen(false);
+    setOcr({ stage: "scanning" });
+    try {
+      const { base64 } = await compressImageFile(file);
+      const data = await callOcr(base64);
+      const stamp = Date.now();
+      const problems = (Array.isArray(data.problems) ? data.problems : []).map((p, i) => ({ ...p, key: `p${stamp}-${i}` }));
+      // Ảnh chỉ có một bài thì chọn sẵn bài đó.
+      setOcr({ stage: "review", problems, selected: problems.length === 1 ? [problems[0].key] : [] });
+    } catch (err) {
+      setOcr({ stage: "error", message: err.message });
+    }
+  };
+
+  const startGuide = (keys) => {
+    setOcr(prev => {
+      if (prev?.stage !== "review") return prev;
+      const items = prev.problems.filter(p => keys.includes(p.key));
+      return items.length ? { stage: "guide", items, activeKey: items[0].key, results: {} } : prev;
+    });
+  };
+
+  const setGuideResult = (key, result) => {
+    setOcr(prev => {
+      if (prev?.stage !== "guide") return prev;
+      const results = { ...prev.results };
+      if (result) results[key] = result; else delete results[key];
+      return { ...prev, results };
+    });
+  };
+
+  // Mỗi bài là một câu hỏi độc lập (không gửi lịch sử chat) và tính 1 lượt như câu gõ tay. Đề + câu
+  // trả lời được thêm vào cuộc trò chuyện hiện tại để lưu/đồng bộ như mọi tin nhắn khác.
+  const runGuidance = async (item) => {
+    if (inFlightRef.current) return;
+    inFlightRef.current = item.key;
+    setInFlightKey(item.key);
+    setGuideResult(item.key, { status: "loading" });
+    const message = problemToFinderMessage(item);
+    try {
+      const data = await callAI(message, []);
+      if (typeof data.remaining === "number") setAiQueriesLeft(data.remaining);
+      const answer = {
+        type: data.type,
+        formulaIds: Array.isArray(data.formulaIds) ? data.formulaIds : [],
+        intro: data.intro || "",
+        steps: Array.isArray(data.steps) ? data.steps : [],
+        reminder: data.reminder || "",
+      };
+      setGuideResult(item.key, { status: "done", answer });
+      const now = Date.now();
+      setMessages(prev => [
+        ...prev,
+        { id: now, sender: "user", text: message },
+        { id: now + 1, sender: "bot", text: data.reply || data.intro || "", answer },
+      ]);
+    } catch (error) {
+      if (typeof error.remaining === "number") setAiQueriesLeft(error.remaining);
+      if (error.code === "quota_exceeded" || (error.status === 429 && error.remaining === 0)) {
+        setAiQueriesLeft(0);
+        setGuideResult(item.key, { status: "limit", message: error.message });
+      } else {
+        const isConn = error.message.includes("fetch") || error.message.includes("Failed");
+        setGuideResult(item.key, {
+          status: "error",
+          message: isConn ? "Không kết nối được tới máy chủ AI. Bạn kiểm tra mạng rồi thử lại nhé." : error.message,
+        });
+      }
+    } finally {
+      inFlightRef.current = null;
+      setInFlightKey(null);
+    }
+  };
+
+  // Chỉ gọi AI cho bài đang mở, chưa có kết quả, và khi không có bài nào đang chờ AI. Mở tab khác
+  // trong lúc chờ thì tab đó bắt đầu ngay khi bài trước xong.
+  const guideActiveKey = ocr?.stage === "guide" ? ocr.activeKey : null;
+  const guideResults = ocr?.stage === "guide" ? ocr.results : null;
+  const guideItems = ocr?.stage === "guide" ? ocr.items : null;
+  useEffect(() => {
+    if (!guideResults) return;
+    const key = nextGuidanceRequest({ activeKey: guideActiveKey, results: guideResults, inFlightKey });
+    const item = key && guideItems.find(p => p.key === key);
+    if (item) runGuidance(item);
+    // runGuidance là hàm tạo lại mỗi lần render — chỉ cần chạy lại khi tab/kết quả/bài đang chờ đổi.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guideActiveKey, guideResults, guideItems, inFlightKey]);
 
   const formatDate = (dateStr) => {
     const d = new Date(dateStr);
@@ -472,6 +591,78 @@ export default function FormulaFinder({
   };
 
   // ─── Render ───────────────────────────────────────────────────────────────
+
+  // Luồng ảnh đề chiếm khung chat (ô nhập ẩn) cho tới khi học sinh bấm Đóng/Xong; các bài đã
+  // hướng dẫn nằm sẵn trong cuộc trò chuyện. Đóng giữa chừng thì bài đang chờ AI vẫn được thêm vào
+  // cuộc trò chuyện khi xong (runGuidance không phụ thuộc màn này còn mở hay không).
+  const closeOcr = () => setOcr(null);
+
+  const renderOcrPanel = () => {
+    if (ocr.stage === "scanning") {
+      return (
+        <div className="flex flex-col items-center text-center gap-2 py-10">
+          <div className="flex items-center gap-2 text-[0.85rem] font-bold text-text-muted dark:text-[#94A3B8]">
+            <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
+            <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
+            <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
+            <span>Đang đọc đề trong ảnh...</span>
+          </div>
+          <span className="text-[0.75rem] text-text-muted dark:text-[#94A3B8]">Thường mất khoảng 5–10 giây.</span>
+        </div>
+      );
+    }
+    if (ocr.stage === "error") {
+      return (
+        <div className="flex flex-col items-center text-center gap-3 py-10 px-4 max-w-[420px] mx-auto">
+          <AlertCircle size={26} className="text-error" />
+          <p className="text-[0.88rem] text-primary dark:text-[#E2E8F0] m-0">{ocr.message}</p>
+          <div className="flex gap-2">
+            <button type="button" onClick={openScanSheet} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
+              <Camera size={14} /> Thử lại
+            </button>
+            <button type="button" onClick={closeOcr} className="bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#E2E8F0] border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
+              Đóng
+            </button>
+          </div>
+        </div>
+      );
+    }
+    if (ocr.stage === "review") {
+      return (
+        <ImageProblemsPanel
+          problems={ocr.problems}
+          selected={ocr.selected}
+          onToggle={(key) => setOcr(prev => ({
+            ...prev,
+            selected: prev.selected.includes(key) ? prev.selected.filter(k => k !== key) : [...prev.selected, key],
+          }))}
+          onEdit={(key, patch) => setOcr(prev => ({
+            ...prev,
+            problems: prev.problems.map(p => (p.key === key ? { ...p, ...patch } : p)),
+          }))}
+          onGuide={startGuide}
+          onCancel={closeOcr}
+          onRescan={openScanSheet}
+          aiQueriesLeft={aiQueriesLeft}
+          isPremium={isPremium}
+        />
+      );
+    }
+    return (
+      <ProblemTabs
+        items={ocr.items}
+        activeKey={ocr.activeKey}
+        results={ocr.results}
+        inFlightKey={inFlightKey}
+        onSelect={(key) => setOcr(prev => ({ ...prev, activeKey: key }))}
+        onRetry={(key) => setGuideResult(key, null)}
+        onClose={closeOcr}
+        onUpgrade={() => setActiveTab("premium")}
+        formulas={formulas}
+        onViewDetail={onViewDetail}
+      />
+    );
+  };
 
   const guestExamples = isGuest
     ? GUEST_EXAMPLES
@@ -667,6 +858,8 @@ export default function FormulaFinder({
                   );
                 })}
               </div>
+            ) : ocr ? (
+              renderOcrPanel()
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center text-center py-8 md:py-12 max-w-[500px] mx-auto gap-4">
                 <div className="w-[68px] h-[68px] rounded-full bg-secondary/8 text-secondary flex items-center justify-center">
@@ -812,7 +1005,7 @@ export default function FormulaFinder({
               })
             )}
 
-            {isAnalyzing && (
+            {isAnalyzing && !ocr && (
               <div className="self-start max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white dark:bg-[#1E293B]">
                 <div className="flex items-center gap-2 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8]">
                   <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
@@ -867,26 +1060,18 @@ export default function FormulaFinder({
                 </button>
               </div>
             </div>
-          ) : (
+          ) : ocr ? null : (
           <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
             <div className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] flex items-center gap-2 py-1.5 px-3">
-              {/* Nhập đề bằng ảnh/tệp — đang ẩn qua cờ FINDER_IMAGE_INPUT_ENABLED (config/features.js) */}
+              {/* Nhập đề bằng ảnh — bật/tắt bằng cờ FINDER_IMAGE_INPUT_ENABLED (config/features.js) */}
               {FINDER_IMAGE_INPUT_ENABLED && (
-                <>
-                  <button type="button" onClick={() => setCameraOpen(true)}
-                    className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-1 pl-2"
-                    title="Quét đề bài bằng Camera AI"
-                  >
-                    <Camera size={18} />
-                  </button>
-                  <button type="button" onClick={() => fileInputRef.current?.click()}
-                    className="bg-transparent border-none text-[#94A3B8] cursor-pointer flex items-center justify-center py-2 pr-2 pl-1"
-                    title="Tải đề bài lên từ máy tính"
-                  >
-                    <Paperclip size={18} />
-                  </button>
-                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*,.pdf,.txt,.docx" />
-                </>
+                <button type="button" onClick={openScanSheet} disabled={isAnalyzing}
+                  className="bg-transparent border-none text-[#64748B] dark:text-[#94A3B8] hover:text-accent cursor-pointer flex items-center justify-center py-2 pr-1 pl-1.5 disabled:opacity-50"
+                  title="Gửi ảnh đề bài (chụp hoặc chọn ảnh)"
+                  aria-label="Gửi ảnh đề bài"
+                >
+                  <Camera size={19} />
+                </button>
               )}
               <textarea
                 ref={textareaRef}
@@ -954,45 +1139,8 @@ export default function FormulaFinder({
         </div>
       )}
 
-      {/* ─── Camera Modal ─── */}
-      {cameraOpen && (
-        <div className="fixed inset-0 bg-[rgba(15,23,42,0.75)] backdrop-blur-[4px] z-[1000] flex items-center justify-center p-5">
-          <div className="bg-white rounded-2xl w-full max-w-[420px] p-6 shadow-[0_10px_25px_rgba(0,0,0,0.15)] relative flex flex-col gap-4">
-            <button aria-label="Đóng camera" onClick={() => setCameraOpen(false)} className="absolute top-4 right-4 bg-[#F1F5F9] border-none w-8 h-8 rounded-full cursor-pointer flex items-center justify-center text-[#1E3A5F]">
-              <X size={16} />
-            </button>
-            <div className="text-center mt-2">
-              <h3 className="text-[1.1rem] font-extrabold text-[#1E3A5F] m-0">Chụp ảnh đề bài bằng Camera AI</h3>
-              <p className="text-xs text-text-muted mt-1 mb-0">Đặt công thức/đề bài vào khung quét bên dưới</p>
-            </div>
-            <div className="relative w-full h-[220px] bg-[#0F172A] rounded-xl overflow-hidden flex flex-col items-center justify-center">
-              <div className="absolute top-0 left-0 right-0 h-0.5 bg-success shadow-[0_0_8px_#10B981] animate-[float_3s_infinite_ease-in-out]" />
-              <div className="absolute w-4/5 h-1/2 border-2 border-dashed border-premium rounded-lg shadow-[0_0_0_9999px_rgba(15,23,42,0.4)] z-[2] flex items-center justify-center">
-                <div className="absolute -top-1 -left-1 w-3 h-3 border-t-[3px] border-l-[3px] border-premium" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 border-t-[3px] border-r-[3px] border-premium" />
-                <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-[3px] border-l-[3px] border-premium" />
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-[3px] border-r-[3px] border-premium" />
-              </div>
-              <div className="text-[#E2E8F0] text-[0.9rem] font-mono text-center leading-[1.6] p-5 z-[1]">
-                <div className="text-[0.8rem] text-[#94A3B8]">[ Đề bài mẫu ]</div>
-                <strong>Cho mặt cầu bán kính R = 3cm.</strong><br />
-                <strong>Tính thể tích V của khối cầu đó.</strong>
-              </div>
-              <span className="absolute bottom-3 bg-black/60 text-success text-[0.65rem] py-1 px-2 rounded font-bold tracking-[0.5px]">ĐANG TỰ ĐỘNG LẤY NÉT</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 mt-1">
-              <button
-                onClick={handleCapturePhoto}
-                className="w-14 h-14 rounded-full bg-white border-4 border-accent p-1 cursor-pointer flex items-center justify-center shadow-[0_4px_12px_rgba(217,119,6,0.3)]"
-                title="Chụp ngay"
-              >
-                <div className="w-full h-full rounded-full bg-accent" />
-              </button>
-              <span className="text-xs text-text-muted font-bold">Nhấn nút để quét công thức</span>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ─── Chọn nguồn ảnh đề (kèm thông báo quyền riêng tư) ─── */}
+      {scanSheetOpen && <ImageScanSheet onPick={handlePickImage} onClose={() => setScanSheetOpen(false)} />}
     </div>
   );
 }
