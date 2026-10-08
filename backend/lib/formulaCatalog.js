@@ -134,9 +134,13 @@ function noteForPrompt(f) {
   return note.length > 160 ? `${note.slice(0, 157)}...` : note;
 }
 
-/** Một dòng thư viện trong prompt: "id | tên | công thức | ghi chú". */
+/**
+ * Một dòng thư viện trong prompt: "id | lớp | tên | công thức | ghi chú". Cột lớp để AI ưu tiên công
+ * thức trong chương trình lớp của học sinh (quy tắc 1d) — tiền tố id không đáng tin (gt12-daoham-basic
+ * là lớp 11).
+ */
 export function formatForPrompt(f) {
-  return `${f.id} | ${f.name} | ${f.latex} | ${noteForPrompt(f)}`;
+  return `${f.id} | lớp ${f.grade} | ${f.name} | ${f.latex} | ${noteForPrompt(f)}`;
 }
 
 const SEARCH_INDEX = formulas.map((f) => ({

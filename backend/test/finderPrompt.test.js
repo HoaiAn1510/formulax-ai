@@ -17,7 +17,7 @@ test("prompt caching: tin system #1 giống hệt nhau ở mọi đề, thư vi�
     assert.equal(msgs[0].role, "system");
     assert.equal(msgs[0].content, FINDER_SYSTEM_PROMPT);
     assert.equal(msgs[1].role, "system");
-    assert.match(msgs[1].content, /^THƯ VIỆN \(id \| tên \| công thức \| ghi chú\):\n/);
+    assert.match(msgs[1].content, /^THƯ VIỆN \(id \| lớp \| tên \| công thức \| ghi chú\):\n/);
   }
   // Thư viện khác nhau giữa các đề (đúng là phần thay đổi) nhưng tin #1 thì không.
   assert.notEqual(all[0][1].content, all[1][1].content);
@@ -62,4 +62,34 @@ test("askFinder gửi Groq đúng 2 tin system đầu, tin #1 là phần cố đ
   // Lần hỏi lại = nguyên tin nhắn lần đầu + 2 tin nối thêm → phần đầu trùng khớp, cache được.
   assert.deepEqual(sent[1].slice(0, sent[0].length), sent[0]);
   assert.equal(meta.cachedTokens, 16);
+});
+
+// ─── Lớp của học sinh (2026-10-08) ───────────────────────────────────────────
+test("lớp học sinh: tin system riêng ngay trước đề; chưa chọn lớp thì không có; tin #1 vẫn giống hệt", () => {
+  const q = "Hàm số y = x² − 6x + 5 đồng biến trên khoảng nào?";
+  const history = [{ role: "user", content: "câu trước" }, { role: "assistant", content: "trả lời trước" }];
+  const withGrade = buildFinderMessages({ candidates: [], history, message: q, grade: 10 });
+  assert.deepEqual(withGrade.map((m) => m.role), ["system", "system", "user", "assistant", "system", "user"]);
+  assert.equal(withGrade.at(-2).content, "Học sinh đang học lớp 10.");
+  assert.equal(withGrade.at(-1).content, q); // đề giữ nguyên, không ghép "lớp 10" vào (bộ lọc số)
+  assert.equal(withGrade[0].content, FINDER_SYSTEM_PROMPT);
+  for (const grade of [null, undefined, 9, "10"]) {
+    const msgs = buildFinderMessages({ candidates: [], message: q, grade });
+    assert.equal(msgs.some((m) => m.content.startsWith("Học sinh đang học lớp")), false, String(grade));
+  }
+});
+
+test("quy tắc 1d trong phần cố định; mỗi dòng thư viện có cột lớp", () => {
+  assert.match(FINDER_SYSTEM_PROMPT, /Ưu tiên phương pháp và công thức trong chương trình của lớp học sinh\. Chỉ dùng công thức của lớp cao hơn khi không có cách nào trong chương trình lớp đó\./);
+  const lib = buildLibraryMessage(shortlistFormulas(["Tìm cực trị của y = x^3 - 3x"]));
+  assert.match(lib, /^gt12-daoham-basic \| lớp 11 \|/m); // tiền tố id nói 12 nhưng lớp thật là 11
+  assert.match(lib, /^gt12-cuctrituoc \| lớp 12 \|/m);
+});
+
+test("askFinder gửi dòng lớp học sinh khi biết lớp", async () => {
+  const sent = [];
+  const reply = JSON.stringify({ type: "solution", formula_ids: ["hh10-parabola"], intro: "Dùng đỉnh parabol.", steps: [{ title: "Tìm hoành độ đỉnh", detail: "Bạn tự tính.", expression: "x_I = -\frac{b}{2a}, \text{ với } a = 1, b = -6 \Rightarrow x_I = ?" }], reminder: "Tự tính nhé!" });
+  const groq = { chat: { completions: { create: async (body) => { sent.push(body.messages); return { choices: [{ message: { content: reply } }], usage: {} }; } } } };
+  await askFinder({ groq, message: "Hàm số y = x² − 6x + 5 đồng biến trên khoảng nào?", grade: 10, now: () => 0, deadline: CHAT_BUDGET_MS });
+  assert.equal(sent[0].at(-2).content, "Học sinh đang học lớp 10.");
 });

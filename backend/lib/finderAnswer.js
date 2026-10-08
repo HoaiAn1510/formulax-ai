@@ -97,7 +97,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
   const candidates = shortlistFormulas([message, ...recentUserTexts], 10, { grade });
   // Thứ tự cố định → thư viện → lịch sử → câu hỏi: giữ phần đầu giống hệt nhau cho prompt caching
   // của Groq (xem finderPrompt.js).
-  const messages = buildFinderMessages({ candidates, history, message });
+  const messages = buildFinderMessages({ candidates, history, message, grade });
 
   // cachedTokens: phần prompt Groq lấy từ cache (phần cố định của system prompt đứng đầu). Khi chấm
   // 2026-09-30, token cache KHÔNG bị tính vào hạn mức ngày — theo dõi để biết cache giúp được bao nhiêu.
