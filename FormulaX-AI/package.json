@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "test:data": "node scripts/validate-data.mjs",
     "test:quiz": "node scripts/test-fill-answer.mjs",
-    "test:ocr": "node --test scripts/test-ocr-flow.mjs"
+    "test:ocr": "node --test scripts/test-ocr-flow.mjs",
+    "test:math": "node --test scripts/test-math-lines.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

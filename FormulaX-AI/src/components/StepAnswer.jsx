@@ -1,4 +1,7 @@
+import { useLayoutEffect, useRef, useState } from "react";
 import { MathElement, RichTextRenderer, InlineRichText } from "../utils/katexHelper";
+import FitMath from "./FitMath";
+import { splitMathLines } from "../utils/mathLines";
 
 const SECTION_TITLE = "text-[0.7rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-[#94A3B8] mb-2";
 
@@ -22,6 +25,53 @@ const markBlanksInText = (text) => String(text || "")
     return part.replace(/(=\s*)\?(?=[\s.,;:)]|$)/g, (_, eq) => `${eq}$${BLANK_BOX}$`);
   })
   .join("");
+
+/**
+ * Một dòng gồm nhiều khúc (vd "\text{ với } b = 12," + "c = 5"): vừa bề ngang thì hiện liền một dòng,
+ * không vừa thì xếp mỗi khúc một dòng (đo thật sau khi KaTeX vẽ, không đoán theo số ký tự).
+ */
+function StepLine({ chunks }) {
+  const boxRef = useRef(null);
+  const [stacked, setStacked] = useState(false);
+  const joined = chunks.join(String.raw`\ `);
+
+  useLayoutEffect(() => {
+    const box = boxRef.current;
+    if (!box || chunks.length < 2) return;
+    const check = () => { if (box.scrollWidth > box.clientWidth + 1) setStacked(true); };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(box);
+    if (box.firstElementChild) ro.observe(box.firstElementChild);
+    return () => ro.disconnect();
+  }, [chunks.length, joined]);
+
+  if (chunks.length < 2) return <FitMath math={markBlanksInMath(chunks[0])} />;
+  if (stacked) return chunks.map((c, j) => <FitMath key={j} math={markBlanksInMath(c)} />);
+  return (
+    <div ref={boxRef} className="w-full overflow-hidden">
+      <div className="inline-block min-w-full [&_.katex-display]:!my-1.5">
+        <MathElement math={markBlanksInMath(joined)} block={true} />
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Biểu thức của một bước, tách nhiều dòng ở "với", "⇒" và dấu phẩy ngăn hai biểu thức độc lập
+ * (utils/mathLines.js) để ô "?" luôn nằm trong phần nhìn thấy trên màn hình hẹp. Khúc nào một mình
+ * vẫn quá rộng thì tự thu nhỏ cỡ chữ (FitMath) thay vì bắt cuộn ngang.
+ */
+function StepExpression({ latex }) {
+  return (
+    // .math-block (App.css: margin 12px + padding 8px) cộng margin 1em của .katex-display làm mỗi dòng
+    // cách nhau ~80px khi tách nhiều dòng — thu gọn riêng trong khung biểu thức của bước.
+    <div data-qa-math className="flex flex-col py-1.5 gap-0.5 [&_.math-block]:!my-0 [&_.math-block]:!py-0.5 [&_.katex-display]:!my-0">
+
+      {splitMathLines(latex).map((chunks, i) => <StepLine key={i} chunks={chunks} />)}
+    </div>
+  );
+}
 
 /**
  * Câu trả lời dạng "hướng dẫn tự giải" của AI Finder: công thức sử dụng → các bước → lời nhắc tự
@@ -59,8 +109,9 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
                   <span className="text-[0.88rem] font-extrabold text-primary dark:text-[#E2E8F0]">{f.name}</span>
                   <span className="text-[0.7rem] font-bold text-accent shrink-0 mt-0.5">Xem chi tiết</span>
                 </div>
-                <div className="mt-2 max-w-full overflow-x-auto rounded-lg bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 !text-[#1E3A5F] dark:!text-[#E2E8F0]">
-                  <MathElement math={f.latex} block={true} />
+                {/* Công thức thư viện giữ nguyên (không tách dòng) — quá rộng thì thu nhỏ cho vừa. */}
+                <div data-qa-math className="mt-2 max-w-full overflow-x-auto rounded-lg bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 !text-[#1E3A5F] dark:!text-[#E2E8F0]">
+                  <FitMath math={f.latex} />
                 </div>
               </button>
             ))}
@@ -88,7 +139,7 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
                   )}
                   {st.expression && (
                     <div className="mt-1.5 max-w-full overflow-x-auto rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 !text-[#1E3A5F] dark:!text-[#E2E8F0]">
-                      <MathElement math={markBlanksInMath(st.expression)} block={true} />
+                      <StepExpression latex={st.expression} />
                     </div>
                   )}
                 </div>
