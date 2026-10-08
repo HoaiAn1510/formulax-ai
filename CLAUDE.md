@@ -196,6 +196,13 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
 1. `lib/formulaCatalog.js` lọc tối đa 10 công thức ứng viên từ `formulas.js`: nhóm công thức theo
    dạng bài (`METHOD_GROUPS` — cực trị kéo theo công thức đạo hàm...) được ghim trước, còn lại theo
    từ khóa câu hỏi. Thêm dạng bài mới thì thêm nhóm + test trong `test/formulaCatalog.test.js`.
+   Nhóm lớp 10 (2026-10-08): hàm số bậc hai (có x², không có bậc ≥ 3/mũ/log/lượng giác) + đồng biến /
+   biến thiên / GTLN–GTNN / đỉnh → ghim biến thiên + parabol, KHÔNG ghim đạo hàm; giao điểm parabol với
+   trục → phương trình bậc hai + parabol; từ 2 "góc XYZ" trở lên → côsin, định lý sin, diện tích theo sin.
+   **Theo lớp học sinh** (`grade` chọn ở onboarding, frontend gửi kèm `/api/chat`): công thức lớp cao
+   hơn KHÔNG được ghim ở bất kỳ nhóm nào và bị trừ 0,5 điểm (xếp sau công thức cùng mức liên quan,
+   không loại hẳn — có thể chọn nhầm lớp); chưa chọn lớp thì như cũ. Kiểm tra độ phủ offline:
+   `node backend/scripts/shortlist-coverage.mjs [lớp]` (20 đề lớp 10, phải 20/20).
    So khớp chỉ giữ a–z/0–9 sau khi bỏ dấu, nên ký hiệu ("△", "ΔABC", "⊥") mất hẳn → trước khi so khớp,
    `lib/problemText.js` (`expandShorthand`) đổi ký hiệu và viết tắt của học sinh ("pt", "hs", "đt",
    "tđ", "vt", "ptđt", "đths"...) sang chữ đầy đủ — CHỈ để chọn ứng viên, đề gửi AI vẫn nguyên văn.
@@ -250,6 +257,10 @@ Quy tắc khi sửa:
   được đổi tên điểm/cạnh/biến cho khớp đề (vd định lý côsin cho cạnh c), ngoài ra giữ nguyên.
 - Thư viện không có công thức phù hợp → `no_formula`, nói rõ thư viện chưa có; không gợi ý công
   thức hay tài liệu ngoài.
+- **Kiến thức nền THCS** (quy tắc 1c của prompt, 2026-10-08): AI được dùng KHÔNG cần thẻ công thức,
+  CHỈ hai điều — tổng ba góc tam giác bằng 180° và định lý Pytago. Không thêm vào `formulas.js`.
+  `BACKGROUND_KNOWLEDGE_LATEX` (`lib/finderPrompt.js`) cho bộ lọc "không tính" biết 180, 90 là số có
+  sẵn (thiếu nó thì `A = 180^\circ - B - C` bị bắt nhầm). Mở rộng danh sách phải hỏi chủ dự án.
 - **Model `openai/gpt-oss-120b`**, chọn sau khi chấm cùng bộ câu với `gpt-oss-20b`: lộ số 2/12
   so với 5/12, không lỗi hiển thị LaTeX (20b: 3), không lỗi JSON 400 (20b: 2); đổi lại chậm hơn
   (~2,5s so với 1,4s). Đổi model hoặc thêm ví dụ vào prompt thì chấm lại trên bộ câu thử, chỉ giữ
