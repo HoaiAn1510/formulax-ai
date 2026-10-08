@@ -21,6 +21,7 @@ cd backend && npm run dev          # backend dev (node --watch)
 cd backend && npm start            # backend production
 cd backend && npm test             # test backend (node --test): bộ lọc số, JSON, hoàn lượt, thời gian, OCR
 cd FormulaX-AI && npm run test:ocr # hàm thuần của luồng ảnh đề (tô [?], tính lượt, gọi lần lượt từng bài)
+cd FormulaX-AI && npm run test:math # tách biểu thức dài của AI Finder thành nhiều dòng (utils/mathLines.js)
 ```
 
 ## Schema `formulas.js` — bắt buộc tuân thủ khi thêm/sửa công thức
@@ -271,7 +272,17 @@ Quy tắc khi sửa:
   khách). Tin nhắn chỉ lưu `answer.formulaIds`, không lưu cả object công thức; tin định dạng cũ
   trong `chat_sessions` (`aiResult`) vẫn phải hiển thị được. Tin hệ thống (`isError`,
   `isLimitHit`, `isNotice`) được lưu trong phiên nhưng **không gửi lên AI làm lịch sử**.
-  Biểu thức KaTeX dài cuộn ngang trong khung riêng, không làm tràn trang trên mobile.
+  Biểu thức dài KHÔNG được bắt học sinh cuộn ngang (ô `?` hay nằm ở phần bị khuất): biểu thức của bước
+  được tách dòng ở cấp ngoài cùng (`utils/mathLines.js`: trước "\text{ với }", trước `\Rightarrow`/⇒,
+  tại dấu phẩy ngăn hai biểu thức độc lập; không tách trong ngoặc, phân số, căn) — dòng nhiều khúc vừa
+  thì hiện liền, không vừa thì mỗi khúc một dòng; khúc vẫn quá rộng và thẻ công thức thư viện thì
+  `components/FitMath.jsx` thu nhỏ cỡ chữ (tối thiểu 55%). Công thức thư viện không bao giờ bị tách.
+  Lưu ý Tailwind v4: class utility nằm trong `@layer`, thua CSS không layer của App.css/KaTeX (vd
+  margin của `.math-block`, `.katex-display`) — phải dùng dạng `!` (`[&_.math-block]:!my-0`).
+- **"AI đang bận" (Groq 429 theo phút):** backend trả `retryAfter` (header retry-after → "try again in
+  …" → 60s, trần 120s) và hoàn lượt như cũ; log `[finder:busy]` (loại hạn mức, số giây). Tab bài từ
+  ảnh đếm ngược rồi tự hỏi lại MỘT lần; trong lúc chờ không tab nào gọi AI. Ô chat gõ tay vẫn chỉ báo
+  "AI đang bận" (chưa đếm ngược).
 - **Nhập đề bằng ảnh** bật/tắt bằng cờ `FINDER_IMAGE_INPUT_ENABLED` trong `src/config/features.js`
   (bật từ 2026-10-07 — thay nút camera/ghim giấy giả lập cũ). Xem mục "Đọc ảnh đề" bên dưới.
 
