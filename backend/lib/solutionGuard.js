@@ -533,8 +533,49 @@ function isAttachedToVariable(side, tok) {
  * lộ giá trị ("x=3"); `accepted` là hệ số/số mũ mới hợp lệ, được dùng tiếp ở các bước sau
  * (y' = 3x^2 - 6x - 9 rồi b = -6).
  */
-export function mathLeaks(latex, allowed, questionText = "") {
+// ─── Ngoại lệ HẸP đã được chủ dự án duyệt (2026-10-08): nhắc lại dữ kiện ở cuối biểu thức ──────────
+// "… \text{ vì } a = -2" (sau dấu = cuối cùng là một số) từng bị coi là kết quả tính ra → học sinh thấy
+// "vì a = ?". Chỉ cho qua khi THỎA CẢ BA: (1) vế trái là MỘT ký hiệu đơn chữ thường (không phải ẩn
+// x, y, z, t, không phải đại lượng đề hỏi như h, d, R, S, V, P); (2) đúng cặp "ký hiệu = giá trị" đó đã
+// có ở một bước TRƯỚC của cùng câu trả lời (bước xác định dữ kiện); (3) giá trị đó có trong đề, tính cả
+// dấu âm. Prompt (quy tắc ô trống) là lớp chính — dặn AI viết lý do bằng lời trước biểu thức.
+const RESTATED_SYMBOL = /(?:^|\\text\s*\{[^{}]*\}|[,;:])\s*([a-su-w])\s*$/;
+function isRestatedDatum(lhs, value, question, declared) {
+  if (!declared || !declared.size) return false;
+  const m = String(lhs).match(RESTATED_SYMBOL);
+  if (!m) return false;
+  const sym = m[1];
+  const q = plain(question);
+  if (ASKED_QUANTITIES.some(([kw, re]) => kw.test(q) && re.test(sym))) return false;
+  const v = compact(String(value)).replace(/−/g, "-");
+  if (!declared.has(`${sym}=${v}`)) return false;
+  const signGuard = v.startsWith("-") ? "" : "\\-";
+  return new RegExp(`(?<![\\d.${signGuard}])${escapeRe(v)}(?![\\d.])`).test(compact(normalizeMath(question)).replace(/−/g, "-"));
+}
+
+/** Cặp "ký hiệu đơn = số" khai báo trong một đoạn (vd bước 1 "với $a = -2$, $b = 4$") → "a=-2", "b=4". */
+export function declaredPairs(text) {
+  const out = [];
+  for (const m of String(text || "").matchAll(/(?<![\p{L}\\_])([a-su-w])\s*=\s*([+\-−]?\d+(?:[.,]\d+)?)(?![\d.,]*\d)/gu)) {
+    out.push(`${m[1]}=${m[2].replace(/−/g, "-").replace(/^\+/, "")}`);
+  }
+  return out;
+}
+
+/**
+ * Đại lượng đề hỏi dạng tên đoạn / góc viết hoa: "tính BC", "tìm độ dài cạnh AC", "tính số đo góc A".
+ * Gán đại lượng này bằng MỘT con số là lộ đáp số kể cả khi số đó có trong đề (tam giác đều AB = AC = 5
+ * ⇒ BC = 5) — trước 2026-10-08 lọt vì 5 "có sẵn" (giới hạn đã biết).
+ */
+export function askedTargets(question) {
+  const re = /(?:tính|tìm|xác định)\s+(?:(?:độ dài|số đo|chiều dài)\s+)?(?:(?:cạnh|đoạn thẳng|đoạn|góc)\s+)?([A-Z]{1,3})(?![\p{L}\d])/giu;
+  return [...String(question || "").normalize("NFC").matchAll(re)].map((m) => m[1]).filter((t) => /^[A-Z]+$/.test(t));
+}
+const targetSymbol = (s) => compact(String(s)).replace(/^\\widehat\{([A-Z]{1,3})\}$/, "$1").replace(/^\\angle([A-Z]{1,3})$/, "$1");
+
+export function mathLeaks(latex, allowed, questionText = "", opts = {}) {
   const leaks = [], accepted = [];
+  const targets = askedTargets(questionText);
   const known = (n) => allowed.has(n) || accepted.includes(n);
   const q = compact(normalizeMath(questionText));
   const isClauseSep = (s, i) => (s[i] === ";" || (s[i] === "," && !(/\d/.test(s[i - 1] ?? "") && /\d/.test(s[i + 1] ?? ""))) ? 1 : 0);
@@ -590,6 +631,13 @@ export function mathLeaks(latex, allowed, questionText = "") {
       if (!l || !r) return;
       const [value, other] = isSingleValue(r) && !isSingleValue(l) ? [r, l] : isSingleValue(l) && !isSingleValue(r) ? [l, r] : [null, null];
       if (!value) return;
+      // Đại lượng đề hỏi = một số → luôn là lộ đáp số (xem askedTargets), trừ khi chính đề cho cặp đó.
+      if (op === "=" && value === r && targets.includes(targetSymbol(other)) && !q.includes(compact(`${other}=${value}`))) {
+        leaks.push(compact(`${other}${op}${value}`));
+        return;
+      }
+      // Ngoại lệ hẹp: "… vì a = -2" nhắc lại dữ kiện đã khai báo (xem isRestatedDatum).
+      if (op === "=" && value === r && isRestatedDatum(other, value, questionText, opts.declared)) return;
       const nums = extractNumbers(value);
       const newNums = nums.filter((n) => !known(n));
       const statement = compact(`${other}${op}${value}`);
@@ -635,7 +683,7 @@ export function mathLeaks(latex, allowed, questionText = "") {
 const PROSE_VALUE = /(?<![A-Za-z])((?:[xt](?:_\{?[1-9][0-9,]*\}?)?)|Δ|\\Delta)\s*=\s*((?:[+\-−]|\\pm|±)?\d+(?:[.,]\d+)?)(?![\d.]*(?:[a-zA-Z(^*·]|\s*[+\-−*/^·]))/g;
 
 /** Lộ giá trị số trong một đoạn văn có xen toán $...$: phần chữ xét như cũ, phần $...$ xét như biểu thức. */
-function textLeaks(text, allowed, questionText) {
+function textLeaks(text, allowed, questionText, opts = {}) {
   const s = String(text || "");
   const maths = [...s.matchAll(/\$\$?([^$]+)\$\$?/g)].map((m) => m[1]);
   const prose = s.replace(/\$\$?[^$]+\$\$?/g, " ");
@@ -651,7 +699,7 @@ function textLeaks(text, allowed, questionText) {
   leaks.push(...revealedValueLeaks(normalizeMath(prose), questionText));
   const accepted = [];
   for (const m of maths) {
-    const r = mathLeaks(m, new Set([...allowed, ...accepted]), questionText);
+    const r = mathLeaks(m, new Set([...allowed, ...accepted]), questionText, opts);
     leaks.push(...r.leaks);
     accepted.push(...r.accepted);
   }
@@ -744,7 +792,7 @@ const collapseBlanks = (s) => s.replace(/\?(?:\s*=\s*\?)+/g, "?");
  * khoảng, danh sách x → ký hiệu x_1, x_2 (`symbolFor`, mặc định đánh số riêng cho biểu thức này).
  * Trả về chuỗi đã sạch, hoặc null.
  */
-export function maskMathLeaks(latex, allowed, questionText = "", symbolFor = makeRootSymbols([latex], questionText)) {
+export function maskMathLeaks(latex, allowed, questionText = "", symbolFor = makeRootSymbols([latex], questionText), opts = {}) {
   let s = maskRevealed(String(latex || ""), questionText, symbolFor);
   const parts = splitRelationsRaw(s);
   // y(x_1) = 1^4 - 2 \cdot 1^2 + 3: đối số đã thay nhưng vế phải vẫn thay chính nghiệm đó → vế phải
@@ -774,26 +822,26 @@ export function maskMathLeaks(latex, allowed, questionText = "", symbolFor = mak
       continue;
     }
     if (!isSingleValue(normalizeMath(parts[i]))) continue;
-    if (mathLeaks(`${parts[i - 2]}${op}${parts[i]}`, allowed, questionText).leaks.length) parts[i] = parts[i].match(/^\s*/)[0] + "?";
+    if (mathLeaks(`${parts[i - 2]}${op}${parts[i]}`, allowed, questionText, opts).leaks.length) parts[i] = parts[i].match(/^\s*/)[0] + "?";
   }
   s = parts.join("");
   // Số lạ còn lại (đứng riêng, không phải chỉ số/số mũ) → "?". Số ngay sau "{" vẫn thay được
   // (\sqrt{89 - 80}, \frac{82}{2}) trừ khi "{" là của chỉ số/số mũ (_{20}, ^{2}).
-  for (const n of mathLeaks(s, allowed, questionText).leaks.filter((l) => /^-?\d+(?:\.\d+)?$/.test(l))) {
+  for (const n of mathLeaks(s, allowed, questionText, opts).leaks.filter((l) => /^-?\d+(?:\.\d+)?$/.test(l))) {
     s = s.replace(new RegExp(String.raw`(?<![\d.^_a-zA-Z\\])(?<![\^_]\{)${escapeRe(n)}(?![\d.])`, "g"), "?");
   }
   s = collapseBlanks(s.split(MARK).join(""));
-  return mathLeaks(s, allowed, questionText).leaks.length ? null : s;
+  return mathLeaks(s, allowed, questionText, opts).leaks.length ? null : s;
 }
 
 /** Như maskMathLeaks nhưng cho đoạn văn có xen $...$. Trả về chuỗi đã sạch, hoặc null. */
-export function maskTextLeaks(text, allowed, questionText = "", symbolFor = makeRootSymbols([text], questionText)) {
+export function maskTextLeaks(text, allowed, questionText = "", symbolFor = makeRootSymbols([text], questionText), opts = {}) {
   const s = String(text || "");
   let failed = false;
   const out = s.split(/(\$\$[^$]*\$\$|\$[^$]*\$)/).map((part, i) => {
     if (i % 2 === 1) {
       const fence = part.startsWith("$$") ? "$$" : "$";
-      const masked = maskMathLeaks(part.slice(fence.length, -fence.length), allowed, questionText, symbolFor);
+      const masked = maskMathLeaks(part.slice(fence.length, -fence.length), allowed, questionText, symbolFor, opts);
       if (masked === null) failed = true;
       return masked === null ? part : `${fence}${masked}${fence}`;
     }
@@ -806,7 +854,7 @@ export function maskTextLeaks(text, allowed, questionText = "", symbolFor = make
     }
     return p;
   }).join("");
-  if (failed || textLeaks(out, allowed, questionText).leaks.length) return null;
+  if (failed || textLeaks(out, allowed, questionText, opts).leaks.length) return null;
   return out;
 }
 
@@ -832,10 +880,12 @@ function allowedNumbers(sourceTexts, formulaTexts) {
 export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNames = [], mask = false }) {
   const allowed = allowedNumbers(sourceTexts, formulaTexts);
   const question = sourceTexts[0] || "";
+  // Cặp "ký hiệu = số" đã khai báo ở các bước TRƯỚC bước đang xét (ngoại lệ hẹp isRestatedDatum).
+  let declared = new Set();
   const leakedIn = (...texts) => {
     const leaks = [], accepted = [];
     for (const t of texts) {
-      const r = textLeaks(t, new Set([...allowed, ...accepted]), question);
+      const r = textLeaks(t, new Set([...allowed, ...accepted]), question, { declared });
       leaks.push(...r.leaks);
       accepted.push(...r.accepted);
     }
@@ -865,13 +915,14 @@ export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNam
   const symbolFor = makeRootSymbols(answer.steps.flatMap((st) => [st.detail, st.expression]), question);
   const tryMask = (st) => {
     const allowedNow = new Set(allowed);
-    const detail = maskTextLeaks(st.detail, allowedNow, question, symbolFor);
-    const expression = st.expression ? maskMathLeaks(st.expression, allowedNow, question, symbolFor) : "";
+    const detail = maskTextLeaks(st.detail, allowedNow, question, symbolFor, { declared });
+    const expression = st.expression ? maskMathLeaks(st.expression, allowedNow, question, symbolFor, { declared }) : "";
     if (detail === null || expression === null) return null;
     const recheck = leakedIn(detail, expression ? `$${expression}$` : "");
     return recheck.leaks.length ? null : { step: { ...st, detail, expression }, accepted: recheck.accepted };
   };
-  for (const st of answer.steps) {
+  answer.steps.forEach((st, idx) => {
+    declared = new Set(answer.steps.slice(0, idx).flatMap((prev) => [...declaredPairs(prev.detail), ...declaredPairs(prev.expression)]));
     const { leaks, accepted } = leakedIn(st.detail, st.expression ? `$${st.expression}$` : "");
     const masked = leaks.length && mask ? tryMask(st) : null;
     if (masked) {
@@ -887,7 +938,8 @@ export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNam
       steps.push(st);
       for (const n of accepted) allowed.add(n);
     }
-  }
+  });
+  declared = new Set(); // intro / reminder: không áp ngoại lệ
   flushRun();
 
   const replaced = [];
