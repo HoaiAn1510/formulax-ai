@@ -244,9 +244,18 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
    "Thay số vào công thức". Làm sạch cuối (`dropNumericSubstitutions`, 2026-10-04): dòng biểu thức
    đã thay số (lũy thừa / tích của số có trong đề: `8^2 + 5^2 - 2 \cdot 8 \cdot 5…`) bị bỏ, giữ chữ của
    bước — không tính là vi phạm phải hỏi lại; không bắt `(20-1)d`, `x_2^2`. Giới hạn đã biết: hằng số tính ra trùng số trong đề vẫn lọt (vd
-   $D = -3$ khi đề có điểm $(1;2;3)$); giá trị lượng giác đã thay (`\frac{1}{2}` thay cho
+   $D = -3$ khi đề có điểm $(1;2;3)$) — RIÊNG đại lượng đề hỏi dạng tên đoạn/góc viết hoa ("tính BC",
+   "tìm độ dài cạnh AC", "tính số đo góc A" — `askedTargets`) gán bằng một số thì luôn bị bắt, kể cả số
+   có trong đề (từ 2026-10-08: tam giác AB = AC = 5 "⇒ BC = 5"); giá trị lượng giác đã thay (`\frac{1}{2}` thay cho
    `\cos 60^\circ`) chỉ được prompt chặn, bộ lọc không bắt. Có test trong `backend/test/` — sửa
    guard thì chạy `npm test`.
+   **Ngoại lệ HẸP đã được chủ dự án duyệt (2026-10-08) — không mở rộng thêm khi chưa hỏi:** sau dấu `=`
+   cuối cùng được là một con số CHỈ KHI thỏa cả ba: vế trái là MỘT ký hiệu đơn chữ thường (không phải
+   ẩn x/y/z/t, không phải đại lượng đề hỏi h, d, R, S, V, P); đúng cặp "ký hiệu = giá trị" đó đã có ở một
+   bước TRƯỚC của cùng câu trả lời (bước xác định dữ kiện); giá trị có trong đề, tính cả dấu âm
+   (`isRestatedDatum`, `declaredPairs` trong `lib/solutionGuard.js`; test `test/restatedDatum.test.js`).
+   Lý do: "… vì a = -2" bị thay thành "vì a = ?" (chạy thật). Lớp chính là prompt: quy tắc ô trống dặn
+   viết lý do / dữ kiện nhắc lại bằng lời TRƯỚC biểu thức, không đặt sau dấu `=` cuối cùng.
    **Bài trắc nghiệm** (từ 2026-10-07, `lib/choiceGuard.js`, chỉ chạy khi đề có chữ "trắc nghiệm" hoặc
    nhãn A. B. C.): AI hướng dẫn như bài thường, kết thúc bằng ô `?`, KHÔNG nói phương án nào đúng —
    prompt quy tắc 3b + bộ lọc bắt "đáp án A", "chọn B", "phương án C đúng", "D là đáp án đúng" → hỏi
