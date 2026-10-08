@@ -44,3 +44,16 @@ test("bộ lọc vẫn bắt góc đã tính ra (A = 60°) dù có kiến thức
   const { meta } = finalizeAnswer(parsed, { message: "Cho tam giác ABC có BC = 10, góc B = 45°, góc C = 75°. Tính AC", mask: false });
   assert.ok([...meta.removedSteps, ...meta.maskedSteps].flatMap((s) => s.leaked).includes("60"));
 });
+
+test("số lớp học sinh ('theo chương trình lớp 10') là số có sẵn khi biết lớp; chưa biết lớp thì vẫn bị bắt", () => {
+  const parsed = {
+    type: "solution", formula_ids: ["hh10-parabola"], intro: "Theo chương trình lớp 10, bài này dùng đỉnh parabol.",
+    steps: [{ title: "Tìm hoành độ đỉnh", detail: "Bạn tự tính.", expression: "" }], reminder: "",
+  };
+  const q = "Lập bảng biến thiên của hàm số y = −2x² + 4x + 1";
+  const known = finalizeAnswer(parsed, { message: q, mask: false, grade: 10 });
+  assert.deepEqual(known.meta.replaced, []);
+  assert.match(known.answer.intro, /lớp 10/);
+  const unknown = finalizeAnswer(parsed, { message: q, mask: false });
+  assert.deepEqual(unknown.meta.replaced, ["intro"]);
+});

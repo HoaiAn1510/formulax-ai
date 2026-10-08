@@ -1,5 +1,5 @@
 import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalog.js";
-import { buildFinderMessages, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS, BACKGROUND_KNOWLEDGE_LATEX } from "./finderPrompt.js";
+import { buildFinderMessages, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS, BACKGROUND_KNOWLEDGE_LATEX, gradeLine } from "./finderPrompt.js";
 import {
   parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, dropNumericSubstitutions, toReplyText, extractNumbers, DEFAULT_TEXT,
 } from "./solutionGuard.js";
@@ -157,7 +157,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
   // Quy tắc "ô trống": câu trả lời còn giá trị số tính sẵn → yêu cầu AI viết lại MỘT lần (nếu còn
   // đủ thời gian). Lần viết lại vẫn lộ, hoặc không gọi lại được (hết giờ, 429 theo phút, JSON hỏng)
   // → thay đúng con số lộ bằng "?" (mask). Chỉ khi không thay sạch được mới bỏ bước.
-  const first = finalizeAnswer(parsed, { message, recentUserTexts, mask: false });
+  const first = finalizeAnswer(parsed, { message, recentUserTexts, mask: false, grade });
   const violations = leakList(first.meta);
   let checked = null;
   if (violations.length && deadline - now() >= MIN_CALL_MS) {
@@ -192,7 +192,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
         reparsed = await callRetry(FINDER_FALLBACK_MODEL);
       }
       if (reparsed && reparsed.type === parsed.type) {
-        checked = finalizeAnswer(reparsed, { message, recentUserTexts, mask: true });
+        checked = finalizeAnswer(reparsed, { message, recentUserTexts, mask: true, grade });
         meta.retriedForLeaks.stillLeaked = leakList(checked.meta);
       } else {
         meta.retriedForLeaks.error = reparsed ? "type_changed" : "json_failed";
@@ -203,7 +203,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
       meta.retriedForLeaks.error = `${err?.status || ""} ${err?.code || err?.name || "error"}`.trim();
     }
   }
-  if (!checked) checked = finalizeAnswer(parsed, { message, recentUserTexts, mask: true });
+  if (!checked) checked = finalizeAnswer(parsed, { message, recentUserTexts, mask: true, grade });
   return { answer: checked.answer, reply: checked.reply, meta: { ...meta, ...checked.meta } };
 }
 
@@ -253,7 +253,7 @@ export function numberSourceTexts(message, recentUserTexts = []) {
  * Kiểm tra đối tượng JSON model trả về: chuẩn hoá khung, bỏ id không có thật, bỏ biểu thức lệch
  * ngoặc, lọc bước có số lạ. Tách riêng khỏi lời gọi Groq để test và chấm lại offline được.
  */
-export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = false }) {
+export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = false, grade = null }) {
   const { answer: normalized, droppedIds, aiNote } = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
   const chosen = withBraces.formulaIds.map(getFormula);
@@ -261,7 +261,9 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
   const { answer: guarded, removedSteps, maskedSteps, replaced } = applyNumberGuard(withBraces, {
     sourceTexts,
     // + kiến thức nền THCS (quy tắc 1c): 180° của tổng ba góc là số có sẵn, không phải AI tự tính.
-    formulaTexts: [...chosen.map((f) => `${f.latex}\n${f.explanation || ""}`), BACKGROUND_KNOWLEDGE_LATEX],
+    // + dòng lớp học sinh: AI hay viết "theo chương trình lớp 10" — số lớp không phải số tự tính (chạy
+    //   thật 2026-10-08: thiếu dòng này thì "10" bị bắt, phải hỏi lại 2 lần).
+    formulaTexts: [...chosen.map((f) => `${f.latex}\n${f.explanation || ""}`), BACKGROUND_KNOWLEDGE_LATEX, gradeLine(grade) || ""],
     formulaNames: chosen.map((f) => f.name),
     mask,
   });
