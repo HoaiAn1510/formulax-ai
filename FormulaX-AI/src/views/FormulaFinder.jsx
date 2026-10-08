@@ -260,7 +260,8 @@ export default function FormulaFinder({
     }
   }, [messages, sessionsKey]);
 
-  const callAI = async (userMessage, messageHistory) => {
+  // source: "image" cho bài lấy từ ảnh đề — backend chỉ dùng để ghi log [finder:no_formula].
+  const callAI = async (userMessage, messageHistory, source = "typed") => {
     // Timeout chủ động — không có dòng này, backend treo/mạng rớt sẽ khiến fetch không bao
     // giờ resolve/reject, isAnalyzing kẹt true mãi mãi và nút gửi tin nhắn "chết" vĩnh viễn
     // cho tới khi tải lại trang.
@@ -279,7 +280,7 @@ export default function FormulaFinder({
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ message: userMessage, history: messageHistory }),
+        body: JSON.stringify({ message: userMessage, history: messageHistory, source }),
         signal: controller.signal,
       });
     } catch (err) {
@@ -546,7 +547,7 @@ export default function FormulaFinder({
     setGuideResult(item.key, { status: "loading" });
     const message = problemToFinderMessage(item);
     try {
-      const data = await callAI(message, []);
+      const data = await callAI(message, [], "image");
       if (typeof data.remaining === "number") setAiQueriesLeft(data.remaining);
       const answer = {
         type: data.type,
@@ -555,7 +556,8 @@ export default function FormulaFinder({
         steps: Array.isArray(data.steps) ? data.steps : [],
         reminder: data.reminder || "",
       };
-      setGuideResult(item.key, { status: "done", answer });
+      // no_formula: không tính lượt (backend hoàn), tab hiện nút Sửa đề thay vì ✓.
+      setGuideResult(item.key, { status: answer.type === "no_formula" ? "no_formula" : "done", answer });
       const now = Date.now();
       setMessages(prev => [
         ...prev,
@@ -697,6 +699,17 @@ export default function FormulaFinder({
         busySince={busySince}
         onSelect={(key) => setOcr(prev => ({ ...prev, activeKey: key }))}
         onRetry={(key) => { setBusyUntil(0); setGuideResult(key, null); }}
+        onEditItem={(key, patch) => {
+          // Đề đã sửa → bài coi như mới: xoá kết quả cũ (effect hỏi lại khi tab đang mở), cho phép tự
+          // thử lại lần nữa nếu gặp "AI đang bận".
+          autoRetriedRef.current.delete(key);
+          setOcr(prev => {
+            if (prev?.stage !== "guide") return prev;
+            const results = { ...prev.results };
+            delete results[key];
+            return { ...prev, items: prev.items.map(p => (p.key === key ? { ...p, ...patch } : p)), results };
+          });
+        }}
         onClose={closeOcr}
         onUpgrade={() => setActiveTab("premium")}
         formulas={formulas}

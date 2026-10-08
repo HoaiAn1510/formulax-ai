@@ -1,7 +1,7 @@
 // Test các hàm thuần của luồng "ảnh đề → chọn bài → hướng dẫn từng bài". Chạy: npm run test:ocr
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { markUnclear, hasUnclear, problemToFinderMessage, checkGuidanceQuota, nextGuidanceRequest, busyWaitSeconds, UNCLEAR_MARK } from "../src/utils/ocrProblems.js";
+import { markUnclear, hasUnclear, problemToFinderMessage, checkGuidanceQuota, nextGuidanceRequest, busyWaitSeconds, isGuided, UNCLEAR_MARK } from "../src/utils/ocrProblems.js";
 import { fitWithin, OCR_MAX_SIDE } from "../src/utils/imageCompress.js";
 
 const R = String.raw;
@@ -78,4 +78,13 @@ test("busyWaitSeconds: theo retryAfter của backend, mặc định 60", () => {
   assert.equal(busyWaitSeconds(14.2), 15);
   assert.equal(busyWaitSeconds(undefined), 60);
   assert.equal(busyWaitSeconds(0), 60);
+});
+
+test("isGuided: ✓ chỉ khi đã có hướng dẫn các bước (solution)", () => {
+  assert.equal(isGuided({ status: "done", answer: { type: "solution" } }), true);
+  assert.equal(isGuided({ status: "no_formula", answer: { type: "no_formula" } }), false);
+  assert.equal(isGuided({ status: "done", answer: { type: "no_formula" } }), false);
+  assert.equal(isGuided({ status: "done", answer: { type: "off_topic" } }), false);
+  for (const status of ["error", "busy", "limit", "loading"]) assert.equal(isGuided({ status }), false, status);
+  assert.equal(isGuided(undefined), false);
 });

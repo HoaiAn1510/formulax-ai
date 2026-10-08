@@ -63,6 +63,14 @@ export function nextGuidanceRequest({ activeKey, results, inFlightKey, busyUntil
   return results[activeKey] ? null : activeKey;
 }
 
+/**
+ * Tab đã có hướng dẫn các bước thật chưa — chỉ khi đó mới hiện ✓. Không có công thức (no_formula),
+ * lỗi, AI bận, hết lượt, hay câu trả lời không phải lời giải (off_topic...) đều không tính.
+ */
+export function isGuided(result) {
+  return result?.status === "done" && result.answer?.type === "solution";
+}
+
 /** Thời gian chờ (giây) sau lỗi "AI đang bận" — theo backend (retryAfter), mặc định 60. */
 export function busyWaitSeconds(retryAfter) {
   const s = Number(retryAfter);

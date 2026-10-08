@@ -25,6 +25,16 @@ const MIN_CALL_MS = 8_000;
 const DEFAULT_DAILY_BLOCK_MS = 10 * 60_000;
 export const fallbackState = { primaryBlockedUntil: 0 };
 
+/**
+ * Câu trả lời có tính là 1 lượt hỏi AI không. Không tính (backend hoàn lượt) khi không giao được câu
+ * trả lời thật: JSON hỏng phải trả câu mẫu, hoặc no_formula — thư viện chưa có công thức là lỗ hổng
+ * của thư viện (hoặc app chưa hiểu cách viết của đề, vd "△"), không phải lỗi của học sinh. off_topic
+ * và refuse_answer vẫn tính.
+ */
+export function countsAsTurn(answer, meta) {
+  return !meta?.jsonFailed && answer?.type !== "no_formula";
+}
+
 // Groq không cho biết phải chờ bao lâu thì mặc định 60 giây (hạn mức theo phút). Trần 120 giây: lâu
 // hơn thì là hạn mức ngày — học sinh không nên ngồi đếm ngược, frontend chỉ báo "thử lại sau".
 const DEFAULT_RETRY_AFTER_S = 60;

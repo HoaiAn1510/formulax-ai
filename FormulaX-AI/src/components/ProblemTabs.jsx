@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { X, RotateCcw, Crown, Hourglass } from "lucide-react";
+import { X, RotateCcw, Crown, Hourglass, Pencil, Check, SearchX } from "lucide-react";
 import { RichTextRenderer } from "../utils/katexHelper";
 import StepAnswer from "./StepAnswer";
+import { isGuided } from "../utils/ocrProblems";
 
 const Dots = ({ label }) => (
   <div className="flex items-center gap-2 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8] py-2">
@@ -34,10 +35,19 @@ function useSecondsLeft(until, since = 0) {
  * busyUntil: sau lỗi "AI đang bận" (Groq 429) — đếm ngược; bài có auto = true tự hỏi lại MỘT lần khi
  * hết giờ (FormulaFinder lo việc gọi), bài đã tự hỏi lại rồi thì chỉ còn nút Thử lại.
  */
-export default function ProblemTabs({ items, activeKey, results, inFlightKey, busyUntil = 0, busySince = 0, onSelect, onRetry, onClose, onUpgrade, formulas, onViewDetail }) {
+export default function ProblemTabs({ items, activeKey, results, inFlightKey, busyUntil = 0, busySince = 0, onSelect, onRetry, onEditItem, onClose, onUpgrade, formulas, onViewDetail }) {
   const active = items.find((p) => p.key === activeKey) || items[0];
   const result = results[active.key];
   const secondsLeft = useSecondsLeft(busyUntil, busySince);
+  // Sửa đề ngay trong tab (khi thư viện không tìm được công thức — thường do cách viết đề, vd "△").
+  const [editing, setEditing] = useState(null); // { key, text, figureNote }
+  const isEditing = editing?.key === active.key;
+  const startEdit = () => setEditing({ key: active.key, text: active.text, figureNote: active.figureNote || "" });
+  const saveEdit = () => {
+    if (!editing.text.trim()) return;
+    onEditItem(active.key, { text: editing.text.trim(), figureNote: editing.figureNote.trim() });
+    setEditing(null);
+  };
   const retryBtn = (
     <button type="button" onClick={() => onRetry(active.key)} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
       <RotateCcw size={12} /> Thử lại
@@ -75,7 +85,8 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
               }`}
             >
               {p.label}
-              {r?.status === "done" && <span aria-label="đã có hướng dẫn" className={isActive ? "text-white" : "text-success"}>✓</span>}
+              {/* ✓ CHỈ khi đã có hướng dẫn các bước — không cho no_formula, lỗi, AI bận. */}
+              {isGuided(r) && <span aria-label="đã có hướng dẫn" className={isActive ? "text-white" : "text-success"}>✓</span>}
               {r?.status === "loading" && <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />}
             </button>
           );
@@ -84,10 +95,39 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
 
       <div className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 py-2.5 min-w-0">
         <div className="text-[0.68rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-[#94A3B8] mb-1">Đề bài</div>
-        <div className="chat-bot-text text-[0.86rem] leading-[1.6] text-primary dark:text-[#E2E8F0] overflow-x-auto">
-          <RichTextRenderer text={active.text} />
-        </div>
-        {active.hasFigure && active.figureNote && (
+        {isEditing ? (
+          <div className="flex flex-col gap-2">
+            <textarea
+              aria-label="Sửa đề bài"
+              value={editing.text}
+              onChange={(e) => setEditing((d) => ({ ...d, text: e.target.value }))}
+              rows={4}
+              className="w-full rounded-lg border border-accent bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] p-2 text-[0.85rem] font-medium leading-[1.5] outline-none resize-y font-[inherit]"
+            />
+            {active.hasFigure && (
+              <textarea
+                aria-label="Sửa ghi chú hình vẽ"
+                value={editing.figureNote}
+                onChange={(e) => setEditing((d) => ({ ...d, figureNote: e.target.value }))}
+                rows={2}
+                className="w-full rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] p-2 text-[0.82rem] leading-[1.5] outline-none resize-y font-[inherit]"
+              />
+            )}
+            <div className="flex gap-2 justify-end">
+              <button type="button" onClick={() => setEditing(null)} className="inline-flex items-center gap-1 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#E2E8F0] border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
+                <X size={12} /> Hủy
+              </button>
+              <button type="button" onClick={saveEdit} disabled={!editing.text.trim()} className="inline-flex items-center gap-1 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
+                <Check size={12} /> Lưu và hướng dẫn lại
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="chat-bot-text text-[0.86rem] leading-[1.6] text-primary dark:text-[#E2E8F0] overflow-x-auto">
+            <RichTextRenderer text={active.text} />
+          </div>
+        )}
+        {!isEditing && active.hasFigure && active.figureNote && (
           <div className="text-[0.76rem] text-[#334155] dark:text-[#CBD5E1] mt-1.5 [&_.detail-paragraph-line]:!text-inherit">
             <strong>Hình vẽ cho biết:</strong> <RichTextRenderer text={active.figureNote} />
           </div>
@@ -121,6 +161,22 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
         )}
         {result?.status === "loading" && <Dots label="AI đang phân tích..." />}
         {result?.status === "done" && <StepAnswer answer={result.answer} formulas={formulas} onViewDetail={onViewDetail} />}
+        {result?.status === "no_formula" && (
+          <div className="flex flex-col gap-2.5 items-start">
+            <div className="flex items-start gap-2 text-[0.86rem] leading-[1.55]">
+              <SearchX size={16} className="shrink-0 mt-0.5 text-accent" />
+              <span>{result.answer?.intro || "Thư viện FormulaX chưa có công thức cho dạng bài này."}</span>
+            </div>
+            <span className="text-[0.8rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">
+              Thử viết rõ tên hình hoặc dạng bài, ví dụ "tam giác" thay cho "△". Lần này không bị tính vào lượt hỏi AI của bạn.
+            </span>
+            {!isEditing && (
+              <button type="button" onClick={startEdit} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
+                <Pencil size={12} /> Sửa đề
+              </button>
+            )}
+          </div>
+        )}
         {result?.status === "error" && (
           <div className="flex flex-col gap-2.5 items-start">
             <span className="text-[0.85rem] text-[#b91c1c] dark:text-[#FCA5A5]">{result.message}</span>

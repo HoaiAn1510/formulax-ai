@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { askFinder, numberSourceTexts, dailyLimitBlockMs, fallbackState, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind } from "../lib/finderAnswer.js";
+import { askFinder, numberSourceTexts, dailyLimitBlockMs, fallbackState, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind, countsAsTurn } from "../lib/finderAnswer.js";
 import { FINDER_MODEL, FINDER_FALLBACK_MODEL } from "../lib/finderPrompt.js";
 
 // Groq giả + đồng hồ giả: mỗi lần gọi "tốn" `costMs` và trả lần lượt các nội dung trong `replies`.
@@ -316,4 +316,12 @@ test("rateLimitKind: đọc loại hạn mức để ghi log", () => {
   assert.equal(rateLimitKind(groq429(TPM)), "TPM");
   assert.equal(rateLimitKind(groq429(TPD("1m"))), "TPD");
   assert.equal(rateLimitKind(groq429("lạ")), "unknown");
+});
+
+test("countsAsTurn: no_formula và JSON hỏng KHÔNG tính lượt (hoàn lại); solution/off_topic/refuse_answer tính", () => {
+  assert.equal(countsAsTurn({ type: "solution" }, {}), true);
+  assert.equal(countsAsTurn({ type: "off_topic" }, {}), true);
+  assert.equal(countsAsTurn({ type: "refuse_answer" }, {}), true);
+  assert.equal(countsAsTurn({ type: "no_formula" }, {}), false);
+  assert.equal(countsAsTurn({ type: "unavailable" }, { jsonFailed: true }), false);
 });

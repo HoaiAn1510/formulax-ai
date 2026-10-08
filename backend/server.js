@@ -9,7 +9,8 @@ import payosPaymentRouter from "./routes/payosPayment.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
-import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind } from "./lib/finderAnswer.js";
+import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind, countsAsTurn } from "./lib/finderAnswer.js";
+import { expandShorthand } from "./lib/problemText.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
 import { decodeImagePayload, readProblemsFromImage, OcrError, OCR_BUDGET_MS, MAX_IMAGE_BYTES } from "./lib/ocrReader.js";
@@ -107,8 +108,10 @@ const FREE_AI_DAILY_LIMIT = 10;
 // Ghi log để theo dõi chất lượng AI Finder: câu hỏi bị báo "thư viện chưa có" và các lần bộ
 // lọc phải can thiệp. CHỈ ghi nội dung câu hỏi (tối đa 150 ký tự), type và id công thức —
 // không ghi google_id, email, tên hay token. Riêng no_formula ghi thêm aiNote: lời giải thích
-// của model (≤ 150 ký tự) về công thức/phương pháp còn thiếu — học sinh KHÔNG thấy câu này.
-function logFinderEvents(message, answer, meta, ms) {
+// của model (≤ 150 ký tự) về công thức/phương pháp còn thiếu — học sinh KHÔNG thấy câu này — và
+// source (đề từ ảnh hay gõ tay) + expanded (bộ chuẩn hoá ký hiệu/viết tắt có đổi gì không): đọc
+// log này để biết học sinh còn viết ký hiệu gì app chưa hiểu, rồi bổ sung lib/problemText.js.
+function logFinderEvents(message, answer, meta, ms, source) {
   const base = { q: String(message).slice(0, 150), type: answer.type, ids: answer.formulaIds };
   // Mọi request: số token để theo dõi prompt caching của Groq (cached = phần prompt lấy từ cache,
   // không tính vào hạn mức token/phút, token/ngày). Không ghi câu hỏi ở dòng này.
@@ -120,7 +123,10 @@ function logFinderEvents(message, answer, meta, ms) {
     completionTokens: meta.completionTokens,
     ms,
   }));
-  if (answer.type === "no_formula") console.log("[finder:no_formula]", JSON.stringify({ ...base, aiNote: meta.aiNote || "" }));
+  if (answer.type === "no_formula") {
+    const expanded = expandShorthand(message) !== String(message).normalize("NFC").replace(/[ \t]{2,}/g, " ").trim();
+    console.log("[finder:no_formula]", JSON.stringify({ ...base, source, expanded, aiNote: meta.aiNote || "" }));
+  }
   if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
   // Câu trả lời do model dự phòng (20b) soạn vì model chính hết hạn mức ngày — đếm số dòng này
   // trong Render Logs để biết mỗi ngày bao nhiêu câu phải dùng dự phòng.
@@ -220,12 +226,15 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
 
     // Chọn công thức ứng viên → gọi model → parse JSON → kiểm tra id, ngoặc, số lạ. Xem
     // lib/finderAnswer.js; câu trả lời trả về đây đã qua bộ lọc, không cần tin model.
-    // delivered = false khi JSON hỏng cả 2 lần và phải trả câu mẫu — không tính là đã trả lời.
+    // delivered = false (không tính lượt, hoàn lại) khi JSON hỏng cả 2 lần phải trả câu mẫu, hoặc
+    // no_formula — xem countsAsTurn trong lib/finderAnswer.js.
+    // source: frontend gửi "image" cho bài lấy từ ảnh đề; mọi giá trị khác coi là gõ tay. Chỉ để ghi log.
+    const source = req.body?.source === "image" ? "image" : "typed";
     const ask = async () => {
       const startedAt = Date.now();
       const out = await askFinder({ groq, message, history: chatHistory, deadline: requestDeadline });
-      logFinderEvents(message, out.answer, out.meta, Date.now() - startedAt);
-      return { ...out, delivered: !out.meta.jsonFailed };
+      logFinderEvents(message, out.answer, out.meta, Date.now() - startedAt, source);
+      return { ...out, delivered: countsAsTurn(out.answer, out.meta) };
     };
 
     // Premium: không đếm lượt. Free: xem lib/quotaFlow.js — tăng lượt TRƯỚC khi gọi Groq (RPC
