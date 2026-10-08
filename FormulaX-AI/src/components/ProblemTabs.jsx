@@ -12,15 +12,19 @@ const Dots = ({ label }) => (
   </div>
 );
 
-/** Số giây còn lại tới mốc `until` (ms), cập nhật mỗi nửa giây; 0 khi đã qua. */
-function useSecondsLeft(until) {
+/**
+ * Số giây còn lại tới mốc `until` (ms), cập nhật mỗi nửa giây; 0 khi đã qua. `since` = lúc bắt đầu
+ * chờ (do nơi gọi ghi lại): lần vẽ đầu sau khi bắt đầu chờ, `now` còn là mốc cũ từ lúc mở tab — lấy
+ * mốc muộn hơn để không hiện số giây lớn hơn thật.
+ */
+function useSecondsLeft(until, since = 0) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (!until || until <= Date.now()) return;
     const id = setInterval(() => setNow(Date.now()), 500);
     return () => clearInterval(id);
   }, [until]);
-  return until ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
+  return until ? Math.max(0, Math.ceil((until - Math.max(now, since)) / 1000)) : 0;
 }
 
 /**
@@ -30,10 +34,10 @@ function useSecondsLeft(until) {
  * busyUntil: sau lỗi "AI đang bận" (Groq 429) — đếm ngược; bài có auto = true tự hỏi lại MỘT lần khi
  * hết giờ (FormulaFinder lo việc gọi), bài đã tự hỏi lại rồi thì chỉ còn nút Thử lại.
  */
-export default function ProblemTabs({ items, activeKey, results, inFlightKey, busyUntil = 0, onSelect, onRetry, onClose, onUpgrade, formulas, onViewDetail }) {
+export default function ProblemTabs({ items, activeKey, results, inFlightKey, busyUntil = 0, busySince = 0, onSelect, onRetry, onClose, onUpgrade, formulas, onViewDetail }) {
   const active = items.find((p) => p.key === activeKey) || items[0];
   const result = results[active.key];
-  const secondsLeft = useSecondsLeft(busyUntil);
+  const secondsLeft = useSecondsLeft(busyUntil, busySince);
   const retryBtn = (
     <button type="button" onClick={() => onRetry(active.key)} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
       <RotateCcw size={12} /> Thử lại

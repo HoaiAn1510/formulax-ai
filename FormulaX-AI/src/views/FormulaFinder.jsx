@@ -139,6 +139,7 @@ export default function FormulaFinder({
   const inFlightRef = useRef(null); // chặn gọi trùng khi StrictMode chạy effect 2 lần
   // Sau lỗi "AI đang bận": mốc hết chờ (ms), và các bài đã được tự hỏi lại một lần.
   const [busyUntil, setBusyUntil] = useState(0);
+  const [busySince, setBusySince] = useState(0);
   const autoRetriedRef = useRef(new Set());
   const [apiError, setApiError] = useState(null);
 
@@ -569,7 +570,9 @@ export default function FormulaFinder({
       } else if (error.code === "ai_busy") {
         // Groq hết hạn mức token/PHÚT của cả app (lượt đã được backend hoàn). Chờ đúng thời gian Groq
         // báo rồi tự hỏi lại MỘT lần cho bài này; lần sau vẫn bận thì chỉ còn nút Thử lại.
-        setBusyUntil(Date.now() + busyWaitSeconds(error.retryAfter) * 1000);
+        const startedWaiting = Date.now();
+        setBusySince(startedWaiting);
+        setBusyUntil(startedWaiting + busyWaitSeconds(error.retryAfter) * 1000);
         const auto = !autoRetriedRef.current.has(item.key);
         autoRetriedRef.current.add(item.key);
         setGuideResult(item.key, { status: "busy", auto });
@@ -691,6 +694,7 @@ export default function FormulaFinder({
         results={ocr.results}
         inFlightKey={inFlightKey}
         busyUntil={busyUntil}
+        busySince={busySince}
         onSelect={(key) => setOcr(prev => ({ ...prev, activeKey: key }))}
         onRetry={(key) => { setBusyUntil(0); setGuideResult(key, null); }}
         onClose={closeOcr}
