@@ -74,6 +74,29 @@ test("viết tắt đứng riêng → từ đầy đủ", () => {
   for (const [input, want] of cases) assert.equal(expandShorthand(input), want, input);
 });
 
+test("viết tắt bổ sung 2026-10-08: ptb2, tgv, hcn, hbh, đtròn, đk, mp, csc, csn", () => {
+  const cases = [
+    ["Giải ptb2 x^2 - 3x + 2 = 0", "Giải phương trình bậc hai x^2 - 3x + 2 = 0"],
+    ["Cho tgv ABC tại A", "Cho tam giác vuông ABC tại A"],
+    ["Tính diện tích hcn có chiều dài 5", "Tính diện tích hình chữ nhật có chiều dài 5"],
+    ["Cho hbh ABCD", "Cho hình bình hành ABCD"],
+    ["Viết pt đtròn tâm I(1; 2)", "Viết phương trình đường tròn tâm I(1; 2)"],
+    ["Tìm đk xác định", "Tìm điều kiện xác định"],
+    ["Viết pt mp (P)", "Viết phương trình mặt phẳng (P)"],
+    ["Cho csc có u1 = 2, d = 3", "Cho cấp số cộng có u1 = 2, d = 3"],
+    ["Cho csn có u1 = 3, q = 2", "Cho cấp số nhân có u1 = 3, q = 2"],
+  ];
+  for (const [input, want] of cases) assert.equal(expandShorthand(input), want, input);
+  // Đứng riêng mới thay: "mp3", "hcnx" không đổi.
+  assert.equal(expandShorthand("file mp3"), "file mp3");
+  assert.equal(expandShorthand("Đặt hcnx = 2"), "Đặt hcnx = 2");
+});
+
+test("viết tắt bổ sung giúp chọn đúng công thức như khi viết đủ", () => {
+  assert.deepEqual(ids("Cho csc có u1 = 2, d = 3. Tính u10"), ids("Cho cấp số cộng có u1 = 2, d = 3. Tính u10"));
+  assert.deepEqual(ids("Giải ptb2 x^2 - 3x + 2 = 0"), ids("Giải phương trình bậc hai x^2 - 3x + 2 = 0"));
+});
+
 test("không thay viết tắt nằm trong từ khác", () => {
   assert.equal(expandShorthand("Cho điểm Apt và tập hst"), "Cho điểm Apt và tập hst");
   assert.equal(expandShorthand("ptđt"), "phương trình đường thẳng"); // không ra "phương trìnhđt"

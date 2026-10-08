@@ -23,6 +23,15 @@ const SYMBOLS = [
 // ĐỨNG RIÊNG — không thay "pt" trong "ptđt" đã xử lý, hay trong một từ khác.
 const ABBREVIATIONS = [
   ["ptđt", "phương trình đường thẳng"],
+  ["ptb2", "phương trình bậc hai"],
+  ["đtròn", "đường tròn"],
+  ["tgv", "tam giác vuông"],
+  ["hcn", "hình chữ nhật"],
+  ["hbh", "hình bình hành"],
+  ["csc", "cấp số cộng"],
+  ["csn", "cấp số nhân"],
+  ["đk", "điều kiện"],
+  ["mp", "mặt phẳng"],
   ["đths", "đồ thị hàm số"],
   ["bpt", "bất phương trình"],
   ["hpt", "hệ phương trình"],
