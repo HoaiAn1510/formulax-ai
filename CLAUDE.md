@@ -196,6 +196,14 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
 1. `lib/formulaCatalog.js` lọc tối đa 10 công thức ứng viên từ `formulas.js`: nhóm công thức theo
    dạng bài (`METHOD_GROUPS` — cực trị kéo theo công thức đạo hàm...) được ghim trước, còn lại theo
    từ khóa câu hỏi. Thêm dạng bài mới thì thêm nhóm + test trong `test/formulaCatalog.test.js`.
+   So khớp chỉ giữ a–z/0–9 sau khi bỏ dấu, nên ký hiệu ("△", "ΔABC", "⊥") mất hẳn → trước khi so khớp,
+   `lib/problemText.js` (`expandShorthand`) đổi ký hiệu và viết tắt của học sinh ("pt", "hs", "đt",
+   "tđ", "vt", "ptđt", "đths"...) sang chữ đầy đủ — CHỈ để chọn ứng viên, đề gửi AI vẫn nguyên văn.
+   Lỗi thật 2026-10-08: "… của △ có 3 cạnh 5, 12, 13" mất định lý côsin + diện tích theo sin khỏi 10 ứng
+   viên → no_formula. Δ đứng riêng (biệt thức) giữ nguyên; "tg" chỉ là tam giác khi đi với tên hình /
+   "vuông, cân, đều, có…" ("tg x" = tang theo sách cũ). Thêm viết tắt mới thì thêm test trong
+   `test/problemText.test.js`; xem log `[finder:no_formula]` (có `source` ảnh/gõ tay, `expanded`) để
+   biết học sinh còn viết gì app chưa hiểu.
 2. `lib/finderPrompt.js` dựng tin nhắn theo thứ tự CỐ ĐỊNH để Groq cache phần đầu (token lấy từ cache
    không tính vào hạn mức token/phút, token/ngày): tin system #1 `FINDER_SYSTEM_PROMPT` (quy tắc + ví dụ,
    giống hệt nhau từng byte ở mọi câu hỏi) → tin system #2 thư viện ứng viên → lịch sử → câu hỏi.
@@ -263,7 +271,9 @@ Quy tắc khi sửa:
   Premium không giới hạn, khách (Supabase anonymous) bị chặn 403. Lượt được tăng TRƯỚC khi gọi
   Groq rồi **hoàn lại** (`refund_ai_usage` — migration 007, qua `lib/quotaFlow.js`) trong mọi
   trường hợp không giao được câu trả lời: vượt hạn mức, Groq 429 (trả `code: "ai_busy"`), Groq
-  lỗi/timeout, JSON hỏng.
+  lỗi/timeout, JSON hỏng, và **`no_formula`** (từ 2026-10-08, `countsAsTurn` trong
+  `lib/finderAnswer.js` — thư viện thiếu / app chưa hiểu cách viết đề không phải lỗi của học sinh).
+  `off_topic`, `refuse_answer` vẫn tính lượt.
 - **Log:** chỉ ghi nội dung câu hỏi (cắt ≤ 150 ký tự), `type`, id công thức. KHÔNG ghi
   google_id, email, tên hay token. Mọi request có một dòng `[finder:usage]` (model, attempts,
   promptTokens, cachedTokens, completionTokens, ms — không có câu hỏi) để theo dõi prompt caching;
@@ -320,7 +330,9 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
   nhiều hơn số lượt còn lại thì báo trước, không gọi.
 - **Tab từng bài:** CHỈ gọi AI Finder cho tab đang mở, chưa có kết quả, và **không gọi song song** —
   mở tab khác trong lúc chờ thì bắt đầu ngay khi bài trước xong (`nextGuidanceRequest`). Lỗi không tự
-  gọi lại (phải bấm Thử lại). Tin gửi AI = đề đã xác nhận + "(Hình vẽ cho biết: …)", không kèm lịch
+  gọi lại (phải bấm Thử lại). Tab chỉ có ✓ khi đã có hướng dẫn các bước (`isGuided`) — không cho
+  no_formula, lỗi, AI bận. `no_formula` hiện gợi ý "viết rõ tên hình…" + nút **Sửa đề** ngay trong tab
+  (lưu xong thì hỏi lại). Bài từ ảnh gửi `source: "image"` lên `/api/chat` (chỉ để ghi log). Tin gửi AI = đề đã xác nhận + "(Hình vẽ cho biết: …)", không kèm lịch
   sử; đề + câu trả lời được thêm vào cuộc trò chuyện hiện tại để lưu/đồng bộ như tin gõ tay.
 - **Thông báo quyền riêng tư** nằm ở hằng số `OCR_PRIVACY_NOTICE` (`src/config/features.js`). Đang dùng
   gói Gemini MIỄN PHÍ — Google có thể dùng nội dung để cải thiện dịch vụ, câu thông báo phải nói thật
