@@ -442,7 +442,25 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
   mũi tên (`x: -\infty \rightarrow x_I \rightarrow +\infty ;\; y: \uparrow y_I \downarrow`, chạy thật
   2026-10-08). Cần một dạng dữ liệu riêng cho bước "bảng biến thiên" để frontend vẽ bảng thật.
 - **AI Finder — không hỏi lại cùng một ô `?` ở nhiều bước:** cùng lần chạy đó, `y_I = ?` được hỏi ở
-  bước tìm đỉnh rồi hỏi lại ở bước lập bảng; các bước sau nên gọi kết quả bằng ký hiệu (`y_I`).
+  bước tìm đỉnh rồi hỏi lại ở bước lập bảng; lần sau `\Delta = ?` lặp lại trong biểu thức bước sau.
+  Các bước sau nên gọi kết quả bằng ký hiệu (`y_I`, `\Delta`).
+
+**AI Finder tạm dừng chỉnh từ 2026-10-08 (trước đợt lớp 10 dùng thử).** Các điểm chưa đẹp còn lại:
+- **Thẻ `hh10-parabola`:** phần giải thích ghi "đỉnh là cực tiểu / cực đại" (thuật ngữ lớp 12). CHƯA
+  sửa — chờ nhóm gửi nguyên văn SGK Toán 10 KNTT Bài 16. Thẻ này, `ds10-phuongtrinh-bac2`,
+  `ds10-bpt-bac2` còn thiếu `sgk_source`.
+- **Thư viện thiếu (chờ đối chiếu SGK giấy, KHÔNG tự thêm):** S = abc/(4R), S = pr, hệ quả định lý
+  côsin `cos A = (b² + c² − a²)/(2bc)`, độ dài đường trung tuyến (chưa chắc có trong lý thuyết KNTT 10),
+  giao điểm parabol với trục tung `(0; c)`.
+- **Đề lớp 10 về hàm bậc hai:** công thức đạo hàm vẫn ở vị trí #4 trong 10 ứng viên (qua từ khoá
+  "đồng biến"); AI không dùng nhờ quy tắc 1d nhưng chưa loại khỏi danh sách (đã quyết định không tăng
+  mức trừ điểm).
+- **Câu trả lời bảng biến thiên đôi khi bỏ bước nêu khoảng đồng biến / nghịch biến** (chạy thật
+  2026-10-08, lần thứ ba) — chỉ còn "tìm đỉnh" rồi "lập bảng".
+- **Ô chat gõ tay:** "AI đang bận" chưa có đếm ngược / tự hỏi lại như tab bài từ ảnh.
+- **Bộ lọc "không tính":** hằng số tính ra trùng số trong đề vẫn lọt, trừ đại lượng đề hỏi dạng tên
+  đoạn/góc viết hoa (`askedTargets`); giá trị lượng giác đã thay (`\frac{1}{2}` thay `\cos 60^\circ`)
+  chỉ được prompt chặn.
 
 - **OCR — trường `occlusions` (sau đợt cho học sinh lớp 10 dùng thử):** yêu cầu Gemini liệt kê vật
   che lên vùng chữ (bút, tay, bóng); backend đánh dấu bài có `occlusions` khác rỗng là cần kiểm tra.
