@@ -7,6 +7,7 @@
 // dòng import dưới đây làm backend dừng ngay khi khởi động — lỗi rõ ràng, không chạy âm thầm
 // với danh sách rỗng.
 import { formulas } from "../../FormulaX-AI/src/data/formulas.js";
+import { expandShorthand } from "./problemText.js";
 
 const byId = new Map(formulas.map((f) => [f.id, f]));
 
@@ -122,7 +123,10 @@ const SEARCH_INDEX = formulas.map((f) => ({
  */
 // limit 10 (trước là 15): mỗi dòng công thức ~128 token. Chấm 2026-09-30 trên 20 câu: 10 ứng viên
 // giảm ~11% token/câu (5.123 → 4.574), no_formula và lộ giá trị số không đổi (2/20, 0).
-export function shortlistFormulas(texts, limit = 10) {
+export function shortlistFormulas(rawTexts, limit = 10) {
+  // Ký hiệu/viết tắt của học sinh ("△", "ΔABC", "pt", "tg"...) → chữ đầy đủ, CHỈ để so khớp từ khoá
+  // (lib/problemText.js). Đề gửi AI vẫn nguyên văn.
+  const texts = rawTexts.filter(Boolean).map(expandShorthand);
   const pinned = [];
   for (const text of texts.filter(Boolean)) for (const id of methodGroupIds(text)) if (!pinned.includes(id)) pinned.push(id);
   const pinnedFormulas = pinned.slice(0, Math.min(MAX_PINNED, limit)).map(getFormula).filter(Boolean);
