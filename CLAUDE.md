@@ -283,10 +283,18 @@ duyệt (`utils/imageCompress.js`: cạnh dài ≤ 2000px, JPEG 0,82, xoay theo 
 màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từng bài (`ProblemTabs.jsx`).
 - **Backend** (`lib/ocrReader.js`): model `gemini-3.5-flash-lite`, dự phòng `gemini-3.1-flash-lite`
   (429/5xx/timeout/JSON hỏng → dự phòng một lần; hạn mức tính riêng từng model). Chế độ JSON
-  (`responseMimeType`), **parse thường trước, chỉ sửa escape khi thất bại** — sửa escape trước làm
-  `\nA.` (xuống dòng trước phương án) thành chữ "\nA". Câu lệnh `lib/ocrPrompt.js` là **nguyên văn đã
-  duyệt** — không sửa chữ nào khi chưa hỏi; đổi thì chạy lại bài thử ảnh (`scratchpad/ocr-test`, đã
-  gitignore vì ảnh có chữ viết học sinh). Ảnh kiểm tra theo byte đầu (JPEG/PNG/WebP), tối đa 1,5 MB;
+  (`responseMimeType`) nhưng Gemini VẪN có lúc viết lệnh LaTeX một dấu `\` — JSON hỏng (`\circ`) hoặc
+  hợp lệ mà sai nghĩa (`\neq` → xuống dòng + "eq", `\frac` → ký tự `\f`). Vì vậy **không parse
+  "thường" trước**: `parseOcrJson` luôn chạy `keepOcrNewlines` ("\n" là xuống dòng trừ khi là lệnh
+  LaTeX bắt đầu bằng n — `\neq`, `\nu`, `\not`, `\nabla`...) rồi sửa escape rồi parse. Câu lệnh
+  `lib/ocrPrompt.js` là **nguyên văn đã duyệt** (quy tắc 5 bản v2 từ 2026-10-08) — không sửa chữ nào
+  khi chưa hỏi; đổi thì chạy lại bài thử ảnh (`scratchpad/ocr-test`, đã gitignore vì ảnh có chữ viết
+  học sinh; ví dụ trong câu lệnh không được trùng đề của ảnh thử).
+- **Giới hạn đã biết — model vẫn đoán số bị che:** ảnh 04 (đầu bút che một phần chữ số) cả Flash-Lite
+  lẫn 3.5 Flash đều điền số thay vì `[?]`, kể cả với quy tắc 5 v2 (thử 2026-10-08). Lớp bảo vệ chính là
+  **ảnh gốc hiện trên màn chọn bài** (thu nhỏ, bấm để phóng to — `ImageZoomViewer.jsx`, tự xử lý chụm
+  2 ngón) + dòng nhắc "Kiểm tra lại từng con số với ảnh trước khi chọn bài". Ảnh là object URL của
+  bản đã nén, chỉ trong trình duyệt, revoke khi rời màn chọn bài. Ảnh kiểm tra theo byte đầu (JPEG/PNG/WebP), tối đa 1,5 MB;
   route có parser JSON riêng (các route khác giữ 64kb). Ngân sách 40s (`OCR_BUDGET_MS`) < timeout
   frontend 45s (`callOcr` trong `FormulaFinder.jsx`).
 - **Giới hạn quét** (không tính vào 10 lượt AI Finder): Free 20/ngày, Premium 50/ngày (bảng
@@ -382,6 +390,11 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 - **Không truy vấn database production (Supabase thật) khi chưa hỏi người dùng — kể cả truy vấn chỉ đọc**, kể cả bằng `SUPABASE_SERVICE_ROLE_KEY` có sẵn trong `backend/.env`. Khi được phép: chỉ in **số liệu tổng hợp** (số bản ghi, số tài khoản, tỉ lệ…), không in `google_id`, email, tên hay bất kỳ dữ liệu cá nhân nào; script chỉ đọc, không ghi/xoá.
 
 ## Việc sau
+
+- **OCR — trường `occlusions` (sau đợt cho học sinh lớp 10 dùng thử):** yêu cầu Gemini liệt kê vật
+  che lên vùng chữ (bút, tay, bóng); backend đánh dấu bài có `occlusions` khác rỗng là cần kiểm tra.
+  Lý do: quy tắc 5 v2 không làm model đánh `[?]` cho số bị che (ảnh 04, 2026-10-08), dù model có nhận
+  ra cây bút. Phải chấm lại trên cả 4 ảnh thử trước khi dùng.
 
 - **Gia hạn khi còn Premium — ngày hết hạn hiển thị có thể là ngày cũ** cho tới lần tải sau
   (2026-10-02). Sau khi payOS trả về `payment=success`, `PremiumUpgrade.jsx` kiểm tra lại trạng
