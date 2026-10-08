@@ -60,3 +60,59 @@ test("chuẩn hoá NFKD: log₂ vẫn khớp từ khóa logarit, x³ không làm
   assert.ok(ids(["log₂(x) = 3"]).includes("gt12-logarit"));
   assert.ok(ids(["Tìm cực trị của y = x³ + 1"]).includes("gt12-cuctrituoc"));
 });
+
+// ─── 2026-10-08: hàm bậc hai lớp 10, giao điểm với trục, tam giác không nêu tên, xếp hạng theo lớp ───
+const DERIV = ["gt12-tinhdondieu-daoham", "gt12-daoham-basic", "gt11-daoham-tonghieu", "gt12-gtln-gtnn", "gt12-cuctrituoc"];
+const top = (q, grade = null) => shortlistFormulas([q], 10, { grade }).map((f) => f.id);
+
+test("hàm bậc hai: ghim công thức lớp 10 (biến thiên, parabol), KHÔNG ghim đạo hàm", () => {
+  for (const q of ["Hàm số y = x² − 6x + 5 đồng biến trên khoảng nào", "Lập bảng biến thiên của hàm số y = −2x² + 4x + 1", "Tìm giá trị lớn nhất của y = -x^2 + 4x"]) {
+    const pinned = methodGroupIds(q);
+    assert.deepEqual(pinned.slice(0, 2), ["ds10-hamso-bachai-bienthien", "hh10-parabola"], q);
+    assert.equal(pinned.some((id) => DERIV.includes(id)), false, q);
+  }
+  // Bậc ba trở lên / hàm mũ vẫn dùng đạo hàm như cũ.
+  assert.ok(methodGroupIds("Hàm số y = x^3 - 3x đồng biến trên khoảng nào").includes("gt12-tinhdondieu-daoham"));
+  assert.ok(methodGroupIds("Tìm khoảng đồng biến của y = x⁴ − 2x²").includes("gt12-tinhdondieu-daoham"));
+});
+
+test("giao điểm parabol với trục hoành/tung → ghim phương trình bậc hai + parabol", () => {
+  assert.deepEqual(methodGroupIds("Tìm giao điểm của parabol y = x² − 3x + 2 với trục hoành"), ["ds10-phuongtrinh-bac2", "hh10-parabola"]);
+  assert.deepEqual(methodGroupIds("Tìm giao điểm của đồ thị y = x^2 - 4 với Ox").slice(0, 1), ["ds10-phuongtrinh-bac2"]);
+  // Đường thẳng (không có x², không parabol) không ghim nhóm này.
+  assert.deepEqual(methodGroupIds("Tìm giao điểm của đường thẳng y = 2x + 1 với trục hoành"), []);
+});
+
+test("tam giác không nêu tên (từ 2 góc trở lên) → ghim côsin, định lý sin, diện tích theo sin", () => {
+  const q = String.raw`Từ $2$ vị trí $A$ và $B$ cách nhau $50\text{ m}$, người ta nhìn thấy đỉnh $C$ của một ngọn tháp với góc $\widehat{CAB} = 60^\circ$ và góc $\widehat{CBA} = 70^\circ$. Tính $AC$`;
+  assert.ok(top(q).includes("hh10-dinhly-sin"));
+  assert.deepEqual(methodGroupIds("Cho tam giác ABC có BC = 10, góc B = 45°, góc C = 75°. Tính AC"), ["hh10-cosin", "hh10-dinhly-sin", "hh10-dientich-sinC"]);
+  // Chỉ một góc: không ghim (từ khoá "tam giác" đã đủ).
+  assert.deepEqual(methodGroupIds("Cho tam giác ABC có AB = 6, AC = 8, góc A = 60°. Tính BC"), []);
+});
+
+test("lớp 10: đề đồng biến hàm bậc hai không có công thức đạo hàm trong 3 vị trí đầu", () => {
+  const got = top("Hàm số y = x² − 6x + 5 đồng biến trên khoảng nào", 10);
+  assert.equal(got.slice(0, 3).some((id) => DERIV.includes(id)), false);
+  assert.ok(got.includes("ds10-hamso-bachai-bienthien"));
+});
+
+test("lớp 10: không ghim công thức lớp 11–12 ở BẤT KỲ nhóm nào; vẫn có thể vào danh sách qua từ khoá", () => {
+  const q = "Tìm cực trị của hàm số y = x^3 - 3x + 2";
+  assert.deepEqual(methodGroupIds(q, 10), ["ds10-phuongtrinh-bac2"]); // cực trị: chỉ còn phương trình bậc hai
+  assert.ok(methodGroupIds(q, null).includes("gt12-cuctrituoc")); // chưa chọn lớp: như cũ
+  assert.ok(top(q, 10).includes("gt12-cuctrituoc")); // không loại hẳn (có thể chọn nhầm lớp)
+});
+
+test("lớp 11: không ghim công thức lớp 12, vẫn ghim công thức lớp 11", () => {
+  const pinned = methodGroupIds("Hàm số y = x^3 - 3x đồng biến trên khoảng nào", 11);
+  assert.equal(pinned.includes("gt12-tinhdondieu-daoham"), false);
+  assert.ok(pinned.includes("gt11-daoham-tonghieu"));
+});
+
+test("trừ điểm theo lớp chỉ đổi thứ tự giữa công thức CÙNG mức liên quan", () => {
+  // Chưa chọn lớp: kết quả y như trước (không trừ điểm).
+  assert.deepEqual(top("Tính đạo hàm của y = x^3", null), shortlistFormulas(["Tính đạo hàm của y = x^3"]).map((f) => f.id));
+  // Lớp 10 hỏi đạo hàm (lớp 11): vẫn tìm thấy công thức đạo hàm — không loại hẳn.
+  assert.ok(top("Tính đạo hàm của y = x^3", 10).some((id) => id.includes("daoham")));
+});

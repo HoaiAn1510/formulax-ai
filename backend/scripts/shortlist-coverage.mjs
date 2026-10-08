@@ -35,13 +35,17 @@ const CASES = [
   { src: "gõ tay 10", q: "Tìm m để hs y = x² − 2mx + 3 đồng biến trên (1; +∞)", need: ["ds10-hamso-bachai-bienthien"], anyOf: [["hh10-parabola"]] },
 ];
 
-// Công thức lớp 12 (dùng đạo hàm) bị ghim cho đề lớp 10 — đáng báo vì học sinh lớp 10 chưa học.
+// Công thức đạo hàm (lớp 11–12) lọt vào top 10 của đề lớp 10 — đáng báo vì học sinh lớp 10 chưa học.
 const GRADE12_DERIVATIVE = ["gt12-tinhdondieu-daoham", "gt12-daoham-basic", "gt11-daoham-tonghieu", "gt12-gtln-gtnn", "gt12-cuctrituoc"];
+
+// Lớp học sinh: "node shortlist-coverage.mjs 10" giả định học sinh đã chọn lớp 10; không có = chưa chọn.
+const GRADE = Number(process.argv[2]) || null;
+console.log(GRADE ? `Giả định học sinh lớp ${GRADE}\n` : "Học sinh chưa chọn lớp\n");
 
 const rows = [];
 let failures = 0;
 for (const c of CASES) {
-  const top = shortlistFormulas([c.q]).map((f) => f.id);
+  const top = shortlistFormulas([c.q], 10, { grade: GRADE }).map((f) => f.id);
   const missing = [];
   for (const id of c.need) {
     if (!getFormula(id)) missing.push(`${id} (thư viện không có)`);
@@ -50,7 +54,7 @@ for (const c of CASES) {
   for (const group of c.anyOf || []) {
     if (!group.some((id) => top.includes(id))) missing.push(`một trong ${group.join(" / ")} (xếp hạng)`);
   }
-  const derivative = top.filter((id) => GRADE12_DERIVATIVE.includes(id));
+  const derivative = top.map((id, i) => (GRADE12_DERIVATIVE.includes(id) ? `${id}#${i + 1}` : null)).filter(Boolean);
   if (missing.length) failures++;
   rows.push({
     src: c.src,
@@ -58,7 +62,7 @@ for (const c of CASES) {
     ok: missing.length ? "THIẾU" : "đủ",
     missing: missing.join("; "),
     ranks: c.need.map((id) => `${id}#${top.indexOf(id) + 1 || "–"}`).join(" "),
-    pinned: methodGroupIds(c.q).length ? "ghim nhóm" : "",
+    pinned: methodGroupIds(c.q, GRADE).filter((id) => GRADE12_DERIVATIVE.includes(id)).join(", "),
     derivative: derivative.join(", "),
     library: (c.missingFromLibrary || []).join("; "),
   });
@@ -67,7 +71,7 @@ for (const c of CASES) {
 for (const r of rows) {
   console.log(`${r.ok === "đủ" ? "✔" : "✖"} ${r.src.padEnd(15)} | cần: ${r.need}`);
   console.log(`    vị trí: ${r.ranks}${r.missing ? `  | THIẾU: ${r.missing}` : ""}`);
-  if (r.derivative) console.log(`    ghim công thức đạo hàm lớp 11–12: ${r.derivative}`);
+  if (r.derivative) console.log(`    công thức đạo hàm lớp 11–12 trong top 10 (vị trí): ${r.derivative}${r.pinned ? ` — ĐƯỢC GHIM: ${r.pinned}` : " (qua từ khoá, không ghim)"}`);
   if (r.library) console.log(`    thư viện chưa có (đề có thể cần): ${r.library}`);
 }
 console.log(`\n${CASES.length - failures}/${CASES.length} đề có đủ công thức bắt buộc trong top 10.`);
