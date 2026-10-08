@@ -201,7 +201,11 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
    trục → phương trình bậc hai + parabol; từ 2 "góc XYZ" trở lên → côsin, định lý sin, diện tích theo sin.
    **Theo lớp học sinh** (`grade` chọn ở onboarding, frontend gửi kèm `/api/chat`): công thức lớp cao
    hơn KHÔNG được ghim ở bất kỳ nhóm nào và bị trừ 0,5 điểm (xếp sau công thức cùng mức liên quan,
-   không loại hẳn — có thể chọn nhầm lớp); chưa chọn lớp thì như cũ. Kiểm tra độ phủ offline:
+   không loại hẳn — có thể chọn nhầm lớp); chưa chọn lớp thì như cũ. AI cũng được báo lớp: tin system
+   "Học sinh đang học lớp N." đặt NGAY TRƯỚC đề (phần động — không đụng tin #1; không ghép vào đề vì bộ
+   lọc số lấy số trong đề làm số có sẵn), mỗi dòng thư viện có cột `lớp`, và quy tắc 1d trong phần cố
+   định: ưu tiên công thức lớp của học sinh, chỉ dùng lớp cao hơn khi không có cách nào khác. Chạy thật
+   2026-10-08 (lớp 10, "đồng biến" và "bảng biến thiên" hàm bậc hai): không câu nào dùng đạo hàm. Kiểm tra độ phủ offline:
    `node backend/scripts/shortlist-coverage.mjs [lớp]` (20 đề lớp 10, phải 20/20).
    So khớp chỉ giữ a–z/0–9 sau khi bỏ dấu, nên ký hiệu ("△", "ΔABC", "⊥") mất hẳn → trước khi so khớp,
    `lib/problemText.js` (`expandShorthand`) đổi ký hiệu và viết tắt của học sinh ("pt", "hs", "đt",
