@@ -1,7 +1,7 @@
 // Test các hàm thuần của luồng "ảnh đề → chọn bài → hướng dẫn từng bài". Chạy: npm run test:ocr
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { markUnclear, hasUnclear, problemToFinderMessage, checkGuidanceQuota, nextGuidanceRequest, UNCLEAR_MARK } from "../src/utils/ocrProblems.js";
+import { markUnclear, hasUnclear, problemToFinderMessage, checkGuidanceQuota, nextGuidanceRequest, busyWaitSeconds, UNCLEAR_MARK } from "../src/utils/ocrProblems.js";
 import { fitWithin, OCR_MAX_SIDE } from "../src/utils/imageCompress.js";
 
 const R = String.raw;
@@ -59,4 +59,23 @@ test("fitWithin: cạnh dài ≤ 2000px, giữ tỉ lệ, không phóng to ảnh
   assert.deepEqual(fitWithin(4032, 3024, 2000), { width: 2000, height: 1500 });
   assert.deepEqual(fitWithin(1441, 2560, 2000), { width: 1126, height: 2000 });
   assert.deepEqual(fitWithin(800, 600, 2000), { width: 800, height: 600 });
+});
+
+test("AI đang bận (Groq 429): trong lúc chờ không tab nào gọi AI; hết giờ thì gọi lại tab đang mở", () => {
+  const now = 1_000_000;
+  // Tab b vừa bị "busy" (kết quả đã bị xoá để tự thử lại) nhưng còn trong thời gian chờ → chưa gọi.
+  assert.equal(nextGuidanceRequest({ activeKey: "b", results: {}, inFlightKey: null, busyUntil: now + 5000, now }), null);
+  // Mở tab c trong lúc chờ cũng không gọi (gọi lúc này chắc chắn lại 429).
+  assert.equal(nextGuidanceRequest({ activeKey: "c", results: { b: { status: "busy", auto: true } }, inFlightKey: null, busyUntil: now + 5000, now }), null);
+  // Hết giờ → gọi tab đang mở.
+  assert.equal(nextGuidanceRequest({ activeKey: "b", results: {}, inFlightKey: null, busyUntil: now - 1, now }), "b");
+  // Bài đã tự thử lại một lần (kết quả busy còn giữ) → không tự gọi nữa, chờ bấm Thử lại.
+  assert.equal(nextGuidanceRequest({ activeKey: "b", results: { b: { status: "busy", auto: false } }, inFlightKey: null, busyUntil: 0, now }), null);
+});
+
+test("busyWaitSeconds: theo retryAfter của backend, mặc định 60", () => {
+  assert.equal(busyWaitSeconds(15), 15);
+  assert.equal(busyWaitSeconds(14.2), 15);
+  assert.equal(busyWaitSeconds(undefined), 60);
+  assert.equal(busyWaitSeconds(0), 60);
 });

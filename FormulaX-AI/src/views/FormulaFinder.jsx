@@ -10,7 +10,7 @@ import ImageScanSheet from "../components/ImageScanSheet";
 import ImageProblemsPanel from "../components/ImageProblemsPanel";
 import ProblemTabs from "../components/ProblemTabs";
 import { compressImageFile } from "../utils/imageCompress";
-import { problemToFinderMessage, nextGuidanceRequest } from "../utils/ocrProblems";
+import { problemToFinderMessage, nextGuidanceRequest, busyWaitSeconds } from "../utils/ocrProblems";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -137,6 +137,9 @@ export default function FormulaFinder({
   const [ocr, setOcr] = useState(null);
   const [inFlightKey, setInFlightKey] = useState(null);
   const inFlightRef = useRef(null); // chặn gọi trùng khi StrictMode chạy effect 2 lần
+  // Sau lỗi "AI đang bận": mốc hết chờ (ms), và các bài đã được tự hỏi lại một lần.
+  const [busyUntil, setBusyUntil] = useState(0);
+  const autoRetriedRef = useRef(new Set());
   const [apiError, setApiError] = useState(null);
 
   // Session management
@@ -292,6 +295,7 @@ export default function FormulaFinder({
       // remaining: số lượt còn lại SAU khi backend đã hoàn lượt cho request không thành công.
       err.code = errData.code;
       err.remaining = errData.remaining;
+      err.retryAfter = errData.retryAfter; // giây chờ khi "ai_busy" (Groq 429)
       throw err;
     }
     const data = await response.json();
@@ -562,6 +566,13 @@ export default function FormulaFinder({
       if (error.code === "quota_exceeded" || (error.status === 429 && error.remaining === 0)) {
         setAiQueriesLeft(0);
         setGuideResult(item.key, { status: "limit", message: error.message });
+      } else if (error.code === "ai_busy") {
+        // Groq hết hạn mức token/PHÚT của cả app (lượt đã được backend hoàn). Chờ đúng thời gian Groq
+        // báo rồi tự hỏi lại MỘT lần cho bài này; lần sau vẫn bận thì chỉ còn nút Thử lại.
+        setBusyUntil(Date.now() + busyWaitSeconds(error.retryAfter) * 1000);
+        const auto = !autoRetriedRef.current.has(item.key);
+        autoRetriedRef.current.add(item.key);
+        setGuideResult(item.key, { status: "busy", auto });
       } else {
         const isConn = error.message.includes("fetch") || error.message.includes("Failed");
         setGuideResult(item.key, {
@@ -582,12 +593,27 @@ export default function FormulaFinder({
   const guideItems = ocr?.stage === "guide" ? ocr.items : null;
   useEffect(() => {
     if (!guideResults) return;
-    const key = nextGuidanceRequest({ activeKey: guideActiveKey, results: guideResults, inFlightKey });
+    const key = nextGuidanceRequest({ activeKey: guideActiveKey, results: guideResults, inFlightKey, busyUntil });
     const item = key && guideItems.find(p => p.key === key);
     if (item) runGuidance(item);
     // runGuidance là hàm tạo lại mỗi lần render — chỉ cần chạy lại khi tab/kết quả/bài đang chờ đổi.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [guideActiveKey, guideResults, guideItems, inFlightKey]);
+  }, [guideActiveKey, guideResults, guideItems, inFlightKey, busyUntil]);
+
+  // Hết thời gian chờ "AI đang bận": bỏ chặn, và bài nào còn quyền tự thử lại (auto) thì xoá kết quả
+  // "busy" để effect trên hỏi lại khi bài đó đang mở. Bài đã tự thử lại một lần thì giữ nút Thử lại.
+  useEffect(() => {
+    if (!busyUntil) return;
+    const id = setTimeout(() => {
+      setBusyUntil(0);
+      setOcr(prev => {
+        if (prev?.stage !== "guide") return prev;
+        const results = Object.fromEntries(Object.entries(prev.results).filter(([, r]) => !(r.status === "busy" && r.auto)));
+        return { ...prev, results };
+      });
+    }, Math.max(0, busyUntil - Date.now()));
+    return () => clearTimeout(id);
+  }, [busyUntil]);
 
   const formatDate = (dateStr) => {
     const d = new Date(dateStr);
@@ -664,8 +690,9 @@ export default function FormulaFinder({
         activeKey={ocr.activeKey}
         results={ocr.results}
         inFlightKey={inFlightKey}
+        busyUntil={busyUntil}
         onSelect={(key) => setOcr(prev => ({ ...prev, activeKey: key }))}
-        onRetry={(key) => setGuideResult(key, null)}
+        onRetry={(key) => { setBusyUntil(0); setGuideResult(key, null); }}
         onClose={closeOcr}
         onUpgrade={() => setActiveTab("premium")}
         formulas={formulas}

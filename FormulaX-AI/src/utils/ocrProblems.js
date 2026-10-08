@@ -54,10 +54,17 @@ export function checkGuidanceQuota({ count, remaining, isPremium }) {
 }
 
 /**
- * Tab tiếp theo cần gọi AI: CHỈ bài đang mở, chưa có kết quả, và không có bài nào đang chờ AI
- * (không gọi song song nhiều bài). null = không gọi gì lúc này.
+ * Tab tiếp theo cần gọi AI: CHỈ bài đang mở, chưa có kết quả, không có bài nào đang chờ AI (không
+ * gọi song song nhiều bài), và không trong lúc chờ sau lỗi "AI đang bận" (busyUntil — Groq 429).
+ * null = không gọi gì lúc này.
  */
-export function nextGuidanceRequest({ activeKey, results, inFlightKey }) {
-  if (inFlightKey || activeKey == null) return null;
+export function nextGuidanceRequest({ activeKey, results, inFlightKey, busyUntil = 0, now = Date.now() }) {
+  if (inFlightKey || activeKey == null || busyUntil > now) return null;
   return results[activeKey] ? null : activeKey;
+}
+
+/** Thời gian chờ (giây) sau lỗi "AI đang bận" — theo backend (retryAfter), mặc định 60. */
+export function busyWaitSeconds(retryAfter) {
+  const s = Number(retryAfter);
+  return Number.isFinite(s) && s > 0 ? Math.ceil(s) : 60;
 }

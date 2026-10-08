@@ -9,7 +9,7 @@ import payosPaymentRouter from "./routes/payosPayment.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
-import { askFinder, CHAT_BUDGET_MS } from "./lib/finderAnswer.js";
+import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind } from "./lib/finderAnswer.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
 import { decodeImagePayload, readProblemsFromImage, OcrError, OCR_BUDGET_MS, MAX_IMAGE_BYTES } from "./lib/ocrReader.js";
@@ -288,7 +288,12 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     // Groq 429 = gói miễn phí hết token/phút cho cả app, không phải lỗi của học sinh. code
     // "ai_busy" để frontend phân biệt với 429 hết lượt (code "quota_exceeded").
     if (status === 429) {
-      return res.status(429).json({ error: "AI đang bận, bạn thử lại sau ít phút nhé", code: "ai_busy", ...remainingInfo });
+      // retryAfter (giây): frontend đếm ngược rồi tự hỏi lại một lần. Log chỉ có loại hạn mức + số
+      // giây, không có câu hỏi hay tài khoản.
+      const retryAfter = retryAfterSeconds(error);
+      console.warn("[finder:busy]", JSON.stringify({ limit: rateLimitKind(error), retryAfter, refunded: typeof error.remaining === "number" }));
+      res.set("Retry-After", String(retryAfter));
+      return res.status(429).json({ error: "AI đang bận, bạn thử lại sau ít phút nhé", code: "ai_busy", retryAfter, ...remainingInfo });
     }
     let errorMsg = "Không thể kết nối AI";
     if (status === 401) errorMsg = "Lỗi cấu hình phía máy chủ, vui lòng thử lại sau";

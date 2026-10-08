@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { askFinder, numberSourceTexts, dailyLimitBlockMs, fallbackState, CHAT_BUDGET_MS } from "../lib/finderAnswer.js";
+import { askFinder, numberSourceTexts, dailyLimitBlockMs, fallbackState, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind } from "../lib/finderAnswer.js";
 import { FINDER_MODEL, FINDER_FALLBACK_MODEL } from "../lib/finderPrompt.js";
 
 // Groq giả + đồng hồ giả: mỗi lần gọi "tốn" `costMs` và trả lần lượt các nội dung trong `replies`.
@@ -300,4 +300,20 @@ test("ô trống: không còn đủ thời gian → không hỏi lại, thay ? n
   assert.equal(groq.bodies.length, 1);
   assert.equal(meta.retriedForLeaks, undefined);
   assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
+});
+
+// ─── Thời gian chờ khi Groq 429 (frontend đếm ngược rồi tự hỏi lại một lần) ─────────────
+test("retryAfterSeconds: ưu tiên header retry-after, rồi 'try again in …' trong thông báo, mặc định 60", () => {
+  assert.equal(retryAfterSeconds(groq429(TPM, 15)), 15);
+  assert.equal(retryAfterSeconds(groq429(TPM)), 15); // 14.28s làm tròn lên
+  assert.equal(retryAfterSeconds(groq429("Rate limit reached, slow down")), 60);
+  assert.equal(retryAfterSeconds(groq429(TPM, 0.4)), 1);
+  // Hạn mức ngày (vài phút trở lên) → trần 120 giây.
+  assert.equal(retryAfterSeconds(groq429(TPD("7m12.5s"))), 120);
+});
+
+test("rateLimitKind: đọc loại hạn mức để ghi log", () => {
+  assert.equal(rateLimitKind(groq429(TPM)), "TPM");
+  assert.equal(rateLimitKind(groq429(TPD("1m"))), "TPD");
+  assert.equal(rateLimitKind(groq429("lạ")), "unknown");
 });

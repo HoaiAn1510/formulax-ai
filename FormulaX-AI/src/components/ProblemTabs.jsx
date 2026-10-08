@@ -1,4 +1,5 @@
-import { X, RotateCcw, Crown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { X, RotateCcw, Crown, Hourglass } from "lucide-react";
 import { RichTextRenderer } from "../utils/katexHelper";
 import StepAnswer from "./StepAnswer";
 
@@ -11,14 +12,33 @@ const Dots = ({ label }) => (
   </div>
 );
 
+/** Số giây còn lại tới mốc `until` (ms), cập nhật mỗi nửa giây; 0 khi đã qua. */
+function useSecondsLeft(until) {
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!until || until <= Date.now()) return;
+    const id = setInterval(() => setNow(Date.now()), 500);
+    return () => clearInterval(id);
+  }, [until]);
+  return until ? Math.max(0, Math.ceil((until - now) / 1000)) : 0;
+}
+
 /**
  * Các bài đã chọn từ ảnh, mỗi bài một tab. Component chỉ hiển thị — FormulaFinder quyết định khi nào
  * gọi AI: CHỈ gọi cho bài đang mở, chưa có kết quả, và lần lượt từng bài (không gọi song song).
- * results[key]: { status: "loading" | "done" | "error" | "limit", answer?, message? }
+ * results[key]: { status: "loading" | "done" | "error" | "limit" | "busy", answer?, message?, auto? }
+ * busyUntil: sau lỗi "AI đang bận" (Groq 429) — đếm ngược; bài có auto = true tự hỏi lại MỘT lần khi
+ * hết giờ (FormulaFinder lo việc gọi), bài đã tự hỏi lại rồi thì chỉ còn nút Thử lại.
  */
-export default function ProblemTabs({ items, activeKey, results, inFlightKey, onSelect, onRetry, onClose, onUpgrade, formulas, onViewDetail }) {
+export default function ProblemTabs({ items, activeKey, results, inFlightKey, busyUntil = 0, onSelect, onRetry, onClose, onUpgrade, formulas, onViewDetail }) {
   const active = items.find((p) => p.key === activeKey) || items[0];
   const result = results[active.key];
+  const secondsLeft = useSecondsLeft(busyUntil);
+  const retryBtn = (
+    <button type="button" onClick={() => onRetry(active.key)} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
+      <RotateCcw size={12} /> Thử lại
+    </button>
+  );
 
   return (
     <div className="flex flex-col gap-3 w-full max-w-[760px] mx-auto min-w-0">
@@ -72,15 +92,35 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, on
 
       <div role="tabpanel" className="rounded-xl border border-[#e2e8f0] dark:border-[#334155] bg-white dark:bg-[#1E293B] py-3 px-4 min-w-0 text-primary dark:text-[#E2E8F0]">
         {!result && inFlightKey && inFlightKey !== active.key && <Dots label="Đang hướng dẫn bài trước, bài này sẽ bắt đầu ngay sau..." />}
-        {(!result && !inFlightKey) && <Dots label="AI đang phân tích..." />}
+        {!result && !inFlightKey && secondsLeft > 0 && (
+          <div role="status" className="flex items-center gap-2 text-[0.85rem] text-[#92400E] dark:text-[#FCD34D] py-1">
+            <Hourglass size={16} className="shrink-0" />
+            <span>AI đang bận, bài này sẽ bắt đầu sau {secondsLeft} giây.</span>
+          </div>
+        )}
+        {(!result && !inFlightKey && secondsLeft === 0) && <Dots label="AI đang phân tích..." />}
+        {result?.status === "busy" && (
+          <div className="flex flex-col gap-2.5 items-start">
+            <div role="status" className="flex items-center gap-2 text-[0.85rem] text-[#92400E] dark:text-[#FCD34D]">
+              <Hourglass size={16} className="shrink-0" />
+              <span>
+                {result.auto && secondsLeft > 0
+                  ? `AI đang bận, tự thử lại sau ${secondsLeft} giây.`
+                  : secondsLeft > 0
+                    ? `AI vẫn đang bận. Bạn đợi ${secondsLeft} giây rồi bấm Thử lại nhé.`
+                    : "AI vẫn đang bận. Bạn bấm Thử lại nhé."}
+              </span>
+            </div>
+            <span className="text-[0.75rem] text-text-muted dark:text-[#94A3B8]">Lần này không bị tính vào lượt hỏi AI của bạn.</span>
+            {retryBtn}
+          </div>
+        )}
         {result?.status === "loading" && <Dots label="AI đang phân tích..." />}
         {result?.status === "done" && <StepAnswer answer={result.answer} formulas={formulas} onViewDetail={onViewDetail} />}
         {result?.status === "error" && (
           <div className="flex flex-col gap-2.5 items-start">
             <span className="text-[0.85rem] text-[#b91c1c] dark:text-[#FCA5A5]">{result.message}</span>
-            <button type="button" onClick={() => onRetry(active.key)} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
-              <RotateCcw size={12} /> Thử lại
-            </button>
+            {retryBtn}
           </div>
         )}
         {result?.status === "limit" && (

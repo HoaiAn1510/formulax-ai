@@ -25,6 +25,33 @@ const MIN_CALL_MS = 8_000;
 const DEFAULT_DAILY_BLOCK_MS = 10 * 60_000;
 export const fallbackState = { primaryBlockedUntil: 0 };
 
+// Groq không cho biết phải chờ bao lâu thì mặc định 60 giây (hạn mức theo phút). Trần 120 giây: lâu
+// hơn thì là hạn mức ngày — học sinh không nên ngồi đếm ngược, frontend chỉ báo "thử lại sau".
+const DEFAULT_RETRY_AFTER_S = 60;
+const MAX_RETRY_AFTER_S = 120;
+
+/**
+ * Số giây nên chờ trước khi hỏi lại sau một lỗi 429 của Groq: header retry-after, không có thì đọc
+ * "try again in 7.5s" trong thông báo lỗi, không có nữa thì 60 giây. Làm tròn lên, tối thiểu 1.
+ */
+export function retryAfterSeconds(err) {
+  const header = Number(err?.headers?.get?.("retry-after") ?? err?.headers?.["retry-after"]);
+  let s = Number.isFinite(header) && header > 0 ? header : null;
+  if (s === null) {
+    const text = String(err?.error?.error?.message || err?.message || "");
+    const m = text.match(/try again in (?:(\d+)h)?(?:(\d+)m)?(?:([\d.]+)s)?/);
+    const fromText = m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0;
+    s = fromText > 0 ? fromText : DEFAULT_RETRY_AFTER_S;
+  }
+  return Math.min(MAX_RETRY_AFTER_S, Math.max(1, Math.ceil(s)));
+}
+
+/** Loại hạn mức Groq trong thông báo 429 (TPM/RPM/TPD/RPD) — chỉ để ghi log. */
+export function rateLimitKind(err) {
+  const text = String(err?.error?.error?.message || err?.message || "");
+  return (text.match(/\((TPM|RPM|TPD|RPD)\)/) || [])[1] || "unknown";
+}
+
 /** Thời gian (ms) model chính còn bị chặn nếu lỗi là 429 hết hạn mức NGÀY; null nếu không phải. */
 export function dailyLimitBlockMs(err) {
   if (err?.status !== 429) return null;
