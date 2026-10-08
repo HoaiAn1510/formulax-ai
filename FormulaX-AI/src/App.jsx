@@ -665,6 +665,7 @@ export default function App() {
             onAddSearchHistory={handleAddSearchHistory}
             setActiveTab={setActiveTab}
             isPremium={isPremium}
+            grade={userGrade}
           />
         );
       case "flashcard":

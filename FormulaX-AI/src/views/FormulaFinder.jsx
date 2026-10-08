@@ -91,6 +91,8 @@ export default function FormulaFinder({
   searchHistory = [],
   onAddSearchHistory,
   isPremium = false,
+  // Lớp học sinh chọn ở onboarding (10/11/12, có thể chưa có) — backend dùng để xếp hạng công thức.
+  grade = null,
 }) {
   const { user } = useAuth();
   const { loginNow: handleGuestLogin } = useGuestGate();
@@ -280,7 +282,7 @@ export default function FormulaFinder({
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ message: userMessage, history: messageHistory, source }),
+        body: JSON.stringify({ message: userMessage, history: messageHistory, source, grade }),
         signal: controller.signal,
       });
     } catch (err) {

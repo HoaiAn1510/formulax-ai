@@ -1,5 +1,5 @@
 import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalog.js";
-import { buildFinderMessages, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS } from "./finderPrompt.js";
+import { buildFinderMessages, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS, BACKGROUND_KNOWLEDGE_LATEX } from "./finderPrompt.js";
 import {
   parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, dropNumericSubstitutions, toReplyText, extractNumbers, DEFAULT_TEXT,
 } from "./solutionGuard.js";
@@ -84,15 +84,17 @@ export function dailyLimitBlockMs(err) {
  * @param {import("groq-sdk").default} opts.groq
  * @param {string} opts.message         câu hỏi hiện tại
  * @param {{role: string, content: string}[]} opts.history  lịch sử đã cắt gọn (role user/assistant)
+ * @param {10|11|12|null} [opts.grade]  lớp học sinh (null = chưa chọn)
  * @param {string} [opts.model]
  * @param {number} [opts.deadline]  mốc thời gian (ms) phải xong; mặc định = bây giờ + CHAT_BUDGET_MS
  * @param {() => number} [opts.now] đồng hồ, truyền vào được để test
  * Lỗi từ Groq (429, mạng, timeout...) được ném ra ngoài cho nơi gọi xử lý.
  */
-export async function askFinder({ groq, message, history = [], model = FINDER_MODEL, now = Date.now, deadline = now() + CHAT_BUDGET_MS }) {
+export async function askFinder({ groq, message, history = [], grade = null, model = FINDER_MODEL, now = Date.now, deadline = now() + CHAT_BUDGET_MS }) {
   // Công thức ứng viên theo câu hỏi hiện tại + 2 câu hỏi trước (hiểu câu hỏi nối tiếp).
   const recentUserTexts = history.filter((h) => h.role === "user").slice(-2).map((h) => h.content);
-  const candidates = shortlistFormulas([message, ...recentUserTexts]);
+  // grade: lớp học sinh chọn ở onboarding — công thức lớp cao hơn không được ghim, xếp sau (formulaCatalog).
+  const candidates = shortlistFormulas([message, ...recentUserTexts], 10, { grade });
   // Thứ tự cố định → thư viện → lịch sử → câu hỏi: giữ phần đầu giống hệt nhau cho prompt caching
   // của Groq (xem finderPrompt.js).
   const messages = buildFinderMessages({ candidates, history, message });
@@ -258,7 +260,8 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
   const sourceTexts = numberSourceTexts(message, recentUserTexts);
   const { answer: guarded, removedSteps, maskedSteps, replaced } = applyNumberGuard(withBraces, {
     sourceTexts,
-    formulaTexts: chosen.map((f) => `${f.latex}\n${f.explanation || ""}`),
+    // + kiến thức nền THCS (quy tắc 1c): 180° của tổng ba góc là số có sẵn, không phải AI tự tính.
+    formulaTexts: [...chosen.map((f) => `${f.latex}\n${f.explanation || ""}`), BACKGROUND_KNOWLEDGE_LATEX],
     formulaNames: chosen.map((f) => f.name),
     mask,
   });

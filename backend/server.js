@@ -230,9 +230,12 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     // no_formula — xem countsAsTurn trong lib/finderAnswer.js.
     // source: frontend gửi "image" cho bài lấy từ ảnh đề; mọi giá trị khác coi là gõ tay. Chỉ để ghi log.
     const source = req.body?.source === "image" ? "image" : "typed";
+    // grade: lớp học sinh chọn ở onboarding (frontend gửi kèm), chỉ nhận 10/11/12 — dùng để xếp hạng
+    // công thức ứng viên (không ghim công thức lớp cao hơn). Không có / sai thì như chưa chọn lớp.
+    const grade = [10, 11, 12].includes(Number(req.body?.grade)) ? Number(req.body.grade) : null;
     const ask = async () => {
       const startedAt = Date.now();
-      const out = await askFinder({ groq, message, history: chatHistory, deadline: requestDeadline });
+      const out = await askFinder({ groq, message, history: chatHistory, grade, deadline: requestDeadline });
       logFinderEvents(message, out.answer, out.meta, Date.now() - startedAt, source);
       return { ...out, delivered: countsAsTurn(out.answer, out.meta) };
     };
