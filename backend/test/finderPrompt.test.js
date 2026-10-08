@@ -88,8 +88,16 @@ test("quy tắc 1d trong phần cố định; mỗi dòng thư viện có cột 
 
 test("askFinder gửi dòng lớp học sinh khi biết lớp", async () => {
   const sent = [];
-  const reply = JSON.stringify({ type: "solution", formula_ids: ["hh10-parabola"], intro: "Dùng đỉnh parabol.", steps: [{ title: "Tìm hoành độ đỉnh", detail: "Bạn tự tính.", expression: "x_I = -\frac{b}{2a}, \text{ với } a = 1, b = -6 \Rightarrow x_I = ?" }], reminder: "Tự tính nhé!" });
+  const reply = JSON.stringify({ type: "solution", formula_ids: ["hh10-parabola"], intro: "Dùng đỉnh parabol.", steps: [{ title: "Tìm hoành độ đỉnh", detail: "Bạn tự tính.", expression: String.raw`x_I = -\frac{b}{2a}, \text{ với } a = 1, b = -6 \Rightarrow x_I = ?` }], reminder: "Tự tính nhé!" });
   const groq = { chat: { completions: { create: async (body) => { sent.push(body.messages); return { choices: [{ message: { content: reply } }], usage: {} }; } } } };
   await askFinder({ groq, message: "Hàm số y = x² − 6x + 5 đồng biến trên khoảng nào?", grade: 10, now: () => 0, deadline: CHAT_BUDGET_MS });
   assert.equal(sent[0].at(-2).content, "Học sinh đang học lớp 10.");
+});
+
+test("quy tắc 1e (thuật ngữ SGK): parabol, dấu chấm phẩy trong khoảng/tọa độ", () => {
+  const rule = FINDER_SYSTEM_PROMPT.split("\n").find((l) => l.startsWith("1e."));
+  assert.ok(rule);
+  assert.match(rule, /viết "parabol" \(không viết "parabola"\)/);
+  assert.match(rule, /dấu chấm phẩy/);
+  assert.match(rule, /\(-\\infty; x_I\), A\(1; 5\)/);
 });

@@ -828,7 +828,7 @@ export const formulas = [
     example: "Giải bất phương trình $x^2 - 5x + 6 < 0$.\n\n**Lời giải:**\n- $a = 1 > 0$, $\\Delta = 25 - 24 = 1 > 0$.\n- Nghiệm $x_1 = 2$, $x_2 = 3$.\n- $f(x) < 0$ khi $x_1 < x < x_2$, tức $2 < x < 3$.\n- Tập nghiệm: $(2; 3)$.",
     tags: ["Bất phương trình", "Bậc hai", "Tam thức"],
     difficulty: "Trung bình",
-    mnemonic: "Parabola hướng lên (a>0): âm ở trong khoảng giữa hai nghiệm, dương ở ngoài. Parabola hướng xuống (a<0): ngược lại."
+    mnemonic: "Parabol hướng lên (a>0): âm ở trong khoảng giữa hai nghiệm, dương ở ngoài. Parabol hướng xuống (a<0): ngược lại."
   },
 
   // ===== LƯỢNG GIÁC (Lớp 11 - Kết nối tri thức) =====
