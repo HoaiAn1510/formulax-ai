@@ -100,4 +100,5 @@ test("quy tắc 1e (thuật ngữ SGK): parabol, dấu chấm phẩy trong kho�
   assert.match(rule, /viết "parabol" \(không viết "parabola"\)/);
   assert.match(rule, /dấu chấm phẩy/);
   assert.match(rule, /\(-\\infty; x_I\), A\(1; 5\)/);
+  assert.match(rule, /hàm số bậc hai ở lớp 10, dùng "giá trị lớn nhất \/ giá trị nhỏ nhất" và "điểm cao nhất \/ điểm thấp nhất" \(đỉnh parabol\); không dùng "cực đại \/ cực tiểu" \(thuật ngữ lớp 12\)/);
 });
