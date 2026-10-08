@@ -73,13 +73,30 @@ export function decodeImagePayload(image) {
  */
 export function parseOcrJson(text) {
   const body = String(text ?? "").trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
-  try {
-    const value = JSON.parse(body);
-    if (value && typeof value === "object" && !Array.isArray(value)) return value;
-  } catch {
-    // thử sửa escape bên dưới
-  }
-  return parseModelJson(body);
+  return parseModelJson(keepOcrNewlines(body));
+}
+
+// Lệnh LaTeX bắt đầu bằng chữ n — "\n" đứng trước các chữ này là lệnh LaTeX, không phải xuống dòng.
+const LATEX_N_COMMANDS = new Set([
+  "ne", "neq", "neg", "ni", "nu", "not", "notin", "nabla", "natural", "nmid", "nleq", "ngeq",
+  "nleqslant", "ngeqslant", "nless", "ngtr", "nexists", "nsubseteq", "nsupseteq", "nsubset",
+  "nsupset", "ncong", "nsim", "nparallel", "nearrow", "nwarrow", "newline", "noindent", "nolimits",
+  "nonumber", "nrightarrow", "nleftarrow", "nRightarrow", "nLeftarrow", "nleftrightarrow",
+]);
+
+/**
+ * Chuẩn bị JSON của Gemini trước khi sửa escape + parse. LUÔN chạy (không parse "thường" trước):
+ * chế độ JSON của Gemini vẫn có lúc viết lệnh LaTeX với MỘT dấu \ (6/12 lần khi thử 2026-10-08).
+ * Có khi JSON hỏng (\circ), có khi JSON vẫn HỢP LỆ nhưng sai nghĩa: \neq → xuống dòng + "eq",
+ * \frac → ký tự \f + "rac", \text → tab + "ext". Hàm sửa escape chung (repairLatexEscapes) xử lý
+ * đúng \f \t \b \r trước chữ cái (nhân đôi thành lệnh LaTeX), nhưng cũng nhân đôi "\n" trước chữ
+ * cái — dòng xuống thật trước "Tính…", "A." hay "a)" sẽ hiện thành chữ "\nTính". Ở đây: "\n" chưa
+ * escape là XUỐNG DÒNG trừ khi theo sau là một lệnh LaTeX bắt đầu bằng n (LATEX_N_COMMANDS) → đổi
+ * thành \u000A (escape JSON hợp lệ, hàm sửa escape giữ nguyên). "\\n" (dấu \ đã escape + n) không đụng.
+ */
+export function keepOcrNewlines(raw) {
+  return String(raw ?? "").replace(/(?<!\\)((?:\\\\)*)\\n([A-Za-z]*)/g, (whole, pairs, word) =>
+    LATEX_N_COMMANDS.has(`n${word}`) ? whole : `${pairs}\\u000A${word}`);
 }
 
 const str = (v, max) => (typeof v === "string" ? v.trim().slice(0, max) : "");

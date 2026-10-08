@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  detectImageType, decodeImagePayload, parseOcrJson, normalizeOcrResult, readProblemsFromImage,
+  detectImageType, decodeImagePayload, parseOcrJson, keepOcrNewlines, normalizeOcrResult, readProblemsFromImage,
   OcrError, OCR_MODEL, OCR_FALLBACK_MODEL, MAX_IMAGE_BYTES, MAX_PROBLEMS,
 } from "../lib/ocrReader.js";
 import { OCR_PROMPT } from "../lib/ocrPrompt.js";
@@ -37,7 +37,7 @@ test("decodeImagePayload: thiếu ảnh / không phải ảnh / base64 hỏng �
 });
 
 // ─── Parse + chuẩn hoá ───────────────────────────────────────────────────────
-test("parseOcrJson: parse bình thường trước — xuống dòng trước phương án giữ là xuống dòng (lỗi \\nA khi thử)", () => {
+test("parseOcrJson: JSON đúng chuẩn — xuống dòng trước phương án giữ là xuống dòng (lỗi \\nA khi thử)", () => {
   // Gemini chế độ JSON viết escape đúng chuẩn: "\n" là xuống dòng, "\\infty" là \infty.
   const raw = R`{"problems":[{"label":"3","text":"Hàm số đồng biến trên khoảng nào?\nA. $(-\\infty; 3)$\nB. $(3; +\\infty)$","has_figure":false,"figure_note":"","unclear":[]}]}`;
   const text = parseOcrJson(raw).problems[0].text;
@@ -49,6 +49,50 @@ test("parseOcrJson: JSON lẫn \\ đơn và \\\\ (chế độ thường) vẫn c
   const raw = "```json\n" + R`{"problems":[{"label":"2","text":"góc $\widehat{A} = 60^\\circ$","has_figure":false,"figure_note":"","unclear":[]}]}` + "\n```";
   assert.equal(parseOcrJson(raw).problems[0].text, R`góc $\widehat{A} = 60^\circ$`);
   assert.equal(parseOcrJson("không phải json"), null);
+});
+
+test("parseOcrJson: JSON hỏng (\\circ một dấu \\) mà có xuống dòng thật trước chữ in hoa → vẫn là xuống dòng", () => {
+  // Đúng câu ảnh 03 (2026-10-08), thêm \circ viết MỘT dấu \ như Gemini thỉnh thoảng trả → buộc đi
+  // nhánh sửa escape. Trước khi sửa: text hiện chữ "\nTính".
+  const raw = R`{"problems":[{"label":"Bài 1","text":"Cho $\\triangle ABC$ có $AB = 4, AC = 6$ và góc $A = 120^\circ$.\nTính độ dài cạnh $BC$","has_figure":false,"figure_note":"","unclear":[]}]}`;
+  assert.throws(() => JSON.parse(raw)); // đúng là JSON hỏng
+  const text = parseOcrJson(raw).problems[0].text;
+  assert.equal(text, R`Cho $\triangle ABC$ có $AB = 4, AC = 6$ và góc $A = 120^\circ$.` + "\nTính độ dài cạnh $BC$");
+  // Phương án trắc nghiệm xuống dòng trước "A." / "B." cũng vậy.
+  const mc = parseOcrJson(R`{"problems":[{"text":"Đồng biến trên khoảng nào?\nA. $(-\infty; 3)$\nB. $(3; +\infty)$"}]}`).problems[0].text;
+  assert.equal(mc, "Đồng biến trên khoảng nào?\nA. $(-\\infty; 3)$\nB. $(3; +\\infty)$");
+});
+
+test("parseOcrJson: lệnh LaTeX bắt đầu bằng n (\\neq, \\nu, \\not, \\nabla) giữ nguyên, kể cả viết một dấu \\", () => {
+  for (const cmd of ["neq", "nu", "not", "nabla"]) {
+    // Một dấu \ (JSON hỏng) và hai dấu \ (JSON đúng) đều phải ra đúng lệnh LaTeX.
+    const single = parseOcrJson(`{"problems":[{"text":"$a \\${cmd} b$\\nTính $x$"}]}`).problems[0].text;
+    const double = parseOcrJson(`{"problems":[{"text":"$a \\\\${cmd} b$\\nTính $x$"}]}`).problems[0].text;
+    assert.equal(single, `$a \\${cmd} b$\nTính $x$`, cmd);
+    assert.equal(double, `$a \\${cmd} b$\nTính $x$`, cmd);
+  }
+  // Có thêm \circ một dấu \ (JSON hỏng): lệnh n... vẫn đúng.
+  const mixed = parseOcrJson(R`{"problems":[{"text":"$x \neq 60^\circ$, $\nabla f$, $\nu$, $\not\in$\nTính $x$"}]}`).problems[0].text;
+  assert.equal(mixed, R`$x \neq 60^\circ$, $\nabla f$, $\nu$, $\not\in$` + "\nTính $x$");
+});
+
+test("parseOcrJson: JSON HỢP LỆ nhưng lệnh LaTeX viết một dấu \\ (\\frac, \\text, \\times, \\beta, \\rightarrow, \\neq) vẫn ra đúng lệnh", () => {
+  // Không có \c, \w... nên JSON.parse thường sẽ "thành công" — và biến \f, \t, \b, \r, \n thành ký tự
+  // điều khiển. Vì vậy không được parse thường trước.
+  const raw = R`{"problems":[{"text":"$\frac{1}{2}$, $\text{ cm}$, $2 \times 3$, $\beta$, $x \rightarrow y$, $a \neq b$"}]}`;
+  assert.doesNotThrow(() => JSON.parse(raw));
+  assert.equal(parseOcrJson(raw).problems[0].text, R`$\frac{1}{2}$, $\text{ cm}$, $2 \times 3$, $\beta$, $x \rightarrow y$, $a \neq b$`);
+});
+
+test("keepOcrNewlines: \\n chưa escape là xuống dòng trừ khi là lệnh LaTeX bắt đầu bằng n; \\\\n giữ nguyên", () => {
+  assert.equal(keepOcrNewlines(R`a\nTính`), R`a\u000ATính`);
+  assert.equal(keepOcrNewlines(R`a\nA. b`), R`a\u000AA. b`);
+  assert.equal(keepOcrNewlines(R`a\n`), R`a\u000A`);
+  // Ý a), b) của bài và chữ thường bắt đầu dòng: vẫn là xuống dòng.
+  assert.equal(keepOcrNewlines(R`Câu 2:\na) Tính\nb) Tìm`), R`Câu 2:\u000Aa) Tính\u000Ab) Tìm`);
+  assert.equal(keepOcrNewlines(R`x\nnếu`), R`x\u000Anếu`);
+  assert.equal(keepOcrNewlines(R`$\neq$ $\nu$ $\not$ $\nabla$ $\notin$`), R`$\neq$ $\nu$ $\not$ $\nabla$ $\notin$`);
+  assert.equal(keepOcrNewlines(R`\\nTính`), R`\\nTính`); // dấu \ đã escape + chữ n: không phải xuống dòng
 });
 
 test("normalizeOcrResult: bỏ bài rỗng, nhãn mặc định, figure_note chỉ giữ khi has_figure, cắt unclear", () => {
@@ -73,6 +117,8 @@ test("câu lệnh OCR là nguyên văn đã duyệt (không bị sửa)", () => 
   assert.match(OCR_PROMPT, /^Bạn là công cụ chép đề toán từ ảnh cho học sinh THPT Việt Nam\. Nhiệm vụ DUY NHẤT là chép lại đề bài, KHÔNG giải\./);
   assert.match(OCR_PROMPT, /\$\\widehat\{BAC\} = 60\^\\circ\$/);
   assert.match(OCR_PROMPT, /7\. Nếu ảnh không chứa đề toán, trả về "problems": \[\]\./);
+  // Quy tắc 5 bản v2 (2026-10-08): bị vật che dù chỉ một phần nét cũng phải [?]; ví dụ khác ảnh thử 04.
+  assert.match(OCR_PROMPT, /\n5\. Chỗ nào không đọc rõ thì viết \[\?\][^\n]*BỊ VẬT KHÁC CHE dù chỉ một phần nét[^\n]*"BC = \[\?\]"[^\n]*Tuyệt đối không đoán số hay ký hiệu\.\n/);
   assert.match(OCR_PROMPT, /"unclear": \[\]\n    \}\n  \]\n\}$/);
 });
 
