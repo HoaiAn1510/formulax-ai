@@ -429,6 +429,12 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 
 ## Việc sau
 
+- **AI Finder — bảng biến thiên dạng bảng thật:** hiện AI viết bảng biến thiên thành một dòng biểu thức
+  mũi tên (`x: -\infty \rightarrow x_I \rightarrow +\infty ;\; y: \uparrow y_I \downarrow`, chạy thật
+  2026-10-08). Cần một dạng dữ liệu riêng cho bước "bảng biến thiên" để frontend vẽ bảng thật.
+- **AI Finder — không hỏi lại cùng một ô `?` ở nhiều bước:** cùng lần chạy đó, `y_I = ?` được hỏi ở
+  bước tìm đỉnh rồi hỏi lại ở bước lập bảng; các bước sau nên gọi kết quả bằng ký hiệu (`y_I`).
+
 - **OCR — trường `occlusions` (sau đợt cho học sinh lớp 10 dùng thử):** yêu cầu Gemini liệt kê vật
   che lên vùng chữ (bút, tay, bóng); backend đánh dấu bài có `occlusions` khác rỗng là cần kiểm tra.
   Lý do: quy tắc 5 v2 không làm model đánh `[?]` cho số bị che (ảnh 04, 2026-10-08), dù model có nhận
