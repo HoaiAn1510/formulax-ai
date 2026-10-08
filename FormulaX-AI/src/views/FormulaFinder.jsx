@@ -495,16 +495,25 @@ export default function FormulaFinder({
     setScanSheetOpen(false);
     setOcr({ stage: "scanning" });
     try {
-      const { base64 } = await compressImageFile(file);
+      const { base64, blob } = await compressImageFile(file);
       const data = await callOcr(base64);
       const stamp = Date.now();
       const problems = (Array.isArray(data.problems) ? data.problems : []).map((p, i) => ({ ...p, key: `p${stamp}-${i}` }));
-      // Ảnh chỉ có một bài thì chọn sẵn bài đó.
-      setOcr({ stage: "review", problems, selected: problems.length === 1 ? [problems[0].key] : [] });
+      // Ảnh chỉ có một bài thì chọn sẵn bài đó. imageUrl: ảnh đã nén, chỉ để học sinh đối chiếu trên màn
+      // chọn bài — được revoke khi rời màn (effect bên dưới).
+      setOcr({ stage: "review", problems, selected: problems.length === 1 ? [problems[0].key] : [], imageUrl: URL.createObjectURL(blob) });
     } catch (err) {
       setOcr({ stage: "error", message: err.message });
     }
   };
+
+  // Giải phóng ảnh khi rời màn "Các bài trong ảnh" (sang tab hướng dẫn, đóng, quét ảnh khác) hoặc rời
+  // AI Finder: imageUrl đổi/mất → cleanup của URL cũ chạy.
+  const reviewImageUrl = ocr?.stage === "review" ? ocr.imageUrl : null;
+  useEffect(() => {
+    if (!reviewImageUrl) return;
+    return () => URL.revokeObjectURL(reviewImageUrl);
+  }, [reviewImageUrl]);
 
   const startGuide = (keys) => {
     setOcr(prev => {
@@ -645,6 +654,7 @@ export default function FormulaFinder({
           onRescan={openScanSheet}
           aiQueriesLeft={aiQueriesLeft}
           isPremium={isPremium}
+          imageUrl={ocr.imageUrl}
         />
       );
     }

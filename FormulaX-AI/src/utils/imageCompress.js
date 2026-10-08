@@ -61,7 +61,8 @@ const blobToBase64 = (blob) => new Promise((resolve, reject) => {
 });
 
 /**
- * @returns {Promise<{ base64: string, bytes: number, width: number, height: number }>}
+ * @returns {Promise<{ base64: string, blob: Blob, bytes: number, width: number, height: number }>}
+ * `blob` dùng để hiện ảnh đã gửi trên màn chọn bài (URL.createObjectURL — nơi gọi tự revoke).
  * Ném lỗi có code "decode_failed" khi trình duyệt không đọc được ảnh (vd ảnh HEIC trên Chrome Android).
  */
 export async function compressImageFile(file) {
@@ -80,5 +81,5 @@ export async function compressImageFile(file) {
     blob = await toJpegBlob(source, width, height, 0.7);
   }
   source.close?.();
-  return { base64: await blobToBase64(blob), bytes: blob.size, width, height };
+  return { base64: await blobToBase64(blob), blob, bytes: blob.size, width, height };
 }

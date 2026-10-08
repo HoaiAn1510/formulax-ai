@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Pencil, Check, X, TriangleAlert, ListChecks, Camera } from "lucide-react";
+import { Pencil, Check, X, TriangleAlert, ListChecks, Camera, ZoomIn } from "lucide-react";
 import { RichTextRenderer } from "../utils/katexHelper";
 import { markUnclear, hasUnclear, checkGuidanceQuota } from "../utils/ocrProblems";
+import ImageZoomViewer from "./ImageZoomViewer";
 
 /**
  * Màn "Các bài trong ảnh": mỗi bài Gemini đọc được là một thẻ (nhãn bài, đề render KaTeX, ô chọn,
@@ -9,10 +10,11 @@ import { markUnclear, hasUnclear, checkGuidanceQuota } from "../utils/ocrProblem
  * không đoán được số bị mờ. Bài có hình vẽ hiện ghi chú hình để học sinh kiểm tra (sửa được).
  * Mỗi bài được hướng dẫn tính 1 lượt AI Finder — chọn nhiều hơn số lượt còn lại thì báo trước.
  */
-export default function ImageProblemsPanel({ problems, selected, onToggle, onEdit, onGuide, onCancel, onRescan, aiQueriesLeft, isPremium }) {
+export default function ImageProblemsPanel({ problems, selected, onToggle, onEdit, onGuide, onCancel, onRescan, aiQueriesLeft, isPremium, imageUrl }) {
   const [editingKey, setEditingKey] = useState(null);
   const [draft, setDraft] = useState({ text: "", figureNote: "" });
   const [notice, setNotice] = useState("");
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   const ready = problems.filter((p) => !hasUnclear(p.text));
   const chosen = problems.filter((p) => selected.includes(p.key) && !hasUnclear(p.text));
@@ -65,6 +67,28 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
       <p className="text-[0.78rem] text-text-muted dark:text-[#94A3B8] m-0">
         Kiểm tra đề AI đọc được có đúng với ảnh không, sửa nếu sai, rồi chọn bài cần hướng dẫn.
       </p>
+
+      {/* Ảnh đã gửi — AI có thể đọc nhầm số bị che/mờ mà không đánh [?] (thử 2026-10-08), nên học
+          sinh phải đối chiếu được với ảnh gốc. Ảnh chỉ nằm trong trình duyệt (object URL). */}
+      {imageUrl && (
+        <div className="flex flex-col gap-1.5">
+          <button
+            type="button"
+            onClick={() => setZoomOpen(true)}
+            aria-label="Phóng to ảnh đề bài"
+            className="relative self-center w-full rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A] p-1 cursor-zoom-in overflow-hidden"
+          >
+            <img src={imageUrl} alt="Ảnh đề bài đã gửi" className="block mx-auto max-h-[180px] max-w-full object-contain rounded-lg" />
+            <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 bg-[rgba(15,23,42,0.75)] text-white text-[0.7rem] font-bold rounded-full py-1 px-2.5">
+              <ZoomIn size={12} /> Bấm để phóng to
+            </span>
+          </button>
+          <div className="text-[0.78rem] font-semibold leading-[1.5] text-[#92400E] dark:text-[#FCD34D] bg-accent-light/70 dark:bg-accent/10 rounded-lg px-3 py-2">
+            Kiểm tra lại từng con số với ảnh trước khi chọn bài.
+          </div>
+        </div>
+      )}
+      {zoomOpen && imageUrl && <ImageZoomViewer src={imageUrl} onClose={() => setZoomOpen(false)} />}
 
       {problems.map((p) => {
         const unclear = hasUnclear(p.text);
