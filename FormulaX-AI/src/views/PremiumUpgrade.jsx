@@ -257,7 +257,8 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   // free === "Khóa" hiện dấu ✗, premium === "Mở" hiện dấu ✓.
   const features = [
     { name: "Luyện đề trắc nghiệm", free: "Quiz: 10 lượt/ngày", premium: "Quiz: không giới hạn" },
-    { name: "Trợ lý giải toán Finder AI", free: "10 lượt hỏi mỗi ngày", premium: "Không giới hạn lượt hỏi" },
+    { name: "Trợ lý AI Finder", free: "10 lượt hỏi mỗi ngày", premium: "Không giới hạn lượt hỏi" },
+    { name: "Quét ảnh đề bài", free: "5 lần/ngày", premium: "50 lần/ngày" },
     { name: "Quiz Điền đáp án, Kết hợp", free: "Khóa", premium: "Mở" },
     { name: "Trang Tiến độ: Hiệu suất theo chủ đề, Coach", free: "Khóa", premium: "Mở" },
     { name: "Xuất bộ thẻ Flashcard ra PDF", free: "Khóa", premium: "Mở" }
