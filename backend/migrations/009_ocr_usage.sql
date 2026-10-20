@@ -5,7 +5,7 @@
 -- BỐI CẢNH
 -- Học sinh chụp ảnh đề → backend gửi ảnh tới Gemini để chép đề ra chữ. Quét ảnh KHÔNG tính vào
 -- 10 lượt AI Finder/ngày, nhưng mỗi lần quét tốn hạn mức Gemini dùng chung cho cả app, nên vẫn
--- giới hạn để tránh lạm dụng: Free 20 lần/ngày, Premium 50 lần/ngày (backend/server.js). Khách
+-- giới hạn để tránh lạm dụng: Free 5 lần/ngày (lúc tạo là 20, hạ 2026-10-20), Premium 50 lần/ngày (backend/server.js). Khách
 -- ẩn danh không được quét (403 trước khi tới đây).
 --
 -- Cùng cách làm với ai_usage_daily (006/007):

@@ -375,9 +375,9 @@ app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
 // backend kiểm tra ảnh, gửi Gemini, trả danh sách bài để học sinh xác nhận/sửa rồi mới hỏi AI
 // Finder (mỗi bài hướng dẫn = 1 lượt AI Finder, tính ở /api/chat như câu hỏi gõ tay).
 // Quét ảnh KHÔNG tính lượt AI Finder, nhưng có giới hạn riêng để tránh lạm dụng hạn mức Gemini
-// dùng chung: Free 20 lần/ngày, Premium 50 lần/ngày (bảng ocr_usage_daily, migration 009), và tối
+// dùng chung: Free 5 lần/ngày (hạ từ 20, 2026-10-20), Premium 50 lần/ngày (bảng ocr_usage_daily, migration 009), và tối
 // đa 5 lần/phút mỗi tài khoản. Không lưu ảnh, không ghi ảnh hay chữ trong đề vào log.
-const FREE_OCR_DAILY_LIMIT = 20;
+const FREE_OCR_DAILY_LIMIT = 5;
 const PREMIUM_OCR_DAILY_LIMIT = 50;
 const ocrAccountLimiter = createPerKeyLimiter({ windowMs: 60 * 1000, max: 5 });
 // Chốt theo IP trước khi đọc body ảnh (rộng hơn giới hạn tài khoản vì nhiều học sinh chung IP).

@@ -342,7 +342,7 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
   bản đã nén, chỉ trong trình duyệt, revoke khi rời màn chọn bài. Ảnh kiểm tra theo byte đầu (JPEG/PNG/WebP), tối đa 1,5 MB;
   route có parser JSON riêng (các route khác giữ 64kb). Ngân sách 40s (`OCR_BUDGET_MS`) < timeout
   frontend 45s (`callOcr` trong `FormulaFinder.jsx`).
-- **Giới hạn quét** (không tính vào 10 lượt AI Finder): Free 20/ngày, Premium 50/ngày (bảng
+- **Giới hạn quét** (không tính vào 10 lượt AI Finder): Free 5/ngày (hạ từ 20 ngày 2026-10-20), Premium 50/ngày (bảng
   `ocr_usage_daily`, RPC `increment_ocr_usage`/`refund_ocr_usage` — migration 009, tăng trước rồi
   hoàn khi lỗi qua `runWithQuota`), 5 lần/phút mỗi tài khoản (`lib/perKeyLimiter.js`, trong bộ nhớ),
   30/phút mỗi IP. Khách 403. Ảnh không có đề (problems rỗng) vẫn tính lượt quét.
@@ -423,7 +423,7 @@ Mọi dữ liệu của tài khoản Google phải nằm trên Supabase; `localS
 ## Giới hạn tài khoản Free đang áp dụng — kiểm tra code trước khi đổi số
 
 - Formula Finder (AI): 10 lượt hỏi/ngày, đếm ở backend (`ai_usage_daily`, ngày theo giờ Việt Nam) — bộ đếm "Còn x/10" ở frontend chỉ để hiển thị. Mỗi bài hướng dẫn từ ảnh tính 1 lượt.
-- Quét ảnh đề: 20 lần/ngày (Premium 50), không tính vào lượt AI Finder
+- Quét ảnh đề: 5 lần/ngày (Premium 50), không tính vào lượt AI Finder — số nằm ở `FREE_OCR_DAILY_LIMIT` trong `backend/server.js`
 - Quiz: chỉ dạng trắc nghiệm cơ bản; điền đáp án + dạng kết hợp yêu cầu Premium
 - ProgressDashboard: một phần nội dung bị làm mờ cho tài khoản free
 
