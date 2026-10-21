@@ -133,6 +133,13 @@ function Privacy() {
           chiếu giao dịch. Việc thanh toán do cổng <strong>payOS</strong> xử lý — FormulaX{" "}
           <strong>không lưu và không nhìn thấy</strong> thông tin thẻ hay tài khoản ngân hàng của bạn.
         </p>
+        {/* Theo dõi kênh: lib/channelTracking.js + backend routes/channelTracking.js (chỉ ref, ngày,
+            mã trình duyệt ngẫu nhiên — không IP, không user agent). Đổi cách theo dõi thì sửa đoạn này. */}
+        <p>
+          <strong>Kênh giới thiệu:</strong> FormulaX ghi nhận kênh giới thiệu (ví dụ TikTok, Facebook)
+          khi bạn mở app từ link của nhóm, để đo hiệu quả truyền thông. Thông tin này không dùng để
+          nhận diện cá nhân.
+        </p>
       </Section>
 
       <Section title="2. Dùng để làm gì">
