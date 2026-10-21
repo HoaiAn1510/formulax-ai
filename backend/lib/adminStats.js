@@ -50,3 +50,35 @@ export function publicOrders(rows) {
     email: maskEmail(r.email_masked),
   }));
 }
+
+const DAY_MS = 86400000;
+const shiftDay = (day, n) => new Date(Date.parse(`${day}T00:00:00Z`) + n * DAY_MS).toISOString().slice(0, 10);
+
+/** Kỳ liền trước cùng độ dài: 15/10–21/10 → 08/10–14/10. Dùng lại hàm SQL của kỳ hiện tại để so sánh. */
+export function previousRange({ from, to }) {
+  const days = (Date.parse(`${to}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / DAY_MS + 1;
+  return { from: shiftDay(from, -days), to: shiftDay(from, -1) };
+}
+
+/**
+ * Tổng tài khoản tích luỹ theo ngày, suy từ dữ liệu đã gộp sẵn ở DB: tổng hiện tại trừ số tài khoản
+ * tạo từ `from` tới hôm nay = số tài khoản trước kỳ; cộng dần theo ngày. `signupsToToday` là kết quả
+ * admin_signups_by_day(from, max(to, hôm nay)). Chỉ tính tài khoản còn tồn tại (tài khoản đã xoá không có trong cả hai số).
+ */
+export function cumulativeAccounts(total, signupsToToday, to) {
+  const rows = numericRows(signupsToToday);
+  let running = num(total) - rows.reduce((s, r) => s + r.new_accounts, 0);
+  const out = [];
+  for (const r of rows) {
+    running += r.new_accounts;
+    if (r.day <= to) out.push({ day: r.day, total_accounts: running });
+  }
+  return out;
+}
+
+/** Ghép nhiều bảng theo ngày (cùng danh sách ngày từ generate_series) thành một. */
+export function mergeByDay(...tables) {
+  const map = new Map();
+  for (const rows of tables) for (const r of numericRows(rows)) map.set(r.day, { ...(map.get(r.day) || {}), ...r });
+  return [...map.values()].sort((a, b) => (a.day < b.day ? -1 : 1));
+}

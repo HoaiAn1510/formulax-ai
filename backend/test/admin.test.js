@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import express from "express";
 import { createAdminRouter } from "../routes/admin.js";
-import { maskEmail, publicOrders, channelTotals, numericRows, sumColumns } from "../lib/adminStats.js";
+import { maskEmail, publicOrders, channelTotals, numericRows, sumColumns, previousRange, cumulativeAccounts, mergeByDay } from "../lib/adminStats.js";
 import { createUsageMetrics, USAGE_METRICS } from "../lib/usageMetrics.js";
 
 const NOW = Date.parse("2026-10-21T05:00:00Z");
@@ -175,7 +175,7 @@ test("admin: đọc được mọi route; from/to sai → 400", async () => {
 
     assert.equal((await fetch(`${base}/usage?from=2026-10-21&to=2026-10-01`)).status, 400);
   });
-  const usageCall = db.calls.find((c) => c.name === "admin_usage_by_day");
+  const usageCall = db.calls.find((c) => c.name === "admin_usage_by_day" && c.args.p_from === "2026-10-15");
   assert.deepEqual(usageCall.args, { p_from: "2026-10-15", p_to: "2026-10-21", p_ai_limit: 10, p_ocr_free_limit: 5, p_ocr_premium_limit: 50 });
   assert.deepEqual(db.calls.find((c) => c.name === "admin_recent_orders").args, { p_limit: 20 });
 });
@@ -187,4 +187,70 @@ test("lỗi DB → 503 chung, không lộ thông báo lỗi của DB", async () 
     assert.equal(res.status, 503);
     assert.doesNotMatch(JSON.stringify(await res.json()), /secret|auth\.users/);
   });
+});
+
+// ─── Kỳ trước, tích luỹ, ghép theo ngày ──────────────────────────────────────
+
+test("previousRange: kỳ liền trước cùng độ dài", () => {
+  assert.deepEqual(previousRange({ from: "2026-10-15", to: "2026-10-21" }), { from: "2026-10-08", to: "2026-10-14" });
+  assert.deepEqual(previousRange({ from: "2026-10-01", to: "2026-10-01" }), { from: "2026-09-30", to: "2026-09-30" });
+  assert.deepEqual(previousRange({ from: "2026-03-01", to: "2026-03-31" }), { from: "2026-01-29", to: "2026-02-28" });
+});
+
+test("cumulativeAccounts: tổng hiện tại trừ phần tạo sau đầu kỳ, cộng dần, cắt ở ngày cuối kỳ", () => {
+  const toToday = [
+    { day: "2026-10-18", new_accounts: 2 }, { day: "2026-10-19", new_accounts: 0 },
+    { day: "2026-10-20", new_accounts: "3" }, { day: "2026-10-21", new_accounts: 1 },
+  ];
+  // 100 tài khoản hiện tại, 6 tạo từ 18/10 → 94 trước kỳ.
+  assert.deepEqual(cumulativeAccounts(100, toToday, "2026-10-20"), [
+    { day: "2026-10-18", total_accounts: 96 }, { day: "2026-10-19", total_accounts: 96 }, { day: "2026-10-20", total_accounts: 99 },
+  ]);
+  assert.equal(cumulativeAccounts(100, toToday, "2026-10-21").at(-1).total_accounts, 100);
+});
+
+test("mergeByDay: ghép cột theo ngày, giữ thứ tự", () => {
+  assert.deepEqual(mergeByDay([{ day: "2026-10-21", new_accounts: 1 }, { day: "2026-10-20", new_accounts: "2" }], [{ day: "2026-10-20", revenue: 49000 }]), [
+    { day: "2026-10-20", new_accounts: 2, revenue: 49000 }, { day: "2026-10-21", new_accounts: 1 },
+  ]);
+});
+
+test("overview / users / revenue / usage trả số kỳ trước tính bằng chính hàm SQL với khoảng ngày liền trước", async () => {
+  const calls = [];
+  const db = {
+    rpc(name, args) {
+      calls.push({ name, args });
+      const prev = args?.p_from === "2026-10-08";
+      const data = {
+        admin_overview: [{ new_accounts: prev ? 4 : 6, premium_active: 2, revenue_total: prev ? 49000 : 98000, paid_orders: prev ? 1 : 2, ai_turns_today: 3, ocr_scans_today: 1 }],
+        admin_signups_by_day: [{ day: "2026-10-21", new_accounts: prev ? 4 : 6 }],
+        admin_revenue_by_day: [{ day: "2026-10-21", paid_orders: prev ? 1 : 2, revenue: prev ? 49000 : 98000 }],
+        admin_user_totals: [{ google_accounts_total: 50, premium_active: 2, premium_no_expiry: 0, premium_expiring_7d: 1 }],
+        admin_usage_by_day: [{ day: "2026-10-21", ai_free_turns: prev ? 5 : 9, ai_premium_turns: 0, ai_users_at_limit: 0, ocr_scans: 1, ocr_users_at_limit: 0, ai_quota_exceeded: 0, ai_busy: 1, ocr_quota_exceeded: 0, ocr_rate_limited: 0, chat_ip_limited: 0 }],
+        channel_stats: [{ source: "tiktok", visits: 10, signups: 2, paid_users: 1, revenue: 49000 }],
+        admin_recent_orders: [],
+      }[name];
+      return Promise.resolve({ data, error: null });
+    },
+  };
+  await withServer({ db, verifyUser: verifyAs(googleUser({ email: ADMIN })) }, async (base) => {
+    const q = "?from=2026-10-15&to=2026-10-21";
+    const o = await (await fetch(`${base}/overview${q}`)).json();
+    assert.deepEqual(o.previous, { new_accounts: 4, revenue_total: 49000, paid_orders: 1 });
+    assert.deepEqual(o.previousRange, { from: "2026-10-08", to: "2026-10-14" });
+    assert.deepEqual(o.days, [{ day: "2026-10-21", new_accounts: 6, paid_orders: 2, revenue: 98000 }]);
+    assert.equal(o.channels[0].source, "tiktok");
+    assert.equal(o.today.ai_busy, 1);
+    const u = await (await fetch(`${base}/users${q}`)).json();
+    assert.deepEqual(u.previous, { new_accounts: 4 });
+    assert.equal(u.cumulative.at(-1).total_accounts, 50);
+    const r = await (await fetch(`${base}/revenue${q}`)).json();
+    assert.deepEqual(r.previous, { paid_orders: 1, revenue: 49000 });
+    const g = await (await fetch(`${base}/usage${q}`)).json();
+    assert.equal(g.previous.ai_free_turns, 5);
+    assert.equal(g.sum.ai_free_turns, 9);
+  });
+  // Hoạt động hôm nay của overview: gọi admin_usage_by_day đúng một ngày (hôm nay giờ VN = 21/10 lúc NOW).
+  assert.ok(calls.some((c) => c.name === "admin_usage_by_day" && c.args.p_from === "2026-10-21" && c.args.p_to === "2026-10-21"));
+  assert.ok(calls.some((c) => c.name === "admin_overview" && c.args.p_from === "2026-10-08" && c.args.p_to === "2026-10-14"));
 });
