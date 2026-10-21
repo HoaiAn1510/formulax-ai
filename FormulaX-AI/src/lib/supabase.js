@@ -114,7 +114,9 @@ export async function checkPremiumStatus(googleId) {
     .from("users")
     .select("is_premium, premium_expiry")
     .eq("google_id", googleId)
-    .single();
+    // maybeSingle: tài khoản chưa từng mua không có dòng trong users — .single() khi đó trả lỗi 406
+    // (PGRST116) làm bẩn Console dù kết quả vẫn đúng. Không có dòng → data null → không phải Premium.
+    .maybeSingle();
   if (error || !data) return { isPremium: false, premiumExpiry: null };
   const expired = data.premium_expiry && new Date(data.premium_expiry) < new Date();
   return { isPremium: Boolean(data.is_premium) && !expired, premiumExpiry: data.premium_expiry };
