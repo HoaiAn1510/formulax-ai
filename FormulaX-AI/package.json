@@ -12,7 +12,8 @@
     "test:quiz": "node scripts/test-fill-answer.mjs",
     "test:ocr": "node --test scripts/test-ocr-flow.mjs",
     "test:math": "node --test scripts/test-math-lines.mjs",
-    "test:channel": "node --test scripts/test-channel-ref.mjs"
+    "test:channel": "node --test scripts/test-channel-ref.mjs",
+    "test:admin": "node --test scripts/test-admin-range.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

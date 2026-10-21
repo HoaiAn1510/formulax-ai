@@ -2,7 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
-import App from './App.jsx'
+import RootGate from './RootGate.jsx'
 import { captureChannelVisit } from './lib/channelTracking'
 
 // Kênh giới thiệu (?ref=tiktok…): lưu first-touch, xoá tham số khỏi URL, đếm 1 lượt truy cập/ngày.
@@ -31,7 +31,7 @@ if ('serviceWorker' in navigator) {
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
-      <App />
+      <RootGate />
     </AuthProvider>
   </StrictMode>,
 )
