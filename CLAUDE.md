@@ -22,6 +22,7 @@ cd backend && npm start            # backend production
 cd backend && npm test             # test backend (node --test): bộ lọc số, JSON, hoàn lượt, thời gian, OCR
 cd FormulaX-AI && npm run test:ocr # hàm thuần của luồng ảnh đề (tô [?], tính lượt, gọi lần lượt từng bài)
 cd FormulaX-AI && npm run test:math # tách biểu thức dài của AI Finder thành nhiều dòng (utils/mathLines.js)
+cd FormulaX-AI && npm run test:channel # kênh giới thiệu phía trình duyệt (utils/channelRef.js)
 ```
 
 ## Schema `formulas.js` — bắt buộc tuân thủ khi thêm/sửa công thức
@@ -388,7 +389,7 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 
 - **Migration Supabase chạy TRƯỚC khi deploy backend/frontend** dùng tới nó (vd 006 `ai_usage_daily` +
   `increment_ai_usage`, 007 `refund_ai_usage`, 008 cột đồng bộ cài đặt trên `learning_stats` —
-  frontend dùng, 009 `ocr_usage_daily` cho `/api/ocr`). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
+  frontend dùng, 009 `ocr_usage_daily` cho `/api/ocr`, 010 theo dõi kênh giới thiệu). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
   để hoàn tác. Migration đã chạy trên Supabase thì không sửa dòng SQL nào, chỉ được sửa comment.
 - **Render — Root Directory / Build Filters:** backend import `FormulaX-AI/src/data/formulas.js`
   (ngoài thư mục `backend/`). Nếu service trên Render đặt Root Directory = `backend` thì phải thêm
@@ -398,6 +399,29 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
   `formulas.js` (hiện 246). Bằng 0 hoặc lỗi = backend không đọc được file.
 - Backend bắt buộc `NODE_ENV=production` (xem mục Hiệu năng & bảo mật).
 - Đọc ảnh đề cần `GEMINI_API_KEY` trên Render (thiếu thì `/api/ocr` trả 500, log khởi động báo ❌).
+- Theo dõi kênh: migration 010 chạy trước backend; `ADMIN_EMAILS` trên Render (trống = không ai xem
+  được thống kê).
+
+## Theo dõi kênh giới thiệu — báo cáo KPI (từ 2026-10-21)
+
+Link của nhóm `?ref=tiktok`, `?ref=facebook`, `?ref=tiktok-video3` (hoặc `utm_source`).
+- **Frontend** (`utils/channelRef.js` hàm thuần, `lib/channelTracking.js` gọi mạng; gọi từ `main.jsx`
+  trước khi render và `AuthContext.jsx`): ref làm sạch (chữ thường, `[a-z0-9-]`, ≤ 40), lưu first-touch
+  30 ngày ở `formulax_ref` (ref còn hạn KHÔNG bị ghi đè), xoá `ref`/`utm_*` khỏi URL bằng
+  `history.replaceState`. Lượt truy cập: ref trong URL, không có thì `direct`, 1 lần/trình duyệt/ref/ngày
+  (`formulax_visit_mark`), không đếm lúc Google đăng nhập xong quay về (`?code=`/`#access_token=`).
+  Nguồn đăng ký: gửi 1 lần mỗi tài khoản Google (`formulax_signup_tracked_${googleId}`, chỉ đặt khi
+  server nhận). Mọi lỗi im lặng.
+- **Backend** (`routes/channelTracking.js`, `lib/channelTracking.js`): `POST /api/track/visit` (không cần
+  đăng nhập, rate limit IP, visitor_id phải là UUID, luôn 204); `POST /api/track/signup` (khách ẩn danh /
+  không có Google identity → 204 không ghi; google_id + `created_at` lấy từ tài khoản đã xác thực; chỉ
+  gắn nguồn khi tài khoản tạo ≤ 24 giờ; insert-if-absent, DB không cấp `update`);
+  `GET /api/admin/channel-stats?from&to` (chỉ email trong `ADMIN_EMAILS`, gộp bằng RPC `channel_stats`).
+  `/payos/create` ghi `payments.signup_source` từ `user_acquisition` — đọc lỗi thì tạo đơn như cũ, không
+  bao giờ chặn thanh toán; webhook không đổi.
+- Không lưu IP, user agent; không ghi google_id/email vào log. Doanh thu chỉ tính đơn `success`, loại
+  đơn giả lập `payos_reference = 'SIMULATED'`. Tài khoản cũ / không có ref = `direct` (nên tỉ lệ
+  paid/signups của `direct` có thể > 1). Đổi cách theo dõi thì sửa đoạn "Kênh giới thiệu" ở `LegalModal.jsx`.
 
 ## Đồng bộ nhiều thiết bị (từ 2026-10-01)
 
