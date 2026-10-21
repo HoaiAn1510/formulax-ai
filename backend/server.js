@@ -6,6 +6,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import Groq from "groq-sdk";
 import payosPaymentRouter from "./routes/payosPayment.js";
+import { createChannelRouter } from "./routes/channelTracking.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
@@ -87,6 +88,10 @@ const paymentLimiter = rateLimit({
 // bị chặn ở đây đồng nghĩa người dùng đã trả tiền nhưng không được cấp Premium.
 app.use("/api/payment/payos/create", paymentLimiter);
 app.use("/api/payment/payos", payosPaymentRouter);
+
+// Theo dõi kênh giới thiệu (?ref=tiktok…) cho báo cáo KPI: /api/track/visit, /api/track/signup,
+// /api/admin/channel-stats (chỉ ADMIN_EMAILS). Xem routes/channelTracking.js, migration 010.
+app.use("/api", createChannelRouter({ db: supabaseAdmin, verifyUser: verifySupabaseUser, extractGoogleId }));
 
 // maxRetries 0: mặc định SDK tự thử lại 2 lần khi gặp 429, giữ request hàng chục giây. Gặp 429
 // thì báo "AI đang bận" và hoàn lượt ngay. Timeout từng lần gọi do askFinder tự đặt theo ngân

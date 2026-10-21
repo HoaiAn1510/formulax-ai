@@ -1,6 +1,7 @@
 import express from "express";
 import { supabaseAdmin } from "../lib/supabaseAdmin.js";
 import { PLAN_CONFIG, isValidPlan, computeStackedExpiry, generateOrderCode, getPayOS } from "../lib/payos.js";
+import { sanitizeRef } from "../lib/channelTracking.js";
 
 const router = express.Router();
 
@@ -50,6 +51,17 @@ function devOnly(req, res, next) {
   next();
 }
 
+async function readSignupSource(googleId) {
+  try {
+    const { data, error } = await supabaseAdmin.from("user_acquisition")
+      .select("signup_source").eq("google_id", googleId).maybeSingle();
+    if (error) return null;
+    return sanitizeRef(data?.signup_source);
+  } catch {
+    return null;
+  }
+}
+
 function payosConfigured() {
   return Boolean(process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY);
 }
@@ -95,9 +107,13 @@ router.post("/create", async (req, res) => {
     // và để webhook tra được userId/plan theo orderCode. Bắt buộc phải ghi thành công mới gọi
     // sang PayOS: nếu bỏ qua lỗi ở đây, webhook sau này sẽ không tìm thấy order và không có
     // cách nào cấp premium cho người dùng dù họ đã thanh toán — đơn hàng "mồ côi".
+    // Nguồn đăng ký của người mua (kênh giới thiệu, migration 010) — chỉ để thống kê, không bao giờ
+    // chặn việc tạo đơn: đọc lỗi / chưa có nguồn thì đơn được tạo như cũ, không có cột này.
+    const signupSource = await readSignupSource(userId);
     const { error: insertError } = await supabaseAdmin.from("payments").insert({
       order_id: String(orderCode), request_id: String(orderCode), google_id: userId, plan, amount,
       status: "pending", provider: "payos", payos_order_code: orderCode,
+      ...(signupSource ? { signup_source: signupSource } : {}),
     });
     if (insertError) {
       console.error("[PayOS create] Ghi payments lỗi:", insertError.message);
