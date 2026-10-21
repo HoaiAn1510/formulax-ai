@@ -23,6 +23,7 @@ cd backend && npm test             # test backend (node --test): bộ lọc số
 cd FormulaX-AI && npm run test:ocr # hàm thuần của luồng ảnh đề (tô [?], tính lượt, gọi lần lượt từng bài)
 cd FormulaX-AI && npm run test:math # tách biểu thức dài của AI Finder thành nhiều dòng (utils/mathLines.js)
 cd FormulaX-AI && npm run test:channel # kênh giới thiệu phía trình duyệt (utils/channelRef.js)
+cd FormulaX-AI && npm run test:admin # khoảng ngày trang quản trị + dấu gợi ý admin
 ```
 
 ## Schema `formulas.js` — bắt buộc tuân thủ khi thêm/sửa công thức
@@ -389,7 +390,7 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 
 - **Migration Supabase chạy TRƯỚC khi deploy backend/frontend** dùng tới nó (vd 006 `ai_usage_daily` +
   `increment_ai_usage`, 007 `refund_ai_usage`, 008 cột đồng bộ cài đặt trên `learning_stats` —
-  frontend dùng, 009 `ocr_usage_daily` cho `/api/ocr`, 010 theo dõi kênh giới thiệu). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
+  frontend dùng, 009 `ocr_usage_daily` cho `/api/ocr`, 010 theo dõi kênh giới thiệu, 011 trang quản trị + `usage_events_daily`). Chạy theo số thứ tự; file `_rollback.sql` đi kèm
   để hoàn tác. Migration đã chạy trên Supabase thì không sửa dòng SQL nào, chỉ được sửa comment.
 - **Render — Root Directory / Build Filters:** backend import `FormulaX-AI/src/data/formulas.js`
   (ngoài thư mục `backend/`). Nếu service trên Render đặt Root Directory = `backend` thì phải thêm
@@ -400,7 +401,7 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 - Backend bắt buộc `NODE_ENV=production` (xem mục Hiệu năng & bảo mật).
 - Đọc ảnh đề cần `GEMINI_API_KEY` trên Render (thiếu thì `/api/ocr` trả 500, log khởi động báo ❌).
 - Theo dõi kênh: migration 010 chạy trước backend; `ADMIN_EMAILS` trên Render (trống = không ai xem
-  được thống kê).
+  được thống kê, không ai vào được trang quản trị). Trang quản trị: migration 011 chạy trước backend.
 
 ## Theo dõi kênh giới thiệu — báo cáo KPI (từ 2026-10-21)
 
@@ -416,12 +417,37 @@ Link của nhóm `?ref=tiktok`, `?ref=facebook`, `?ref=tiktok-video3` (hoặc `u
   đăng nhập, rate limit IP, visitor_id phải là UUID, luôn 204); `POST /api/track/signup` (khách ẩn danh /
   không có Google identity → 204 không ghi; google_id + `created_at` lấy từ tài khoản đã xác thực; chỉ
   gắn nguồn khi tài khoản tạo ≤ 24 giờ; insert-if-absent, DB không cấp `update`);
-  `GET /api/admin/channel-stats?from&to` (chỉ email trong `ADMIN_EMAILS`, gộp bằng RPC `channel_stats`).
+  `GET /api/admin/channel-stats?from&to` (nay nằm ở `routes/admin.js` — xem mục Trang quản trị).
   `/payos/create` ghi `payments.signup_source` từ `user_acquisition` — đọc lỗi thì tạo đơn như cũ, không
   bao giờ chặn thanh toán; webhook không đổi.
 - Không lưu IP, user agent; không ghi google_id/email vào log. Doanh thu chỉ tính đơn `success`, loại
   đơn giả lập `payos_reference = 'SIMULATED'`. Tài khoản cũ / không có ref = `direct` (nên tỉ lệ
   paid/signups của `direct` có thể > 1). Đổi cách theo dõi thì sửa đoạn "Kênh giới thiệu" ở `LegalModal.jsx`.
+
+## Trang quản trị — chỉ xem số liệu (từ 2026-10-21)
+
+Email trong `ADMIN_EMAILS` (Render) đăng nhập Google → vào thẳng `AdminApp`, không thấy app học sinh.
+Không bảng role, không chức năng sửa dữ liệu.
+- **Backend** (`routes/admin.js`, middleware `lib/adminAuth.js`): `GET /api/admin/me` → `{ isAdmin }` (thiếu
+  token 401; khách / non-admin 200 false). `overview`, `channel-stats`, `users`, `revenue`, `usage`
+  (`?from&to` giờ VN): thiếu token 401, non-admin 403. Mọi phép đếm chạy trong DB bằng hàm `admin_*`
+  (migration 011, security definer, chỉ service_role EXECUTE) — không đọc dòng thô về backend (PostgREST
+  cắt 1000 dòng). Email đơn hàng che trong SQL (`admin_mask_email`) và che lần hai ở backend
+  (`maskEmail`, `lib/adminStats.js`); không trả google_id, mã đơn, mã giao dịch.
+- **Bộ đếm sự kiện** `usage_events_daily` (`lib/usageMetrics.js`, RPC `bump_usage_metric`): 6 chỉ số
+  `ai_premium_turn`, `ai_quota_exceeded`, `ai_busy`, `ocr_quota_exceeded`, `ocr_rate_limited`,
+  `chat_ip_limited` — chỉ ngày + tên + số đếm. Gọi CHẠY NGẦM (không await), lỗi bỏ qua: không bao giờ
+  làm chậm/hỏng request của học sinh. Thêm chỉ số mới = sửa check constraint (migration mới) + `USAGE_METRICS`.
+  Ba bộ giới hạn IP (chat 12/phút, 300/ngày; quét ảnh 30/phút) nằm ở `lib/ipLimiters.js`, chỉ thêm `handler` đếm
+  số lần bị chặn — `test/ipLimiters.test.js` giữ mã 429, body JSON, header RateLimit/Retry-After như cũ.
+- **Frontend** (`RootGate.jsx` trong `main.jsx`): khách / chưa đăng nhập → `<App/>` ngay, không gọi `/me`.
+  Tài khoản Google → `<App/>` ngay, `/me` chạy ngầm, true thì chuyển sang `AdminApp` (`React.lazy`,
+  `src/admin/`). Dấu `formulax_admin_hint_${googleId}` (`utils/adminHint.js`) CHỈ để máy của admin hiện màn
+  hình tải chờ `/me` tối đa 10 giây (Render có thể đang ngủ) — không phải căn cứ phân quyền; `/me` true
+  ghi dấu, false xoá. Không ghi email admin trong frontend. AdminApp chỉ có giao diện sáng (gỡ class
+  `dark-mode` khi mở), tên tài khoản + Đăng xuất, không có nút sang app học sinh.
+- Premium đang hoạt động tính cả tài khoản cấp tay không thời hạn (`premium_expiry` null); "chạm giới hạn
+  quét" dùng trạng thái Premium hiện tại (gần đúng). Lượt AI của Premium chỉ có từ khi chạy migration 011.
 
 ## Đồng bộ nhiều thiết bị (từ 2026-10-01)
 
