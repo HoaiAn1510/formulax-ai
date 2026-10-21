@@ -48,5 +48,6 @@ export function formatDay(day, withYear = false) {
   return withYear ? `${d}/${m}/${y}` : `${d}/${m}`;
 }
 
+export const formatCount = (v) => (Number(v) || 0).toLocaleString("vi-VN");
 export const formatVnd = (n) => `${Math.round(Number(n) || 0).toLocaleString("vi-VN")} đ`;
 export const formatPercent = (r) => (r === null || r === undefined ? "—" : `${(r * 100).toLocaleString("vi-VN", { maximumFractionDigits: 1 })}%`);

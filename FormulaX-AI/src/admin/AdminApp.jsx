@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { LogOut, LayoutDashboard, Share2, Users, Wallet, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { LogOut, LayoutDashboard, Share2, Users, Wallet, Sparkles, RefreshCw, CalendarDays } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { RANGE_PRESETS, computeRange, todayVN, formatDay } from "./adminRange";
+import { maskEmail, initialOf } from "./adminFormat";
 import OverviewSection from "./sections/OverviewSection";
 import ChannelSection from "./sections/ChannelSection";
 import UsersSection from "./sections/UsersSection";
 import RevenueSection from "./sections/RevenueSection";
 import UsageSection from "./sections/UsageSection";
+import { FOCUS } from "./adminStyle";
 
 const TABS = [
   { id: "overview", label: "Tổng quan", icon: LayoutDashboard, Section: OverviewSection },
@@ -15,6 +17,8 @@ const TABS = [
   { id: "revenue", label: "Doanh thu & đơn hàng", icon: Wallet, Section: RevenueSection },
   { id: "usage", label: "Sử dụng AI", icon: Sparkles, Section: UsageSection },
 ];
+
+const timeHM = (ms) => new Date(ms).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" });
 
 /**
  * Trang quản trị — chỉ xem số liệu, không sửa dữ liệu. RootGate chỉ hiện trang này khi backend xác
@@ -31,8 +35,17 @@ export default function AdminApp() {
     const today = todayVN(openedAt);
     return { from: `${today.slice(0, 7)}-01`, to: today };
   });
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [status, setStatus] = useState({ loading: true, loadedAt: null });
+  const onStatus = useCallback((s) => setStatus(s), []);
   const range = useMemo(() => computeRange(preset, openedAt, custom), [preset, openedAt, custom]);
   const { Section } = TABS.find((t) => t.id === tab);
+  const email = maskEmail(user?.email);
+
+  const goTo = useCallback((id) => {
+    setTab(id);
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }, []);
 
   // App học sinh có thể đã gắn class dark-mode lên <html> trước khi chuyển sang đây.
   useEffect(() => {
@@ -42,21 +55,27 @@ export default function AdminApp() {
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-primary">
       <header className="bg-sidebar text-white">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 pt-3 flex items-center gap-3">
           <img src="/favicon.svg" alt="" className="w-8 h-8 rounded-lg shrink-0" />
           <div className="min-w-0 flex-1">
-            <p className="text-[0.95rem] font-extrabold leading-tight">FormulaX · Quản trị</p>
-            <p className="text-[0.75rem] text-[#CBD5E1] truncate">{user?.name}</p>
+            <p className="text-[0.95rem] font-extrabold leading-tight">FormulaX</p>
+            <p className="text-[0.72rem] text-[#CBD5E1] leading-tight">Trang quản trị · chỉ xem</p>
           </div>
-          <button
-            type="button"
-            onClick={logout}
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[0.82rem] font-bold text-[#CBD5E1] hover:bg-white/10 hover:text-white transition-colors shrink-0"
-          >
-            <LogOut size={16} /> Đăng xuất
-          </button>
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-8 h-8 rounded-full bg-accent text-primary font-extrabold text-[0.85rem] flex items-center justify-center shrink-0" aria-hidden="true">
+              {initialOf(user?.name, user?.email)}
+            </span>
+            <span className="hidden sm:block text-[0.8rem] text-[#E2E8F0] truncate max-w-[220px]" title={email}>{email}</span>
+            <button
+              type="button"
+              onClick={logout}
+              className={`inline-flex items-center gap-1.5 h-8 px-2.5 rounded-lg text-[0.8rem] font-semibold text-[#E2E8F0] hover:bg-white/10 hover:text-white transition-colors ${FOCUS} focus-visible:ring-offset-sidebar`}
+            >
+              <LogOut size={15} /> <span className="hidden sm:inline">Đăng xuất</span>
+            </button>
+          </div>
         </div>
-        <nav className="max-w-6xl mx-auto px-2 flex gap-1 overflow-x-auto" aria-label="Mục quản trị">
+        <nav className="max-w-[1280px] mx-auto px-2 sm:px-4 mt-2 flex gap-1 overflow-x-auto [scrollbar-width:none]" aria-label="Mục quản trị">
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -67,63 +86,81 @@ export default function AdminApp() {
                 e.currentTarget.scrollIntoView({ inline: "nearest", block: "nearest" });
               }}
               aria-current={tab === id ? "page" : undefined}
-              className={`inline-flex items-center gap-1.5 px-3 py-2.5 text-[0.82rem] font-bold whitespace-nowrap border-b-2 transition-colors ${
-                tab === id ? "border-accent text-white" : "border-transparent text-[#CBD5E1] hover:text-white"
+              className={`relative inline-flex items-center gap-1.5 px-3 py-3 text-[0.83rem] font-semibold whitespace-nowrap transition-colors rounded-t-md ${FOCUS} focus-visible:ring-offset-sidebar ${
+                tab === id ? "text-white" : "text-[#CBD5E1] hover:text-white"
               }`}
             >
               <Icon size={15} /> {label}
+              <span className={`absolute left-2 right-2 bottom-0 h-[3px] rounded-t-full ${tab === id ? "bg-accent" : "bg-transparent"}`} />
             </button>
           ))}
         </nav>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-5 flex flex-col gap-5">
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap gap-2" role="group" aria-label="Khoảng ngày">
+      <div className="sticky top-0 z-30 bg-[#F8FAFC]/95 backdrop-blur-sm border-b border-[#E5E7EB]">
+        <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-2.5 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="inline-flex p-0.5 rounded-xl bg-[#E2E8F0]" role="group" aria-label="Khoảng ngày">
             {RANGE_PRESETS.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => setPreset(p.id)}
                 aria-pressed={preset === p.id}
-                className={`px-3 py-1.5 rounded-full text-[0.8rem] font-bold border transition-colors ${
-                  preset === p.id
-                    ? "bg-accent border-accent text-white"
-                    : "bg-white border-[#E5E7EB] text-primary hover:border-accent"
+                className={`px-3 h-8 rounded-[10px] text-[0.8rem] font-semibold transition-colors ${FOCUS} ${
+                  preset === p.id ? "bg-white text-primary shadow-sm" : "text-[#475569] hover:text-primary"
                 }`}
               >
                 {p.label}
               </button>
             ))}
           </div>
+
           {preset === "custom" && (
-            <div className="flex flex-wrap items-center gap-2 text-[0.82rem]">
-              <label className="flex items-center gap-1.5">
-                Từ
-                <input
-                  type="date"
-                  value={custom.from}
-                  onChange={(e) => setCustom((c) => ({ ...c, from: e.target.value }))}
-                  className="px-2 py-1.5 rounded-lg border border-[#E5E7EB] bg-white"
-                />
-              </label>
-              <label className="flex items-center gap-1.5">
-                đến
-                <input
-                  type="date"
-                  value={custom.to}
-                  onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))}
-                  className="px-2 py-1.5 rounded-lg border border-[#E5E7EB] bg-white"
-                />
-              </label>
+            <div className="flex items-center gap-1.5 text-[0.8rem]">
+              <CalendarDays size={15} className="text-text-muted" />
+              <input
+                type="date"
+                aria-label="Từ ngày"
+                value={custom.from}
+                max={custom.to || undefined}
+                onChange={(e) => setCustom((c) => ({ ...c, from: e.target.value }))}
+                className={`h-8 px-2 rounded-lg border border-[#CBD5E1] bg-white text-primary ${FOCUS}`}
+              />
+              <span className="text-text-muted">–</span>
+              <input
+                type="date"
+                aria-label="Đến ngày"
+                value={custom.to}
+                min={custom.from || undefined}
+                onChange={(e) => setCustom((c) => ({ ...c, to: e.target.value }))}
+                className={`h-8 px-2 rounded-lg border border-[#CBD5E1] bg-white text-primary ${FOCUS}`}
+              />
             </div>
           )}
-          <p className="text-[0.78rem] text-text-muted">
-            {range.error ? <span className="text-error font-semibold">{range.error}</span> : `Từ ${formatDay(range.from, true)} đến ${formatDay(range.to, true)} (giờ Việt Nam)`}
-          </p>
-        </div>
 
-        <Section key={tab} range={range} />
+          <p className="text-[0.78rem] text-[#475569]">
+            {range.error ? <span className="text-[#B91C1C] font-semibold">{range.error}</span> : `${formatDay(range.from, true)} – ${formatDay(range.to, true)}`}
+          </p>
+
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-[0.75rem] text-[#475569] tabular-nums" aria-live="polite">
+              {status.loading ? "Đang tải…" : status.loadedAt ? `Cập nhật lúc ${timeHM(status.loadedAt)}` : ""}
+            </span>
+            <button
+              type="button"
+              onClick={() => setRefreshKey((k) => k + 1)}
+              disabled={status.loading}
+              aria-label="Làm mới số liệu"
+              className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border border-[#E5E7EB] bg-white text-[#334155] hover:bg-[#F1F5F9] disabled:opacity-60 transition-colors ${FOCUS}`}
+            >
+              <RefreshCw size={15} className={status.loading ? "motion-safe:animate-spin" : ""} />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-[1280px] mx-auto px-4 sm:px-6 py-5 sm:py-6">
+        <Section key={tab} range={range} refreshKey={refreshKey} onStatus={onStatus} goTo={goTo} />
       </main>
     </div>
   );
