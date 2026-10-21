@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { trackSignupOnce } from "../lib/channelTracking";
 
 const AuthContext = createContext(null);
 
@@ -76,6 +77,12 @@ export function AuthProvider({ children }) {
       localStorage.removeItem("formulax_user");
     }
   }, [user]);
+
+  // Nguồn đăng ký (kênh giới thiệu) — một lần mỗi tài khoản Google, không gửi cho khách ẩn danh.
+  // Server tự lấy google_id + ngày tạo tài khoản từ token. Xem lib/channelTracking.js.
+  useEffect(() => {
+    if (user?.googleId && !user.isAnonymous) trackSignupOnce(user.googleId);
+  }, [user?.googleId, user?.isAnonymous]);
 
   const loginWithGoogle = async () => {
     // Từ chế độ khách bấm "Đăng nhập Google": đăng xuất phiên ẩn danh trước rồi mới đăng nhập

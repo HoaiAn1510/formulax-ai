@@ -3,6 +3,11 @@ import { createRoot } from 'react-dom/client'
 import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import App from './App.jsx'
+import { captureChannelVisit } from './lib/channelTracking'
+
+// Kênh giới thiệu (?ref=tiktok…): lưu first-touch, xoá tham số khỏi URL, đếm 1 lượt truy cập/ngày.
+// Chạy trước khi render để URL sạch ngay từ đầu. Lỗi im lặng.
+captureChannelVisit()
 
 // Đăng ký service worker qua virtual:pwa-register (thay vì injectRegister mặc định của
 // vite-plugin-pwa, chỉ gọi navigator.serviceWorker.register() trần — không có logic phát
