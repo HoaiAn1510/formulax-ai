@@ -407,7 +407,8 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 
 Link của nhóm `?ref=tiktok`, `?ref=facebook`, `?ref=tiktok-video3` (hoặc `utm_source`).
 - **Frontend** (`utils/channelRef.js` hàm thuần, `lib/channelTracking.js` gọi mạng; gọi từ `main.jsx`
-  trước khi render và `AuthContext.jsx`): ref làm sạch (chữ thường, `[a-z0-9-]`, ≤ 40), lưu first-touch
+  trước khi render và `AuthContext.jsx`): ref làm sạch (chữ thường, `[a-z0-9-]`, ≤ 40, phải bắt đầu bằng chữ/số: `^[a-z0-9][a-z0-9-]{0,39}$` — chặt hơn
+  check constraint của DB, chỉ siết ở code), lưu first-touch
   30 ngày ở `formulax_ref` (ref còn hạn KHÔNG bị ghi đè), xoá `ref`/`utm_*` khỏi URL bằng
   `history.replaceState`. Lượt truy cập: ref trong URL, không có thì `direct`, 1 lần/trình duyệt/ref/ngày
   (`formulax_visit_mark`), không đếm lúc Google đăng nhập xong quay về (`?code=`/`#access_token=`).
@@ -446,6 +447,14 @@ Không bảng role, không chức năng sửa dữ liệu.
   hình tải chờ `/me` tối đa 10 giây (Render có thể đang ngủ) — không phải căn cứ phân quyền; `/me` true
   ghi dấu, false xoá. Không ghi email admin trong frontend. AdminApp chỉ có giao diện sáng (gỡ class
   `dark-mode` khi mở), tên tài khoản + Đăng xuất, không có nút sang app học sinh.
+- **So sánh kỳ trước** (từ 2026-10-22): backend gọi lại CHÍNH các hàm `admin_*` với kỳ liền trước cùng độ dài
+  (`previousRange`, `lib/adminStats.js`) — không có hàm SQL riêng. Tổng tài khoản tích luỹ suy từ tổng hiện tại
+  trừ số tạo từ đầu kỳ tới hôm nay (`cumulativeAccounts`).
+- **Giao diện** (`src/admin/`): hàm thuần ở `adminFormat.js` (so sánh %, trục biểu đồ, CSV có BOM + ô chữ bắt đầu
+  bằng = + - @ tab CR được thêm dấu ' để Excel không chạy công thức, gom kênh theo phần trước dấu "-" đầu tiên,
+  `fb` = facebook) và `adminRange.js` — test bằng `npm run test:admin`. Biểu đồ tự vẽ SVG ở `charts.jsx` — không
+  thêm thư viện biểu đồ (chunk admin phải nhẹ). Hằng số màu/focus ở `adminStyle.js` (file `.jsx` chỉ export
+  component — lint react-refresh). Số liệu "càng ít càng tốt" (AI bận) dùng `invertDelta`.
 - Premium đang hoạt động tính cả tài khoản cấp tay không thời hạn (`premium_expiry` null); "chạm giới hạn
   quét" dùng trạng thái Premium hiện tại (gần đúng). Lượt AI của Premium chỉ có từ khi chạy migration 011.
 
