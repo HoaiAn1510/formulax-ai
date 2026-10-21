@@ -7,6 +7,9 @@ import rateLimit from "express-rate-limit";
 import Groq from "groq-sdk";
 import payosPaymentRouter from "./routes/payosPayment.js";
 import { createChannelRouter } from "./routes/channelTracking.js";
+import { createAdminRouter } from "./routes/admin.js";
+import { createUsageMetrics } from "./lib/usageMetrics.js";
+import { createIpLimiters } from "./lib/ipLimiters.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
@@ -60,21 +63,11 @@ app.use((req, res, next) => (req.path === "/api/ocr" ? next() : smallJson(req, r
 // được dễ dàng bằng cách gọi thẳng API. Các limiter dưới đây là chốt chặn phía server để một
 // IP không thể vét cạn quota Groq/PayOS — đặt rộng hơn hạn mức nghiệp vụ để không chặn nhầm
 // người dùng thật (nhiều học sinh cùng NAT ra một IP ở trường/quán net).
-const chatBurstLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 12,
-  standardHeaders: "draft-7",
-  legacyHeaders: false,
-  message: { error: "Bạn hỏi hơi nhanh, chờ khoảng một phút rồi thử lại nhé." },
-});
-
-const chatDailyLimiter = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000,
-  max: 300,
-  standardHeaders: "draft-7",
-  legacyHeaders: false,
-  message: { error: "Đã đạt giới hạn số câu hỏi trong ngày. Vui lòng quay lại vào ngày mai." },
-});
+// Đếm sự kiện theo ngày cho trang quản trị (migration 011) — chạy ngầm, lỗi bỏ qua, không await.
+const bumpMetric = createUsageMetrics(supabaseAdmin);
+// Chat 12/phút + 300/ngày và quét ảnh 30/phút theo IP — cấu hình ở lib/ipLimiters.js (giữ nguyên như
+// trước, chỉ thêm đếm số lần bị chặn; test/ipLimiters.test.js kiểm tra mã 429, body, header không đổi).
+const { chatBurst: chatBurstLimiter, chatDaily: chatDailyLimiter, ocrIp: ocrIpLimiter } = createIpLimiters(bumpMetric);
 
 const paymentLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -252,6 +245,7 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     let outcome;
     if (isPremium) {
       outcome = { result: await ask(), remaining: null };
+      if (outcome.result.delivered) bumpMetric("ai_premium_turn");
     } else {
       outcome = await runWithQuota({
         limit: FREE_AI_DAILY_LIMIT,
@@ -270,6 +264,7 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
         onRefundError: (err) => console.error("[FormulaX Backend] refund_ai_usage lỗi:", err.message),
       });
       if (outcome.limited) {
+        bumpMetric("ai_quota_exceeded");
         return res.status(429).json({
           error: `Bạn đã dùng hết ${FREE_AI_DAILY_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`,
           code: "quota_exceeded",
@@ -305,6 +300,7 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     // Groq 429 = gói miễn phí hết token/phút cho cả app, không phải lỗi của học sinh. code
     // "ai_busy" để frontend phân biệt với 429 hết lượt (code "quota_exceeded").
     if (status === 429) {
+      bumpMetric("ai_busy");
       // retryAfter (giây): frontend đếm ngược rồi tự hỏi lại một lần. Log chỉ có loại hạn mức + số
       // giây, không có câu hỏi hay tài khoản.
       const retryAfter = retryAfterSeconds(error);
@@ -385,14 +381,7 @@ app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
 const FREE_OCR_DAILY_LIMIT = 5;
 const PREMIUM_OCR_DAILY_LIMIT = 50;
 const ocrAccountLimiter = createPerKeyLimiter({ windowMs: 60 * 1000, max: 5 });
-// Chốt theo IP trước khi đọc body ảnh (rộng hơn giới hạn tài khoản vì nhiều học sinh chung IP).
-const ocrIpLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 30,
-  standardHeaders: "draft-7",
-  legacyHeaders: false,
-  message: { error: "Bạn quét ảnh hơi nhanh, chờ khoảng một phút rồi thử lại nhé.", code: "ocr_rate" },
-});
+// Giới hạn theo IP (30/phút) là ocrIpLimiter ở đầu file (lib/ipLimiters.js).
 // base64 lớn hơn ảnh gốc 4/3 — chừa thêm chỗ cho phần JSON bao quanh.
 const ocrJsonParser = express.json({ limit: Math.ceil((MAX_IMAGE_BYTES * 4) / 3) + 16 * 1024 });
 // Lỗi của parser (ảnh vượt giới hạn, body hỏng) trả JSON có code như mọi lỗi khác của route này,
@@ -424,6 +413,7 @@ app.post("/api/ocr", ocrIpLimiter, ocrJson, async (req, res) => {
 
     const burst = ocrAccountLimiter.hit(googleId);
     if (!burst.allowed) {
+      bumpMetric("ocr_rate_limited");
       return res.status(429).json({ error: "Bạn quét ảnh hơi nhanh, chờ khoảng một phút rồi thử lại nhé.", code: "ocr_rate" });
     }
 
@@ -466,6 +456,7 @@ app.post("/api/ocr", ocrIpLimiter, ocrJson, async (req, res) => {
       onRefundError: (err) => console.error("[FormulaX Backend] refund_ocr_usage lỗi:", err.message),
     });
     if (outcome.limited) {
+      bumpMetric("ocr_quota_exceeded");
       return res.status(429).json({
         error: `Bạn đã quét hết ${limit} ảnh hôm nay. Bạn vẫn có thể gõ đề vào ô chat nhé.`,
         code: "ocr_quota",
@@ -503,6 +494,15 @@ app.post("/api/ocr", ocrIpLimiter, ocrJson, async (req, res) => {
     res.status(500).json({ error: "Chưa đọc được ảnh, bạn thử lại sau nhé.", code: "ocr_failed" });
   }
 });
+
+// Trang quản trị — chỉ đọc số liệu, quyền theo ADMIN_EMAILS (routes/admin.js, migration 011). Đặt
+// sau các hằng số giới hạn để truyền đúng số đang áp dụng vào phép đếm "chạm giới hạn".
+app.use("/api/admin", createAdminRouter({
+  db: supabaseAdmin,
+  verifyUser: verifySupabaseUser,
+  extractGoogleId,
+  limits: { aiFree: FREE_AI_DAILY_LIMIT, ocrFree: FREE_OCR_DAILY_LIMIT, ocrPremium: PREMIUM_OCR_DAILY_LIMIT },
+}));
 
 // Health check endpoint
 // commit: bản code đang chạy — Render tự đặt RENDER_GIT_COMMIT khi deploy. Dùng để xác nhận sau

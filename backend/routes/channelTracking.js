@@ -1,26 +1,24 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
-import { sanitizeRef, isValidVisitorId, attributedSource, isAdminEmail, parseDateRange, buildChannelStats, DIRECT_SOURCE } from "../lib/channelTracking.js";
+import { sanitizeRef, isValidVisitorId, attributedSource, DIRECT_SOURCE } from "../lib/channelTracking.js";
 
 /**
  * Theo dõi kênh giới thiệu — xem lib/channelTracking.js, migrations/010_channel_tracking.sql.
  *   POST /api/track/visit          — không cần đăng nhập (khách cũng được đếm); luôn trả 204.
  *   POST /api/track/signup         — tài khoản Google thật; ghi nguồn đăng ký một lần, không ghi đè.
- *   GET  /api/admin/channel-stats  — chỉ email trong ADMIN_EMAILS.
+ * Thống kê theo kênh (GET /api/admin/channel-stats) nằm ở routes/admin.js.
  * Không ghi IP, user agent, google_id hay email vào DB (trừ google_id làm khoá user_acquisition) hay log.
  *
  * Phụ thuộc truyền vào để test được không cần Supabase thật: db (supabaseAdmin), verifyUser,
- * extractGoogleId, adminEmails() (đọc ADMIN_EMAILS lúc gọi), now(), cấu hình rate limit.
+ * extractGoogleId, now(), cấu hình rate limit.
  */
 export function createChannelRouter({
   db,
   verifyUser,
   extractGoogleId,
-  adminEmails = () => process.env.ADMIN_EMAILS,
   now = Date.now,
   visitLimit = { windowMs: 60 * 1000, max: 60 },
   signupLimit = { windowMs: 60 * 1000, max: 20 },
-  statsLimit = { windowMs: 60 * 1000, max: 20 },
 }) {
   const router = express.Router();
   const limiter = ({ windowMs, max }) => rateLimit({ windowMs, max, standardHeaders: "draft-7", legacyHeaders: false, message: { error: "Thử lại sau ít phút." } });
@@ -73,31 +71,6 @@ export function createChannelRouter({
       return res.status(503).json({ error: "Thử lại sau." });
     }
     res.json({ ok: true });
-  });
-
-  router.get("/admin/channel-stats", limiter(statsLimit), async (req, res) => {
-    let authUser;
-    try {
-      authUser = await verifyUser(req);
-    } catch (err) {
-      return res.status(err.status || 401).json({ error: err.message });
-    }
-    if (authUser.is_anonymous || !extractGoogleId(authUser) || !isAdminEmail(authUser.email, adminEmails())) {
-      return res.status(403).json({ error: "Không có quyền." });
-    }
-    const range = parseDateRange(req.query.from, req.query.to, now());
-    if (range.error) return res.status(400).json({ error: range.error });
-    try {
-      const { data, error } = await db.rpc("channel_stats", { p_from: range.from, p_to: range.to });
-      if (error) {
-        console.error("[admin:channel-stats] lỗi:", error.message);
-        return res.status(503).json({ error: "Không đọc được thống kê." });
-      }
-      res.json({ from: range.from, to: range.to, rows: buildChannelStats(data) });
-    } catch (err) {
-      console.error("[admin:channel-stats] lỗi:", err.message);
-      res.status(503).json({ error: "Không đọc được thống kê." });
-    }
   });
 
   return router;

@@ -203,32 +203,3 @@ test("track/signup: không có token → 401", async () => {
   });
   assert.equal(db.calls.upserts.length, 0);
 });
-
-test("admin/channel-stats: chặn người không phải admin (403), khách (403), thiếu token (401)", async () => {
-  const cases = [
-    { verifyUser: rejectAuth, status: 401 },
-    { verifyUser: verifyAs(googleUser()), status: 403 },
-    { verifyUser: verifyAs(googleUser({ email: "admin@x.com", is_anonymous: true })), status: 403 },
-    { verifyUser: verifyAs(googleUser({ email: "admin@x.com", identities: [] })), status: 403 },
-    { verifyUser: verifyAs(googleUser({ email: "admin@x.com" })), status: 403, adminEmails: () => "" },
-  ];
-  for (const { verifyUser, status, adminEmails = () => "admin@x.com" } of cases) {
-    const db = fakeDb();
-    await withServer({ db, verifyUser, adminEmails }, async (base) => {
-      assert.equal((await fetch(`${base}/admin/channel-stats`)).status, status);
-    });
-    assert.equal(db.calls.rpc.length, 0, "không đọc thống kê khi không phải admin");
-  }
-});
-
-test("admin/channel-stats: admin đọc được, from/to truyền vào RPC, from/to sai → 400", async () => {
-  const db = fakeDb({ rpcRows: [{ source: "tiktok", visits: 10, signups: 2, paid_users: 1, revenue: 49000 }] });
-  await withServer({ db, verifyUser: verifyAs(googleUser({ email: "Admin@X.com" })), adminEmails: () => "admin@x.com" }, async (base) => {
-    const res = await fetch(`${base}/admin/channel-stats?from=2026-10-01&to=2026-10-21`);
-    assert.equal(res.status, 200);
-    const body = await res.json();
-    assert.deepEqual(body.rows[0], { source: "tiktok", visits: 10, signups: 2, paid_users: 1, revenue: 49000, signup_rate: 0.2, paid_rate: 0.5 });
-    assert.equal((await fetch(`${base}/admin/channel-stats?from=2026-10-21&to=2026-10-01`)).status, 400);
-  });
-  assert.deepEqual(db.calls.rpc, [{ name: "channel_stats", args: { p_from: "2026-10-01", p_to: "2026-10-21" } }]);
-});
