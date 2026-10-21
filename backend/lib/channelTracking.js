@@ -10,11 +10,15 @@ export const DIRECT_SOURCE = "direct";
 export const ATTRIBUTION_WINDOW_MS = 24 * 60 * 60 * 1000;
 const MAX_RANGE_DAYS = 366;
 
-/** Chữ thường, chỉ giữ a-z 0-9 và "-", tối đa 40 ký tự. Rỗng/sai kiểu → null. */
+// Ref hợp lệ: bắt đầu bằng chữ hoặc số, sau đó chữ / số / "-", tối đa 40 ký tự. Chặt hơn check
+// constraint của DB (cho phép bắt đầu bằng "-") — chỉ siết ở code, không đổi migration đã chạy.
+export const REF_PATTERN = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+/** Chữ thường, bỏ ký tự ngoài a-z 0-9 "-", cắt 40 ký tự; không khớp REF_PATTERN (rỗng, bắt đầu bằng "-") → null. */
 export function sanitizeRef(value) {
   if (typeof value !== "string") return null;
   const ref = value.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, MAX_REF_LENGTH);
-  return ref || null;
+  return REF_PATTERN.test(ref) ? ref : null;
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

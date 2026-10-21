@@ -17,6 +17,12 @@ test("sanitizeRef: chữ thường, chỉ a-z 0-9 -, tối đa 40 ký tự, rỗ
   assert.equal(sanitizeRef("Tiếng Việt"), "tingvit");
   assert.equal(sanitizeRef("a".repeat(60)).length, 40);
   assert.equal(sanitizeRef("!!!"), null);
+  // Phải bắt đầu bằng chữ hoặc số.
+  assert.equal(sanitizeRef("-tiktok"), null);
+  assert.equal(sanitizeRef("---"), null);
+  assert.equal(sanitizeRef("!-fb"), null, "sau khi bỏ ký tự lạ vẫn bắt đầu bằng '-'");
+  assert.equal(sanitizeRef("9-lop10a"), "9-lop10a");
+  assert.equal(sanitizeRef("tiktok-"), "tiktok-");
   assert.equal(sanitizeRef(""), null);
   assert.equal(sanitizeRef(undefined), null);
   assert.equal(sanitizeRef(["tiktok"]), null);

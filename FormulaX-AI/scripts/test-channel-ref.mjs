@@ -15,6 +15,11 @@ const NOW = Date.parse("2026-10-21T05:00:00Z");
 
 test("sanitizeRef: chữ thường, a-z 0-9 -, tối đa 40", () => {
   assert.equal(sanitizeRef("TikTok-Video3"), "tiktok-video3");
+  // Phải bắt đầu bằng chữ hoặc số (giống backend).
+  assert.equal(sanitizeRef("-tiktok"), null);
+  assert.equal(sanitizeRef("=cmd"), "cmd");
+  assert.equal(sanitizeRef("!-fb"), null);
+  assert.equal(sanitizeRef("9-lop10a"), "9-lop10a");
   assert.equal(sanitizeRef("<b>fb</b>"), "bfbb");
   assert.equal(sanitizeRef("x".repeat(50)).length, 40);
   assert.equal(sanitizeRef("%%%"), null);

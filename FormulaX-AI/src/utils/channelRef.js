@@ -16,7 +16,8 @@ export const DIRECT_REF = "direct";
 export function sanitizeRef(value) {
   if (typeof value !== "string") return null;
   const ref = value.toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 40);
-  return ref || null;
+  // Phải bắt đầu bằng chữ hoặc số (giống backend lib/channelTracking.js REF_PATTERN).
+  return /^[a-z0-9][a-z0-9-]{0,39}$/.test(ref) ? ref : null;
 }
 
 export function safeGet(storage, key) {
