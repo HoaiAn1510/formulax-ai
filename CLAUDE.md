@@ -223,7 +223,7 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
    **Không chèn gì thay đổi theo câu hỏi/người dùng (ngày giờ, tên, lượt còn lại...) vào tin #1** —
    `test/finderPrompt.test.js` giữ điều này. Phần cố định gồm 4 ví dụ mẫu — cố ý KHÔNG dùng
    chính các đề trong bộ câu kiểm thử, để lần chấm còn đo được) và khai báo
-   model/tham số. AI trả JSON: `type` (`solution | no_formula | refuse_answer | off_topic`),
+   model/tham số. AI trả JSON: `type` (`solution | no_formula | refuse_answer | off_topic | invalid_data`),
    `formula_ids`, `intro`, `steps[{title, detail, expression}]`, `reminder`. **Không dùng
    `response_format` (json_object/json_schema)**: chế độ ràng buộc JSON của Groq chặn lệnh LaTeX viết
    với một dấu `\` (`\angle`, `\circ`, `\mathbb` — escape JSON không hợp lệ) nên học sinh thấy
@@ -273,7 +273,14 @@ Quy tắc khi sửa:
 - Thư viện không có công thức phù hợp → `no_formula`, nói rõ thư viện chưa có; không gợi ý công
   thức hay tài liệu ngoài.
 - **Kiến thức nền THCS** (quy tắc 1c của prompt, 2026-10-08): AI được dùng KHÔNG cần thẻ công thức,
-  CHỈ hai điều — tổng ba góc tam giác bằng 180° và định lý Pytago. Không thêm vào `formulas.js`.
+  CHỈ ba điều — tổng ba góc tam giác bằng 180°, định lý Pytago, và (từ 2026-10-22, chủ dự án duyệt)
+  bất đẳng thức tam giác (tổng hai cạnh bất kỳ > cạnh còn lại). Không thêm vào `formulas.js`.
+- **Ba cạnh không tạo thành tam giác → `invalid_data`** (quy tắc 1f, 2026-10-22 — ca mentor "ba cạnh
+  1, 2, 4, dùng Hê-rông", trước đó trả nhầm "thư viện chưa có công thức"). AI trả thêm `sides`; backend
+  KHÔNG tin AI: `checkTriangleSides` (`lib/solutionGuard.js`) chỉ nhận khi đúng ba số có trong đề và
+  thật sự vi phạm, rồi TỰ dựng câu giải thích ("vì $1 + 2 < 4$", không viết tổng ra số); kiểm không
+  được → `no_formula` (hoàn lượt). `invalid_data` cũng hoàn lượt. Log `[finder:invalid_data]`.
+  CHỈ cho tam giác — góc ≥ 180°, cạnh âm, sin > 1 chưa làm (xem "Việc sau"). Test: `test/invalidTriangle.test.js`.
   `BACKGROUND_KNOWLEDGE_LATEX` (`lib/finderPrompt.js`) cho bộ lọc "không tính" biết 180, 90 là số có
   sẵn (thiếu nó thì `A = 180^\circ - B - C` bị bắt nhầm). Mở rộng danh sách phải hỏi chủ dự án.
 - **Model `openai/gpt-oss-120b`**, chọn sau khi chấm cùng bộ câu với `gpt-oss-20b`: lộ số 2/12
@@ -298,7 +305,8 @@ Quy tắc khi sửa:
   Groq rồi **hoàn lại** (`refund_ai_usage` — migration 007, qua `lib/quotaFlow.js`) trong mọi
   trường hợp không giao được câu trả lời: vượt hạn mức, Groq 429 (trả `code: "ai_busy"`), Groq
   lỗi/timeout, JSON hỏng, và **`no_formula`** (từ 2026-10-08, `countsAsTurn` trong
-  `lib/finderAnswer.js` — thư viện thiếu / app chưa hiểu cách viết đề không phải lỗi của học sinh).
+  `lib/finderAnswer.js` — thư viện thiếu / app chưa hiểu cách viết đề không phải lỗi của học sinh),
+  **`invalid_data`** (từ 2026-10-22 — đề sai, không có hướng dẫn nào được giao).
   `off_topic`, `refuse_answer` vẫn tính lượt.
 - **Log:** chỉ ghi nội dung câu hỏi (cắt ≤ 150 ký tự), `type`, id công thức. KHÔNG ghi
   google_id, email, tên hay token. Mọi request có một dòng `[finder:usage]` (model, attempts,
@@ -520,6 +528,9 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 - **Bộ lọc "không tính":** hằng số tính ra trùng số trong đề vẫn lọt, trừ đại lượng đề hỏi dạng tên
   đoạn/góc viết hoa (`askedTargets`); giá trị lượng giác đã thay (`\frac{1}{2}` thay `\cos 60^\circ`)
   chỉ được prompt chặn.
+- **Dữ kiện vô lý ngoài bất đẳng thức tam giác** (việc riêng, chưa làm — 2026-10-22): tổng các góc
+  ≥ 180° / một góc ≥ 180°, độ dài cạnh âm hoặc bằng 0, sin/cos > 1. Hiện AI vẫn hướng dẫn bình thường
+  hoặc trả `no_formula`; `invalid_data` mới chỉ nhận ba cạnh tam giác.
 
 - **OCR — trường `occlusions` (sau đợt cho học sinh lớp 10 dùng thử):** yêu cầu Gemini liệt kê vật
   che lên vùng chữ (bút, tay, bóng); backend đánh dấu bài có `occlusions` khác rỗng là cần kiểm tra.

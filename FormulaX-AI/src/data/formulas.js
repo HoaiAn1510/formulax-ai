@@ -301,7 +301,7 @@ export const formulas = [
     topic: "Hình học",
     grade: 10,
     latex: "S = \\sqrt{p(p-a)(p-b)(p-c)}",
-    explanation: "Dùng để tính diện tích tam giác khi biết độ dài cả ba cạnh.\nTrong đó:\n- $a, b, c$: Độ dài ba cạnh tam giác.\n- $p$: Nửa chu vi tam giác: $p = \\frac{a+b+c}{2}$.",
+    explanation: "Dùng để tính diện tích tam giác khi biết độ dài cả ba cạnh.\nTrong đó:\n- $a, b, c$: Độ dài ba cạnh tam giác.\n- $p$: Nửa chu vi tam giác: $p = \\frac{a+b+c}{2}$.\nĐiều kiện tồn tại tam giác: ba số dương $a, b, c$ là độ dài ba cạnh của một tam giác khi và chỉ khi tổng hai số bất kỳ lớn hơn số còn lại: $a + b > c$, $b + c > a$, $c + a > b$. Nếu không thỏa thì không có tam giác nào như vậy, không áp dụng được công thức (kiến thức THCS, không gắn với bài cụ thể trong SGK KNTT lớp 10).",
     example: "Tính diện tích tam giác $ABC$ có độ dài ba cạnh lần lượt là $a = 13$, $b = 14$, $c = 15$.\n\n**Lời giải:**\n- Nửa chu vi: $p = \\frac{13 + 14 + 15}{2} = 21$.\n- Diện tích:\n  $$S = \\sqrt{21(21-13)(21-14)(21-15)} = \\sqrt{21 \\cdot 8 \\cdot 7 \\cdot 6}$$\n  $$S = \\sqrt{21 \\cdot 7 \\cdot 8 \\cdot 6} = \\sqrt{147 \\cdot 48} = \\sqrt{7056} = 84$$",
     tags: ["Diện tích", "Tam giác", "Chu vi"],
     difficulty: "Trung bình",

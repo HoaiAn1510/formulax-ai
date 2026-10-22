@@ -6,13 +6,14 @@ import { getFormula } from "../lib/formulaCatalog.js";
 
 const R = String.raw;
 
-test("prompt: kiến thức nền THCS chỉ gồm tổng ba góc và Pytago; ngoài ra mọi công thức lấy từ thư viện", () => {
+test("prompt: kiến thức nền THCS chỉ gồm tổng ba góc, Pytago và bất đẳng thức tam giác; ngoài ra mọi công thức lấy từ thư viện", () => {
   const rule = FINDER_SYSTEM_PROMPT.split("\n").find((l) => l.startsWith("1c."));
   assert.ok(rule, "thiếu quy tắc 1c");
-  assert.match(rule, /CHỈ gồm đúng hai điều/);
+  assert.match(rule, /CHỈ gồm đúng ba điều/);
   assert.match(rule, /tổng ba góc trong tam giác bằng 180°/);
   assert.match(rule, /định lý Pytago trong tam giác vuông/);
-  assert.match(rule, /Ngoài hai điều này, mọi công thức vẫn phải lấy từ THƯ VIỆN/);
+  assert.match(rule, /bất đẳng thức tam giác: ba số dương a, b, c là độ dài ba cạnh của một tam giác khi và chỉ khi tổng hai số bất kỳ lớn hơn số còn lại/);
+  assert.match(rule, /Ngoài ba điều này, mọi công thức vẫn phải lấy từ THƯ VIỆN/);
   assert.match(rule, /không ghi vào formula_ids/);
 });
 

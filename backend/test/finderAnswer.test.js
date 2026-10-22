@@ -318,10 +318,11 @@ test("rateLimitKind: đọc loại hạn mức để ghi log", () => {
   assert.equal(rateLimitKind(groq429("lạ")), "unknown");
 });
 
-test("countsAsTurn: no_formula và JSON hỏng KHÔNG tính lượt (hoàn lại); solution/off_topic/refuse_answer tính", () => {
+test("countsAsTurn: no_formula, invalid_data và JSON hỏng KHÔNG tính lượt (hoàn lại); solution/off_topic/refuse_answer tính", () => {
   assert.equal(countsAsTurn({ type: "solution" }, {}), true);
   assert.equal(countsAsTurn({ type: "off_topic" }, {}), true);
   assert.equal(countsAsTurn({ type: "refuse_answer" }, {}), true);
   assert.equal(countsAsTurn({ type: "no_formula" }, {}), false);
+  assert.equal(countsAsTurn({ type: "invalid_data" }, { invalidData: { verified: true } }), false);
   assert.equal(countsAsTurn({ type: "unavailable" }, { jsonFailed: true }), false);
 });

@@ -3,7 +3,8 @@
 // 2/12 và 1/8 ở nhóm bài dạng n − 1), thỉnh thoảng viết LaTeX sai escape trong JSON hoặc thiếu
 // dấu ngoặc.
 
-export const ANSWER_TYPES = ["solution", "no_formula", "refuse_answer", "off_topic"];
+// invalid_data (2026-10-22): CHỈ cho ba cạnh không thỏa bất đẳng thức tam giác — xem checkTriangleSides.
+export const ANSWER_TYPES = ["solution", "no_formula", "refuse_answer", "off_topic", "invalid_data"];
 
 // formulaIds 4: bài theo phương pháp (cực trị...) dùng tới 3–4 công thức — điều kiện cực trị,
 // đạo hàm, quy tắc tổng hiệu, công thức nghiệm.
@@ -15,6 +16,7 @@ export const DEFAULT_TEXT = {
   reminder: "Phần tính toán bạn tự làm nhé — làm xong nhớ kiểm tra lại đơn vị!",
   allStepsRemoved: "Mình đã chọn công thức cho bạn nhưng chưa trình bày được các bước chắc chắn đúng — bạn xem phần ví dụ trong thẻ công thức nhé.",
   unavailable: "Mình chưa soạn được hướng dẫn cho câu này, bạn thử diễn đạt lại câu hỏi nhé.",
+  invalidDataReminder: "Bạn kiểm tra lại đề (có thể chép nhầm số) rồi hỏi lại mình nhé.",
 };
 
 // ─── 1. Sửa escape LaTeX trong JSON thô ─────────────────────────────────────
@@ -236,8 +238,10 @@ export function normalizeAnswer(value, isValidId, nameOf) {
   // no_formula: học sinh chỉ thấy câu mặc định. Lời giải thích của model thường nêu tên phương
   // pháp/công thức còn thiếu ("cần tích phân từng phần") — tức là trỏ ra ngoài thư viện — nên chỉ
   // giữ lại trong aiNote để ghi log cho nhóm biết thư viện đang thiếu gì.
-  const aiNote = type === "no_formula" ? intro.slice(0, LIMITS.aiNote) : "";
+  const aiNote = type === "no_formula" || type === "invalid_data" ? intro.slice(0, LIMITS.aiNote) : "";
   if (type === "no_formula") intro = DEFAULT_TEXT.noFormulaIntro;
+  // invalid_data: ba cạnh model nêu — nơi gọi kiểm lại bằng checkTriangleSides rồi mới dùng.
+  const sides = type === "invalid_data" && Array.isArray(obj.sides) ? obj.sides.slice(0, 3) : [];
   const answer = {
     type,
     formulaIds: type === "solution" ? formulaIds : [],
@@ -247,7 +251,39 @@ export function normalizeAnswer(value, isValidId, nameOf) {
     // thức X trong sách" — tức là trỏ tới công thức/tài liệu ngoài thư viện.
     reminder: type === "no_formula" ? "" : reminder || (type === "solution" ? DEFAULT_TEXT.reminder : ""),
   };
-  return { answer, droppedIds, aiNote };
+  return { answer, droppedIds, aiNote, sides };
+}
+
+/**
+ * Kiểm lại câu trả lời invalid_data của model — không tin model nói "dữ kiện vô lý": chỉ nhận khi
+ * model nêu đúng ba độ dài cạnh, mỗi số đều có trong đề, và ba số đó THẬT SỰ không thỏa bất đẳng thức
+ * tam giác (tổng hai cạnh nhỏ nhất ≤ cạnh lớn nhất). Câu giải thích do backend dựng, chỉ chứa số của đề
+ * (so sánh "1 + 2 < 4", không viết tổng ra số). Trả null nếu không kiểm được → nơi gọi coi như no_formula.
+ */
+export function checkTriangleSides(sides, questionText) {
+  if (!Array.isArray(sides) || sides.length !== 3) return null;
+  const inQuestion = new Set(extractNumbers(questionText).map((n) => String(Number(n))));
+  const values = [];
+  for (const raw of sides) {
+    const text = String(raw ?? "").replace(/[$\s]/g, "").replace(/\{,\}/g, ",");
+    if (!/^\d+(?:[.,]\d+)?$/.test(text)) return null; // √2, a, 2x... không kiểm được
+    const n = Number(text.replace(",", "."));
+    // extractNumbers đọc "1,5" thành 1 và 5 (tránh nhầm toạ độ) → nhận thêm khi cạnh có nguyên văn trong đề.
+    const literal = new RegExp(`(?<![\\d.,])${text.replace(/[.,]/g, "[.,]")}(?![.,]?\\d)`).test(String(questionText));
+    if (!(n > 0) || !(inQuestion.has(String(n)) || literal)) return null;
+    values.push(n);
+  }
+  const [x, y, z] = [...values].sort((p, q) => p - q);
+  // Sai số dấu phẩy động (0,1 + 0,2 vs 0,3): so trên số nguyên sau khi nhân 10^k.
+  const scale = 10 ** Math.max(...values.map((n) => (String(n).split(".")[1] || "").length));
+  const [sx, sy, sz] = [x, y, z].map((n) => Math.round(n * scale));
+  if (sx + sy > sz) return null;
+  const vi = (n) => String(n).replace(".", ",");
+  const tex = (n) => String(n).replace(".", "{,}");
+  const op = sx + sy === sz ? "=" : "<";
+  const intro = `Ba cạnh ${values.map(vi).join(", ")} không tạo thành tam giác vì $${tex(x)} + ${tex(y)} ${op} ${tex(z)}$ — `
+    + "tổng hai cạnh bất kỳ phải lớn hơn cạnh còn lại. Vì vậy không có tam giác nào như vậy, nên không tính được diện tích hay các yếu tố khác của nó.";
+  return { sides: values, intro };
 }
 
 // ─── 3. Chặn tự tính (số lạ) ───────────────────────────────────────────────

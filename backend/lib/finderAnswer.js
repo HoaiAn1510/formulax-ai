@@ -2,6 +2,7 @@ import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalo
 import { buildFinderMessages, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS, BACKGROUND_KNOWLEDGE_LATEX, gradeLine } from "./finderPrompt.js";
 import {
   parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, dropNumericSubstitutions, toReplyText, extractNumbers, DEFAULT_TEXT,
+  checkTriangleSides,
 } from "./solutionGuard.js";
 import { isMultipleChoiceQuestion, guardChoiceReveals } from "./choiceGuard.js";
 
@@ -28,11 +29,12 @@ export const fallbackState = { primaryBlockedUntil: 0 };
 /**
  * Câu trả lời có tính là 1 lượt hỏi AI không. Không tính (backend hoàn lượt) khi không giao được câu
  * trả lời thật: JSON hỏng phải trả câu mẫu, hoặc no_formula — thư viện chưa có công thức là lỗ hổng
- * của thư viện (hoặc app chưa hiểu cách viết của đề, vd "△"), không phải lỗi của học sinh. off_topic
- * và refuse_answer vẫn tính.
+ * của thư viện (hoặc app chưa hiểu cách viết của đề, vd "△"), không phải lỗi của học sinh; và
+ * invalid_data — đề sai (ba cạnh không tạo thành tam giác), không có hướng dẫn nào được giao (quyết
+ * định chủ dự án 2026-10-22). off_topic và refuse_answer vẫn tính.
  */
 export function countsAsTurn(answer, meta) {
-  return !meta?.jsonFailed && answer?.type !== "no_formula";
+  return !meta?.jsonFailed && answer?.type !== "no_formula" && answer?.type !== "invalid_data";
 }
 
 // Groq không cho biết phải chờ bao lâu thì mặc định 60 giây (hạn mức theo phút). Trần 120 giây: lâu
@@ -254,10 +256,27 @@ export function numberSourceTexts(message, recentUserTexts = []) {
  * ngoặc, lọc bước có số lạ. Tách riêng khỏi lời gọi Groq để test và chấm lại offline được.
  */
 export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = false, grade = null }) {
-  const { answer: normalized, droppedIds, aiNote } = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
+  const { answer: normalized, droppedIds, aiNote, sides } = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
+  const sourceTexts = numberSourceTexts(message, recentUserTexts);
+  // Ba cạnh không tạo thành tam giác (quy tắc 1f): backend kiểm lại rồi tự dựng câu giải thích. Kiểm
+  // không được (model nêu sai cạnh / ba cạnh thật ra hợp lệ) → no_formula như trước, lời model vào log.
+  if (normalized.type === "invalid_data") {
+    const checked = checkTriangleSides(sides, sourceTexts.join("\n"));
+    const answer = checked
+      ? { ...normalized, intro: checked.intro, reminder: DEFAULT_TEXT.invalidDataReminder }
+      : { type: "no_formula", formulaIds: [], intro: DEFAULT_TEXT.noFormulaIntro, steps: [], reminder: "" };
+    return {
+      answer,
+      reply: toReplyText(answer, getFormula),
+      meta: {
+        rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions: 0, droppedSubstitutions: 0,
+        removedSteps: [], maskedSteps: [], replaced: [], aiNote, choiceReveals: [],
+        invalidData: { verified: Boolean(checked), sides },
+      },
+    };
+  }
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
   const chosen = withBraces.formulaIds.map(getFormula);
-  const sourceTexts = numberSourceTexts(message, recentUserTexts);
   const { answer: guarded, removedSteps, maskedSteps, replaced } = applyNumberGuard(withBraces, {
     sourceTexts,
     // + kiến thức nền THCS (quy tắc 1c): 180° của tổng ba góc là số có sẵn, không phải AI tự tính.

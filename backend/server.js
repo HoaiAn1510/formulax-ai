@@ -125,6 +125,9 @@ function logFinderEvents(message, answer, meta, ms, source) {
     const expanded = expandShorthand(message) !== String(message).normalize("NFC").replace(/[ \t]{2,}/g, " ").trim();
     console.log("[finder:no_formula]", JSON.stringify({ ...base, source, expanded, aiNote: meta.aiNote || "" }));
   }
+  // Model báo ba cạnh không tạo thành tam giác (quy tắc 1f): verified = false là backend kiểm lại thấy
+  // sai → học sinh nhận no_formula (dòng [finder:no_formula] ở trên).
+  if (meta.invalidData) console.log("[finder:invalid_data]", JSON.stringify({ ...base, verified: meta.invalidData.verified, sides: meta.invalidData.sides }));
   if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
   // Câu trả lời do model dự phòng (20b) soạn vì model chính hết hạn mức ngày — đếm số dòng này
   // trong Render Logs để biết mỗi ngày bao nhiêu câu phải dùng dự phòng.
@@ -225,7 +228,7 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     // Chọn công thức ứng viên → gọi model → parse JSON → kiểm tra id, ngoặc, số lạ. Xem
     // lib/finderAnswer.js; câu trả lời trả về đây đã qua bộ lọc, không cần tin model.
     // delivered = false (không tính lượt, hoàn lại) khi JSON hỏng cả 2 lần phải trả câu mẫu, hoặc
-    // no_formula — xem countsAsTurn trong lib/finderAnswer.js.
+    // no_formula / invalid_data — xem countsAsTurn trong lib/finderAnswer.js.
     // source: frontend gửi "image" cho bài lấy từ ảnh đề; mọi giá trị khác coi là gõ tay. Chỉ để ghi log.
     const source = req.body?.source === "image" ? "image" : "typed";
     // grade: lớp học sinh chọn ở onboarding (frontend gửi kèm), chỉ nhận 10/11/12 — dùng để xếp hạng
