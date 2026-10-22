@@ -77,7 +77,7 @@ const FAQS = [
   },
   {
     q: "Cách thanh toán và nhận tài khoản Premium thế nào?",
-    a: "Bạn thanh toán qua payOS — chuyển khoản ngân hàng hoặc quét mã VietQR. Premium được bật sau khi hệ thống nhận xác nhận từ payOS, thường trong vài phút. Nếu chậm, tải lại trang hoặc liên hệ nguyenduonghoaian7966@gmail.com.",
+    a: "Bạn thanh toán qua payOS — chuyển khoản ngân hàng hoặc quét mã VietQR. Premium được bật sau khi hệ thống nhận xác nhận từ payOS, thường trong vài phút. Nếu chậm, tải lại trang hoặc liên hệ formulaxadmin@gmail.com.",
     icon: Landmark
   }
 ];

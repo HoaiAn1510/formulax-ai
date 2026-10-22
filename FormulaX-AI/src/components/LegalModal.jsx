@@ -14,8 +14,8 @@ import { X } from "lucide-react";
  * (đăng nhập, chế độ khách, AI Finder, thanh toán) thì phải sửa văn bản này theo.
  */
 
-const CONTACT_EMAIL = "nguyenduonghoaian7966@gmail.com";
-const LAST_UPDATED = "30/09/2026";
+const CONTACT_EMAIL = "formulaxadmin@gmail.com";
+const LAST_UPDATED = "22/10/2026";
 
 function Section({ title, children }) {
   return (
