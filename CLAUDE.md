@@ -397,7 +397,27 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
   gói Gemini MIỄN PHÍ — Google có thể dùng nội dung để cải thiện dịch vụ, câu thông báo phải nói thật
   điều đó. Khi bật thanh toán cho key Gemini thì sửa câu này.
 
-### Hướng phát triển đợt 2 — suy ra công thức (CHƯA làm, chưa có thiết kế được duyệt)
+### Hướng phát triển đợt 2 / Phase 3 — suy ra công thức (CHƯA làm; dời sau 26/10/2026)
+
+**Trạng thái (2026-10-22):** chủ dự án duyệt **về nguyên tắc** Hướng C — AI được tự ghép tối đa **2** công
+thức thư viện, backend KIỂM BẰNG SỐ (không so hình dạng biểu thức), backend tự dựng LaTeX từ biểu thức đã
+kiểm — nhưng **dời sau 26/10**, không làm trong 3,5 ngày còn lại trước đó. Bản thiết kế đầy đủ (so sánh 5 hướng,
+sơ đồ "công thức nấu" + kiểm bằng số, danh sách cặp thẻ an toàn / rủi ro, ước lượng token và công, câu hỏi
+cần quyết): https://claude.ai/artifact/JCqUBVHUEhubW2KjF63n7R (trang riêng tư; chủ dự án cần được chia sẻ).
+- **Thay đổi so với nguyên tắc cũ bên dưới:** phạm vi nâng từ MỘT lên TỐI ĐA HAI công thức. Các nguyên tắc còn lại
+  (kiểm bằng số bắt buộc, giao diện "Suy ra từ …", không ghi vào `formulas.js`, bộ lọc số vẫn áp dụng) giữ nguyên.
+- **Đã xử lý trước, không cần ghép (Hướng 0):** thêm tags "Bán kính nội tiếp" / "Bán kính ngoại tiếp" vào thẻ
+  `hh10-herong` để câu "biết ba cạnh, tính r / R" kéo thẻ Hê-rông vào 8 ứng viên (#4) và AI nối tiếp hai thẻ
+  (`p = ?` → `S = ?` → `r = S/p`) thay vì cần công thức ghép. Tác dụng phụ đã đo: 2/12 câu không liên quan
+  ("đường tròn nội tiếp" trong elip, "ngoại tiếp" lăng trụ) cũng kéo Hê-rông vào ở vị trí #7–#8, đẩy ra ứng viên
+  yếu hơn.
+- **Việc cần chạy bằng key chấm khi có lại hạn mức:** 12–15 câu chuỗi hai thẻ (r, R, biểu thức đối xứng hai nghiệm
+  Vi-ét, trung tuyến theo tọa độ) xem AI nối tiếp hai thẻ có tốt không. Nếu tốt thì dừng ở Hướng 0, KHÔNG làm
+  thêm thẻ ghép (Hướng A) hay bảng công thức nấu tĩnh (Hướng C′). Chưa có kết quả.
+- Hướng B (so hình dạng biểu thức) đã loại: về bản chất là Cách 2 mở rộng, từ chối biểu thức tương đương và
+  không đạt yêu cầu kiểm bằng số.
+
+Nguyên tắc gốc của đợt 2 (đọc cùng ghi chú trên):
 
 Hiện AI chỉ được dùng công thức thư viện đúng như đang viết (được đổi tên biến). Dạng bài cần
 biến đổi công thức — vd biết thể tích khối cầu, tìm bán kính — thì AI chỉ có thể hướng dẫn thay
@@ -548,7 +568,10 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
   chỉ ghi tới cấp chương ("Chương III Hệ thức lượng trong tam giác, không gắn bài cụ thể") — CHƯA đối chiếu
   được số bài/trang trong SGK giấy; khi có thì sửa lại. Chưa chấm bằng AI thật (key chấm hết hạn mức ngày).
   Lưu ý: công thức S = abc/(4R) và S = pr của audit là dạng viết khác của hai công thức này (r = S/p,
-  R = abc/(4S)); AI Finder chọn công thức theo từ khoá nên chưa biết có dùng được cho đề cần "S" ra trước hay không.
+  R = abc/(4S)). Đề cần "S" ra trước: thẻ Hê-rông đã được thêm tags "Bán kính nội tiếp/ngoại tiếp" (xem "Đợt 2 /
+  Phase 3") để vào được 8 ứng viên; chưa chạy bằng AI thật. `shortlist-coverage.mjs` hiện 19/20: ca "gõ tay 8" ("ΔABC
+  vuông tại A có AB = 3, AC = 4, tính bán kính đường tròn ngoại tiếp") mất `hh10-cosin` khỏi top 8 vì thẻ R = abc/(4S)
+  mới đứng #1 — tiêu chí của ca này (anyOf `hh10-cosin`) có vẻ lỗi thời, CHƯA sửa chờ chủ dự án quyết.
 - **Đề lớp 10 về hàm bậc hai:** công thức đạo hàm vẫn ở vị trí #4 trong 10 ứng viên (qua từ khoá
   "đồng biến"); AI không dùng nhờ quy tắc 1d nhưng chưa loại khỏi danh sách (đã quyết định không tăng
   mức trừ điểm).
