@@ -1,9 +1,10 @@
 import { useState } from "react";
 import {
   LayoutDashboard, BookOpen, Sparkles, Layers, GraduationCap,
-  LogOut, Bell, ChevronDown, User, Settings, LogIn, Lock, UserRound,
+  LogOut, Bell, ChevronDown, User, Settings, LogIn, Lock, UserRound, BookOpenText,
 } from "lucide-react";
 import { useGuestGate } from "../utils/useGuestGate";
+import { USER_MANUAL_URL } from "../config/links";
 
 // Class dùng chung cho mọi nav-item (5 tab chính + Cài đặt/Thông báo/Tài khoản + Đăng xuất).
 // Mobile: giữ nguyên pill xanh như cũ (không đổi). Desktop: sidebar luôn nền navy #16243A bất kể
@@ -130,6 +131,18 @@ export default function BottomNav({
           <div className={navIconClass(activeTab === "settings")}><Settings size={18} /></div>
           <span className={collapsibleLabel}>Cài đặt</span>
         </button>
+
+        {/* Hướng dẫn sử dụng — cho cả khách lẫn tài khoản Google; PDF mở ở tab mới */}
+        <a
+          href={USER_MANUAL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`${navItemClass(false)} no-underline`}
+          title="Hướng dẫn sử dụng"
+        >
+          <div className={navIconClass(false)}><BookOpenText size={18} /></div>
+          <span className={collapsibleLabel}>Hướng dẫn sử dụng</span>
+        </a>
 
         {/* Bell / Thông báo */}
         <button

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Bell, LogOut, LogIn, Settings, UserRound, Lock } from "lucide-react";
+import { Bell, LogOut, LogIn, Settings, UserRound, Lock, BookOpenText } from "lucide-react";
+import { USER_MANUAL_URL } from "../config/links";
 import { useGuestGate } from "../utils/useGuestGate";
 
 export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn, displayName, setActiveTab, notifications, onOpenNotifications }) {
@@ -158,6 +159,18 @@ export default function Header({ user, isPremium, onLogout, onLogin, isLoggedIn,
                     <span className="text-[0.82rem] text-[#1E3A5F] font-semibold">Cài đặt</span>
                   </button>
                 )}
+
+                {/* Hướng dẫn sử dụng — cho cả khách lẫn tài khoản Google; PDF mở ở tab mới */}
+                <a
+                  href={USER_MANUAL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setDropdownOpen(false)}
+                  className="w-full flex items-center gap-2.5 py-2.5 px-3.5 bg-transparent border-b border-[#f1f5f9] no-underline text-left"
+                >
+                  <BookOpenText size={15} color="#64748B" />
+                  <span className="text-[0.82rem] text-[#1E3A5F] font-semibold">Hướng dẫn sử dụng</span>
+                </a>
 
                 {/* Logout button — với khách là thoát phiên ẩn danh, quay về màn hình đăng nhập */}
                 <div className="p-2.5">

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { GraduationCap, Sparkles, ClipboardList, ArrowRight, Check, X } from "lucide-react";
+import { USER_MANUAL_URL } from "../config/links";
 
 const STEPS = [
   {
@@ -192,6 +193,16 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
           {step < STEPS.length - 1 ? "Tiếp theo" : "Bắt đầu học!"}
           <ArrowRight size={16} />
         </button>
+
+        {/* Bước cuối: link phụ tới hướng dẫn PDF (tab mới) — không đổi luồng các nút */}
+        {isLast && (
+          <a href={USER_MANUAL_URL} target="_blank" rel="noopener noreferrer" style={{
+            display: "block", marginTop: "10px", textAlign: "center",
+            color: "#D97706", fontSize: "0.78rem", fontWeight: "600", textDecoration: "underline",
+          }}>
+            Xem hướng dẫn chi tiết
+          </a>
+        )}
 
         {step > 0 && (
           <button onClick={() => setStep(s => s - 1)} style={{

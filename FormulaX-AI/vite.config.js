@@ -44,6 +44,10 @@ export default defineConfig({
       },
       workbox: {
         navigateFallback: '/index.html',
+        // Mở PDF trong public/ (hướng dẫn sử dụng, src/config/links.js) là một lượt điều hướng —
+        // thiếu dòng này thì service worker trả index.html, người dùng thấy app thay vì PDF. PDF
+        // không nằm trong precache (globPatterns mặc định chỉ js/css/html), chỉ tải khi mở.
+        navigateFallbackDenylist: [/\.pdf$/i],
         // PremiumGem3D kéo theo three.js (~980 KB, 264 KB gzip) nhưng chỉ là hiệu ứng 3D trang
         // trí ở màn Premium và đã có sẵn fallback khi thiếu WebGL. Để nó trong precache đồng
         // nghĩa mọi người dùng tải về gần 1 MB ngay lần ghé đầu dù không vào màn đó — chuyển
