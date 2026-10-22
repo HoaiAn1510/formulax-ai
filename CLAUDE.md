@@ -30,7 +30,7 @@ cd FormulaX-AI && npm run test:admin # khoảng ngày trang quản trị + dấu
 
 **`formulas.js` là nguồn công thức DUY NHẤT của cả app lẫn AI Finder** — backend import thẳng file này (`backend/lib/formulaCatalog.js` → `../../FormulaX-AI/src/data/formulas.js`), không còn danh sách công thức chép tay nào khác. Vì vậy:
 - `formulas.js` **KHÔNG được import bất kỳ thứ gì** (ảnh, component, hàm tiện ích, thư viện frontend…) — chỉ export dữ liệu thuần. Node không hiểu import ảnh/JSX/alias của Vite, và gói chỉ cài ở frontend thì backend không có → backend sập ngay lúc khởi động.
-- Sửa/thêm công thức ở đây là AI Finder nhận luôn sau khi backend deploy lại; `/api/health` báo số công thức đã nạp (`formulasLoaded`, hiện 246).
+- Sửa/thêm công thức ở đây là AI Finder nhận luôn sau khi backend deploy lại; `/api/health` báo số công thức đã nạp (`formulasLoaded`, hiện 249).
 
 ```js
 {
@@ -430,7 +430,7 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
   `FormulaX-AI/src/data/formulas.js` vào **Build Filters → Included Paths**, nếu không sửa công
   thức sẽ không kích hoạt deploy lại backend và AI Finder dùng dữ liệu cũ.
 - Sau deploy kiểm tra `GET /api/health` → `formulasLoaded` phải bằng số công thức trong
-  `formulas.js` (hiện 246). Bằng 0 hoặc lỗi = backend không đọc được file.
+  `formulas.js` (hiện 249). Bằng 0 hoặc lỗi = backend không đọc được file.
 - Backend bắt buộc `NODE_ENV=production` (xem mục Hiệu năng & bảo mật).
 - Đọc ảnh đề cần `GEMINI_API_KEY` trên Render (thiếu thì `/api/ocr` trả 500, log khởi động báo ❌).
 - Theo dõi kênh: migration 010 chạy trước backend; `ADMIN_EMAILS` trên Render (trống = không ai xem
@@ -541,9 +541,14 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 - **Thẻ `hh10-parabola`:** phần giải thích ghi "đỉnh là cực tiểu / cực đại" (thuật ngữ lớp 12). CHƯA
   sửa — chờ nhóm gửi nguyên văn SGK Toán 10 KNTT Bài 16. Thẻ này, `ds10-phuongtrinh-bac2`,
   `ds10-bpt-bac2` còn thiếu `sgk_source`.
-- **Thư viện thiếu (chờ đối chiếu SGK giấy, KHÔNG tự thêm):** S = abc/(4R), S = pr, hệ quả định lý
-  côsin `cos A = (b² + c² − a²)/(2bc)`, độ dài đường trung tuyến (chưa chắc có trong lý thuyết KNTT 10),
-  giao điểm parabol với trục tung `(0; c)`.
+- **Thư viện thiếu (chờ đối chiếu SGK giấy, KHÔNG tự thêm):** độ dài đường trung tuyến (chưa chắc có
+  trong lý thuyết KNTT 10), giao điểm parabol với trục tung `(0; c)`.
+- **3 công thức Hệ thức lượng thêm 2026-10-22 (chủ dự án yêu cầu):** `hh10-bankinh-noitiep` (r = S/p),
+  `hh10-bankinh-ngoaitiep` (R = abc/(4S)), `hh10-hequa-cosin` (cos A = (b² + c² − a²)/(2bc)). `sgk_source` mới
+  chỉ ghi tới cấp chương ("Chương III Hệ thức lượng trong tam giác, không gắn bài cụ thể") — CHƯA đối chiếu
+  được số bài/trang trong SGK giấy; khi có thì sửa lại. Chưa chấm bằng AI thật (key chấm hết hạn mức ngày).
+  Lưu ý: công thức S = abc/(4R) và S = pr của audit là dạng viết khác của hai công thức này (r = S/p,
+  R = abc/(4S)); AI Finder chọn công thức theo từ khoá nên chưa biết có dùng được cho đề cần "S" ra trước hay không.
 - **Đề lớp 10 về hàm bậc hai:** công thức đạo hàm vẫn ở vị trí #4 trong 10 ứng viên (qua từ khoá
   "đồng biến"); AI không dùng nhờ quy tắc 1d nhưng chưa loại khỏi danh sách (đã quyết định không tăng
   mức trừ điểm).

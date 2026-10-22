@@ -309,6 +309,45 @@ export const formulas = [
     sgk_source: "Toán 10 KNTT Tập 1, Bài 6, trang 41"
   },
   {
+    id: "hh10-bankinh-noitiep",
+    name: "Bán kính đường tròn nội tiếp tam giác",
+    topic: "Hình học",
+    grade: 10,
+    latex: "r = \\frac{S}{p}",
+    explanation: "Bán kính đường tròn nội tiếp tam giác.\nTrong đó:\n- $S$: Diện tích tam giác.\n- $p$: Nửa chu vi tam giác.\n- $r$: Bán kính đường tròn nội tiếp (đường tròn tiếp xúc với ba cạnh).\nNửa chu vi $p = \\frac{a+b+c}{2}$. Cần biết diện tích $S$ trước, thường tính bằng công thức Hê-rông hoặc $S = \\frac{1}{2}ab\\sin C$. Điều kiện: $a, b, c$ là ba cạnh của một tam giác (tổng hai cạnh bất kỳ lớn hơn cạnh còn lại).",
+    example: "Cho tam giác $ABC$ có $a = 13$, $b = 14$, $c = 15$. Tính bán kính đường tròn nội tiếp $r$.\n\n**Lời giải:**\n- Nửa chu vi: $p = \\frac{13 + 14 + 15}{2} = 21$.\n- Diện tích (công thức Hê-rông): $S = \\sqrt{21 \\cdot 8 \\cdot 7 \\cdot 6} = 84$.\n- Bán kính nội tiếp:\n  $$r = \\frac{S}{p} = \\frac{84}{21} = 4$$",
+    tags: ["Hệ thức lượng", "Tam giác", "Đường tròn nội tiếp", "Bán kính", "Diện tích"],
+    difficulty: "Trung bình",
+    mnemonic: "Bán kính nội tiếp r bằng diện tích chia nửa chu vi: r = S trên p.",
+    sgk_source: "Toán 10 KNTT Tập 1, Chương III Hệ thức lượng trong tam giác (kiến thức chương Hệ thức lượng, không gắn bài cụ thể)"
+  },
+  {
+    id: "hh10-bankinh-ngoaitiep",
+    name: "Bán kính đường tròn ngoại tiếp tam giác theo ba cạnh và diện tích",
+    topic: "Hình học",
+    grade: 10,
+    latex: "R = \\frac{abc}{4S}",
+    explanation: "Bán kính đường tròn ngoại tiếp tam giác.\nTrong đó:\n- $a, b, c$: Độ dài ba cạnh.\n- $S$: Diện tích tam giác.\n- $R$: Bán kính đường tròn ngoại tiếp (đường tròn đi qua ba đỉnh).\nCần biết diện tích $S$ trước, thường tính bằng công thức Hê-rông hoặc $S = \\frac{1}{2}ab\\sin C$. Điều kiện: $a, b, c$ là ba cạnh của một tam giác (tổng hai cạnh bất kỳ lớn hơn cạnh còn lại).",
+    example: "Cho tam giác $ABC$ có $a = 13$, $b = 14$, $c = 15$. Tính bán kính đường tròn ngoại tiếp $R$.\n\n**Lời giải:**\n- Diện tích (công thức Hê-rông, $p = 21$): $S = \\sqrt{21 \\cdot 8 \\cdot 7 \\cdot 6} = 84$.\n- Bán kính ngoại tiếp:\n  $$R = \\frac{abc}{4S} = \\frac{13 \\cdot 14 \\cdot 15}{4 \\cdot 84} = \\frac{2730}{336} = \\frac{65}{8}$$",
+    tags: ["Hệ thức lượng", "Tam giác", "Đường tròn ngoại tiếp", "Bán kính", "Diện tích"],
+    difficulty: "Trung bình",
+    mnemonic: "Bán kính ngoại tiếp R bằng tích ba cạnh chia bốn lần diện tích: R = abc trên 4S.",
+    sgk_source: "Toán 10 KNTT Tập 1, Chương III Hệ thức lượng trong tam giác (kiến thức chương Hệ thức lượng, không gắn bài cụ thể)"
+  },
+  {
+    id: "hh10-hequa-cosin",
+    name: "Hệ quả của định lý Côsin (tính góc khi biết ba cạnh)",
+    topic: "Hình học",
+    grade: 10,
+    latex: "\\cos A = \\frac{b^2 + c^2 - a^2}{2bc}",
+    explanation: "Tính góc của tam giác khi biết độ dài ba cạnh.\nTrong đó:\n- $a, b, c$: Độ dài các cạnh đối diện với các góc $A, B, C$.\n- Tương tự: $\\cos B = \\frac{a^2 + c^2 - b^2}{2ac}$ và $\\cos C = \\frac{a^2 + b^2 - c^2}{2ab}$.\nSuy ra từ định lý côsin $a^2 = b^2 + c^2 - 2bc\\cos A$ bằng cách chuyển vế. Điều kiện: $a, b, c$ là ba cạnh của một tam giác (tổng hai cạnh bất kỳ lớn hơn cạnh còn lại).",
+    example: "Cho tam giác $ABC$ có $a = 7$, $b = 5$, $c = 3$. Tính góc $A$.\n\n**Lời giải:**\nÁp dụng hệ quả của định lý côsin:\n$$\\cos A = \\frac{b^2 + c^2 - a^2}{2bc} = \\frac{5^2 + 3^2 - 7^2}{2 \\cdot 5 \\cdot 3} = \\frac{25 + 9 - 49}{30} = -\\frac{1}{2}$$\nVậy $A = 120^\\circ$.",
+    tags: ["Hệ thức lượng", "Định lý", "Tam giác", "Tính góc", "Côsin"],
+    difficulty: "Trung bình",
+    mnemonic: "Cos của một góc bằng tổng bình phương hai cạnh kề trừ bình phương cạnh đối, chia hai lần tích hai cạnh kề.",
+    sgk_source: "Toán 10 KNTT Tập 1, Chương III Hệ thức lượng trong tam giác (kiến thức chương Hệ thức lượng, không gắn bài cụ thể)"
+  },
+  {
     id: "hh10-vecto-toado",
     name: "Tọa độ vectơ và tích vô hướng",
     topic: "Hình học",

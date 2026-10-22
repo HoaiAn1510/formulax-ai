@@ -75,7 +75,7 @@ với trước khi sửa (57 vấn đề, đều là import thừa có sẵn t�
    bundle. Nếu vẽ luôn khung Dashboard rồi điền số liệu sau, thời gian thấy nội dung đầu tiên
    giảm khoảng 1 giây. Đánh đổi: các ô thống kê hiện 0 trong thoáng chốc rồi mới nhảy sang số
    thật — cần quyết định về mặt trải nghiệm.
-2. **Tách `formulas.js` thành phần nhẹ + phần chi tiết.** Hiện mỗi lần tải là cả 246 công thức
+2. **Tách `formulas.js` thành phần nhẹ + phần chi tiết.** Hiện mỗi lần tải là cả 249 công thức
    kèm `explanation`/`example` (~101 KB gzip), trong khi màn danh sách chỉ cần `id`, `name`,
    `topic`, `grade`, `latex`. Tách ra có thể giảm còn khoảng 1/3, phần chi tiết tải khi mở
    modal. Lưu ý: đây là dữ liệu lõi của USP "chống hallucination", phải làm bằng script sinh

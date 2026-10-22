@@ -22,7 +22,7 @@ export function isValidFormulaId(id) {
 }
 
 // ─── Chọn công thức ứng viên cho một câu hỏi ─────────────────────────────────
-// Gửi cả 246 công thức kèm LaTeX vào prompt tốn khoảng 10k token — vượt hạn mức 8k token/phút
+// Gửi cả 249 công thức kèm LaTeX vào prompt tốn khoảng 10k token — vượt hạn mức 8k token/phút
 // của gói Groq miễn phí. Nên chỉ gửi một nhóm ứng viên, chọn bằng so khớp từ khóa (bỏ dấu) với
 // tên, chủ đề, tag, dòng đầu của ví dụ và phần giải thích.
 

@@ -99,7 +99,7 @@ export default function App() {
   const [selectedFormula, setSelectedFormula] = useState(null);
   const [isLoadingData, setIsLoadingData]     = useState(false);
 
-  // formulas.js nặng ~410 KB nguồn (246 công thức kèm giải thích + ví dụ). Nạp tĩnh ở đây
+  // formulas.js nặng ~410 KB nguồn (249 công thức kèm giải thích + ví dụ). Nạp tĩnh ở đây
   // đồng nghĩa toàn bộ khối đó nằm trong bundle đầu tiên, chặn cả những màn hình không cần
   // tới nó. Tải động ngay khi App mount: người dùng thấy khung Dashboard trước, danh sách
   // gợi ý điền vào ngay sau đó (thường trong cùng một nhịp vẽ vì request chạy song song).
