@@ -1,8 +1,8 @@
-import { shortlistFormulas, getFormula, isValidFormulaId } from "./formulaCatalog.js";
+import { shortlistFormulas, getFormula, isValidFormulaId, SHORTLIST_SIZE } from "./formulaCatalog.js";
 import { buildFinderMessages, FINDER_MODEL, FINDER_FALLBACK_MODEL, FINDER_PARAMS, BACKGROUND_KNOWLEDGE_LATEX, gradeLine } from "./finderPrompt.js";
 import {
   parseModelJson, normalizeAnswer, dropBrokenExpressions, applyNumberGuard, dropNumericSubstitutions, toReplyText, extractNumbers, DEFAULT_TEXT,
-  checkTriangleSides,
+  checkTriangleSides, checkBaseKnowledge,
 } from "./solutionGuard.js";
 import { isMultipleChoiceQuestion, guardChoiceReveals } from "./choiceGuard.js";
 
@@ -58,6 +58,32 @@ export function retryAfterSeconds(err) {
   return Math.min(MAX_RETRY_AFTER_S, Math.max(1, Math.ceil(s)));
 }
 
+// ─── Lỗi 413 "Request too large" của gói Groq miễn phí ───────────────────────
+// Mỗi yêu cầu bị chặn nếu prompt + max_completion_tokens > 8.000 (TPM của model). Thông báo lỗi cho
+// biết chính xác: "Limit 8000, Requested 8029" (đã khớp từng số với usage của Groq, 2026-10-22).
+// Gọi lại MỘT lần với max_completion_tokens thấp hơn đúng phần vượt (+ biên) thì câu hỏi vẫn được
+// trả lời thay vì "Không thể kết nối AI". Dưới MIN_COMPLETION_TOKENS thì thôi (completion thật đo
+// được tối đa 917 token, câu bị cắt giữa chừng còn tệ hơn báo lỗi).
+const TPM_RETRY_MARGIN = 100;
+const MIN_COMPLETION_TOKENS = 1200;
+
+/** 413 do vượt TPM → { limit, requested }; lỗi khác (kể cả 413 của loại khác) → null. */
+export function parseTpmOverflow(err) {
+  if (err?.status !== 413) return null;
+  const text = [err?.error?.error?.message, err?.error?.message, err?.message].filter((t) => typeof t === "string").join(" ");
+  if (!/tokens per minute|TPM/i.test(text)) return null;
+  const m = text.match(/Limit\s+(\d+),\s*Requested\s+(\d+)/i);
+  return m ? { limit: Number(m[1]), requested: Number(m[2]) } : null;
+}
+
+/** max_completion_tokens mới cho lần gọi lại sau 413; null nếu không phải 413 TPM hoặc không còn đủ chỗ. */
+export function reducedCompletionTokens(err, current) {
+  const o = parseTpmOverflow(err);
+  if (!o || o.requested <= o.limit) return null;
+  const next = current - (o.requested - o.limit) - TPM_RETRY_MARGIN;
+  return next >= MIN_COMPLETION_TOKENS ? next : null;
+}
+
 /** Loại hạn mức Groq trong thông báo 429 (TPM/RPM/TPD/RPD) — chỉ để ghi log. */
 export function rateLimitKind(err) {
   const text = String(err?.error?.error?.message || err?.message || "");
@@ -96,7 +122,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
   // Công thức ứng viên theo câu hỏi hiện tại + 2 câu hỏi trước (hiểu câu hỏi nối tiếp).
   const recentUserTexts = history.filter((h) => h.role === "user").slice(-2).map((h) => h.content);
   // grade: lớp học sinh chọn ở onboarding — công thức lớp cao hơn không được ghim, xếp sau (formulaCatalog).
-  const candidates = shortlistFormulas([message, ...recentUserTexts], 10, { grade });
+  const candidates = shortlistFormulas([message, ...recentUserTexts], SHORTLIST_SIZE, { grade });
   // Thứ tự cố định → thư viện → lịch sử → câu hỏi: giữ phần đầu giống hệt nhau cho prompt caching
   // của Groq (xem finderPrompt.js).
   const messages = buildFinderMessages({ candidates, history, message, grade });
@@ -104,6 +130,23 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
   // cachedTokens: phần prompt Groq lấy từ cache (phần cố định của system prompt đứng đầu). Khi chấm
   // 2026-09-30, token cache KHÔNG bị tính vào hạn mức ngày — theo dõi để biết cache giúp được bao nhiêu.
   const meta = { model, candidates: candidates.map((f) => f.id), attempts: 0, promptTokens: 0, completionTokens: 0, cachedTokens: 0 };
+  // Một lần gọi Groq; gặp 413 vượt TPM thì gọi lại đúng một lần với max_completion_tokens thấp hơn
+  // (không tính là một lần gọi của vòng lặp bên dưới — 413 bị từ chối ngay, chưa có câu trả lời nào).
+  const createCompletion = async (callModel, callMessages, firstTimeoutMs) => {
+    const call = (maxTokens, timeoutMs) => groq.chat.completions.create(
+      { model: callModel, messages: callMessages, ...FINDER_PARAMS, max_completion_tokens: maxTokens },
+      { timeout: timeoutMs },
+    );
+    try {
+      return await call(FINDER_PARAMS.max_completion_tokens, firstTimeoutMs);
+    } catch (err) {
+      const next = reducedCompletionTokens(err, FINDER_PARAMS.max_completion_tokens);
+      if (next === null) throw err;
+      const overflow = parseTpmOverflow(err);
+      meta.reducedForTpm = { from: FINDER_PARAMS.max_completion_tokens, to: next, requested: overflow.requested, limit: overflow.limit };
+      return await call(next, Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, deadline - now())));
+    }
+  };
   let activeModel = model;
   const canFallBack = model === FINDER_MODEL;
   if (canFallBack && now() < fallbackState.primaryBlockedUntil) {
@@ -119,10 +162,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
     }
     meta.attempts++;
     try {
-      const completion = await groq.chat.completions.create(
-        { model: activeModel, messages, ...FINDER_PARAMS },
-        { timeout: Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, timeLeft)) },
-      );
+      const completion = await createCompletion(activeModel, messages, Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, timeLeft)));
       meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
       meta.completionTokens += completion.usage?.completion_tokens ?? 0;
       meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
@@ -171,10 +211,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
     ];
     const callRetry = async (retryModel) => {
       meta.attempts++;
-      const completion = await groq.chat.completions.create(
-        { model: retryModel, messages: retryMessages, ...FINDER_PARAMS },
-        { timeout: Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, deadline - now())) },
-      );
+      const completion = await createCompletion(retryModel, retryMessages, Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, deadline - now())));
       meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
       meta.completionTokens += completion.usage?.completion_tokens ?? 0;
       meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
@@ -256,7 +293,9 @@ export function numberSourceTexts(message, recentUserTexts = []) {
  * ngoặc, lọc bước có số lạ. Tách riêng khỏi lời gọi Groq để test và chấm lại offline được.
  */
 export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = false, grade = null }) {
-  const { answer: normalized, droppedIds, aiNote, sides } = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
+  const result = normalizeAnswer(parsed, isValidFormulaId, (id) => getFormula(id)?.name);
+  const { droppedIds, aiNote, sides, baseCandidate } = result;
+  let normalized = result.answer;
   const sourceTexts = numberSourceTexts(message, recentUserTexts);
   // Ba cạnh không tạo thành tam giác (quy tắc 1f): backend kiểm lại rồi tự dựng câu giải thích. Kiểm
   // không được (model nêu sai cạnh / ba cạnh thật ra hợp lệ) → no_formula như trước, lời model vào log.
@@ -274,6 +313,21 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
         invalidData: { verified: Boolean(checked), sides },
       },
     };
+  }
+  // Lời giải không có id công thức bị normalizeAnswer đổi thành no_formula — trừ khi chỉ dùng kiến thức nền
+  // đã duyệt (quy tắc 1c: tổng ba góc, Pytago, bất đẳng thức tam giác): backend tự nhận diện từ biểu
+  // thức (checkBaseKnowledge), không tin AI khai. Đã kiểm được thì đây là câu trả lời thật (tính lượt);
+  // không thì giữ no_formula (hoàn lượt) như trước.
+  let baseKnowledge = null;
+  if (normalized.type === "no_formula" && baseCandidate) {
+    const verified = checkBaseKnowledge(baseCandidate, sourceTexts.join("\n"));
+    baseKnowledge = { verified: Boolean(verified), kinds: verified?.kinds ?? [] };
+    if (verified) {
+      normalized = {
+        type: "solution", formulaIds: [], intro: baseCandidate.intro || DEFAULT_TEXT.intro,
+        steps: baseCandidate.steps, reminder: baseCandidate.reminder || DEFAULT_TEXT.reminder,
+      };
+    }
   }
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
   const chosen = withBraces.formulaIds.map(getFormula);
@@ -298,6 +352,6 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
   return {
     answer,
     reply: toReplyText(answer, getFormula),
-    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, droppedSubstitutions, removedSteps, maskedSteps, replaced, aiNote, choiceReveals },
+    meta: { rawType: parsed.type, rawIds: parsed.formula_ids, droppedIds, droppedExpressions, droppedSubstitutions, removedSteps, maskedSteps, replaced, aiNote, choiceReveals, ...(baseKnowledge && { baseKnowledge }) },
   };
 }

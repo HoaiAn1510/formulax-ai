@@ -195,7 +195,9 @@ câu nhắc tự tính. **Không có mục "Kết quả"**, không trường k�
 (`StepAnswer.jsx`) vẽ mỗi `?` trong phần toán thành ô viền amber (`\fcolorbox`, không cần `trust`).
 
 **Luồng backend** (`POST /api/chat` trong `backend/server.js`):
-1. `lib/formulaCatalog.js` lọc tối đa 10 công thức ứng viên từ `formulas.js`: nhóm công thức theo
+1. `lib/formulaCatalog.js` lọc tối đa `SHORTLIST_SIZE` = 8 công thức ứng viên (từ 2026-10-22, trước đó 10;
+   mỗi dòng thư viện gửi AI có ghi chú ≤ `PROMPT_NOTE_MAX` = 100 ký tự, trước đó 160 — xem "Ngân sách token"
+   bên dưới) từ `formulas.js`: nhóm công thức theo
    dạng bài (`METHOD_GROUPS` — cực trị kéo theo công thức đạo hàm...) được ghim trước, còn lại theo
    từ khóa câu hỏi. Thêm dạng bài mới thì thêm nhóm + test trong `test/formulaCatalog.test.js`.
    Nhóm lớp 10 (2026-10-08): hàm số bậc hai (có x², không có bậc ≥ 3/mũ/log/lượng giác) + đồng biến /
@@ -283,6 +285,29 @@ Quy tắc khi sửa:
   CHỈ cho tam giác — góc ≥ 180°, cạnh âm, sin > 1 chưa làm (xem "Việc sau"). Test: `test/invalidTriangle.test.js`.
   `BACKGROUND_KNOWLEDGE_LATEX` (`lib/finderPrompt.js`) cho bộ lọc "không tính" biết 180, 90 là số có
   sẵn (thiếu nó thì `A = 180^\circ - B - C` bị bắt nhầm). Mở rộng danh sách phải hỏi chủ dự án.
+- **Lời giải chỉ dùng kiến thức nền (`formula_ids` rỗng) — `checkBaseKnowledge`** (từ 2026-10-22). Bộ ép
+  "solution không có id → `no_formula`" (`normalizeAnswer`, có từ 30/9) từng mâu thuẫn với quy tắc 1c (8/10):
+  "A = 50°, B = 60°, tính C", "tam giác vuông AB = 6, AC = 8, tính BC", "3, 4, 5 có tạo thành tam giác không?"
+  đều bị báo "thư viện chưa có công thức" dù AI giải đúng (chạy thật 5/5 câu). Bây giờ `normalizeAnswer` giữ lại
+  bản đã chuẩn hoá (`baseCandidate`) và `finalizeAnswer` gọi `checkBaseKnowledge` (`lib/solutionGuard.js`) —
+  backend KHÔNG tin AI khai, tự nhận diện, fail-closed (thiếu điều kiện nào là giữ `no_formula` như cũ, hoàn
+  lượt): (1) đề có ngữ cảnh tam giác (`hasTriangleContext`); (2) đề và lời giải không dính tam giác cân/đều
+  hoặc Pytago đảo; (3) MỌI biểu thức không rỗng khớp đúng một mẫu — tổng ba góc (`C = 180^\circ - (A+B)`,
+  `A + B + C = 180^\circ`), Pytago (`BC = \sqrt{AB^2 + AC^2}` và dạng tìm cạnh góc vuông, đề phải có "vuông"),
+  bất đẳng thức tam giác — kèm dữ kiện chỉ gồm số có trong đề; (4) có ít
+  nhất một biểu thức như vậy (ẩn cuối phải là `?`, không phải kết quả). Hai góc đã cho cộng ≥ 180° hoặc cạnh huyền ≤ cạnh góc vuông thì không nhận (đề vô
+  lý — việc riêng, xem "Việc sau"). Đã kiểm được = câu trả lời thật, TÍNH lượt (khác `invalid_data`). Chữ trong
+  `detail` không kiểm được (ngoài lọc cân/đều/đảo); số trong đó vẫn qua bộ lọc "không tính". Log
+  `[finder:base_knowledge]` (verified, kinds). KHÔNG mở rộng sang kiến thức nền khác khi chưa hỏi chủ dự án. Test: `test/baseKnowledgeOnly.test.js` (5 câu trả lời thật nguyên văn).
+- **Ngân sách token — lỗi 413 của Groq** (2026-10-22): gói miễn phí cho tối đa 8.000 token/yêu cầu và tính
+  prompt + `max_completion_tokens` (`FINDER_PARAMS`, hiện 2.000). Đo bằng `usage` thật: system #1 = 4.163 token,
+  thư viện 8 ứng viên ≈ 930–1.130, câu hỏi ≈ 100; ước lượng yêu cầu 7.050–7.260 (biên 740–950) — trước khi rút là
+  5.500–5.600 + 2.500 = 8.000–8.100 (2 câu chấm bị 413: 8.029 và 8.033; production 20/10: 8.091). Token lấy từ
+  cache không bị tính nhưng backend ít người dùng nên cache thường nguội — đừng dựa vào cache. Thêm quy tắc/ví dụ
+  vào prompt thì chạy `npm test` (`test/tokenBudget.test.js` ước lượng ≤ 7.600) và đo lại bằng `usage`. Nếu vẫn dính
+  413 TPM, `askFinder` gọi lại MỘT lần với `max_completion_tokens` thấp hơn đúng phần vượt + 100
+  (`reducedCompletionTokens`, tối thiểu 1.200); log `[finder:tpm_retry]` xuất hiện thường xuyên = prompt lại sát trần.
+  Completion thật đo được 616–917 token (n = 3, chưa có số production).
 - **Model `openai/gpt-oss-120b`**, chọn sau khi chấm cùng bộ câu với `gpt-oss-20b`: lộ số 2/12
   so với 5/12, không lỗi hiển thị LaTeX (20b: 3), không lỗi JSON 400 (20b: 2); đổi lại chậm hơn
   (~2,5s so với 1,4s). Đổi model hoặc thêm ví dụ vào prompt thì chấm lại trên bộ câu thử, chỉ giữ
@@ -530,7 +555,19 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
   chỉ được prompt chặn.
 - **Dữ kiện vô lý ngoài bất đẳng thức tam giác** (việc riêng, chưa làm — 2026-10-22): tổng các góc
   ≥ 180° / một góc ≥ 180°, độ dài cạnh âm hoặc bằng 0, sin/cos > 1. Hiện AI vẫn hướng dẫn bình thường
-  hoặc trả `no_formula`; `invalid_data` mới chỉ nhận ba cạnh tam giác.
+  hoặc trả `no_formula`; `invalid_data` mới chỉ nhận ba cạnh tam giác. (Chạy thật 2026-10-22: sin α = 1,2 vẫn
+  được hướng dẫn tiếp.) Riêng lời giải kiến thức nền có hai góc cho trước cộng ≥ 180° thì giữ `no_formula`.
+- **Kiến thức nền — chưa mở rộng (chủ dự án chốt giữ nghiêm, 2026-10-22):** tam giác cân/đều ("hai góc đáy
+  bằng nhau", ba góc 60°), Pytago đảo ("có phải tam giác vuông không?"), góc phụ (90° − B) vẫn trả `no_formula`
+  vì ngoài ba điều đã duyệt. Mở rộng phải hỏi chủ dự án, thêm mẫu vào `checkBaseKnowledge` + test.
+- **Kiến thức nền — bất đẳng thức tam giác viết bằng số:** AI viết `3 + 4 > 5, 4 + 5 > 3, …` (ghi sẵn đáp án
+  "có"); bộ lọc "không tính" loại đúng — bước bị thay bằng bước trung tính ("Áp dụng vào dữ kiện…"), câu trả lời
+  vẫn là `solution`. Muốn đẹp hơn: dặn prompt viết dạng ký hiệu `a + b > c, \text{ với } a = 3, …` — đổi prompt thì
+  chấm lại bằng key chấm (đừng nới bộ lọc).
+- **Ghi chú công thức gửi AI cắt còn 100 ký tự:** 244/246 ghi chú bị cắt khác đi; phần công thức nghiệm của
+  `ds10-phuongtrinh-bac2` vốn đã bị cắt giữa chừng ở mức 160, ghi chú của `ds10-bpt-bac2` giờ rất ngắn. Chưa
+  chấm lại bằng AI thật (hết hạn mức key chấm ngày 2026-10-22) — chấm các dạng phương trình / bất phương trình
+  bậc hai, GTLN–GTNN, đường tròn trước khi tin là không ảnh hưởng chất lượng.
 
 - **OCR — trường `occlusions` (sau đợt cho học sinh lớp 10 dùng thử):** yêu cầu Gemini liệt kê vật
   che lên vùng chữ (bút, tay, bóng); backend đánh dấu bài có `occlusions` khác rỗng là cần kiểm tra.

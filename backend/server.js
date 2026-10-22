@@ -127,7 +127,13 @@ function logFinderEvents(message, answer, meta, ms, source) {
   }
   // Model báo ba cạnh không tạo thành tam giác (quy tắc 1f): verified = false là backend kiểm lại thấy
   // sai → học sinh nhận no_formula (dòng [finder:no_formula] ở trên).
+  // Lời giải không có id công thức, chỉ dùng kiến thức nền THCS (tổng ba góc / Pytago / bất đẳng thức
+  // tam giác): verified = backend nhận diện được từ biểu thức (giao câu trả lời), false = giữ no_formula.
+  if (meta.baseKnowledge) console.log("[finder:base_knowledge]", JSON.stringify({ ...base, verified: meta.baseKnowledge.verified, kinds: meta.baseKnowledge.kinds }));
   if (meta.invalidData) console.log("[finder:invalid_data]", JSON.stringify({ ...base, verified: meta.invalidData.verified, sides: meta.invalidData.sides }));
+  // Groq trả 413 (prompt + max_completion_tokens > TPM) rồi backend gọi lại với max_completion_tokens
+  // thấp hơn. Dòng này xuất hiện thường xuyên = prompt đang sát trần, cần rút thêm (không có câu hỏi).
+  if (meta.reducedForTpm) console.warn("[finder:tpm_retry]", JSON.stringify(meta.reducedForTpm));
   if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
   // Câu trả lời do model dự phòng (20b) soạn vì model chính hết hạn mức ngày — đếm số dòng này
   // trong Render Logs để biết mỗi ngày bao nhiêu câu phải dùng dự phòng.

@@ -3,6 +3,8 @@
 // 2/12 và 1/8 ở nhóm bài dạng n − 1), thỉnh thoảng viết LaTeX sai escape trong JSON hoặc thiếu
 // dấu ngoặc.
 
+import { expandShorthand } from "./problemText.js";
+
 // invalid_data (2026-10-22): CHỈ cho ba cạnh không thỏa bất đẳng thức tam giác — xem checkTriangleSides.
 export const ANSWER_TYPES = ["solution", "no_formula", "refuse_answer", "off_topic", "invalid_data"];
 
@@ -231,7 +233,11 @@ export function normalizeAnswer(value, isValidId, nameOf) {
   let reminder = text(obj.reminder, LIMITS.reminder);
 
   // Lời giải mà không còn công thức hợp lệ nào = không dựa trên thư viện → không được hiển thị.
+  // Ngoại lệ (quy tắc 1c, kiến thức nền THCS): giữ lại bản đã chuẩn hoá trong `baseCandidate` để
+  // finalizeAnswer kiểm tra bằng checkBaseKnowledge (cần đề bài); không kiểm được thì vẫn no_formula.
+  let baseCandidate = null;
   if (type === "solution" && formulaIds.length === 0) {
+    if (steps.length) baseCandidate = { intro, reminder, steps };
     type = "no_formula";
     reminder = "";
   }
@@ -251,7 +257,7 @@ export function normalizeAnswer(value, isValidId, nameOf) {
     // thức X trong sách" — tức là trỏ tới công thức/tài liệu ngoài thư viện.
     reminder: type === "no_formula" ? "" : reminder || (type === "solution" ? DEFAULT_TEXT.reminder : ""),
   };
-  return { answer, droppedIds, aiNote, sides };
+  return { answer, droppedIds, aiNote, sides, baseCandidate };
 }
 
 /**
@@ -284,6 +290,200 @@ export function checkTriangleSides(sides, questionText) {
   const intro = `Ba cạnh ${values.map(vi).join(", ")} không tạo thành tam giác vì $${tex(x)} + ${tex(y)} ${op} ${tex(z)}$ — `
     + "tổng hai cạnh bất kỳ phải lớn hơn cạnh còn lại. Vì vậy không có tam giác nào như vậy, nên không tính được diện tích hay các yếu tố khác của nó.";
   return { sides: values, intro };
+}
+
+// ─── 2c. Kiến thức nền THCS — lời giải không có id công thức (quy tắc 1c) ───────────────────────
+// Bộ ép no_formula ở normalizeAnswer có từ 30/9; quy tắc 1c (8/10) cho AI dùng kiến thức nền mà không
+// cần thẻ công thức, nên "A = 50°, B = 60°, tính C" bị báo "thư viện chưa có công thức" dù AI giải
+// đúng (chạy thật 2026-10-22: 5/5 câu chỉ cần kiến thức nền đều bị chặn). Cách sửa KHÔNG tin AI khai
+// "tôi dùng kiến thức nền": backend tự nhận diện từ chính biểu thức AI viết, fail-closed — thiếu một
+// điều kiện nào là giữ no_formula như cũ.
+// CHỈ BA điều đã duyệt: tổng ba góc, Pytago (chiều thuận), bất đẳng thức tam giác. Tam giác cân/đều,
+// Pytago đảo, góc phụ (90° − B)... KHÔNG nằm trong đó — vẫn no_formula (roadmap riêng, chưa làm).
+
+const foldVi = (s) => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/đ/g, "d");
+const unicodeWord = (src) => new RegExp(`(?<![\\p{L}])(?:${src})(?![\\p{L}])`, "iu");
+
+// Tam giác cân / đều: tính chất ngoài 3 điều đã duyệt. Có dấu → kiểm trên chữ gốc (tránh nhầm "cân" với
+// "cần"); đề gõ không dấu → kiểm bản đã bỏ dấu.
+const ISOSCELES = unicodeWord("cân\\s+(?:tại|ở)|(?:tam giác|vuông)\\s+(?:[a-zđ]{3}\\s+)?(?:cân|đều)");
+const ISOSCELES_NO_ACCENT = /\bcan (?:tai|o)\b|\b(?:tam giac|vuong) (?:[a-z]{3} )?(?:can|deu)\b/;
+// Pytago đảo: "có phải tam giác vuông không?", "chứng minh ... vuông", "định lý Pytago đảo".
+const INVERSE_PYTHAGORAS = /\b(?:co phai|co la|kiem tra|chung minh|xem)\b[^.?!]*\bvuong\b|\bvuong\b[^.?!]*\bkhong\b/;
+const INVERSE_PYTHAGORAS_NAMED = /\bpytago dao\b|\bdinh ly (?:pytago )?dao\b/;
+
+/** Đề có ngữ cảnh tam giác: chữ "tam giác", "ba cạnh/đoạn", hoặc "góc/cạnh" kèm tên ba đỉnh (ABC). */
+export function hasTriangleContext(text) {
+  const raw = String(text || "");
+  const folded = foldVi(expandShorthand(raw));
+  return /tam giac/.test(folded) || /\bba (?:canh|doan)\b/.test(folded) || (/\b(?:goc|canh)\b/.test(folded) && /\b[A-Z]{3}\b/.test(raw));
+}
+
+/** Biểu thức LaTeX → dạng gọn không khoảng trắng để so mẫu: "\text{ với }" thành "§", "\Rightarrow" thành "→". */
+function normalizeBaseExpression(expr) {
+  return String(expr || "")
+    .replace(/\{,\}/g, ".")
+    .replace(/\\text\{\s*(?:với|voi|with)\s*\}/gi, "§")
+    .replace(/\\text\{[^{}]*\}/g, ",")
+    .replace(/\\(?:left|right)(?![a-zA-Z])/g, "")
+    .replace(/\\(?:widehat|hat)\{([A-Z])\}/g, "$1")
+    .replace(/\\(?:widehat|hat)\s*([A-Z])/g, "$1")
+    .replace(/\\angle\s*\{?([A-Z])\}?/g, "$1")
+    .replace(/\^\{\\circ\}/g, "^\\circ")
+    .replace(/\^\{(\d)\}/g, "^$1")
+    .replace(/\\(?:Longrightarrow|Rightarrow)(?![a-zA-Z])|⇒/g, "→") // trước khi bỏ khoảng trắng: "\Rightarrow C" không được dính thành "\RightarrowC"
+    .replace(/\\[,;:! ]|\\q?quad(?![a-zA-Z])|\s+/g, "")
+    .replace(/,+(?=§|→|$)/g, "");
+}
+
+const ANGLE_SUM_FORMS = [
+  /^([A-Z])=180\^\\circ-([A-Z])-([A-Z])$/,
+  /^([A-Z])=180\^\\circ-\(([A-Z])\+([A-Z])\)$/,
+  /^([A-Z])\+([A-Z])\+([A-Z])=180\^\\circ$/,
+];
+const SEG = "([A-Z]{2}|[a-z])";
+const PYTHAGORAS_FORMS = [
+  { re: new RegExp(`^${SEG}\\^2=${SEG}\\^2\\+${SEG}\\^2$`), hypotenuseUnknown: true },
+  { re: new RegExp(`^${SEG}=\\\\sqrt\\{${SEG}\\^2\\+${SEG}\\^2\\}$`), hypotenuseUnknown: true },
+  { re: new RegExp(`^${SEG}\\^2=${SEG}\\^2-${SEG}\\^2$`), hypotenuseUnknown: false },
+  { re: new RegExp(`^${SEG}=\\\\sqrt\\{${SEG}\\^2-${SEG}\\^2\\}$`), hypotenuseUnknown: false },
+];
+const INEQUALITY_OPERAND = "\\d+(?:\\.\\d+)?|[A-Z]{2}|[a-z]";
+const INEQUALITY_ITEM = new RegExp(`^(${INEQUALITY_OPERAND})\\+(${INEQUALITY_OPERAND})>(${INEQUALITY_OPERAND})$`);
+
+function parseAngleSum(formula) {
+  for (let i = 0; i < ANGLE_SUM_FORMS.length; i++) {
+    const m = formula.match(ANGLE_SUM_FORMS[i]);
+    if (m && new Set(m.slice(1)).size === 3) return { letters: m.slice(1), lhs: i < 2 ? m[1] : null };
+  }
+  return null;
+}
+
+function parsePythagoras(formula) {
+  for (const { re, hypotenuseUnknown } of PYTHAGORAS_FORMS) {
+    const m = formula.match(re);
+    if (m && new Set(m.slice(1)).size === 3) {
+      const [lhs, second, third] = m.slice(1);
+      return { lhs, symbols: [lhs, second, third], hypotenuse: hypotenuseUnknown ? lhs : second, otherLeg: hypotenuseUnknown ? null : third, hypotenuseUnknown };
+    }
+  }
+  return null;
+}
+
+/** "AB=6,AC=8" → Map. Mọi giá trị phải là số có trong đề; khóa trùng hay sai khuôn → null. */
+function parseGivenValues(part, allowedNumbers) {
+  const given = new Map();
+  if (part === "") return given;
+  for (const item of part.split(",")) {
+    const m = item.match(/^([A-Z]{1,2}|[a-z])=(\d+(?:\.\d+)?)(?:\^\\circ)?$/);
+    if (!m || given.has(m[1]) || !allowedNumbers.has(String(Number(m[2])))) return null;
+    given.set(m[1], Number(m[2]));
+  }
+  return given;
+}
+
+/**
+ * Một biểu thức của bước có khớp ĐÚNG một mẫu kiến thức nền đã duyệt không → "angle_sum" |
+ * "pythagoras" | "triangle_inequality" | null. Khung chung: công thức [\text{ với } dữ kiện] [⇒ …] ⇒ ẩn = ?.
+ */
+function matchBaseExpression(expression, allowedNumbers, rightAngle) {
+  const s = normalizeBaseExpression(expression);
+  if (!s || s.split("§").length > 2) return null;
+  const arrows = s.split("→");
+  const [formula, dataPart = ""] = arrows[0].split("§");
+  const middle = arrows.slice(1, -1);
+  let target = null;
+  if (arrows.length > 1) {
+    const t = arrows[arrows.length - 1].match(/^([A-Za-z]{1,2})(?:\^2)?=\?$/);
+    if (!t) return null;
+    target = t[1];
+  }
+
+  const angle = parseAngleSum(formula);
+  if (angle) {
+    if (middle.length) return null;
+    const given = parseGivenValues(dataPart, allowedNumbers);
+    if (!given || [...given.keys()].some((k) => !angle.letters.includes(k))) return null;
+    if (target !== null && (!angle.letters.includes(target) || given.has(target) || (angle.lhs && angle.lhs !== target))) return null;
+    // Hai góc đã cho cộng lại ≥ 180° thì tam giác không tồn tại: KHÔNG hướng dẫn tiếp (ca góc vô lý là
+    // việc riêng, chưa làm — giữ no_formula như trước thay vì dẫn học sinh tới góc âm).
+    const angles = [...given.values()];
+    if (angles.length >= 2 && angles.reduce((a, b) => a + b, 0) >= 180) return null;
+    return "angle_sum";
+  }
+
+  const pythagoras = parsePythagoras(formula);
+  if (pythagoras) {
+    if (!rightAngle) return null;
+    for (const part of middle) {
+      const other = parsePythagoras(part);
+      if (!other || other.symbols.slice().sort().join() !== pythagoras.symbols.slice().sort().join()) return null;
+    }
+    const given = parseGivenValues(dataPart, allowedNumbers);
+    if (!given) return null;
+    for (const [key, value] of given) {
+      const isRightAngle = /^[A-Z]$/.test(key) && value === 90;
+      if (!isRightAngle && (!pythagoras.symbols.includes(key) || key === pythagoras.lhs)) return null;
+    }
+    if (target !== null && target !== pythagoras.lhs) return null;
+    // Tìm cạnh góc vuông: cạnh huyền phải lớn hơn cạnh góc vuông đã cho (không thì đề vô lý).
+    if (!pythagoras.hypotenuseUnknown && given.has(pythagoras.hypotenuse) && given.has(pythagoras.otherLeg)
+      && given.get(pythagoras.hypotenuse) <= given.get(pythagoras.otherLeg)) return null;
+    return "pythagoras";
+  }
+
+  // Bất đẳng thức tam giác: "3+4>5, 4+5>3, 3+5>4" hoặc "a+b>c, …" (kèm dữ kiện). Không có ẩn "?".
+  if (arrows.length === 1 && formula) {
+    const items = formula.split(/[;,]/);
+    const numbersOnly = items.map((it) => it.match(INEQUALITY_ITEM)).every((m) => m && m.slice(1).every((x) => /^\d/.test(x)));
+    const symbolsOnly = items.map((it) => it.match(INEQUALITY_ITEM)).every((m) => m && m.slice(1).every((x) => !/^\d/.test(x)) && new Set(m.slice(1)).size === 3);
+    if (numbersOnly) {
+      if (dataPart !== "") return null;
+      const nums = items.flatMap((it) => it.match(INEQUALITY_ITEM).slice(1));
+      return nums.every((x) => allowedNumbers.has(String(Number(x)))) ? "triangle_inequality" : null;
+    }
+    if (symbolsOnly) {
+      const given = parseGivenValues(dataPart, allowedNumbers);
+      const used = new Set(items.flatMap((it) => it.match(INEQUALITY_ITEM).slice(1)));
+      return given && [...given.keys()].every((k) => used.has(k)) ? "triangle_inequality" : null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Lời giải KHÔNG có id công thức nào có phải chỉ dùng kiến thức nền đã duyệt không (quy tắc 1c).
+ * Điều kiện (thiếu một là null → nơi gọi giữ no_formula):
+ *   1. đề có ngữ cảnh tam giác; 2. đề và lời giải không dính tam giác cân/đều, Pytago đảo (ngoài 3 điều đã duyệt);
+ *   3. MỌI biểu thức không rỗng của các bước khớp đúng một mẫu (tổng ba góc, Pytago, bất đẳng thức tam giác),
+ *      số trong biểu thức đều có trong đề; 4. có ít nhất một biểu thức như vậy (bước thật sự dùng mẫu).
+ * Chữ trong `detail` không kiểm được (ngoài việc lọc cân/đều/đảo) — số trong đó vẫn qua bộ lọc "không tính".
+ * @param {{intro?: string, reminder?: string, steps: Array<{title?: string, detail?: string, expression?: string}>}} candidate
+ * @returns {{kinds: string[]} | null}
+ */
+export function checkBaseKnowledge(candidate, questionText) {
+  const steps = Array.isArray(candidate?.steps) ? candidate.steps : [];
+  const raw = String(questionText || "");
+  if (!steps.length || !hasTriangleContext(raw)) return null;
+
+  const folded = foldVi(raw);
+  const hasAccents = raw.normalize("NFD") !== raw || /[đĐ]/.test(raw);
+  if (ISOSCELES.test(raw) || (!hasAccents && ISOSCELES_NO_ACCENT.test(folded))) return null;
+  if (INVERSE_PYTHAGORAS.test(folded) || INVERSE_PYTHAGORAS_NAMED.test(folded)) return null;
+  const answerText = [candidate.intro, candidate.reminder, ...steps.flatMap((st) => [st.title, st.detail])].join("\n");
+  if (ISOSCELES.test(answerText) || INVERSE_PYTHAGORAS_NAMED.test(foldVi(answerText))) return null;
+
+  const allowedNumbers = new Set(extractNumbers(raw).map((n) => String(Number(n))));
+  const rightAngle = /\bvuong\b/.test(folded);
+  if (rightAngle) allowedNumbers.add("90");
+  const kinds = [];
+  for (const st of steps) {
+    if (!st.expression) continue;
+    const kind = matchBaseExpression(st.expression, allowedNumbers, rightAngle);
+    if (!kind) return null;
+    kinds.push(kind);
+  }
+  return kinds.length ? { kinds: [...new Set(kinds)] } : null;
 }
 
 // ─── 3. Chặn tự tính (số lạ) ───────────────────────────────────────────────
@@ -319,7 +519,16 @@ export function extractNumbers(text) {
  */
 export function neutralStep(formulaNames) {
   const names = formulaNames.filter(Boolean);
-  const label = names.length && names.every((n) => !/\d/.test(n)) ? `công thức ${names.join(", ")}` : "công thức";
+  // Câu trả lời kiến thức nền (quy tắc 1c, 2026-10-22) không có thẻ công thức nào để "xem ở trên".
+  if (!names.length) {
+    return {
+      title: "Áp dụng vào dữ kiện",
+      detail: "Áp dụng kiến thức vừa nêu cho các số trong đề, giữ nguyên các phép so sánh hoặc phép toán, chưa tính.",
+      expression: "",
+      neutral: true,
+    };
+  }
+  const label = names.every((n) => !/\d/.test(n)) ? `công thức ${names.join(", ")}` : "công thức";
   return {
     title: "Thay số vào công thức",
     detail: `Thay các dữ kiện vào ${label} (xem thẻ ở trên), giữ nguyên các phép toán, chưa tính.`,

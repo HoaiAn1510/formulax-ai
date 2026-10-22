@@ -14,9 +14,13 @@ export const FINDER_FALLBACK_MODEL = "openai/gpt-oss-20b";
 // Tham số gọi Groq cho AI Finder. reasoning_effort "low" nhanh hơn nhưng khi thử nghiệm chọn sai
 // công thức nhiều (báo "thư viện chưa có" dù công thức nằm ngay trong danh sách ứng viên) —
 // giữ "medium". max_completion_tokens tính cả phần suy luận của model, không chỉ JSON trả về.
+// 2500 → 2000 (2026-10-22): gói Groq miễn phí cho tối đa 8.000 token/yêu cầu và tính CẢ
+// max_completion_tokens vào đó (prompt 5.529 + 2.500 = 8.029 → 413 "Request too large"). Completion
+// thật đo được 616–917 token (n = 3, đã gồm suy luận) nên 2.000 còn dư hơn gấp đôi. Nếu vẫn dính
+// 413, askFinder tự gọi lại một lần với mức thấp hơn (finderAnswer.js: reducedCompletionTokens).
 export const FINDER_PARAMS = {
   temperature: 0.2,
-  max_completion_tokens: 2500,
+  max_completion_tokens: 2000,
   reasoning_effort: "medium",
   // KHÔNG dùng response_format (json_object / json_schema). Cả hai chế độ ép model chỉ được sinh
   // JSON hợp lệ ngay lúc sinh từng ký tự: lệnh LaTeX viết với MỘT dấu \ (\angle, \circ, \mathbb —

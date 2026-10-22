@@ -112,7 +112,7 @@ test("lớp 11: không ghim công thức lớp 12, vẫn ghim công thức lớp
 
 test("trừ điểm theo lớp chỉ đổi thứ tự giữa công thức CÙNG mức liên quan", () => {
   // Chưa chọn lớp: kết quả y như trước (không trừ điểm).
-  assert.deepEqual(top("Tính đạo hàm của y = x^3", null), shortlistFormulas(["Tính đạo hàm của y = x^3"]).map((f) => f.id));
+  assert.deepEqual(top("Tính đạo hàm của y = x^3", null), shortlistFormulas(["Tính đạo hàm của y = x^3"], 10).map((f) => f.id));
   // Lớp 10 hỏi đạo hàm (lớp 11): vẫn tìm thấy công thức đạo hàm — không loại hẳn.
   assert.ok(top("Tính đạo hàm của y = x^3", 10).some((id) => id.includes("daoham")));
 });

@@ -122,16 +122,20 @@ function firstLine(text) {
   return String(text || "").split("\n")[0];
 }
 
-// Ghi chú ngắn cho prompt: gộp các dòng giải thích ký hiệu thành 1 dòng, tối đa 160 ký tự. Cần
-// thiết vì nhiều công thức để phần quan trọng ở đây — ví dụ công thức nghiệm của phương trình
-// bậc hai nằm trong explanation của mục "Biệt thức Delta", không nằm trong latex.
+// Ghi chú ngắn cho prompt: gộp các dòng giải thích ký hiệu thành 1 dòng, tối đa PROMPT_NOTE_MAX ký
+// tự. Cần thiết vì nhiều công thức để phần quan trọng ở đây — ví dụ công thức nghiệm của phương
+// trình bậc hai nằm trong explanation của mục "Biệt thức Delta", không nằm trong latex.
+// 160 → 100 (2026-10-22, lỗi 413 của Groq): tiết kiệm ~200–230 token/câu. Đánh đổi đã biết: 244/246
+// ghi chú bị cắt khác đi; phần "Δ > 0 → nghiệm …" của phương trình bậc hai vốn đã bị cắt giữa công
+// thức ở mức 160, và ghi chú của bất phương trình bậc hai còn rất ít. AI vẫn có ví dụ 2 trong prompt.
+export const PROMPT_NOTE_MAX = 100;
 function noteForPrompt(f) {
   const lines = String(f.explanation || "")
     .split("\n")
     .map((l) => l.replace(/^\s*-\s*/, "").trim())
     .filter((l) => l && !/^trong đó:?$/i.test(l));
   const note = lines.join("; ").replace(/\s+/g, " ");
-  return note.length > 160 ? `${note.slice(0, 157)}...` : note;
+  return note.length > PROMPT_NOTE_MAX ? `${note.slice(0, PROMPT_NOTE_MAX - 3)}...` : note;
 }
 
 /**
@@ -154,12 +158,16 @@ const SEARCH_INDEX = formulas.map((f) => ({
  * được ghim lên đầu — của câu hiện tại trước, của câu trước sau; phần còn lại xếp theo số từ khóa
  * khớp. Công thức không khớp từ nào và không thuộc nhóm nào thì không được chọn.
  */
-// limit 10 (trước là 15): mỗi dòng công thức ~128 token. Chấm 2026-09-30 trên 20 câu: 10 ứng viên
-// giảm ~11% token/câu (5.123 → 4.574), no_formula và lộ giá trị số không đổi (2/20, 0).
+// Số công thức ứng viên gửi AI: 15 → 10 (2026-09-30, giảm ~11% token/câu, no_formula và lộ giá trị
+// số không đổi 2/20, 0) → 8 (2026-10-22, lỗi 413 của Groq: prompt + max_completion_tokens vượt 8.000
+// token/yêu cầu). Mỗi dòng ~115–135 token; hai công thức cuối trong 10 phần lớn là nhiễu, và
+// `node scripts/shortlist-coverage.mjs 10` vẫn 20/20 với 8 (7 thì mất 1 đề) — 8 là mức thấp nhất.
+export const SHORTLIST_SIZE = 8;
+
 // grade: lớp học sinh chọn ở onboarding (10/11/12), null = chưa chọn → giữ cách xếp hạng cũ. Biết lớp
 // thì công thức lớp cao hơn không được ghim và xếp sau công thức cùng mức liên quan (không loại hẳn —
 // học sinh có thể chọn nhầm lớp).
-export function shortlistFormulas(rawTexts, limit = 10, { grade = null } = {}) {
+export function shortlistFormulas(rawTexts, limit = SHORTLIST_SIZE, { grade = null } = {}) {
   // Ký hiệu/viết tắt của học sinh ("△", "ΔABC", "pt", "tg"...) → chữ đầy đủ, CHỈ để so khớp từ khoá
   // (lib/problemText.js). Đề gửi AI vẫn nguyên văn.
   const texts = rawTexts.filter(Boolean).map(expandShorthand);

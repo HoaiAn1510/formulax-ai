@@ -5,7 +5,7 @@
 // Mỗi đề ghi sẵn công thức BẮT BUỘC phải có trong top 10 (`need`: mọi id phải có; `anyOf`: ít nhất
 // một id trong nhóm). `missingFromLibrary`: công thức đề cần nhưng thư viện CHƯA có (không có id để
 // kiểm) — chỉ để báo cáo, không tính là lỗi xếp hạng.
-import { shortlistFormulas, getFormula, methodGroupIds } from "../lib/formulaCatalog.js";
+import { shortlistFormulas, getFormula, methodGroupIds, SHORTLIST_SIZE } from "../lib/formulaCatalog.js";
 
 const R = String.raw;
 
@@ -45,7 +45,7 @@ console.log(GRADE ? `Giả định học sinh lớp ${GRADE}\n` : "Học sinh ch
 const rows = [];
 let failures = 0;
 for (const c of CASES) {
-  const top = shortlistFormulas([c.q], 10, { grade: GRADE }).map((f) => f.id);
+  const top = shortlistFormulas([c.q], SHORTLIST_SIZE, { grade: GRADE }).map((f) => f.id);
   const missing = [];
   for (const id of c.need) {
     if (!getFormula(id)) missing.push(`${id} (thư viện không có)`);
@@ -74,5 +74,5 @@ for (const r of rows) {
   if (r.derivative) console.log(`    công thức đạo hàm lớp 11–12 trong top 10 (vị trí): ${r.derivative}${r.pinned ? ` — ĐƯỢC GHIM: ${r.pinned}` : " (qua từ khoá, không ghim)"}`);
   if (r.library) console.log(`    thư viện chưa có (đề có thể cần): ${r.library}`);
 }
-console.log(`\n${CASES.length - failures}/${CASES.length} đề có đủ công thức bắt buộc trong top 10.`);
+console.log(`\n${CASES.length - failures}/${CASES.length} đề có đủ công thức bắt buộc trong top ${SHORTLIST_SIZE}.`);
 process.exitCode = failures ? 1 : 0;
