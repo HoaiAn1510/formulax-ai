@@ -1093,7 +1093,7 @@ export const formulas = [
     topic: "Mở rộng",
     grade: 10,
     latex: "\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1 \\quad (a, b > 0)",
-    explanation: "Hypebol là tập hợp các điểm $M$ thỏa mãn: **hiệu** (trị tuyệt đối) khoảng cách từ $M$ đến hai tiêu điểm bằng $2a$.\n\n**Các yếu tố:**\n- $c = \\sqrt{a^2 + b^2}$: Nửa tiêu cự; tiêu cự là $2c$ (khác elip: cộng thêm $b^2$).\n- $F_1(-c,0)$, $F_2(c,0)$: Hai tiêu điểm.\n- $|MF_1 - MF_2| = 2a$ với mọi $M$ trên hypebol.\n- Tâm sai: $e = c/a > 1$.\n- **Tiệm cận:** $y = \\pm \\dfrac{b}{a} x$.\n\n**So sánh với elip:** Elip dùng $+$ (c²=a²-b²); Hypebol dùng $-$ (c²=a²+b²).",
+    explanation: "$c^2=a^2+b^2$; tiêu cự $F_1F_2=2c$; $a,b>0$.\nHypebol là tập hợp các điểm $M$ thỏa mãn: **hiệu** (trị tuyệt đối) khoảng cách từ $M$ đến hai tiêu điểm bằng $2a$.\n\n**Các yếu tố:**\n- $c = \\sqrt{a^2 + b^2}$: Nửa tiêu cự; tiêu cự là $2c$ (khác elip: cộng thêm $b^2$).\n- $F_1(-c,0)$, $F_2(c,0)$: Hai tiêu điểm.\n- $|MF_1 - MF_2| = 2a$ với mọi $M$ trên hypebol.\n- Tâm sai: $e = c/a > 1$.\n- **Tiệm cận:** $y = \\pm \\dfrac{b}{a} x$.\n\n**So sánh với elip:** Elip dùng $+$ (c²=a²-b²); Hypebol dùng $-$ (c²=a²+b²).",
     example: "Hypebol $(H): \\dfrac{x^2}{16} - \\dfrac{y^2}{9} = 1$. Tìm tiêu điểm và tiệm cận.\n\n**Lời giải:**\n- $a=4$, $b=3$, $c = \\sqrt{16+9} = 5$.\n- Tiêu điểm: $F_1(-5;0)$, $F_2(5;0)$.\n- Tiệm cận: $y = \\pm \\dfrac{3}{4}x$.",
     tags: ["Hypebol", "Đường conic", "Tiệm cận", "Mở rộng"],
     difficulty: "Trung bình",
