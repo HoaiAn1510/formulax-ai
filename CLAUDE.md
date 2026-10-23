@@ -300,11 +300,12 @@ Quy tắc khi sửa:
   `detail` không kiểm được (ngoài lọc cân/đều/đảo); số trong đó vẫn qua bộ lọc "không tính". Log
   `[finder:base_knowledge]` (verified, kinds). KHÔNG mở rộng sang kiến thức nền khác khi chưa hỏi chủ dự án. Test: `test/baseKnowledgeOnly.test.js` (5 câu trả lời thật nguyên văn).
 - **Ngân sách token — lỗi 413 của Groq** (2026-10-22): gói miễn phí cho tối đa 8.000 token/yêu cầu và tính
-  prompt + `max_completion_tokens` (`FINDER_PARAMS`, hiện 2.000). Đo bằng `usage` thật: system #1 = 4.163 token,
+  prompt + `max_completion_tokens` (`FINDER_PARAMS`, hiện trần đầu 2.300, lần hỏi lại 2.000; hàm
+  `completionBudget` giảm tiếp theo prompt ước lượng để giữ tổng ≤ 7.800, tối thiểu 1.200). Đo bằng `usage` thật: system #1 = 4.163 token,
   thư viện 8 ứng viên ≈ 930–1.130, câu hỏi ≈ 100; ước lượng yêu cầu 7.050–7.260 (biên 740–950) — trước khi rút là
   5.500–5.600 + 2.500 = 8.000–8.100 (2 câu chấm bị 413: 8.029 và 8.033; production 20/10: 8.091). Token lấy từ
   cache không bị tính nhưng backend ít người dùng nên cache thường nguội — đừng dựa vào cache. Thêm quy tắc/ví dụ
-  vào prompt thì chạy `npm test` (`test/tokenBudget.test.js` ước lượng ≤ 7.600) và đo lại bằng `usage`. Nếu vẫn dính
+  vào prompt thì chạy `npm test` (`test/tokenBudget.test.js` ước lượng ≤ 7.800) và đo lại bằng `usage`. Nếu vẫn dính
   413 TPM, `askFinder` gọi lại MỘT lần với `max_completion_tokens` thấp hơn đúng phần vượt + 100
   (`reducedCompletionTokens`, tối thiểu 1.200); log `[finder:tpm_retry]` xuất hiện thường xuyên = prompt lại sát trần.
   Completion thật đo được 616–917 token (n = 3, chưa có số production).
@@ -316,11 +317,15 @@ Quy tắc khi sửa:
   RIÊNG từng model (kiểm chứng 2026-09-30). Khi 120b trả 429 do hết hạn mức NGÀY (TPD/RPD), backend
   gọi lại bằng 20b và nhớ mốc bị chặn để các câu sau vào thẳng 20b; 429 theo phút vẫn báo "AI đang
   bận". Mỗi câu dùng dự phòng có một dòng log `[finder:fallback]`.
-- **Chấm / thử nghiệm model CHỈ dùng `GROQ_EVAL_API_KEY`** (key ở tài khoản Groq riêng, khai báo
+- **Chấm / thử nghiệm model CHỈ dùng `GROQ_EVAL_API_KEY`** (key chấm riêng, khai báo
   trong `backend/.env`). Script chấm thiếu biến này thì phải DỪNG, tuyệt đối không dùng
   `GROQ_API_KEY`: gói miễn phí giới hạn 200k token/ngày cho `gpt-oss-120b` (~44 câu hỏi/ngày cho
   cả app), một lượt chấm 20 câu tốn ~90k token — chấm bằng key production là ăn vào hạn mức của
   học sinh thật (đã xảy ra ngày 2026-09-30).
+- **Chấm tiếp sau khi hạn mức Groq làm mới** (dự kiến khoảng 07:00 giờ Việt Nam do tính theo UTC):
+  chỉ chạy các ca 19, 21, 22, 23, 24 bằng `GROQ_EVAL_API_KEY`. Trước khi chạy, kiểm tra trang Usage
+  của Groq để xác định key chấm và key production có thuộc cùng tổ chức không. Nếu cùng tổ chức,
+  tránh chấm trong giờ học sinh đang dùng app. Không chạy thêm ca AI thật ngày 2026-10-23.
 - **Thời gian:** backend có ngân sách 40s/request (`CHAT_BUDGET_MS` trong `lib/finderAnswer.js`),
   mỗi lần gọi Groq timeout = min(25s, thời gian còn lại), JSON hỏng chỉ gọi lại khi còn ≥ 8s.
   Timeout frontend (`callAI` trong `FormulaFinder.jsx`) là 45s và **PHẢI lớn hơn** ngân sách
@@ -592,10 +597,9 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
   "có"); bộ lọc "không tính" loại đúng — bước bị thay bằng bước trung tính ("Áp dụng vào dữ kiện…"), câu trả lời
   vẫn là `solution`. Muốn đẹp hơn: dặn prompt viết dạng ký hiệu `a + b > c, \text{ với } a = 3, …` — đổi prompt thì
   chấm lại bằng key chấm (đừng nới bộ lọc).
-- **Ghi chú công thức gửi AI cắt còn 100 ký tự:** 244/246 ghi chú bị cắt khác đi; phần công thức nghiệm của
-  `ds10-phuongtrinh-bac2` vốn đã bị cắt giữa chừng ở mức 160, ghi chú của `ds10-bpt-bac2` giờ rất ngắn. Chưa
-  chấm lại bằng AI thật (hết hạn mức key chấm ngày 2026-10-22) — chấm các dạng phương trình / bất phương trình
-  bậc hai, GTLN–GTNN, đường tròn trước khi tin là không ảnh hưởng chất lượng.
+- **Ghi chú công thức gửi AI cắt còn 100 ký tự:** đã đưa quan hệ chính lên đầu ở
+  `ds10-phuongtrinh-bac2`, `ds10-bpt-bac2`, `mr-elip` (2026-10-23). Đã chấm thật câu 18 và 25;
+  các ca còn lại theo kế hoạch key chấm ở mục AI Finder. Chưa kết luận chất lượng trên toàn bộ dạng bài.
 
 - **OCR — trường `occlusions` (sau đợt cho học sinh lớp 10 dùng thử):** yêu cầu Gemini liệt kê vật
   che lên vùng chữ (bút, tay, bóng); backend đánh dấu bài có `occlusions` khác rỗng là cần kiểm tra.

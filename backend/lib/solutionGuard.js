@@ -121,7 +121,7 @@ export const wrapLooseLatex = (s) => mapProse(
 // Id công thức model chép vào lời giải ("quy tắc đạo hàm của tổng (gt11-daoham-tonghieu)"). Id có
 // thật thì: nằm trong ngoặc ngay sau chính tên công thức → bỏ; còn lại → thay bằng tên công thức.
 // Id không có thật giữ nguyên (không đoán).
-const FORMULA_ID = /[a-z]{2,3}\d{2}-[a-z0-9-]*[a-z0-9]/gi;
+const FORMULA_ID = /[a-z]{2,3}(?:\d{2})?-[a-z0-9-]*[a-z0-9]/gi;
 export function replaceFormulaIds(s, isValidId, nameOf) {
   if (!isValidId || !nameOf) return s;
   return mapProse(s, (prose) => prose
@@ -387,6 +387,12 @@ function parseGivenValues(part, allowedNumbers) {
  * "pythagoras" | "triangle_inequality" | null. Khung chung: công thức [\text{ với } dữ kiện] [⇒ …] ⇒ ẩn = ?.
  */
 function matchBaseExpression(expression, allowedNumbers, rightAngle) {
+  const tail = /\s*(?:\\Rightarrow|⇒)\s*\\text\{có thể tạo tam giác\}\s*=\s*\?\s*$/;
+  if (tail.test(expression)) {
+    const head = expression.replace(tail, "");
+    if (/\\(?:Rightarrow|Longrightarrow)|⇒/.test(head)) return null;
+    return matchBaseExpression(head, allowedNumbers, rightAngle) === "triangle_inequality" ? "triangle_inequality" : null;
+  }
   const s = normalizeBaseExpression(expression);
   if (!s || s.split("§").length > 2) return null;
   const arrows = s.split("→");
@@ -876,6 +882,7 @@ export function mathLeaks(latex, allowed, questionText = "", opts = {}) {
       if (!l || !r) return;
       const [value, other] = isSingleValue(r) && !isSingleValue(l) ? [r, l] : isSingleValue(l) && !isSingleValue(r) ? [l, r] : [null, null];
       if (!value) return;
+      if (opts.symbolicElip && op === "=" && compact(value) === "1" && /^\\frac\{x\^2\}\{(?:a\^2|\?)\}\+\\frac\{y\^2\}\{(?:b\^2|\?)\}$/.test(compact(other))) return;
       // Đại lượng đề hỏi = một số → luôn là lộ đáp số (xem askedTargets), trừ khi chính đề cho cặp đó.
       if (op === "=" && value === r && targets.includes(targetSymbol(other)) && !q.includes(compact(`${other}=${value}`))) {
         leaks.push(compact(`${other}${op}${value}`));
@@ -1125,12 +1132,13 @@ function allowedNumbers(sourceTexts, formulaTexts) {
 export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNames = [], mask = false }) {
   const allowed = allowedNumbers(sourceTexts, formulaTexts);
   const question = sourceTexts[0] || "";
+  const symbolicElip = formulaTexts.some(t => t.includes("\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1"));
   // Cặp "ký hiệu = số" đã khai báo ở các bước TRƯỚC bước đang xét (ngoại lệ hẹp isRestatedDatum).
   let declared = new Set();
   const leakedIn = (...texts) => {
     const leaks = [], accepted = [];
     for (const t of texts) {
-      const r = textLeaks(t, new Set([...allowed, ...accepted]), question, { declared });
+      const r = textLeaks(t, new Set([...allowed, ...accepted]), question, { declared, symbolicElip });
       leaks.push(...r.leaks);
       accepted.push(...r.accepted);
     }
@@ -1160,8 +1168,8 @@ export function applyNumberGuard(answer, { sourceTexts, formulaTexts, formulaNam
   const symbolFor = makeRootSymbols(answer.steps.flatMap((st) => [st.detail, st.expression]), question);
   const tryMask = (st) => {
     const allowedNow = new Set(allowed);
-    const detail = maskTextLeaks(st.detail, allowedNow, question, symbolFor, { declared });
-    const expression = st.expression ? maskMathLeaks(st.expression, allowedNow, question, symbolFor, { declared }) : "";
+    const detail = maskTextLeaks(st.detail, allowedNow, question, symbolFor, { declared, symbolicElip });
+    const expression = st.expression ? maskMathLeaks(st.expression, allowedNow, question, symbolFor, { declared, symbolicElip }) : "";
     if (detail === null || expression === null) return null;
     const recheck = leakedIn(detail, expression ? `$${expression}$` : "");
     return recheck.leaks.length ? null : { step: { ...st, detail, expression }, accepted: recheck.accepted };

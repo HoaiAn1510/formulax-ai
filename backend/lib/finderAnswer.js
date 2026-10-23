@@ -5,8 +5,14 @@ import {
   checkTriangleSides, checkBaseKnowledge,
 } from "./solutionGuard.js";
 import { isMultipleChoiceQuestion, guardChoiceReveals } from "./choiceGuard.js";
+import { unsafeCircleAnswer } from "./circleAnswerGuard.js";
 
 const MAX_ATTEMPTS = 2; // lần 2 chỉ khi JSON hỏng không cứu được
+const measuredPrompts = new Map();
+export function completionBudget(promptTokens, retry = false) {
+  const cap = Math.min(retry ? 2000 : 2300, 7800 - promptTokens);
+  return cap >= 1200 ? cap : null;
+}
 
 // Ngân sách thời gian cho MỖI request /api/chat, tính từ lúc request tới backend. Frontend chờ
 // 45 giây (FormulaFinder.jsx) — con số đó PHẢI lớn hơn ngân sách này. Nếu frontend hết giờ
@@ -133,17 +139,30 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
   // Một lần gọi Groq; gặp 413 vượt TPM thì gọi lại đúng một lần với max_completion_tokens thấp hơn
   // (không tính là một lần gọi của vòng lặp bên dưới — 413 bị từ chối ngay, chưa có câu trả lời nào).
   const createCompletion = async (callModel, callMessages, firstTimeoutMs) => {
+    const retry = meta.attempts > 1;
+    // Conservative estimate calibrated against measured Vietnamese prompts; usage from a
+    // previous call is a lower bound when retry messages append the previous response.
+    const promptKey = JSON.stringify([callModel, callMessages]);
+    const prompt = measuredPrompts.get(promptKey) ?? Math.max(meta.lastPromptTokens || 0, Math.ceil(callMessages.reduce((n, m) => n + m.content.length, 0) / 2.6) + 100);
+    const initialCap = completionBudget(prompt, retry);
+    if (initialCap === null) throw Object.assign(new Error("Insufficient completion budget"), { status: 503 });
     const call = (maxTokens, timeoutMs) => groq.chat.completions.create(
       { model: callModel, messages: callMessages, ...FINDER_PARAMS, max_completion_tokens: maxTokens },
       { timeout: timeoutMs },
     );
     try {
-      return await call(FINDER_PARAMS.max_completion_tokens, firstTimeoutMs);
+      const completion = await call(initialCap, firstTimeoutMs);
+      meta.lastPromptTokens = completion.usage?.prompt_tokens || prompt;
+      if (completion.usage?.prompt_tokens) {
+        if (measuredPrompts.size >= 100) measuredPrompts.delete(measuredPrompts.keys().next().value);
+        measuredPrompts.set(promptKey, completion.usage.prompt_tokens);
+      }
+      return completion;
     } catch (err) {
-      const next = reducedCompletionTokens(err, FINDER_PARAMS.max_completion_tokens);
+      const next = reducedCompletionTokens(err, initialCap);
       if (next === null) throw err;
       const overflow = parseTpmOverflow(err);
-      meta.reducedForTpm = { from: FINDER_PARAMS.max_completion_tokens, to: next, requested: overflow.requested, limit: overflow.limit };
+      meta.reducedForTpm = { from: initialCap, to: next, requested: overflow.requested, limit: overflow.limit };
       return await call(next, Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, deadline - now())));
     }
   };
@@ -166,7 +185,12 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
       meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
       meta.completionTokens += completion.usage?.completion_tokens ?? 0;
       meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
+      if (completion.choices?.[0]?.finish_reason === "length") {
+        meta.truncated = true;
+        continue;
+      }
       parsed = parseModelJson(completion.choices?.[0]?.message?.content);
+      if (parsed) meta.truncated = false;
     } catch (err) {
       // Model chính hết hạn mức NGÀY → chuyển sang model dự phòng (chỉ một lần mỗi request, và chỉ
       // khi còn đủ thời gian). Lần bị 429 không tính là một lần gọi (không có câu trả lời nào).
@@ -215,6 +239,10 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
       meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
       meta.completionTokens += completion.usage?.completion_tokens ?? 0;
       meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
+      if (completion.choices?.[0]?.finish_reason === "length") {
+        meta.truncated = true;
+        return null;
+      }
       return parseModelJson(completion.choices?.[0]?.message?.content);
     };
     try {
@@ -241,6 +269,10 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
       // không biến một câu trả lời dùng được thành lỗi.
       meta.retriedForLeaks.error = `${err?.status || ""} ${err?.code || err?.name || "error"}`.trim();
     }
+  }
+  if (!checked && meta.truncated) {
+    const answer = { type: "unavailable", formulaIds: [], intro: DEFAULT_TEXT.unavailable, steps: [], reminder: "" };
+    return { answer, reply: answer.intro, meta: { ...meta, jsonFailed: true } };
   }
   if (!checked) checked = finalizeAnswer(parsed, { message, recentUserTexts, mask: true, grade });
   return { answer: checked.answer, reply: checked.reply, meta: { ...meta, ...checked.meta } };
@@ -330,6 +362,10 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
     }
   }
   const { answer: withBraces, dropped: droppedExpressions } = dropBrokenExpressions(normalized);
+  if (unsafeCircleAnswer(withBraces, message)) {
+    const answer = { type: "no_formula", formulaIds: [], intro: DEFAULT_TEXT.noFormulaIntro, steps: [], reminder: "" };
+    return { answer, reply: answer.intro, meta: { circleRejected: true } };
+  }
   const chosen = withBraces.formulaIds.map(getFormula);
   const { answer: guarded, removedSteps, maskedSteps, replaced } = applyNumberGuard(withBraces, {
     sourceTexts,
@@ -343,6 +379,10 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
   // Làm sạch cuối: bỏ dòng biểu thức đã thay số (8^2 + 5^2 - 2·8·5…), giữ chữ của bước. Không tính
   // là vi phạm phải hỏi lại — không lộ đáp số, chỉ trái quy tắc "thay dữ kiện, không thay số".
   const { answer: cleaned, dropped: droppedSubstitutions } = dropNumericSubstitutions(guarded, sourceTexts.join("\n"));
+  if (unsafeCircleAnswer(cleaned, message)) {
+    const answer = { type: "no_formula", formulaIds: [], intro: DEFAULT_TEXT.noFormulaIntro, steps: [], reminder: "" };
+    return { answer, reply: answer.intro, meta: { circleRejected: true } };
+  }
   // Bài trắc nghiệm: không được nói phương án nào đúng (lib/choiceGuard.js). Lần kiểm tra đầu
   // (mask = false) chỉ phát hiện để hỏi lại AI; bản cuối (mask = true) bỏ hẳn các câu đó.
   const { answer, reveals: choiceReveals } = isMultipleChoiceQuestion(message)

@@ -1,0 +1,29 @@
+[
+  {
+    "index": 2,
+    "message": "Cho ba đoạn thẳng có độ dài 3, 4, 5. Ba đoạn này có tạo thành một tam giác không?",
+    "calls": [
+      {
+        "raw": "{\"type\":\"solution\",\"formula_ids\":[],\"intro\":\"Ta dùng bất đẳng thức tam giác để kiểm tra.\",\"steps\":[{\"title\":\"Kiểm tra bất đẳng thức tam giác\",\"detail\":\"Áp dụng bất đẳng thức: tổng hai cạnh bất kỳ phải lớn hơn cạnh còn lại. Với $a=3$, $b=4$, $c=5$ kiểm tra ba bất đẳng thức.\",\"expression\":\"3 + 4 > 5,\\\\\\\\; 3 + 5 > 4,\\\\\\\\; 4 + 5 > 3 \\\\\\\\Rightarrow \\\\\\\\text{có thể tạo tam giác} = ?\"}],\"reminder\":\"Bạn tự tính các tổng và xác định dấu > để điền vào ô ?.\"}"
+      }
+    ]
+  },
+  {
+    "index": 22,
+    "message": "Tìm tâm và bán kính đường tròn x² + y² - 4x + 6y - 12 = 0",
+    "calls": [
+      {
+        "raw": "{\n  \"type\":\"solution\",\n  \"formula_ids\":[\"hh10-duongtron-phuongtrinh\"],\n  \"intro\":\"Bài này dùng công thức dạng $(x-a)^2+(y-b)^2=R^2$ của đường tròn để tìm tâm và bán kính.\",\n  \"steps\":[\n    {\n      \"title\":\"Nhóm các hạng tử\",\n      \"detail\":\"Đưa các hạng tử $x$ và $y$ sang một phía, hằng số sang phía còn lại.\",\n      \"expression\":\"x^2 - 4x + y^2 + 6y = 12\"\n    },\n    {\n      \"title\":\"Hoàn thành bình phương\",\n      \"detail\":\"Thêm và trừ các bình phương hoàn chỉnh để viết dưới dạng bình phương hoàn chỉnh.\",\n      \"expression\":\"(x - 2)^2 + (y + 3)^2 = 25\"\n    },\n    {\n      \"title\":\"Áp dụng công thức đường tròn\",\n      \"detail\":\"So sánh với công thức $(x-a)^2+(y-b)^2=R^2$, suy ra các tham số $a,b,R$.\",\n      \"expression\":\"a = 2,\\\\; b = -3,\\\\; R = 5 \\\\Rightarrow (a,b,R) = ?\"\n    },\n    {\n      \"title\":\"Kết luận\",\n      \"detail\":\"Ghi nhận tâm và bán kính của đường tròn.\",\n      \"expression\":\"Tâm = (a; b) = ?,\\\\; R = ?\"\n    }\n  ],\n  \"reminder\":\"Bạn tự tính các ô ? rồi ghi đáp án nhé!\"\n}"
+      }
+    ]
+  },
+  {
+    "index": 23,
+    "message": "Viết phương trình chính tắc elip có độ dài trục lớn 10 và độ dài trục nhỏ 6",
+    "calls": [
+      {
+        "raw": "{\n  \"type\":\"solution\",\n  \"formula_ids\":[\"mr-elip\"],\n  \"intro\":\"Bài này dùng công thức phương trình chuẩn của elip.\",\n  \"steps\":[\n    {\n      \"title\":\"Xác định dữ kiện\",\n      \"detail\":\"Độ dài trục lớn $2a = 10$ nên $a = 5$, độ dài trục nhỏ $2b = 6$ nên $b = 3$.\",\n      \"expression\":\"\"\n    },\n    {\n      \"title\":\"Áp dụng công thức\",\n      \"detail\":\"Dùng công thức \\\\(\\\\frac{x^2}{a^2}+\\\\frac{y^2}{b^2}=1\\\\) với $a$ và $b$ đã biết. Bạn tự tính $a^2$, $b^2$ rồi viết phương trình.\",\n      \"expression\":\"\\\\frac{x^2}{a^2} + \\\\frac{y^2}{b^2} = 1, \\\\text{ với } a = 5, b = 3 \\\\Rightarrow \\\\frac{x^2}{?} + \\\\frac{y^2}{?} = 1\"\n    }\n  ],\n  \"reminder\":\"Bạn tự tính $a^2$, $b^2$ và hoàn thành phương trình nhé!\"\n}"
+      }
+    ]
+  }
+]

@@ -18,8 +18,8 @@ function groqError413(requested) {
   });
 }
 
-test("cấu hình: max_completion_tokens 2000, 8 ứng viên, ghi chú công thức tối đa 100 ký tự", () => {
-  assert.equal(FINDER_PARAMS.max_completion_tokens, 2000);
+test("cấu hình: max_completion_tokens 2300, 8 ứng viên, ghi chú công thức tối đa 100 ký tự", () => {
+  assert.equal(FINDER_PARAMS.max_completion_tokens, 2300);
   assert.equal(SHORTLIST_SIZE, 8);
   assert.equal(PROMPT_NOTE_MAX, 100);
   for (const f of formulas) {
@@ -56,7 +56,7 @@ test("ngân sách token (ước lượng): prompt + max_completion_tokens còn b
   ];
   for (const [q, grade] of cases) {
     const estimate = estimateRequestTokens(q, grade);
-    assert.ok(estimate <= 7600, `${q}: ước lượng ${estimate} token (cần ≤ 7.600, trần Groq 8.000)`);
+    assert.ok(estimate <= 7800, `${q}: ước lượng ${estimate} token (cần ≤ 7.600, trần Groq 8.000)`);
   }
 });
 
@@ -110,10 +110,10 @@ test("gặp 413 (Requested 8029) → gọi lại MỘT lần với max_completio
   const clock = { t: 0 };
   const groq = seqGroq([groqError413(8029), GOOD], clock);
   const { answer, meta } = await askFinder({ groq, message: Q, now: () => clock.t, deadline: CHAT_BUDGET_MS });
-  assert.deepEqual(groq.bodies.map((b) => b.max_completion_tokens), [2000, 1871]);
+  assert.deepEqual(groq.bodies.map((b) => b.max_completion_tokens), [2300, 2171]);
   assert.equal(answer.type, "solution");
   assert.deepEqual(answer.formulaIds, ["hh12-matcau-thetich"]);
-  assert.deepEqual(meta.reducedForTpm, { from: 2000, to: 1871, requested: 8029, limit: 8000 });
+  assert.deepEqual(meta.reducedForTpm, { from: 2300, to: 2171, requested: 8029, limit: 8000 });
   assert.equal(meta.attempts, 1, "413 bị từ chối ngay — không tính là một lần gọi của vòng lặp JSON");
   assert.equal(groq.bodies[1].model, groq.bodies[0].model);
   assert.deepEqual(groq.bodies[1].messages, groq.bodies[0].messages, "gọi lại đúng prompt cũ, chỉ đổi max_completion_tokens");
@@ -153,7 +153,7 @@ test("lần hỏi lại vì lộ số cũng được bảo vệ: retry gặp 413
   const clock = { t: 0 };
   const groq = seqGroq([leaky("3x^2 - 3 = 0 \\Rightarrow x^2 = 1"), groqError413(8200), leaky("3x^2 - 3 = 0 \\Rightarrow x^2 = ?")], clock);
   const { answer, meta } = await askFinder({ groq, message: "Tìm cực trị của hàm số y = x³ − 3x + 2.", now: () => clock.t, deadline: CHAT_BUDGET_MS });
-  assert.deepEqual(groq.bodies.map((b) => b.max_completion_tokens), [2000, 2000, 1700]);
+  assert.deepEqual(groq.bodies.map((b) => b.max_completion_tokens), [2300, 2000, 1700]);
   assert.deepEqual(meta.reducedForTpm, { from: 2000, to: 1700, requested: 8200, limit: 8000 });
   assert.equal(answer.steps[0].expression, "3x^2 - 3 = 0 \\Rightarrow x^2 = ?");
 });
