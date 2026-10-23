@@ -2013,7 +2013,7 @@ export const questionsPool = [
     id: "mr9",
     topic: "Mở rộng",
     grade: 10,
-    text: "Hypebol $\\dfrac{x^2}{4} - \\dfrac{y^2}{5} = 1$ có tiêu cự $c$ bằng:",
+    text: "Hypebol $\\dfrac{x^2}{4} - \\dfrac{y^2}{5} = 1$ có nửa tiêu cự $c$ bằng:",
     options: [
       { letter: "A", text: "$3$", isCorrect: true },
       { letter: "B", text: "$\\sqrt{5}$", isCorrect: false },
