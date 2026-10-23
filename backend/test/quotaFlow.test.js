@@ -54,6 +54,7 @@ test("JSON hỏng sau khi gọi lại (delivered: false, trả câu mẫu) → h
   assert.equal(out.limited, false);
   assert.equal(out.result.answer.type, "unavailable");
   assert.equal(out.remaining, 5);
+  assert.equal(out.refunded, true);
   assert.equal(c.used, 5);
 });
 
@@ -66,6 +67,7 @@ test("hoàn lượt thất bại → chỉ ghi log, học sinh vẫn nhận ph�
     onRefundError: (err) => logged.push(err.message),
   });
   assert.equal(out.remaining, 4);
+  assert.equal(out.refunded, false);
   assert.deepEqual(logged, ["db down"]);
 });
 

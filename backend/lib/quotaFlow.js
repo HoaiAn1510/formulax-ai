@@ -17,15 +17,19 @@
  * @param {() => Promise<{delivered: boolean}>} opts.run  chạy câu hỏi
  * @param {(err: Error) => void} [opts.onRefundError]  hoàn lượt thất bại chỉ được ghi log, không
  *                                              làm hỏng phản hồi cho học sinh
- * @returns {Promise<{limited: true, remaining: 0} | {limited: false, result: object, remaining: number}>}
+ * @returns {Promise<{limited: true, remaining: 0} | {limited: false, result: object, remaining: number, refunded?: boolean}>}
+ *   refunded chỉ có ở phản hồi delivered=false; false khi RPC hoàn lượt thất bại.
  *   Lỗi của run() được ném lại, kèm err.remaining = số lượt còn lại sau khi đã hoàn.
  */
 export async function runWithQuota({ limit, reserve, refund, run, onRefundError = () => {} }) {
   const used = await reserve();
+  let refunded = false;
 
   const refundAndCountRemaining = async () => {
     try {
-      return Math.max(0, limit - (await refund()));
+      const remaining = Math.max(0, limit - (await refund()));
+      refunded = true;
+      return remaining;
     } catch (err) {
       onRefundError(err);
       return Math.max(0, limit - used); // không hoàn được → lượt vẫn bị tính như trước
@@ -46,7 +50,8 @@ export async function runWithQuota({ limit, reserve, refund, run, onRefundError 
   }
 
   if (result?.delivered === false) {
-    return { limited: false, result, remaining: await refundAndCountRemaining() };
+    const remaining = await refundAndCountRemaining();
+    return { limited: false, result, remaining, refunded };
   }
   return { limited: false, result, remaining: Math.max(0, limit - used) };
 }

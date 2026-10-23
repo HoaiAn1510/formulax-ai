@@ -287,8 +287,7 @@ export function checkTriangleSides(sides, questionText) {
   const vi = (n) => String(n).replace(".", ",");
   const tex = (n) => String(n).replace(".", "{,}");
   const op = sx + sy === sz ? "=" : "<";
-  const intro = `Ba cạnh ${values.map(vi).join(", ")} không tạo thành tam giác vì $${tex(x)} + ${tex(y)} ${op} ${tex(z)}$ — `
-    + "tổng hai cạnh bất kỳ phải lớn hơn cạnh còn lại. Vì vậy không có tam giác nào như vậy, nên không tính được diện tích hay các yếu tố khác của nó.";
+  const intro = `Ba cạnh ${values.map(vi).join(", ")} không tạo thành tam giác vì $${tex(x)} + ${tex(y)} ${op} ${tex(z)}$ (tổng hai cạnh phải lớn hơn cạnh còn lại).`;
   return { sides: values, intro };
 }
 

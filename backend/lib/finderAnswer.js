@@ -6,6 +6,7 @@ import {
 } from "./solutionGuard.js";
 import { isMultipleChoiceQuestion, guardChoiceReveals } from "./choiceGuard.js";
 import { unsafeCircleAnswer } from "./circleAnswerGuard.js";
+import { questionNotice, verifiedTriangleNotice } from "./finderNotice.js";
 
 const MAX_ATTEMPTS = 2; // lần 2 chỉ khi JSON hỏng không cứu được
 const measuredPrompts = new Map();
@@ -45,12 +46,24 @@ export function countsAsTurn(answer, meta) {
 
 /** Mã ngắn cho log no_formula; không ghi thêm đề hoặc nội dung thô của model. */
 export function noFormulaReason(meta = {}) {
+  if (meta.noticeReason) return meta.noticeReason;
   if (meta.circleRejected) return "circle_guard";
   if (meta.baseKnowledge && !meta.baseKnowledge.verified) return "base_knowledge_reject";
   if (meta.invalidData && !meta.invalidData.verified) return "invalid_data_reject";
   if (meta.rawType === "no_formula") return "ai_refused";
   if (meta.rawType === "solution") return "formula_ids_reject";
   return "unknown";
+}
+
+/** Chỉ thay câu thông báo sau khi các guard đã quyết định type; không dùng lời model. */
+export function withNonDeliveryNotice(result, { message, grade = null }) {
+  const { answer, meta } = result;
+  if (answer.type !== "no_formula" && answer.type !== "invalid_data") return result;
+  const notice = answer.type === "invalid_data"
+    ? { reason: "invalid_triangle_sides", text: verifiedTriangleNotice(answer.intro) }
+    : questionNotice(noFormulaReason(meta), message, grade);
+  const updated = { ...answer, intro: notice.text, reminder: "" };
+  return { ...result, answer: updated, reply: toReplyText(updated, getFormula), meta: { ...meta, noticeReason: notice.reason } };
 }
 
 // Groq không cho biết phải chờ bao lâu thì mặc định 60 giây (hạn mức theo phút). Trần 120 giây: lâu
@@ -285,7 +298,7 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
     return { answer, reply: answer.intro, meta: { ...meta, jsonFailed: true } };
   }
   if (!checked) checked = finalizeAnswer(parsed, { message, recentUserTexts, mask: true, grade });
-  return { answer: checked.answer, reply: checked.reply, meta: { ...meta, ...checked.meta } };
+  return withNonDeliveryNotice({ answer: checked.answer, reply: checked.reply, meta: { ...meta, ...checked.meta } }, { message, grade });
 }
 
 /** Danh sách giá trị bị bắt trong một lần kiểm tra (bước lọc, bước mask, intro/reminder). */

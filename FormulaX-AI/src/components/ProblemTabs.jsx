@@ -165,11 +165,11 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
           <div className="flex flex-col gap-2.5 items-start">
             <div className="flex items-start gap-2 text-[0.86rem] leading-[1.55]">
               <SearchX size={16} className="shrink-0 mt-0.5 text-accent" />
-              <span>{result.answer?.intro || "Thư viện FormulaX chưa có công thức cho dạng bài này."}</span>
+              <span>{result.answer?.intro || "Mình chưa đủ thông tin để hướng dẫn đề này. Bạn thử viết lại rõ hơn nhé."}</span>
             </div>
-            <span className="text-[0.8rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">
-              Thử viết rõ tên hình hoặc dạng bài, ví dụ "tam giác" thay cho "△". Lần này không bị tính vào lượt hỏi AI của bạn.
-            </span>
+            {result.answer?.reminder && (
+              <span className="text-[0.8rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">{result.answer.reminder}</span>
+            )}
             {!isEditing && (
               <button type="button" onClick={startEdit} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
                 <Pencil size={12} /> Sửa đề

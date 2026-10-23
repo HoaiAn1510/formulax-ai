@@ -14,6 +14,7 @@ import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
 import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind, countsAsTurn, noFormulaReason } from "./lib/finderAnswer.js";
+import { appendRefundNotice } from "./lib/finderNotice.js";
 import { expandShorthand } from "./lib/problemText.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
@@ -127,7 +128,7 @@ function logFinderEvents(message, answer, meta, ms, source) {
   // Lời giải không có id công thức, chỉ dùng kiến thức nền THCS (tổng ba góc / Pytago / bất đẳng thức
   // tam giác): verified = backend nhận diện được từ biểu thức (giao câu trả lời), false = giữ no_formula.
   if (meta.baseKnowledge) console.log("[finder:base_knowledge]", JSON.stringify({ ...base, verified: meta.baseKnowledge.verified, kinds: meta.baseKnowledge.kinds }));
-  if (meta.invalidData) console.log("[finder:invalid_data]", JSON.stringify({ ...base, verified: meta.invalidData.verified, sides: meta.invalidData.sides }));
+  if (meta.invalidData) console.log("[finder:invalid_data]", JSON.stringify({ ...base, verified: meta.invalidData.verified, sides: meta.invalidData.sides, reason: meta.noticeReason || "invalid_triangle_sides" }));
   // Groq trả 413 (prompt + max_completion_tokens > TPM) rồi backend gọi lại với max_completion_tokens
   // thấp hơn. Dòng này xuất hiện thường xuyên = prompt đang sát trần, cần rút thêm (không có câu hỏi).
   if (meta.reducedForTpm) console.warn("[finder:tpm_retry]", JSON.stringify(meta.reducedForTpm));
@@ -279,7 +280,8 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
       }
     }
 
-    const { answer, reply } = outcome.result;
+    // Chỉ nói "không bị tính" khi RPC hoàn lượt thực sự thành công.
+    const { answer, reply } = appendRefundNotice(outcome.result, outcome.refunded === true);
     const remaining = outcome.remaining;
     res.json({
       type: answer.type,

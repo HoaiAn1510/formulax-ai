@@ -25,7 +25,7 @@ test("ca mentor: ba cạnh 1, 2, 4 → invalid_data, giải thích 1 + 2 < 4, kh
   assert.equal(answer.type, "invalid_data");
   assert.deepEqual(answer.formulaIds, []);
   assert.deepEqual(answer.steps, []);
-  assert.equal(answer.intro, "Ba cạnh 1, 2, 4 không tạo thành tam giác vì $1 + 2 < 4$ — tổng hai cạnh bất kỳ phải lớn hơn cạnh còn lại. Vì vậy không có tam giác nào như vậy, nên không tính được diện tích hay các yếu tố khác của nó.");
+  assert.equal(answer.intro, "Ba cạnh 1, 2, 4 không tạo thành tam giác vì $1 + 2 < 4$ (tổng hai cạnh phải lớn hơn cạnh còn lại).");
   assert.doesNotMatch(answer.intro, /chưa có công thức/);
   assert.ok(answer.reminder);
   assert.match(reply, /1 \+ 2 < 4/);
