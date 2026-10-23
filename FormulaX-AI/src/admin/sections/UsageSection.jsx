@@ -41,7 +41,7 @@ export default function UsageSection({ range, refreshKey, onStatus }) {
       state={state}
       onStatus={onStatus}
       isEmpty={(d) => d.days.length === 0}
-      skeleton={<><KpiSkeleton /><div className="grid lg:grid-cols-2 gap-4"><ChartSkeleton /><ChartSkeleton /></div><TableSkeleton /></>}
+      skeleton={<><KpiSkeleton count={3} columns={3} /><div className="grid lg:grid-cols-2 gap-4"><ChartSkeleton /><ChartSkeleton /></div><TableSkeleton /></>}
     >
       {({ days, sum, previous, limits }) => {
         const aiTotal = sum.ai_free_turns + sum.ai_premium_turns;
@@ -50,11 +50,10 @@ export default function UsageSection({ range, refreshKey, onStatus }) {
         const withTotal = days.map((d) => ({ ...d, ai_total: d.ai_free_turns + d.ai_premium_turns }));
         return (
           <div className="flex flex-col gap-4">
-            <KpiGrid>
+            <KpiGrid columns={3}>
               <KpiCard icon={Sparkles} tone="blue" label="Lượt AI Finder" value={formatCount(aiTotal)} delta={computeDelta(aiTotal, aiPrev)} spark={withTotal.map((d) => d.ai_total)} />
               <KpiCard icon={ScanLine} tone="violet" label="Lượt quét ảnh" value={formatCount(sum.ocr_scans)} delta={computeDelta(sum.ocr_scans, previous?.ocr_scans)} spark={days.map((d) => d.ocr_scans)} />
               <KpiCard icon={Gauge} tone="amber" label="Lần chạm giới hạn" value={formatCount(atLimit)} hint={`AI Free ${limits.aiFree} · quét Free ${limits.ocrFree} / Premium ${limits.ocrPremium} mỗi ngày`} highlight={atLimit > 0} />
-              <KpiCard icon={Zap} tone={sum.ai_busy > 0 ? "red" : "green"} label="AI đang bận" value={formatCount(sum.ai_busy)} delta={computeDelta(sum.ai_busy, previous?.ai_busy)} invertDelta hint={sum.ai_busy > 0 ? "Groq báo quá tải" : "Không có sự cố"} />
             </KpiGrid>
 
             <div className="grid lg:grid-cols-2 gap-4">

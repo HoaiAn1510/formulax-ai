@@ -40,9 +40,9 @@ function Bone({ className = "", style }) {
   return <div className={`rounded-md bg-[#E2E8F0] motion-safe:animate-pulse ${className}`} style={style} />;
 }
 
-export function KpiSkeleton({ count = 4 }) {
+export function KpiSkeleton({ count = 4, columns = 4 }) {
   return (
-    <KpiGrid>
+    <KpiGrid columns={columns}>
       {Array.from({ length: count }, (_, i) => (
         <Card key={i} className="p-4 flex flex-col gap-3 min-h-[148px]">
           <div className="flex items-center gap-2"><Bone className="w-8 h-8 rounded-lg" /><Bone className="h-3 w-24" /></div>
@@ -129,8 +129,8 @@ export function SectionShell({ state, skeleton, isEmpty, empty, onStatus, childr
 
 // ─── Thẻ số liệu ─────────────────────────────────────────────────────────────
 
-export function KpiGrid({ children }) {
-  return <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">{children}</div>;
+export function KpiGrid({ children, columns = 4 }) {
+  return <div className={`grid ${columns === 3 ? "grid-cols-1 sm:grid-cols-3" : "grid-cols-2 lg:grid-cols-4"} gap-3 sm:gap-4`}>{children}</div>;
 }
 
 const DELTA_STYLE = {
