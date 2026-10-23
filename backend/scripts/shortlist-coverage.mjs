@@ -30,7 +30,7 @@ const CASES = [
   { src: "gõ tay 5", q: "Hàm số y = x² − 6x + 5 đồng biến trên khoảng nào", need: ["ds10-hamso-bachai-bienthien"] },
   { src: "gõ tay 6", q: "Xác định parabol y = ax² + bx + 2 biết đi qua A(1; 5) và có trục đối xứng x = −1", need: ["hh10-parabola"] },
   { src: "gõ tay 7", q: "Tìm giao điểm của parabol y = x² − 3x + 2 với trục hoành", need: ["ds10-phuongtrinh-bac2"] },
-  { src: "gõ tay 8", q: "ΔABC vuông tại A có AB = 3, AC = 4. Tính bán kính đường tròn ngoại tiếp", need: ["hh10-dinhly-sin"], anyOf: [["hh10-cosin"]], missingFromLibrary: ["định lý Pytago (lớp 8) / R = cạnh huyền ÷ 2"] },
+  { src: "gõ tay 8", q: "ΔABC vuông tại A có AB = 3, AC = 4. Tính bán kính đường tròn ngoại tiếp", need: ["hh10-dinhly-sin"], anyOf: [["hh10-cosin", "hh10-bankinh-ngoaitiep"]], missingFromLibrary: ["định lý Pytago (lớp 8) / R = cạnh huyền ÷ 2"] },
   { src: "gõ tay 9", q: "Tính diện tích tg ABC có AB = 5, AC = 7, góc A = 30°", need: ["hh10-dientich-sinC"] },
   { src: "gõ tay 10", q: "Tìm m để hs y = x² − 2mx + 3 đồng biến trên (1; +∞)", need: ["ds10-hamso-bachai-bienthien"], anyOf: [["hh10-parabola"]] },
 ];
