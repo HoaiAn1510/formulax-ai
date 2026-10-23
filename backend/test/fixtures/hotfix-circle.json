@@ -1,0 +1,22 @@
+[
+  {
+    "index": 5,
+    "message": "Tam giác ABC có a = 13, b = 14, c = 15. Tính bán kính đường tròn nội tiếp r",
+    "raw": "{\"type\":\"solution\",\"formula_ids\":[\"hh10-herong\",\"hh10-bankinh-noitiep\"],\"intro\":\"Bài này dùng công thức Heron tính diện tích tam giác rồi dùng công thức bán kính nội tiếp $r=\\\\frac{S}{p}$.\",\"steps\":[{\"title\":\"Tính nửa chu vi p\",\"detail\":\"Tính $p = \\\\frac{a+b+c}{2}$ với $a=13$, $b=14$, $c=15$. Bạn tự tính $p$.\",\"expression\":\"p = \\\\frac{a+b+c}{2}, \\\\text{ với } a = 13, b = 14, c = 15 \\\\Rightarrow p = ?\"},{\"title\":\"Tính diện tích S\",\"detail\":\"Dùng công thức Heron $S = \\\\sqrt{p(p-a)(p-b)(p-c)}$ với các dữ kiện đã có. Bạn tự tính $S$.\",\"expression\":\"S = \\\\sqrt{p(p-a)(p-b)(p-c)}, \\\\text{ với } a = 13, b = 14, c = 15, p = ? \\\\Rightarrow S = ?\"},{\"title\":\"Tính bán kính nội tiếp r\",\"detail\":\"Áp dụng công thức $r = \\\\frac{S}{p}$, thay $S$ và $p$ vừa tính. Bạn tự tính $r$.\",\"expression\":\"r = \\\\frac{S}{p}, \\\\text{ với } S = ?, p = ? \\\\Rightarrow r = ?\"}],\"reminder\":\"Bạn tự tính các ô ? rồi ghi kết quả nhé!\"}"
+  },
+  {
+    "index": 6,
+    "message": "Tam giác ABC có a = 13, b = 14, c = 15. Tính bán kính đường tròn ngoại tiếp R",
+    "raw": "{\"type\":\"solution\",\"formula_ids\":[\"hh10-herong\",\"hh10-bankinh-ngoaitiep\"],\"intro\":\"Bài này tính diện tích tam giác bằng công thức Heron rồi dùng công thức bán kính ngoại tiếp.\",\"steps\":[{\"title\":\"Xác định dữ kiện\",\"detail\":\"Tam giác có các cạnh $a=13$, $b=14$, $c=15$.\",\"expression\":\"\"},{\"title\":\"Tính diện tích $S$\",\"detail\":\"Dùng công thức Heron $S=\\\\sqrt{p(p-a)(p-b)(p-c)}$ với $p=\\\\frac{a+b+c}{2}$. Bạn tự tính $S$.\",\"expression\":\"S = \\\\sqrt{p\\\\,(p-a)\\\\,(p-b)\\\\,(p-c)}, \\\\text{ với } p = \\\\frac{a+b+c}{2},\\\\ a = 13,\\\\ b = 14,\\\\ c = 15 \\\\Rightarrow S = ?\"},{\"title\":\"Tính bán kính ngoại tiếp $R$\",\"detail\":\"Áp dụng công thức $R = \\\\frac{abc}{4S}$. Bạn tự tính $R$.\",\"expression\":\"R = \\\\frac{a b c}{4 S}, \\\\text{ với } a = 13,\\\\ b = 14,\\\\ c = 15 \\\\Rightarrow R = ?\"}],\"reminder\":\"Bạn tự tính các ô ? rồi ghi kết quả.\"}"
+  },
+  {
+    "index": 8,
+    "message": "Tam giác có ba cạnh 5, 12, 13. Tính bán kính đường tròn nội tiếp",
+    "raw": "{\n  \"type\":\"solution\",\n  \"formula_ids\":[\"hh10-herong\",\"hh10-bankinh-noitiep\"],\n  \"intro\":\"Bài này dùng công thức tính diện tích tam giác Heron và công thức bán kính đường tròn nội tiếp.\",\n  \"steps\":[\n    {\n      \"title\":\"Tính nửa chu vi\",\n      \"detail\":\"Với các cạnh $a=5$, $b=12$, $c=13$, nửa chu vi $p = \\\\frac{a+b+c}{2}$. Bạn tự tính $p$.\",\n      \"expression\":\"p = \\\\frac{5+12+13}{2} \\\\Rightarrow p = ?\"\n    },\n    {\n      \"title\":\"Tính diện tích\",\n      \"detail\":\"Dùng công thức Heron $S = \\\\sqrt{p(p-a)(p-b)(p-c)}$ với $a,b,c$ đã cho và $p$ ở bước trước. Bạn tự tính $S$.\",\n      \"expression\":\"S = \\\\sqrt{p\\\\,(p-5)\\\\,(p-12)\\\\,(p-13)} \\\\Rightarrow S = ?\"\n    },\n    {\n      \"title\":\"Tính bán kính nội tiếp\",\n      \"detail\":\"Áp dụng công thức $r = \\\\frac{S}{p}$ để tìm bán kính đường tròn nội tiếp. Bạn tự tính $r$.\",\n      \"expression\":\"r = \\\\frac{S}{p} \\\\Rightarrow r = ?\"\n    }\n  ],\n  \"reminder\":\"Bạn tự tính các ô ? rồi ghi kết quả.\"\n}"
+  },
+  {
+    "index": 21,
+    "message": "Viết phương trình đường tròn có tâm I(2; -3) và bán kính R = 4",
+    "raw": "{\"type\":\"solution\",\"formula_ids\":[\"hh10-duongtron-phuongtrinh\"],\"intro\":\"Bài này dùng công thức phương trình đường tròn với tâm I(a;b) và bán kính R.\",\"steps\":[{\"title\":\"Xác định dữ kiện\",\"detail\":\"Tâm I có tọa độ $I(2; -3)$, bán kính $R = 4$.\",\"expression\":\"\"},{\"title\":\"Áp dụng công thức\",\"detail\":\"Thay $a=2$, $b=-3$, $R=4$ vào công thức $(x-a)^2+(y-b)^2=R^2$. Bạn tự tính vế phải.\",\"expression\":\"(x-2)^2+(y+3)^2=R^2, \\\\text{ với } R=4 \\\\Rightarrow = ?\"}],\"reminder\":\"Bạn tự tính giá trị $R^2$ rồi viết phương trình hoàn chỉnh.\"}"
+  }
+]

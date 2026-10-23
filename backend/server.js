@@ -13,7 +13,7 @@ import { createIpLimiters } from "./lib/ipLimiters.js";
 import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
-import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind, countsAsTurn } from "./lib/finderAnswer.js";
+import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind, countsAsTurn, noFormulaReason } from "./lib/finderAnswer.js";
 import { expandShorthand } from "./lib/problemText.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
@@ -103,12 +103,9 @@ const MAX_HISTORY_ITEM_CHARS = 1500;
 // Finder bắt buộc đăng nhập Google, xem verifySupabaseUser + kiểm tra is_anonymous bên dưới.
 const FREE_AI_DAILY_LIMIT = 10;
 
-// Ghi log để theo dõi chất lượng AI Finder: câu hỏi bị báo "thư viện chưa có" và các lần bộ
-// lọc phải can thiệp. CHỈ ghi nội dung câu hỏi (tối đa 150 ký tự), type và id công thức —
-// không ghi google_id, email, tên hay token. Riêng no_formula ghi thêm aiNote: lời giải thích
-// của model (≤ 150 ký tự) về công thức/phương pháp còn thiếu — học sinh KHÔNG thấy câu này — và
-// source (đề từ ảnh hay gõ tay) + expanded (bộ chuẩn hoá ký hiệu/viết tắt có đổi gì không): đọc
-// log này để biết học sinh còn viết ký hiệu gì app chưa hiểu, rồi bổ sung lib/problemText.js.
+// Ghi log để theo dõi chất lượng AI Finder. no_formula chỉ ghi mã lý do, source,
+// expanded và aiNote ngắn; không ghi nội dung đề, bản thô, google_id, email hay token ở dòng này.
+// Các dòng guard khác giữ cấu trúc log cũ để không đổi phạm vi hotfix.
 function logFinderEvents(message, answer, meta, ms, source) {
   const base = { q: String(message).slice(0, 150), type: answer.type, ids: answer.formulaIds };
   // Mọi request: số token để theo dõi prompt caching của Groq (cached = phần prompt lấy từ cache,
@@ -123,7 +120,7 @@ function logFinderEvents(message, answer, meta, ms, source) {
   }));
   if (answer.type === "no_formula") {
     const expanded = expandShorthand(message) !== String(message).normalize("NFC").replace(/[ \t]{2,}/g, " ").trim();
-    console.log("[finder:no_formula]", JSON.stringify({ ...base, source, expanded, aiNote: meta.aiNote || "" }));
+    console.log("[finder:no_formula]", JSON.stringify({ type: answer.type, ids: answer.formulaIds, source, expanded, aiNote: meta.aiNote || "", reason: noFormulaReason(meta) }));
   }
   // Model báo ba cạnh không tạo thành tam giác (quy tắc 1f): verified = false là backend kiểm lại thấy
   // sai → học sinh nhận no_formula (dòng [finder:no_formula] ở trên).

@@ -43,6 +43,16 @@ export function countsAsTurn(answer, meta) {
   return !meta?.jsonFailed && answer?.type !== "no_formula" && answer?.type !== "invalid_data";
 }
 
+/** Mã ngắn cho log no_formula; không ghi thêm đề hoặc nội dung thô của model. */
+export function noFormulaReason(meta = {}) {
+  if (meta.circleRejected) return "circle_guard";
+  if (meta.baseKnowledge && !meta.baseKnowledge.verified) return "base_knowledge_reject";
+  if (meta.invalidData && !meta.invalidData.verified) return "invalid_data_reject";
+  if (meta.rawType === "no_formula") return "ai_refused";
+  if (meta.rawType === "solution") return "formula_ids_reject";
+  return "unknown";
+}
+
 // Groq không cho biết phải chờ bao lâu thì mặc định 60 giây (hạn mức theo phút). Trần 120 giây: lâu
 // hơn thì là hạn mức ngày — học sinh không nên ngồi đếm ngược, frontend chỉ báo "thử lại sau".
 const DEFAULT_RETRY_AFTER_S = 60;

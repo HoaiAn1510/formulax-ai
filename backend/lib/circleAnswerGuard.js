@@ -1,7 +1,19 @@
+// Only coordinate-circle equations need the centre/equation fail-closed guard.
+// A triangle's incircle/circumcircle radius is not a coordinate-circle task.
+export function isCoordinateCircleTask(question) {
+  if (!/đường tròn/i.test(question) || /đường tròn lượng giác/i.test(question)) return false;
+  const asksEquation = /(?:viết|lập|tìm|xác định)\s+phương trình\s+(?:của\s+)?đường tròn/i.test(question);
+  const givenCentre = /tâm\s*[A-Z]?\s*\(\s*[+-]?\d+(?:[.,]\d+)?\s*[;,]\s*[+-]?\d+(?:[.,]\d+)?\s*\)/i.test(question);
+  const hasEquation = /(?:\(\s*x[^()]*\)|x)\s*(?:\^\s*\{?2\}?|²)/i.test(question)
+    && /(?:\(\s*y[^()]*\)|y)\s*(?:\^\s*\{?2\}?|²)/i.test(question)
+    && /=/.test(question);
+  return asksEquation || givenCentre || hasEquation;
+}
+
 // Fail closed for derived circle answers. Given centres may be restated; an
 // expanded equation in the question does not declare its centre coordinates.
 export function unsafeCircleAnswer(answer, question) {
-  if (!/đường tròn/i.test(question)) return false;
+  if (!isCoordinateCircleTask(question)) return false;
   const q = question.replace(/\s|\$/g, '').replace(/−/g, '-');
   const givenCentre = /tâm\s*[A-Z]?\s*\(\s*[+-]?\d+(?:[.,]\d+)?\s*[;,]\s*[+-]?\d+(?:[.,]\d+)?\s*\)/i.test(question);
   const text = [answer.intro, answer.reminder, ...answer.steps.flatMap(s => [s.title, s.detail, s.expression])].join('\n');
