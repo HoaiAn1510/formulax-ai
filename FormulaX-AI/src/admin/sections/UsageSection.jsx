@@ -1,4 +1,4 @@
-import { Sparkles, ScanLine, Gauge, Zap, ShieldAlert, Ban, Timer, Lock } from "lucide-react";
+import { Sparkles, ScanLine, Gauge, ShieldAlert, Ban, Timer, Lock } from "lucide-react";
 import { useAdminSection } from "../useAdminSection";
 import { SectionShell, KpiCard, KpiGrid, KpiSkeleton, ChartSkeleton, TableSkeleton, ChartPanel, Panel, DataTable, CsvButton } from "../AdminUI";
 import { computeDelta } from "../adminFormat";
@@ -17,6 +17,7 @@ const COLUMNS = [
   { key: "ocr_rate_limited", label: "Quét quá nhanh", align: "right" },
   { key: "chat_ip_limited", label: "Chặn theo IP (chat)", align: "right" },
 ].map((c) => (c.key === "day" ? c : { ...c, render: (r) => formatCount(r[c.key]) }));
+const TABLE_COLUMNS = COLUMNS.filter((c) => c.key !== "ai_busy");
 
 function IncidentRow({ icon: Icon, label, value, note, level }) {
   const active = value > 0;
@@ -70,7 +71,6 @@ export default function UsageSection({ range, refreshKey, onStatus }) {
 
             <Panel title="Sự cố trong kỳ" subtitle="Số lần xảy ra; tô màu khi lớn hơn 0. Chỉ có số từ ngày cập nhật trang quản trị (migration 011) trở đi.">
               <ul className="grid sm:grid-cols-2 gap-2.5">
-                <IncidentRow icon={Zap} label="AI đang bận" value={sum.ai_busy} level="danger" note="Groq báo 429 — học sinh phải chờ rồi hỏi lại" />
                 <IncidentRow icon={Lock} label="Hỏi khi hết lượt AI" value={sum.ai_quota_exceeded} level="warn" note={`Tài khoản Free đã dùng hết ${limits.aiFree} lượt`} />
                 <IncidentRow icon={Ban} label="Quét ảnh khi hết lượt" value={sum.ocr_quota_exceeded} level="warn" note="Đã dùng hết lượt quét trong ngày" />
                 <IncidentRow icon={Timer} label="Quét ảnh quá nhanh" value={sum.ocr_rate_limited} level="warn" note="Vượt giới hạn theo phút (tài khoản hoặc IP)" />
@@ -79,7 +79,7 @@ export default function UsageSection({ range, refreshKey, onStatus }) {
             </Panel>
 
             <Panel title="Chi tiết theo ngày" actions={<CsvButton name="su-dung-ai" range={range} columns={COLUMNS} rows={days} />}>
-              <DataTable columns={COLUMNS} rows={[...days].reverse()} rowKey={(r) => r.day} className="max-h-[420px] overflow-y-auto" />
+              <DataTable columns={TABLE_COLUMNS} rows={[...days].reverse()} rowKey={(r) => r.day} className="max-h-[420px] overflow-y-auto" />
             </Panel>
           </div>
         );

@@ -1,4 +1,4 @@
-import { UserPlus, Wallet, Receipt, Crown, Sparkles, ScanLine, Zap, Gauge, Share2 } from "lucide-react";
+import { UserPlus, Wallet, Receipt, Crown, Sparkles, ScanLine, Gauge, Share2 } from "lucide-react";
 import { useAdminSection } from "../useAdminSection";
 import { SectionShell, KpiCard, KpiGrid, KpiSkeleton, ChartSkeleton, TableSkeleton, ChartPanel, Panel } from "../AdminUI";
 import { computeDelta, groupChannels } from "../adminFormat";
@@ -74,10 +74,9 @@ export default function OverviewSection({ range, refreshKey, onStatus, goTo }) {
               </Panel>
 
               <Panel title="Hoạt động hôm nay" subtitle="Theo giờ Việt Nam, không phụ thuộc khoảng ngày đã chọn" onMore={() => goTo("usage")}>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <ActivityTile icon={Sparkles} label="Lượt AI Finder" value={aiToday} note={`Free ${formatCount(t.ai_free_turns)} · Premium ${formatCount(t.ai_premium_turns)}`} />
                   <ActivityTile icon={ScanLine} label="Lượt quét ảnh" value={t.ocr_scans || 0} />
-                  <ActivityTile icon={Zap} label="AI đang bận" value={t.ai_busy || 0} level={(t.ai_busy || 0) > 0 ? "danger" : "normal"} note={(t.ai_busy || 0) > 0 ? "Groq báo quá tải — học sinh phải chờ" : "Không có sự cố"} />
                   <ActivityTile icon={Gauge} label="Chạm giới hạn" value={atLimit} level={atLimit > 0 ? "warn" : "normal"} note="Tài khoản dùng hết lượt AI hoặc quét ảnh" />
                 </div>
               </Panel>
