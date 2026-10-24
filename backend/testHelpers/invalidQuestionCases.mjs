@@ -21,7 +21,11 @@ export const positiveGroups = {
   ],
   noMath: [
     ["Xin chào!", "no_math_problem"],
+    ["chào", "no_math_problem"],
+    ["hi", "no_math_problem"],
     ["hello", "no_math_problem"],
+    ["alo", "no_math_problem"],
+    ["xin chào bạn", "no_math_problem"],
     ["ok", "no_math_problem"],
     ["Bạn khỏe không?", "no_math_problem"],
     ["Giải luôn", "missing_problem"],
@@ -59,6 +63,8 @@ export const negativeGroups = {
     "Có công thức diện tích tam giác không?",
     "Tam giác ABC có góc A. Tính góc B",
     "Hi, tính góc A?",
+    "Xin chào bạn, giải phương trình x² - 1 = 0",
+    "Hello, tính diện tích tam giác ABC",
     "Giải tiếp", // có lịch sử: không coi là câu mở đầu thiếu đề
     "Heron?", // tên công thức ngắn vẫn là nội dung toán
   ],

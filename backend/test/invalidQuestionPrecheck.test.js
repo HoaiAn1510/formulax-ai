@@ -20,3 +20,24 @@ for (const [group, cases] of Object.entries(negativeGroups)) {
     });
   }
 }
+
+test("lời chào đứng riêng vẫn bị chặn khi có lịch sử toán; câu chào kèm đề vẫn qua", () => {
+  for (const question of ["xin chào", "chào", "hello", "hi", "alo", "xin chào bạn"]) {
+    assert.equal(precheckInvalidQuestion(question, { hasHistory: true })?.reason, "no_math_problem", question);
+  }
+  for (const question of ["Chào bạn, tính diện tích tam giác có đáy 3", "Hi, tính góc A?"]) {
+    assert.equal(precheckInvalidQuestion(question, { hasHistory: true }), null, question);
+  }
+});
+
+test("câu nối tiếp trong phiên có lịch sử giữ luồng AI cũ", () => {
+  for (const question of [
+    "tại sao lại dùng công thức này?",
+    "còn cách khác không?",
+    "giải thích bước 2",
+    "ok mình hiểu rồi",
+    "cảm ơn",
+  ]) {
+    assert.equal(precheckInvalidQuestion(question, { hasHistory: true }), null, question);
+  }
+});

@@ -21,6 +21,22 @@ const GOOD = JSON.stringify({
 });
 const Q = "Tính thể tích khối cầu bán kính 6 cm";
 
+test("lời nhắc ô ? chỉ giữ khi bước giải cuối có ô trống", async () => {
+  const makeReply = (expression, reminder = "Bạn tự tính các ô ? rồi ghi kết quả nhé!") => JSON.stringify({
+    type: "solution", formula_ids: ["hh12-matcau-thetich"], intro: "Dùng công thức thể tích khối cầu.",
+    steps: [{ title: "Áp dụng", detail: "Dùng công thức với $R = 6$.", expression }],
+    reminder,
+  });
+  const noBlank = await askFinder({ groq: fakeGroq([makeReply(String.raw`V = \frac{4}{3}\pi R^3`)], { t: 0 }, 1000), message: Q });
+  assert.equal(noBlank.answer.type, "solution");
+  assert.equal(noBlank.answer.reminder, "Bạn tự tính phần còn lại rồi ghi kết quả nhé!");
+  const singular = await askFinder({ groq: fakeGroq([makeReply(String.raw`V = \frac{4}{3}\pi R^3`, "Bạn tự tính ô ? rồi ghi kết quả nhé!")], { t: 0 }, 1000), message: Q });
+  assert.equal(singular.answer.reminder, "Bạn tự tính phần còn lại rồi ghi kết quả nhé!");
+  const withBlank = await askFinder({ groq: fakeGroq([makeReply(String.raw`V = \frac{4}{3}\pi R^3, \text{ với } R = 6 \Rightarrow V = ?`)], { t: 0 }, 1000), message: Q });
+  assert.equal(withBlank.answer.type, "solution");
+  assert.equal(withBlank.answer.reminder, "Bạn tự tính các ô ? rồi ghi kết quả nhé!");
+});
+
 test("JSON đúng ngay lần đầu → 1 lần gọi, timeout 25s", async () => {
   const clock = { t: 0 };
   const groq = fakeGroq([GOOD], clock, 2000);

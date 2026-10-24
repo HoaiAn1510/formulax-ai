@@ -58,18 +58,24 @@ test("POST /api/chat: mọi đề vô lý rõ ràng trả invalid_data trước 
     }
     assert.equal(ready, true, `Backend test server did not start: ${output}`);
     const cases = [
-      ["Tam giác ABC có hai góc 100° và 90°. Tính góc còn lại nha", "invalid_angle_sum"],
-      ...Object.values(positiveGroups).flat(),
+      ["Tam giác ABC có hai góc 100° và 90°. Tính góc còn lại nha", "invalid_angle_sum", []],
+      ...Object.values(positiveGroups).flat().map(([message, reason]) => [message, reason, []]),
+      ...["xin chào", "chào", "hello", "hi", "alo", "xin chào bạn"].map((message) => [message, "no_math_problem", [
+        { sender: "user", text: "Giải phương trình x² - 1 = 0" },
+        { sender: "bot", text: "Dùng công thức nghiệm." },
+      ]]),
     ];
-    for (const [index, [message]] of cases.entries()) {
+    for (const [index, [message, reason, history]] of cases.entries()) {
+      const outputStart = output.length;
       const response = await fetch(`${url}/api/chat`, {
         method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer local-test-token",
           "X-Forwarded-For": `198.51.100.${index + 1}` },
-        body: JSON.stringify({ message, grade: 10 }),
+        body: JSON.stringify({ message, grade: 10, history }),
       });
       assert.equal(response.status, 200, `${message}: ${output}`);
       const body = await response.json();
       assert.equal(body.type, "invalid_data", message);
+      assert.match(output.slice(outputStart), new RegExp(`"reason":"${reason}"`), message);
       assert.deepEqual(body.formulaIds, [], message);
       assert.deepEqual(body.steps, [], message);
       assert.equal(body.remaining, 8, message);

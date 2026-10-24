@@ -95,8 +95,13 @@ export function precheckNumericData(question) {
 
 /** Không chặn lời chào kèm đề, câu hỏi công thức, hoặc câu nối tiếp có lịch sử toán. */
 export function precheckNoMath(question, { hasHistory = false } = {}) {
-  if (hasHistory) return null;
   const text = String(question || "").normalize("NFC").trim();
+  // Lời chào đứng riêng không trở thành câu hỏi tiếp nối chỉ vì phiên đã có bài toán.
+  // Khớp toàn bộ câu để "chào bạn, tính ..." vẫn được hướng dẫn bình thường.
+  if (/^(?:(?:xin\s+)?chào(?:\s+(?:bạn|mọi\s+người|thầy|cô))?|hello|hi|alo)[!?.\s]*$/iu.test(text)) {
+    return notice("no_math_problem", "Bạn gửi một đề toán cụ thể để mình hướng dẫn nhé!");
+  }
+  if (hasHistory) return null;
   const math = /\d|[=+×÷√∫∑²³^]|\b[xyz]\b|(?:toán|tính|phương\s+trình|bất\s+phương\s+trình|tam\s+giác|đường\s+tròn|diện\s+tích|thể\s+tích|đạo\s+hàm|nguyên\s+hàm|tích\s+phân|sin|cos|công\s+thức|hê[-\s]?rông|heron|pytago|góc|cạnh|bán\s+kính|chu\s+vi)/iu;
   if (/^(?:giải|làm)\s+(?:luôn|hộ|giùm|giúp|đi|bài\s+này)[!?.\s]*$/iu.test(text)) {
     return notice("missing_problem", "Bạn gửi đầy đủ đề toán và yêu cầu cần hướng dẫn nhé!");

@@ -408,9 +408,16 @@ export function finalizeAnswer(parsed, { message, recentUserTexts = [], mask = f
   }
   // Bài trắc nghiệm: không được nói phương án nào đúng (lib/choiceGuard.js). Lần kiểm tra đầu
   // (mask = false) chỉ phát hiện để hỏi lại AI; bản cuối (mask = true) bỏ hẳn các câu đó.
-  const { answer, reveals: choiceReveals } = isMultipleChoiceQuestion(message)
+  const { answer: choiceChecked, reveals: choiceReveals } = isMultipleChoiceQuestion(message)
     ? guardChoiceReveals(cleaned, { strip: mask })
     : { answer: cleaned, reveals: [] };
+  // Lời nhắc phải khớp bản cuối đã lọc: đôi khi AI nhắc "ô ?" dù không viết ô nào.
+  const hasBlank = choiceChecked.steps.some((step) =>
+    String(step.expression || "").includes("?")
+    || [step.title, step.detail].some((part) => /\$[^$]*\?[^$]*\$|=\s*\?(?=[\s.,;:)]|$)/u.test(String(part || ""))));
+  const answer = !hasBlank && /(?:^|\s)(?:các\s+)?ô\s*\?/iu.test(choiceChecked.reminder)
+    ? { ...choiceChecked, reminder: "Bạn tự tính phần còn lại rồi ghi kết quả nhé!" }
+    : choiceChecked;
 
   return {
     answer,
