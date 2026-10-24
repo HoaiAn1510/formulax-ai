@@ -268,7 +268,7 @@ export const formulas = [
     example: "Tìm nghiệm của phương trình $x^2 - 5x + 6 = 0$.\n\n**Lời giải:**\n- Xác định các hệ số: $a = 1, b = -5, c = 6$.\n- Tính $\\Delta = (-5)^2 - 4(1)(6) = 25 - 24 = 1 > 0$.\n- Do $\\Delta > 0$, phương trình có 2 nghiệm:\n  $x_1 = \\frac{5 + 1}{2} = 3$, $x_2 = \\frac{5 - 1}{2} = 2$.",
     tags: ["Phương trình", "Bậc hai", "Delta"],
     difficulty: "Dễ",
-    mnemonic: "Delta bằng b bình trừ bốn a c. Delta dương hai nghiệm, delta không nghiệm kép, delta âm vô nghiệm thực."
+    mnemonic: "Delta bằng b bình trừ bốn a c. Δ > 0: hai nghiệm phân biệt; Δ = 0: nghiệm kép; Δ < 0: vô nghiệm thực."
   },
   {
     id: "ds10-hethuc-viet",
