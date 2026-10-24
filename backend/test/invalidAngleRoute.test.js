@@ -4,6 +4,7 @@ import http from "node:http";
 import net from "node:net";
 import { spawn } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { positiveGroups } from "../testHelpers/invalidQuestionCases.mjs";
 
 const backendDir = fileURLToPath(new URL("../", import.meta.url));
 const probe = fileURLToPath(new URL("../testHelpers/chatPrecheckProbe.mjs", import.meta.url));
@@ -18,7 +19,7 @@ async function freePort() {
   return port;
 }
 
-test("POST /api/chat: góc vô lý trả invalid_data trước AI và không tăng lượt", { timeout: 15_000 }, async () => {
+test("POST /api/chat: mọi đề vô lý rõ ràng trả invalid_data trước AI và không tăng lượt", { timeout: 30_000 }, async () => {
   const rpcCalls = [];
   const fakeSupabase = http.createServer(async (req, res) => {
     const path = new URL(req.url, "http://127.0.0.1").pathname;
@@ -56,18 +57,26 @@ test("POST /api/chat: góc vô lý trả invalid_data trước AI và không tă
       await new Promise((resolve) => setTimeout(resolve, 100));
     }
     assert.equal(ready, true, `Backend test server did not start: ${output}`);
-    const response = await fetch(`${url}/api/chat`, {
-      method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer local-test-token" },
-      body: JSON.stringify({ message: "Tam giác ABC có hai góc 100° và 90°. Tính góc còn lại nha", grade: 10 }),
-    });
-    assert.equal(response.status, 200, output);
-    const body = await response.json();
-    assert.equal(body.type, "invalid_data");
-    assert.deepEqual(body.formulaIds, []);
-    assert.deepEqual(body.steps, []);
-    assert.equal(body.remaining, 8);
-    assert.match(body.reminder, /không bị tính/);
-    assert.deepEqual(rpcCalls, ["get_ai_usage"]);
+    const cases = [
+      ["Tam giác ABC có hai góc 100° và 90°. Tính góc còn lại nha", "invalid_angle_sum"],
+      ...Object.values(positiveGroups).flat(),
+    ];
+    for (const [index, [message]] of cases.entries()) {
+      const response = await fetch(`${url}/api/chat`, {
+        method: "POST", headers: { "Content-Type": "application/json", Authorization: "Bearer local-test-token",
+          "X-Forwarded-For": `198.51.100.${index + 1}` },
+        body: JSON.stringify({ message, grade: 10 }),
+      });
+      assert.equal(response.status, 200, `${message}: ${output}`);
+      const body = await response.json();
+      assert.equal(body.type, "invalid_data", message);
+      assert.deepEqual(body.formulaIds, [], message);
+      assert.deepEqual(body.steps, [], message);
+      assert.equal(body.remaining, 8, message);
+      assert.match(body.reminder, /không bị tính/, message);
+      assert.equal(rpcCalls.length, index + 1, message);
+      assert.equal(rpcCalls.at(-1), "get_ai_usage", message);
+    }
     assert.doesNotMatch(output, /\[test:groq_call\]|\[finder:usage\]/);
   } finally {
     child.kill();

@@ -15,7 +15,7 @@ import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
 import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind, countsAsTurn, noFormulaReason } from "./lib/finderAnswer.js";
 import { appendRefundNotice, REFUND_NOTICE } from "./lib/finderNotice.js";
-import { precheckInvalidAngleSum } from "./lib/invalidAnglePrecheck.js";
+import { precheckInvalidQuestion } from "./lib/invalidQuestionPrecheck.js";
 import { expandShorthand } from "./lib/problemText.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
@@ -221,10 +221,10 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     }
     const isPremium = computeIsPremium(userRow);
 
-    // Đề có hai góc của cùng một tam giác cộng >= 180°: chặn bằng dữ kiện trong đề,
-    // trước khi giữ lượt hoặc gọi AI. Free chỉ đọc bộ đếm để trả remaining chính xác.
-    const invalidAngle = precheckInvalidAngleSum(message);
-    if (invalidAngle) {
+    // Chỉ chặn dữ kiện hiển nhiên vô lý hoặc câu không có đề toán, trước khi giữ lượt/gọi AI.
+    // Câu nối tiếp có lịch sử được bỏ qua nhánh "không có đề" để tránh chặn nhầm.
+    const prechecked = precheckInvalidQuestion(message, { hasHistory: Array.isArray(history) && history.length > 0 });
+    if (prechecked) {
       let remaining = null;
       if (!isPremium) {
         const { data: usageCount, error: usageError } = await supabaseAdmin.rpc("get_ai_usage", { p_google_id: googleId });
@@ -234,10 +234,10 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
         }
         remaining = Math.max(0, FREE_AI_DAILY_LIMIT - usageCount);
       }
-      console.log("[finder:invalid_data]", JSON.stringify({ type: "invalid_data", ids: [], reason: invalidAngle.reason }));
+      console.log("[finder:invalid_data]", JSON.stringify({ type: "invalid_data", ids: [], reason: prechecked.reason }));
       return res.json({
-        type: "invalid_data", formulaIds: [], intro: invalidAngle.text, steps: [],
-        reminder: REFUND_NOTICE, reply: `${invalidAngle.text}\n${REFUND_NOTICE}`,
+        type: "invalid_data", formulaIds: [], intro: prechecked.text, steps: [],
+        reminder: REFUND_NOTICE, reply: `${prechecked.text}\n${REFUND_NOTICE}`,
         formulaId: null, remaining,
       });
     }
