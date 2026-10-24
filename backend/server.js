@@ -14,7 +14,8 @@ import { supabaseAdmin } from "./lib/supabaseAdmin.js";
 import { verifySupabaseUser, extractGoogleId } from "./lib/verifySupabaseUser.js";
 import { FORMULA_COUNT } from "./lib/formulaCatalog.js";
 import { askFinder, CHAT_BUDGET_MS, retryAfterSeconds, rateLimitKind, countsAsTurn, noFormulaReason } from "./lib/finderAnswer.js";
-import { appendRefundNotice } from "./lib/finderNotice.js";
+import { appendRefundNotice, REFUND_NOTICE } from "./lib/finderNotice.js";
+import { precheckInvalidAngleSum } from "./lib/invalidAnglePrecheck.js";
 import { expandShorthand } from "./lib/problemText.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
@@ -219,6 +220,27 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
       return res.status(503).json({ error: "Không xác thực được trạng thái tài khoản, thử lại sau." });
     }
     const isPremium = computeIsPremium(userRow);
+
+    // Đề có hai góc của cùng một tam giác cộng >= 180°: chặn bằng dữ kiện trong đề,
+    // trước khi giữ lượt hoặc gọi AI. Free chỉ đọc bộ đếm để trả remaining chính xác.
+    const invalidAngle = precheckInvalidAngleSum(message);
+    if (invalidAngle) {
+      let remaining = null;
+      if (!isPremium) {
+        const { data: usageCount, error: usageError } = await supabaseAdmin.rpc("get_ai_usage", { p_google_id: googleId });
+        if (usageError) {
+          console.error("[FormulaX Backend] get_ai_usage lỗi:", usageError.message);
+          return res.status(503).json({ error: "Không đọc được hạn mức AI, thử lại sau." });
+        }
+        remaining = Math.max(0, FREE_AI_DAILY_LIMIT - usageCount);
+      }
+      console.log("[finder:invalid_data]", JSON.stringify({ type: "invalid_data", ids: [], reason: invalidAngle.reason }));
+      return res.json({
+        type: "invalid_data", formulaIds: [], intro: invalidAngle.text, steps: [],
+        reminder: REFUND_NOTICE, reply: `${invalidAngle.text}\n${REFUND_NOTICE}`,
+        formulaId: null, remaining,
+      });
+    }
 
     // Chuyển lịch sử sang format OpenAI-compatible
     const chatHistory = (Array.isArray(history) ? history : [])
