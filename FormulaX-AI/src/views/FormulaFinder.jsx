@@ -11,6 +11,7 @@ import ImageProblemsPanel from "../components/ImageProblemsPanel";
 import ProblemTabs from "../components/ProblemTabs";
 import { compressImageFile } from "../utils/imageCompress";
 import { problemToFinderMessage, nextGuidanceRequest, busyWaitSeconds } from "../utils/ocrProblems";
+import { retryFinderBusyOnce } from "../utils/finderBusyRetry";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -143,7 +144,36 @@ export default function FormulaFinder({
   const [busyUntil, setBusyUntil] = useState(0);
   const [busySince, setBusySince] = useState(0);
   const autoRetriedRef = useRef(new Set());
+  const [typedBusyUntil, setTypedBusyUntil] = useState(0);
+  const [typedBusyNow, setTypedBusyNow] = useState(0);
+  const typedRetryRef = useRef(null);
+  const typedRequestIdRef = useRef(0);
   const [apiError, setApiError] = useState(null);
+
+  const cancelTypedRetry = () => {
+    const pending = typedRetryRef.current;
+    if (!pending) return;
+    clearTimeout(pending.timer);
+    typedRetryRef.current = null;
+    pending.resolve(false);
+    setTypedBusyUntil(0);
+  };
+
+  useEffect(() => {
+    if (!typedBusyUntil) return;
+    const timer = setInterval(() => setTypedBusyNow(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [typedBusyUntil]);
+
+  useEffect(() => () => {
+    typedRequestIdRef.current++;
+    const pending = typedRetryRef.current;
+    if (pending) {
+      clearTimeout(pending.timer);
+      typedRetryRef.current = null;
+      pending.resolve(false);
+    }
+  }, []);
 
   // Session management
   const [sessions, setSessions] = useState(() => loadSessionsFromStorage(sessionsKey));
@@ -351,6 +381,7 @@ export default function FormulaFinder({
     }
 
     setIsAnalyzing(true);
+    const requestId = ++typedRequestIdRef.current;
     try {
       // Tin hệ thống (lỗi, hết lượt, "AI đang bận") vẫn lưu trong phiên để hiển thị lại nhưng
       // KHÔNG gửi lên AI làm lịch sử — chúng không phải lời AI nói, gửi lên chỉ gây nhiễu.
@@ -358,7 +389,25 @@ export default function FormulaFinder({
         .filter(m => !m.isImage && !m.isFile && !m.isError && !m.isLimitHit && !m.isNotice)
         .slice(-6)
         .map(m => ({ sender: m.sender, text: m.text }));
-      const data = await callAI(textToSend, historyForAPI.slice(0, -1));
+      const history = historyForAPI.slice(0, -1);
+      const data = await retryFinderBusyOnce(
+        () => callAI(textToSend, history),
+        (seconds, error) => {
+          if (typeof error.remaining === "number") setAiQueriesLeft(error.remaining);
+          const until = Date.now() + seconds * 1000;
+          setTypedBusyNow(Date.now());
+          setTypedBusyUntil(until);
+          return new Promise(resolve => {
+            const timer = setTimeout(() => {
+              typedRetryRef.current = null;
+              setTypedBusyUntil(0);
+              resolve(true);
+            }, seconds * 1000);
+            typedRetryRef.current = { timer, resolve };
+          });
+        },
+      );
+      if (!data || requestId !== typedRequestIdRef.current) return;
       // remaining = null với Premium (không giới hạn) → giữ nguyên, không hiện bộ đếm.
       if (typeof data.remaining === "number") setAiQueriesLeft(data.remaining);
       // Chỉ lưu id công thức (không lưu cả object như trước) để chat_sessions không giữ bản sao
@@ -377,6 +426,7 @@ export default function FormulaFinder({
         },
       }]);
     } catch (error) {
+      if (requestId !== typedRequestIdRef.current) return;
       if (typeof error.remaining === "number") setAiQueriesLeft(error.remaining);
       if (error.code === "quota_exceeded" || (error.status === 429 && error.remaining === 0)) {
         setAiQueriesLeft(0);
@@ -395,13 +445,16 @@ export default function FormulaFinder({
       setApiError(errorMsg);
       setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text: errorMsg, isError: true }]);
     } finally {
-      setIsAnalyzing(false);
+      if (requestId === typedRequestIdRef.current) setIsAnalyzing(false);
     }
   };
 
   // ─── Session handlers ─────────────────────────────────────────────────────
 
   const startNewChat = () => {
+    typedRequestIdRef.current++;
+    cancelTypedRetry();
+    setIsAnalyzing(false);
     setMessages([]);
     setCurrentSessionId(null);
     sessionIdRef.current = null;
@@ -412,6 +465,9 @@ export default function FormulaFinder({
   };
 
   const loadSession = (session) => {
+    typedRequestIdRef.current++;
+    cancelTypedRetry();
+    setIsAnalyzing(false);
     setMessages(session.messages);
     setCurrentSessionId(session.id);
     sessionIdRef.current = session.id;
@@ -429,6 +485,9 @@ export default function FormulaFinder({
     });
     if (user?.googleId) deleteChatSessionDB(user.googleId, sessionId);
     if (sessionIdRef.current === sessionId) {
+      typedRequestIdRef.current++;
+      cancelTypedRetry();
+      setIsAnalyzing(false);
       setMessages([]);
       setCurrentSessionId(null);
       sessionIdRef.current = null;
@@ -1067,7 +1126,9 @@ export default function FormulaFinder({
                   <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
                   <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
                   <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
-                  <span>AI đang phân tích...</span>
+                  <span>{typedBusyUntil
+                    ? `AI đang bận. Tự thử lại sau ${Math.max(1, Math.ceil((typedBusyUntil - typedBusyNow) / 1000))} giây...`
+                    : "AI đang phân tích..."}</span>
                 </div>
               </div>
             )}
