@@ -156,15 +156,14 @@ function Privacy() {
       <Section title="3. Chia sẻ với ai">
         <p>Dữ liệu chỉ đi qua các nhà cung cấp cần thiết để dịch vụ chạy được:</p>
         <ul className="list-disc pl-5 flex flex-col gap-1">
-          <li><strong>Google</strong> — đăng nhập; Gemini đọc ảnh đề bài bạn gửi</li>
+          <li><strong>Google</strong> — đăng nhập; Gemini đọc ảnh đề bài bạn gửi và tạo câu trả lời của trợ lý AI</li>
           <li><strong>Supabase</strong> — lưu trữ cơ sở dữ liệu</li>
           <li><strong>payOS</strong> — xử lý thanh toán</li>
-          <li><strong>Groq</strong> — xử lý câu hỏi gửi tới trợ lý AI</li>
           <li><strong>Vercel, Render</strong> — vận hành ứng dụng và máy chủ</li>
         </ul>
         <p>
           <strong>Trợ lý AI:</strong> câu hỏi bạn gửi, kèm tối đa 10 tin nhắn gần nhất trong cuộc
-          trò chuyện, được chuyển tới Groq để tạo câu trả lời. Nội dung gửi đi{" "}
+          trò chuyện, được chuyển tới dịch vụ AI của Google (Gemini) để tạo câu trả lời. Ở giai đoạn thử nghiệm, Google có thể dùng nội dung này để cải thiện dịch vụ. Nội dung gửi đi{" "}
           <strong>không kèm tên, email hay mã tài khoản</strong> của bạn. Một số câu hỏi (tối đa
           150 ký tự đầu) được ghi vào nhật ký máy chủ để cải thiện chất lượng trả lời, không kèm
           thông tin định danh. Vì vậy, đừng nhập thông tin cá nhân vào khung chat.
@@ -175,7 +174,7 @@ function Privacy() {
           <strong>Ảnh đề bài:</strong> Khi bạn gửi ảnh đề bài, ảnh được chuyển tới dịch vụ AI của
           Google (Gemini) để đọc nội dung đề. FormulaX không lưu ảnh trên máy chủ. Ở giai đoạn thử
           nghiệm, Google có thể dùng ảnh để cải thiện dịch vụ, vì vậy bạn chỉ nên chụp phần đề bài,
-          tránh chụp tên, khuôn mặt hay bài làm. Phần hướng dẫn giải vẫn do Groq xử lý như trước.
+          tránh chụp tên, khuôn mặt hay bài làm.
         </p>
       </Section>
 

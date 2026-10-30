@@ -182,7 +182,10 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
     // previous call is a lower bound when retry messages append the previous response.
     const promptKey = JSON.stringify([callModel, callMessages]);
     const prompt = measuredPrompts.get(promptKey) ?? Math.max(meta.lastPromptTokens || 0, Math.ceil(callMessages.reduce((n, m) => n + m.content.length, 0) / 2.6) + 100);
-    const initialCap = completionBudget(prompt, retry);
+    // Trần "prompt + completion ≤ 7.800" chỉ để tránh lỗi 413 của Groq (8.000 token/yêu cầu). Gemini không có
+    // trần đó (client khai enforcesTpmCap = false): giữ trần cố định, nếu không thì hỏi nối tiếp vài lượt là
+    // prompt dài làm completionBudget trả null → 503 giả "Insufficient completion budget" dù Gemini nhận được.
+    const initialCap = groq.enforcesTpmCap === false ? (retry ? 2000 : 2300) : completionBudget(prompt, retry);
     if (initialCap === null) throw Object.assign(new Error("Insufficient completion budget"), { status: 503 });
     const call = (maxTokens, timeoutMs) => groq.chat.completions.create(
       { model: callModel, messages: callMessages, ...FINDER_PARAMS, max_completion_tokens: maxTokens },

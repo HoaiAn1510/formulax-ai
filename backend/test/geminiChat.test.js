@@ -175,3 +175,15 @@ test("mô phỏng: cả hai model cùng hết hạn mức phút → lỗi 429 c�
   assert.equal(rateLimitKind(err), "RPM");
   fallbackState.primaryBlockedUntil = 0;
 });
+
+test("Gemini: lịch sử dài KHÔNG bị chặn bởi trần token kiểu Groq (không có 503 giả), trần completion giữ cố định", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const bodies = [];
+  const client = createGeminiClient({ apiKey: "K", fetchImpl: async (url, init) => { bodies.push(JSON.parse(init.body)); return json(200, okBody(GOOD_ANSWER)); } });
+  for (const turns of [0, 4, 10]) {
+    const history = Array.from({ length: turns }, (_, i) => ({ role: i % 2 ? "assistant" : "user", content: "x".repeat(1000) }));
+    const out = await askFinder({ groq: client, message: "Tính thể tích khối cầu bán kính 6 cm", history });
+    assert.equal(out.answer.type, "solution", `${turns} lượt`);
+  }
+  assert.ok(bodies.every((b) => b.generationConfig.maxOutputTokens === 2300 + THINKING_HEADROOM));
+});

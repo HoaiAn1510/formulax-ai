@@ -110,5 +110,6 @@ export function createGeminiClient({ apiKey, fetchImpl = fetch, thinkingLevel = 
       },
     };
   }
-  return { chat: { completions: { create } } };
+  // enforcesTpmCap: false → askFinder không áp trần token kiểu Groq (xem createCompletion trong finderAnswer.js).
+  return { enforcesTpmCap: false, chat: { completions: { create } } };
 }

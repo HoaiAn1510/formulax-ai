@@ -7,7 +7,7 @@ Web app giúp học sinh THPT (lớp 10–12) tra cứu, ghi nhớ và luyện t
 ## Tính năng chính
 
 - **Thư viện công thức** — tra cứu theo lớp/chủ đề, bookmark, ghi chú cá nhân, tìm kiếm không phân biệt dấu tiếng Việt.
-- **Formula Finder** — trợ lý AI (Groq) giải đáp thắc mắc, luôn dẫn nguồn về công thức đã xác minh trong database.
+- **Formula Finder** — trợ lý AI (Gemini) giải đáp thắc mắc, luôn dẫn nguồn về công thức đã xác minh trong database.
 - **Flashcard** — ôn tập theo cơ chế lặp lại ngắt quãng (spaced repetition, SM-2 rút gọn), xuất PDF/ảnh để ôn offline.
 - **Luyện đề (Quiz)** — trắc nghiệm/điền đáp án theo lớp, chủ đề, độ khó tuỳ chọn.
 - **Tiến độ học tập** — thống kê streak, hiệu suất theo chủ đề, gợi ý ôn tập cá nhân hoá.
@@ -21,7 +21,7 @@ Web app giúp học sinh THPT (lớp 10–12) tra cứu, ghi nhớ và luyện t
 | Frontend | React 19 + Vite, Tailwind CSS v4 |
 | Backend | Node.js + Express |
 | Database & Auth | Supabase (Postgres + Row Level Security, Google OAuth qua Supabase Auth) |
-| AI | Groq API (`openai/gpt-oss-20b`) |
+| AI | Gemini API (REST) |
 | Thanh toán | PayOS |
 | Hiển thị công thức | KaTeX |
 
@@ -37,7 +37,7 @@ FormulaX-AI/
     lib/         # supabase.js — mọi giao tiếp Supabase đi qua đây
     utils/       # katexHelper.jsx, spacedRepetition.js, textSearch.js
 backend/
-  server.js        # Express API, proxy gọi Groq, webhook thanh toán PayOS
+  server.js        # Express API, proxy gọi Gemini, webhook thanh toán PayOS
   routes/          # payosPayment.js
   migrations/      # SQL chạy tay trong Supabase SQL Editor
 docs/
@@ -59,7 +59,7 @@ npm install
 npm run dev         # http://localhost:3001
 ```
 
-Cần tạo `backend/.env` (xem `backend/.env.example`) với key Supabase, Groq, PayOS trước khi backend chạy đầy đủ chức năng.
+Cần tạo `backend/.env` (xem `backend/.env.example`) với key Supabase, Gemini, PayOS trước khi backend chạy đầy đủ chức năng.
 
 ## Quy ước phát triển
 
