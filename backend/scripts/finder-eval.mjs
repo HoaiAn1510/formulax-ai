@@ -40,13 +40,25 @@ export function normalize(text) {
     .replace(/\\/g, "");
 }
 
-/** Các chuỗi cấm xuất hiện trong `text` (so sau chuẩn hoá), kèm đoạn ngữ cảnh để người đọc phân biệt trúng thật / trùng ngẫu nhiên. */
+/**
+ * Các chuỗi cấm xuất hiện trong `text` (so sau chuẩn hoá), kèm đoạn ngữ cảnh để người đọc phân biệt trúng thật / trùng
+ * ngẫu nhiên. `embedded` = MỌI lần khớp đều lọt giữa một con số / biểu thức dài hơn ("y=3" trong "y=3/1", "10" trong
+ * "100"): chỉ là gợi ý để đọc, KHÔNG làm đổi số `finalLeak` (vẫn đếm mọi lần khớp chuỗi).
+ */
 export function forbiddenHits(text, forbidden) {
   const hay = normalize(text);
   return forbidden.flatMap((f) => {
     const needle = normalize(f);
-    const at = needle ? hay.indexOf(needle) : -1;
-    return at < 0 ? [] : [{ forbidden: f, context: hay.slice(Math.max(0, at - 18), at + needle.length + 18) }];
+    if (!needle) return [];
+    const spots = [];
+    for (let at = hay.indexOf(needle); at >= 0; at = hay.indexOf(needle, at + 1)) spots.push(at);
+    if (!spots.length) return [];
+    const embedded = spots.every((at) => {
+      const before = hay[at - 1] ?? "", after = hay.slice(at + needle.length, at + needle.length + 2);
+      return (/\d/.test(needle[0]) && /[\d.]/.test(before)) || /^(?:\d|\/|\^|\.\d)/.test(after);
+    });
+    const at = spots[0];
+    return [{ forbidden: f, embedded, context: hay.slice(Math.max(0, at - 18), at + needle.length + 18) }];
   });
 }
 
@@ -89,6 +101,10 @@ function selfTest() {
   eq(forbiddenHits("y = \\frac{3x+1}{x+2}", ["y=3"]).length, 0, "không bắt nhầm y=3 trong y=(3x+1)/(x+2)");
   eq(forbiddenHits("$x_1 + x_2 = -\\frac{b}{a}$", ["x_1+x_2=5"]).length, 0, "Vi-ét dạng ký hiệu không bị coi là lộ");
   eq(forbiddenHits("$x_1 + x_2 = 5$", ["x_1+x_2=5"]).length, 1, "Vi-ét đã thay số bị coi là lộ");
+  eq(forbiddenHits("$y = \\frac{3}{1} \\Rightarrow y = ?$", ["y=3"])[0]?.embedded, true, "y=3 nằm trong y=3/1 → embedded");
+  eq(forbiddenHits("Vậy $y = 3$.", ["y=3"])[0]?.embedded, false, "y=3 đứng riêng → không embedded");
+  eq(forbiddenHits("có 100 cách", ["10"])[0]?.embedded, true, "10 trong 100 → embedded");
+  eq(forbiddenHits("có 10 cách, hoặc 100", ["10"])[0]?.embedded, false, "một lần đứng riêng thì không embedded");
 }
 
 // ─── Khoá ───────────────────────────────────────────────────────────────────────────────────────────
@@ -205,7 +221,7 @@ const summary = {
   rawLeak: { cases: count((r) => r.rawLeak), ofAnswered: answered.length, rate: pct(count((r) => r.rawLeak), answered.length) },
   rawForbiddenInModelOutput: { cases: count((r) => r.rawForbiddenHits?.length), rate: pct(count((r) => r.rawForbiddenHits?.length), answered.length) },
   guardTouched: count((r) => r.guardTouched),
-  finalLeak: { cases: count((r) => r.finalLeak?.length), list: results.filter((r) => r.finalLeak?.length).map((r) => ({ case: r.caseId, repeat: r.repeat, hits: r.finalLeak })) },
+  finalLeak: { cases: count((r) => r.finalLeak?.length), casesAllEmbedded: count((r) => r.finalLeak?.length && r.finalLeak.every((h) => h.embedded)), list: results.filter((r) => r.finalLeak?.length).map((r) => ({ case: r.caseId, repeat: r.repeat, hits: r.finalLeak })) },
   endsWithBlank: { yes: count((r) => r.endsWithBlank === true), ofSolutions: solutions.length },
   formulaOk: { yes: count((r) => r.formulaOk), ofRuns: withExpected.length, rate: pct(count((r) => r.formulaOk), withExpected.length) },
   formulaOkWhenSolution: { yes: count((r) => r.type === "solution" && r.formulaOk), ofSolutions: solutions.length, rate: pct(count((r) => r.type === "solution" && r.formulaOk), solutions.length) },
@@ -224,7 +240,7 @@ lines.push("");
 lines.push(`Loại: solution ${summary.byType.solution} · no_formula ${summary.byType.no_formula} · invalid_data ${summary.byType.invalid_data} · lỗi ${summary.byType.error} · khác ${summary.byType.other}  (tổng ${summary.runs})`);
 lines.push(`rawLeak (AI lộ số TRƯỚC bộ lọc — retriedForLeaks): ${summary.rawLeak.cases}/${summary.rawLeak.ofAnswered} = ${summary.rawLeak.rate}`);
 lines.push(`   văn bản thô của model có chuỗi cấm: ${summary.rawForbiddenInModelOutput.cases}/${answered.length} = ${summary.rawForbiddenInModelOutput.rate}  | bộ lọc đã can thiệp: ${summary.guardTouched}`);
-lines.push(`finalLeak (chuỗi cấm còn lại ở phần HIỂN THỊ — PHẢI là 0): ${summary.finalLeak.cases}${summary.finalLeak.cases ? "  ← " + summary.finalLeak.list.map((x) => `ca ${x.case}: ${x.hits.map((h) => `"${h.forbidden}" ở "…${h.context}…"`).join("; ")}`).join(" | ") : ""}`);
+lines.push(`finalLeak (chuỗi cấm còn lại ở phần HIỂN THỊ — PHẢI là 0): ${summary.finalLeak.cases} (trong đó khớp chỉ lọt giữa biểu thức dài hơn: ${summary.finalLeak.casesAllEmbedded})${summary.finalLeak.cases ? "  ← " + summary.finalLeak.list.map((x) => `ca ${x.case}: ${x.hits.map((h) => `"${h.forbidden}"${h.embedded ? " [nhúng]" : ""} ở "…${h.context}…"`).join("; ")}`).join(" | ") : ""}`);
 lines.push(`Bước cuối có ô ?: ${summary.endsWithBlank.yes}/${summary.endsWithBlank.ofSolutions} ca solution`);
 lines.push(`formulaOk: ${summary.formulaOk.yes}/${summary.formulaOk.ofRuns} = ${summary.formulaOk.rate} (trong các ca solution: ${summary.formulaOkWhenSolution.yes}/${summary.formulaOkWhenSolution.ofSolutions} = ${summary.formulaOkWhenSolution.rate})`);
 lines.push(`Thẻ mong đợi KHÔNG nằm trong ứng viên gửi AI (lỗi chọn ứng viên của app) ở ca: ${summary.expectedMissingFromCandidates.join(", ") || "không có"}`);
