@@ -153,7 +153,7 @@ export function primaryBlockMs(err) {
  * và bộ chấm so sánh model (chạy ngoài) dùng chung đúng một đoạn code.
  *
  * @param {object} opts
- * @param {import("groq-sdk").default} opts.groq
+ * @param {{ chat: { completions: { create: Function } }, enforcesTpmCap?: boolean }} opts.groq  client kiểu Groq/OpenAI (hiện là createGeminiClient trong lib/geminiChat.js)
  * @param {string} opts.message         câu hỏi hiện tại
  * @param {{role: string, content: string}[]} opts.history  lịch sử đã cắt gọn (role user/assistant)
  * @param {10|11|12|null} [opts.grade]  lớp học sinh (null = chưa chọn)
