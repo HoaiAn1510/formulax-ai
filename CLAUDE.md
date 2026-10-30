@@ -203,7 +203,7 @@ Chi tiết đầy đủ ở `docs/SECURITY.md` và `docs/PERFORMANCE.md`. Nhữn
 >   503/500 chuyển và nhớ 20s. Cả hai model cùng 429 → vẫn "AI đang bận" + hoàn lượt như cũ, `retryAfter` là số thật của Gemini.
 > - Đã test bằng Gemini giả (`test/geminiChat.test.js`, gồm mô phỏng "1 yêu cầu/phút"). **CHƯA chạy thật** (môi trường dev không
 >   có key): trước khi deploy chạy `GEMINI_EVAL_API_KEY=... node backend/scripts/finder-live-check.mjs` — key chấm ở dự án Google
->   riêng, thiếu thì script dừng. Tên model mặc định chưa kiểm bằng lần chạy thật.
+>   riêng, thiếu thì script dừng. Tên model mặc định chưa kiểm bằng lần chạy thật. Mặc định `gemini-3.5-flash-lite` (dự phòng `gemini-3.1-flash-lite`): hạn mức free 15 RPM, 500 RPD mỗi model, dùng chung với đọc ảnh (xem bảng AI Studio 2026-10-30 trong finderPrompt.js).
 > - Chất lượng hướng dẫn (lộ số, chọn công thức) trên Gemini CHƯA được chấm lại so với `gpt-oss-120b`; bộ lọc phía backend không đổi.
 
 AI trình bày cách giải dựa trên công thức trong thư viện, **học sinh tự tính**. Câu trả lời gồm:
