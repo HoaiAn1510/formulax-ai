@@ -44,6 +44,18 @@
       "answers": ["1/6"], "forbidden": ["\\frac{1}{6}", "\\frac{6}{36}", "6/36", "1/6"], "expectedAnyOf": ["xs11-xacsuat"] },
     { "id": 20, "grade": 10, "question": "Cho phương trình x² − 5x + 6 = 0 có hai nghiệm x₁, x₂. Tính x₁² + x₂² mà không giải phương trình.",
       "answers": ["13"], "forbidden": ["13", "x_1+x_2=5", "x_1x_2=6"], "expectedAnyOf": ["ds10-hethuc-viet"],
-      "note": "Biểu thức x₁² + x₂² = (x₁+x₂)² − 2x₁x₂ không có thẻ riêng; chỉ Vi-ét làm điểm tựa. Nếu AI trả no_formula thì là lỗ hổng thư viện/quy tắc, không phải lỗi hiểu đề." }
+      "note": "Biểu thức x₁² + x₂² = (x₁+x₂)² − 2x₁x₂ không có thẻ riêng; chỉ Vi-ét làm điểm tựa. Nếu AI trả no_formula thì là lỗ hổng thư viện/quy tắc, không phải lỗi hiểu đề." },
+    { "id": 21, "grade": 12, "question": "Tính thể tích khối cầu có bán kính 2,5 cm.",
+      "answers": ["125π/6 cm³ ≈ 65,45 cm³"], "forbidden": ["\\frac{125}{6}", "\\frac{125\\pi}{6}", "15,625", "65,4", "20,8"], "expectedAnyOf": ["hh12-matcau-thetich"],
+      "note": "Số thập phân dấu phẩy (bán kính 2,5): AI nhắc lại R = 2,5 phải được giữ nguyên." },
+    { "id": 22, "grade": 10, "question": "Tam giác có ba cạnh 4,5; 6; 7,5. Tính diện tích tam giác.",
+      "answers": ["p = 9", "S = 13,5"], "forbidden": ["p=9", "S=13,5", "13,5", "182,25"], "expectedAnyOf": ["hh10-herong", "hh10-cosin", "hh10-dientich-sinC"],
+      "note": "Ba cạnh hợp lệ (4,5 + 6 > 7,5) — không được báo invalid_data. Đây cũng là tam giác vuông (4,5² + 6² = 7,5²) nhưng diện tích ½ab không có thẻ. Nhận Hê-rông, hoặc định lý côsin + diện tích theo sin (expectedAnyOf chỉ cần một thẻ khớp)." },
+    { "id": 23, "grade": 10, "question": "Thời gian tự học (giờ) trong một ngày của 5 bạn là: 1,5; 2; 2,5; 3; 4. Tính số trung bình của mẫu số liệu.",
+      "answers": ["13/5 = 2,6 giờ"], "forbidden": ["2,6", "\\frac{13}{5}", "=13"], "expectedAnyOf": ["xs10-thongke-so"],
+      "note": "Mẫu số liệu có số thập phân dấu phẩy xen dấu chấm phẩy." },
+    { "id": 24, "grade": 10, "question": "Tam giác ABC có AB = 2,5, AC = 3,5, BC = 4. Tính diện tích tam giác ABC.",
+      "answers": ["p = 5", "S = 5√3/2 ≈ 4,33"], "forbidden": ["p=5", "18,75", "4,33", "\\frac{5\\sqrt{3}}{2}"], "expectedAnyOf": ["hh10-herong", "hh10-cosin", "hh10-dientich-sinC"],
+      "note": "Cùng dạng ca #21 cũ (fixture eval-20261024-q21): cạnh thập phân dấu phẩy ngay sau đó là dấu phẩy ngăn cách (\"2,5, AC\"). Nhận Hê-rông, hoặc định lý côsin + diện tích theo sin (expectedAnyOf chỉ cần một thẻ khớp)." }
   ]
 }

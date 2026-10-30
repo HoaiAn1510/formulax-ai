@@ -492,18 +492,22 @@ export function checkBaseKnowledge(candidate, questionText) {
 }
 
 // ─── 3. Chặn tự tính (số lạ) ───────────────────────────────────────────────
+/** Dấu phẩy giữa hai chữ số là thập phân, trừ tọa độ/khoảng, chỉ số dưới và danh sách 3 số. */
+function normalizeDecimalCommas(text) {
+  const protectedCommas = new Set();
+  for (const match of text.matchAll(/_\{[^{}]*\}|\([^()]*\)|\[[^\[\]]*\]|\d+(?:,\d+){2,}/g)) {
+    for (let i = 0; i < match[0].length; i++) if (match[0][i] === ",") protectedCommas.add(match.index + i);
+  }
+  return text.replace(/(?<=\d),(?=\d)/g, (comma, index) => protectedCommas.has(index) ? comma : ".");
+}
+
 /**
  * Lấy các con số trong một đoạn văn bản/LaTeX, BỎ QUA những chỗ số không phải giá trị tính ra:
  * chỉ số dưới (x_{1,2}, u_{20}, u_1), số mũ của đơn vị (cm^3, m^2, \text{cm}^3, cm²), số thứ tự
  * bước ("bước 2").
  */
 export function extractNumbers(text) {
-  const cleaned = String(text || "")
-    .replace(/\{,\}/g, ".") // 3{,}14 → 3.14
-    // Dấu phẩy chỉ là dấu thập phân khi phần nguyên là 0 (0,06; 0,5). "A(1,2,3)", "(-1,1)" là
-    // toạ độ / khoảng — đọc thành 1.2, 1.1 sẽ thành "số lạ" và lọc oan. "x = 0,1,2" là danh sách
-    // (còn ",số" phía sau) và "[0,2]", "(0,1)" là khoảng (0 đứng ngay sau ngoặc) — không phải 0.1, 0.2.
-    .replace(/(^|[^\d.,[(])0,(\d+)(?!,\d)/g, "$10.$2")
+  const cleaned = normalizeDecimalCommas(String(text || "").replace(/\{,\}/g, ".")) // 3{,}14 → 3.14
     .replace(/(\d),(?=\d)/g, "$1 , ")
     // Id công thức model lỡ chép vào lời giải ("công thức gt12-logarit") không phải con số.
     .replace(/\b(?:gt|ds|hh|xs|lg|mr)\d{2}(?=[-\\_\s]|$)/gi, " ")
@@ -560,7 +564,7 @@ const COMMANDS = /\\(?:frac|sqrt|pi|cdot|times|pm|mp|left|right|infty|circ|ldots
 const RELATION = /^(?:=|<|>|≤|≥|≠|≈)/;
 
 function normalizeMath(s) {
-  return String(s || "")
+  return normalizeDecimalCommas(String(s || "")
     .replace(/\\left|\\right|\\displaystyle|\\[,;!: ]|\\q?quad/g, " ")
     .replace(/\\[dt]frac/g, "\\frac")
     .replace(/\{,\}/g, ".") // 3{,}14
@@ -575,7 +579,7 @@ function normalizeMath(s) {
     // "... \text{ với } b = AC = 8": phần dữ kiện là mệnh đề riêng, không dính vào vế phải công thức.
     .replace(/\\text\{\s*(?:hoặc|hay|và|với|khi|trong đó|or|and)\s*\}/gi, ";")
     .replace(/\\(?:Rightarrow|Leftrightarrow|Longrightarrow|Leftarrow|iff|implies|vee|wedge)(?![a-zA-Z])/g, ";")
-    .replace(/[⇒⟹⇔]/g, ";")
+    .replace(/[⇒⟹⇔]/g, ";"))
     // x \in (-1; 1): "\in" là chữ, đứng ngay trước khoảng thì khoảng bị coi là "điểm tên in(...)".
     .replace(/\\in(?![a-zA-Z])/g, " ∈ ").replace(/\\cup(?![a-zA-Z])/g, " ∪ ");
 }
@@ -735,13 +739,11 @@ function splitTopLevel(s, isSep) {
 
 /** Vị trí các con số "thật" (bỏ chỉ số dưới, số mũ đơn vị) trong một vế. */
 function numberTokens(side) {
-  const masked = side
+  const masked = normalizeDecimalCommas(side
     .replace(/_\{[^{}]*\}/g, (m) => "_" + "#".repeat(m.length - 1))
     .replace(/_\d+/g, (m) => "_" + "#".repeat(m.length - 1))
-    .replace(/(?:\\(?:text|mathrm)\{\s*)?(?:k|c|d|m)?m\s*\}?\s*\^\s*\{?\s*[23]\s*\}?/g, (m) => m.replace(/\d/g, "#"));
-  // Dấu phẩy thập phân chỉ khi phần nguyên là 0 (0,06) — (1,2,3) là toạ độ, 0,1,2 là danh sách,
-  // [0,2] là khoảng.
-  return [...masked.matchAll(/(?<![\d.,[(])0,\d+(?!,\d)|\d+(?:\.\d+)?/g)].map((m) => ({ text: m[0].replace(",", ".").replace(/^0+(?=\d)/, ""), index: m.index, end: m.index + m[0].length }));
+    .replace(/(?:\\(?:text|mathrm)\{\s*)?(?:k|c|d|m)?m\s*\}?\s*\^\s*\{?\s*[23]\s*\}?/g, (m) => m.replace(/\d/g, "#")));
+  return [...masked.matchAll(/\d+(?:\.\d+)?/g)].map((m) => ({ text: m[0].replace(/^0+(?=\d)/, ""), index: m.index, end: m.index + m[0].length }));
 }
 
 /** Nội dung nhóm ngoặc bắt đầu tại `open` ({ hoặc (), trả về chuỗi bên trong. */
