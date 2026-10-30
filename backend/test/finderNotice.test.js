@@ -14,7 +14,7 @@ test("mỗi reason no_formula có câu cố định, không lấy aiNote của m
     [{ circleRejected: true }, "circle_guard", /không điền sẵn kết quả/],
     [{ baseKnowledge: { verified: false } }, "base_knowledge_reject", /chưa kiểm tra chắc cách làm/],
     [{ invalidData: { verified: false } }, "invalid_data_reject", /chưa kiểm tra được các số liệu/],
-    [{ rawType: "no_formula", aiNote: "Dùng công thức chưa duyệt" }, "ai_refused", /chưa tìm thấy công thức phù hợp/],
+    [{ rawType: "no_formula", aiNote: "Dùng công thức chưa duyệt" }, "ai_refused", /chưa tìm thấy công thức phù hợp hoặc đề còn thiếu số liệu/],
     [{ rawType: "solution", droppedIds: ["fake-id"] }, "formula_ids_reject", /chưa kiểm tra được công thức/],
     [{}, "unknown", /chưa đủ thông tin chắc chắn/],
   ];
@@ -102,5 +102,6 @@ test("askFinder thật qua Groq giả dùng thông báo cố định cho ai_refu
   const out = await askFinder({ groq, message: MESSAGE });
   assert.equal(out.answer.type, "no_formula");
   assert.equal(out.meta.noticeReason, "ai_refused");
+  assert.match(out.reply, /kiểm tra lại đề giúp mình/);
   assert.doesNotMatch(out.reply, /bí mật|Lượt hỏi này không bị tính/);
 });

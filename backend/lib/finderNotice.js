@@ -4,7 +4,7 @@ const NOTICES = {
   circle_guard: "Mình chỉ hướng dẫn cách tìm tâm, bán kính hoặc lập phương trình đường tròn, không điền sẵn kết quả. Bạn thử hỏi lại từng bước nhé.",
   base_knowledge_reject: "Mình chưa kiểm tra chắc cách làm cho đề này, nên chưa hướng dẫn được. Bạn thử nêu rõ các dữ kiện nhé.",
   invalid_data_reject: "Mình chưa kiểm tra được các số liệu của đề này, nên chưa hướng dẫn được. Bạn kiểm tra lại đề giúp mình nhé.",
-  ai_refused: "Mình chưa tìm thấy công thức phù hợp cho đề này. Bạn thử viết lại rõ hơn (kèm đơn vị, tên đại lượng cần tìm), hoặc tra trong Thư viện nhé.",
+  ai_refused: "Mình chưa tìm thấy công thức phù hợp hoặc đề còn thiếu số liệu. Bạn kiểm tra lại đề giúp mình nhé!",
   formula_ids_reject: "Mình chưa kiểm tra được công thức mà lời giải cần dùng, nên chưa hướng dẫn được. Bạn thử nêu rõ đại lượng cần tìm nhé.",
   out_of_grade_scope: "Dạng này mình chưa hỗ trợ với kiến thức lớp 10, nên chưa hướng dẫn được. Bạn thử hỏi một bài hình học hoặc đại số trong chương trình SGK nhé.",
   unknown: "Mình chưa đủ thông tin chắc chắn để hướng dẫn đề này. Bạn thử viết lại rõ dữ kiện và đại lượng cần tìm nhé.",
