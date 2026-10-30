@@ -264,7 +264,57 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
   // Quy tắc "ô trống": câu trả lời còn giá trị số tính sẵn → yêu cầu AI viết lại MỘT lần (nếu còn
   // đủ thời gian). Lần viết lại vẫn lộ, hoặc không gọi lại được (hết giờ, 429 theo phút, JSON hỏng)
   // → thay đúng con số lộ bằng "?" (mask). Chỉ khi không thay sạch được mới bỏ bước.
-  const first = finalizeAnswer(parsed, { message, recentUserTexts, mask: false, grade });
+  // Một lần hỏi lại (không bắt buộc): gửi thêm lượt hội thoại, trả JSON đã parse (null nếu cắt cụt / JSON hỏng).
+  const askAgain = async (retryModel, retryMessages) => {
+    meta.attempts++;
+    const completion = await createCompletion(retryModel, retryMessages, Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, deadline - now())));
+    meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
+    meta.completionTokens += completion.usage?.completion_tokens ?? 0;
+    meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
+    if (completion.choices?.[0]?.finish_reason === "length") {
+      meta.truncated = true;
+      return null;
+    }
+    return parseModelJson(completion.choices?.[0]?.message?.content);
+  };
+  // Gói Groq miễn phí: 8k token/PHÚT mỗi model, lần đầu đã tốn ~5k nên lần hỏi lại ngay sau gần như luôn
+  // 429 theo phút (chấm 2026-10-03: 3/3 lần). Hạn mức tính RIÊNG từng model → hỏi lại bằng model dự phòng.
+  // 429 theo ngày / lỗi khác thì ném ra, nơi gọi dùng kết quả của lần đầu. `info.model` ghi model dự phòng.
+  const askAgainWithFallback = async (retryMessages, info) => {
+    try {
+      return await askAgain(activeModel, retryMessages);
+    } catch (err) {
+      const perMinute = err?.status === 429 && dailyLimitBlockMs(err) === null;
+      if (!perMinute || activeModel !== FINDER_MODEL || deadline - now() < MIN_CALL_MS) throw err;
+      info.model = FINDER_FALLBACK_MODEL;
+      return await askAgain(FINDER_FALLBACK_MODEL, retryMessages);
+    }
+  };
+
+  // AI báo invalid_data nhưng backend KHÔNG kiểm chứng được (ba cạnh 3, 4, 5 hợp lệ nhưng model khẳng định sai —
+  // chạy thật 2026-10-30: 4/10 lần) → hỏi lại ĐÚNG MỘT LẦN. Kiểm chứng được là vô lý thật → không hỏi lại. Hỏi lại
+  // vẫn không kiểm được, lỗi hoặc hết giờ → giữ hành vi cũ (no_formula, hoàn lượt, log invalid_data_reject).
+  let first = finalizeAnswer(parsed, { message, recentUserTexts, mask: false, grade });
+  if (first.meta.invalidData && !first.meta.invalidData.verified && deadline - now() >= MIN_CALL_MS) {
+    const recheck = meta.retriedForInvalidData = { sides: first.meta.invalidData.sides };
+    try {
+      const reparsed = await askAgainWithFallback([
+        ...messages,
+        { role: "assistant", content: JSON.stringify(parsed) },
+        { role: "user", content: INVALID_DATA_RECHECK },
+      ], recheck);
+      if (reparsed) {
+        recheck.outcome = reparsed.type;
+        parsed = reparsed;
+        first = finalizeAnswer(parsed, { message, recentUserTexts, mask: false, grade });
+      } else {
+        recheck.error = "json_failed";
+        meta.truncated = false; // lần đầu đã có câu trả lời dùng được; đừng để lần hỏi lại bị cắt cụt đổi nó thành "unavailable"
+      }
+    } catch (err) {
+      recheck.error = `${err?.status || ""} ${err?.code || err?.name || "error"}`.trim();
+    }
+  }
   const violations = leakList(first.meta);
   let checked = null;
   if (violations.length && deadline - now() >= MIN_CALL_MS) {
@@ -274,31 +324,8 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
       { role: "assistant", content: JSON.stringify(parsed) },
       { role: "user", content: retryInstruction(violations) },
     ];
-    const callRetry = async (retryModel) => {
-      meta.attempts++;
-      const completion = await createCompletion(retryModel, retryMessages, Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, deadline - now())));
-      meta.promptTokens += completion.usage?.prompt_tokens ?? 0;
-      meta.completionTokens += completion.usage?.completion_tokens ?? 0;
-      meta.cachedTokens += completion.usage?.prompt_tokens_details?.cached_tokens ?? 0;
-      if (completion.choices?.[0]?.finish_reason === "length") {
-        meta.truncated = true;
-        return null;
-      }
-      return parseModelJson(completion.choices?.[0]?.message?.content);
-    };
     try {
-      let reparsed;
-      try {
-        reparsed = await callRetry(activeModel);
-      } catch (err) {
-        // Gói Groq miễn phí: 8k token/PHÚT mỗi model, lần đầu đã tốn ~5k nên lần hỏi lại ngay sau
-        // gần như luôn 429 theo phút (chấm 2026-10-03: 3/3 lần). Hạn mức tính RIÊNG từng model →
-        // hỏi lại bằng model dự phòng. 429 theo ngày / lỗi khác thì thôi, dùng bản đầu đã thay "?".
-        const perMinute = err?.status === 429 && dailyLimitBlockMs(err) === null;
-        if (!perMinute || activeModel !== FINDER_MODEL || deadline - now() < MIN_CALL_MS) throw err;
-        meta.retriedForLeaks.model = FINDER_FALLBACK_MODEL;
-        reparsed = await callRetry(FINDER_FALLBACK_MODEL);
-      }
+      const reparsed = await askAgainWithFallback(retryMessages, meta.retriedForLeaks);
       if (reparsed && reparsed.type === parsed.type) {
         checked = finalizeAnswer(reparsed, { message, recentUserTexts, mask: true, grade });
         meta.retriedForLeaks.stillLeaked = leakList(checked.meta);
@@ -318,6 +345,17 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
   if (!checked) checked = finalizeAnswer(parsed, { message, recentUserTexts, mask: true, grade });
   return withNonDeliveryNotice({ answer: checked.answer, reply: checked.reply, meta: { ...meta, ...checked.meta } }, { message, grade });
 }
+
+/**
+ * Lời nhắc gửi lại model khi nó báo invalid_data mà backend không kiểm chứng được. Chỉ model thấy. Không khẳng
+ * định ba cạnh hợp lệ (backend không biết đề có đúng ba cạnh hay model nêu sai cạnh) — chỉ nói điều đã biết.
+ */
+const INVALID_DATA_RECHECK = [
+  "Hệ thống đã kiểm tra lại: các số cạnh bạn nêu trong trường sides không chứng minh được dữ kiện vô lý (chúng không vi phạm bất đẳng thức tam giác, hoặc không khớp số trong đề).",
+  "Đọc lại đề. Nếu ba cạnh đề cho thỏa bất đẳng thức tam giác (tổng hai cạnh bất kỳ lớn hơn cạnh còn lại) thì hướng dẫn bình thường như một câu trả lời solution.",
+  "Chỉ trả invalid_data khi dữ kiện thật sự vô lý, và khi đó ghi đúng ba số cạnh có trong đề vào sides.",
+  "Chỉ trả về JSON.",
+].join(" ");
 
 /** Danh sách giá trị bị bắt trong một lần kiểm tra (bước lọc, bước mask, intro/reminder). */
 function leakList(checkedMeta) {

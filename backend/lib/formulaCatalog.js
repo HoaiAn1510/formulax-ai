@@ -70,6 +70,9 @@ const isQuadraticOnly = (t) => QUADRATIC.test(t) && !HIGHER_POWER.test(t) && !NO
 // Tam giác không nêu tên (đề "từ 2 vị trí A và B… góc CAB = 60°, góc CBA = 70°"): từ 2 góc trở lên.
 const namedAngles = (t) => (t.match(/goc\s+[a-z]{1,3}\b/g) || []).length;
 const TRIANGLE_TRIO = ["hh10-cosin", "hh10-dinhly-sin", "hh10-dientich-sinC"];
+// Điểm có đúng hai tọa độ: "A(1; 2)", "a(1;2)" (văn bản đã normalize nên chữ thường), dấu phẩy thập phân được.
+const PLANE_POINT = /\b[a-z]\s*\(\s*[+-]?\d+(?:[.,]\d+)?\s*;\s*[+-]?\d+(?:[.,]\d+)?\s*\)/g;
+const hasTwoPlanePoints = (t) => (t.match(PLANE_POINT) || []).length >= 2;
 
 // Mỗi nhóm: match (regex, bắt buộc), and (regex), unless (regex), when (hàm trên văn bản đã normalize).
 export const METHOD_GROUPS = [
@@ -92,6 +95,10 @@ export const METHOD_GROUPS = [
   { match: /mat cau/, and: OXYZ, ids: ["hh12-oxyz-matcau", "hh12-oxyz-khoangcach"] },
   { match: /xac suat/, ids: ["xs11-xacsuat", "xs10-xacsuat-bienco-doi", "xs11-tohop"] },
   { match: /khai trien|he so cua/, ids: ["ds10-heso-xk-khaitrien-axb", "ds11-nhi-thuc-newton", "xs11-tohop"] },
+  // Hai điểm có tọa độ (x; y) + "độ dài / khoảng cách / đoạn": "độ" bị STOP_WORDS bỏ nên từ khoá chỉ còn "dài"
+  // (khớp 25 thẻ), thẻ đích đứng hạng 25 (chạy thật 2026-10-30, ca 10 "Cho A(1; 2) và B(4; 6). Tính độ dài đoạn AB").
+  // Đề chỉ có hai điểm mà không hỏi độ dài/khoảng cách (trung điểm AB) KHÔNG ghim. Tọa độ 3 số (Oxyz) không khớp.
+  { match: /do dai|khoang cach|dai doan|doan thang/, when: hasTwoPlanePoints, unless: /duong thang|duong tron|parabol|mat phang|oxyz/, ids: ["hh10-dodai-vecto-khoangcach"] },
 ];
 const MAX_PINNED = 10; // chừa chỗ cho công thức khớp từ khóa
 

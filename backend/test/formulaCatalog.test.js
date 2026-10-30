@@ -116,3 +116,36 @@ test("trừ điểm theo lớp chỉ đổi thứ tự giữa công thức CÙNG
   // Lớp 10 hỏi đạo hàm (lớp 11): vẫn tìm thấy công thức đạo hàm — không loại hẳn.
   assert.ok(top("Tính đạo hàm của y = x^3", 10).some((id) => id.includes("daoham")));
 });
+
+// Ca 10 của bộ chấm (2026-10-30): "độ" bị STOP_WORDS bỏ nên thẻ độ dài / khoảng cách hai điểm đứng hạng 25.
+const DIST = "hh10-dodai-vecto-khoangcach";
+
+test("hai điểm có tọa độ + độ dài/khoảng cách → ghim thẻ độ dài vectơ & khoảng cách hai điểm, đứng đầu", () => {
+  assert.equal(ids(["Cho A(1; 2) và B(4; 6). Tính độ dài đoạn AB."])[0], DIST);
+  assert.equal(shortlistFormulas(["Cho A(1; 2) và B(4; 6). Tính khoảng cách AB."], 8, { grade: 10 })[0].id, DIST);
+  for (const grade of [10, 11, 12, null]) assert.ok(methodGroupIds("Cho A(1; 2) và B(4; 6). Tính độ dài đoạn AB.", grade).includes(DIST), `lớp ${grade}`);
+});
+
+test("tọa độ viết có/không dấu cách, chữ hoa/thường, dấu phẩy thập phân vẫn khớp", () => {
+  for (const q of [
+    "Cho A(1;2) và B(4;6). Tính độ dài AB.",
+    "Cho a(1;2) và b(4;6). Tính độ dài ab.",
+    "Cho A( 1 ; 2 ), B( 4 ; 6 ). Tính khoảng cách giữa hai điểm.",
+    "Cho A(-1; 2) và B(4; -6). Tính độ dài đoạn thẳng AB.",
+    "Cho A(1,5; 2) và B(4; 6,5). Tính khoảng cách AB.",
+  ]) assert.ok(methodGroupIds(q).includes(DIST), q);
+});
+
+test("không ghim thẻ độ dài khi đề không hỏi độ dài/khoảng cách, chỉ có một điểm, đường thẳng/đường tròn hoặc Oxyz", () => {
+  for (const q of [
+    "Cho A(1; 2), B(4; 6). Tìm trung điểm của AB.", // hai điểm nhưng không hỏi độ dài
+    "Cho A(1; 2), B(4; 6). Tìm tọa độ vectơ AB.",
+    "Tính độ dài đoạn AB.", // không có tọa độ
+    "Cho A(1; 2). Tính khoảng cách từ A đến gốc tọa độ.", // chỉ một điểm
+    "Tính khoảng cách từ A(1; 2) đến đường thẳng 3x + 4y - 1 = 0.",
+    "Cho A(1; 2), B(4; 6) và đường thẳng d: 3x + 4y - 1 = 0. Tính khoảng cách từ A đến d.",
+    "Cho A(1; 2), B(4; 6). Viết phương trình đường tròn đường kính AB, tính độ dài bán kính.",
+    "Cho A(1; 2; 3), B(4; 6; 8). Tính độ dài đoạn AB.", // Oxyz: ba tọa độ
+  ]) assert.equal(methodGroupIds(q).includes(DIST), false, q);
+  assert.notEqual(ids(["Cho A(1; 2), B(4; 6). Tìm trung điểm của AB."])[0], DIST);
+});
