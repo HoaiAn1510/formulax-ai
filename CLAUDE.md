@@ -617,6 +617,12 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 - **Ghi chú công thức gửi AI cắt còn 100 ký tự:** đã đưa quan hệ chính lên đầu ở
   `ds10-phuongtrinh-bac2`, `ds10-bpt-bac2`, `mr-elip` (2026-10-23). Đã chấm thật câu 18 và 25;
   các ca còn lại theo kế hoạch key chấm ở mục AI Finder. Chưa kết luận chất lượng trên toàn bộ dạng bài.
+- **Câu khẳng định dấu Δ — thử đổi VÍ DỤ 2** (`lib/finderPrompt.js`): "Nếu Δ > 0 thì phương trình có hai
+  nghiệm phân biệt" → "Sau khi tính Δ, bạn xét dấu Δ rồi chọn công thức nghiệm". Chạy 100 lượt 2026-10-30:
+  cụm khẳng định dấu Δ giảm 16 → 4, nhưng 3 chỉ số phụ lệch nhẹ ở ca 16/17 (có thể là nhiễu). Chưa chạy phép
+  đo xác nhận, chưa đổi prompt.
+- **Bài thống kê — nhãn số liệu bị bắt nhầm:** AI viết `x_1 = 1,5, x_2 = 2, …` để đặt tên số liệu, bộ lọc coi là
+  lộ nghiệm (ca chấm 23). Cần ngoại lệ hẹp; phải hỏi chủ dự án trước khi làm.
 
 - **OCR — trường `occlusions` (sau đợt cho học sinh lớp 10 dùng thử):** yêu cầu Gemini liệt kê vật
   che lên vùng chữ (bút, tay, bóng); backend đánh dấu bài có `occlusions` khác rỗng là cần kiểm tra.
