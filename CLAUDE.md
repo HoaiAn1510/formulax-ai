@@ -8,7 +8,7 @@ Web app giúp học sinh THPT (lớp 10–12) tra cứu, ghi nhớ và luyện t
 - **Backend:** Node.js + Express, tại `backend/`
 - **Auth:** Google OAuth **qua Supabase Auth** (`supabase.auth.signInWithOAuth`) trong `context/AuthContext.jsx` — luồng redirect cả trang, không phải popup. Nguồn sự thật là phiên Supabase; `localStorage.formulax_user` chỉ còn là bộ nhớ đệm hiển thị, không dùng để xác thực. Gói `@react-oauth/google` vẫn còn trong `package.json` nhưng **không còn được import ở đâu** — giữ tạm làm đường lùi, gỡ sau khi luồng mới chạy ổn trên production. Đổi cách đăng nhập = phá RLS, xem `backend/migrations/003_rls_supabase_auth.sql` trước khi động vào.
 - **Database:** Supabase — mọi thao tác đọc/ghi đi qua `src/lib/supabase.js`, không viết query Supabase trực tiếp trong component
-- **AI:** Groq API, model `openai/gpt-oss-120b` (AI Finder, khai báo ở `backend/lib/finderPrompt.js`; đổi từ `gpt-oss-20b` ngày 2026-09-30 sau khi chấm so sánh — xem mục AI Finder) — provider duy nhất cho phần hướng dẫn giải. **Gemini chỉ dùng để đọc ảnh đề** (OCR, từ 2026-10-07 — xem mục "Đọc ảnh đề"), gọi qua REST, không cài SDK (`@google/generative-ai` đã gỡ 2026-07-23, đừng cài lại). Nếu cần đổi provider, xác nhận với người dùng trước, không tự đổi.
+- **AI:** từ 2026-10-30 AI Finder chạy trên **Gemini** (chủ dự án chốt) — gọi REST qua `backend/lib/geminiChat.js`, không cài SDK (`@google/generative-ai` đã gỡ 2026-07-23, đừng cài lại). Lý do đổi: Groq gói Free chỉ 8.000 token/phút cho cả app, mỗi câu ~6.000 token nên một phút trả lời được một câu. Model khai báo ở `backend/lib/finderPrompt.js` (`FINDER_MODEL`, dự phòng `FINDER_FALLBACK_MODEL`; đặt được bằng biến Render `FINDER_GEMINI_MODEL` / `FINDER_GEMINI_FALLBACK_MODEL` / `FINDER_GEMINI_THINKING_LEVEL`). Cùng `GEMINI_API_KEY` với đọc ảnh đề. Lịch sử: 2026-09-30 đổi `gpt-oss-20b` → `gpt-oss-120b` (Groq); có một lần thử Gemini trước đó bị revert vì quota. Nếu cần đổi provider lần nữa, xác nhận với người dùng trước, không tự đổi.
 - **Render công thức:** KaTeX qua `utils/katexHelper.jsx` (`MathElement`, `RichTextRenderer`)
 
 ## Lệnh thường dùng
@@ -188,6 +188,23 @@ Chi tiết đầy đủ ở `docs/SECURITY.md` và `docs/PERFORMANCE.md`. Nhữn
   chạy `node scripts/test-check-secrets.mjs`.
 
 ## AI Finder — hướng dẫn các bước, không tính kết quả (từ 2026-09-30)
+
+> **2026-10-30 — Finder chuyển từ Groq sang Gemini.** Các mục bên dưới viết lúc còn Groq; con số/lỗi riêng của
+> Groq (8.000 TPM, 413 "Request too large", header `retry-after` của Groq, `gpt-oss-*`) là LỊCH SỬ và vẫn nằm
+> trong code vì Groq-shaped client được giữ làm giao diện chung. Điểm khác khi chạy Gemini:
+> - `lib/geminiChat.js` đổi cuộc gọi/kết quả/lỗi của Gemini về đúng hình dạng askFinder đã đọc (`choices[0].message.content`,
+>   `finish_reason`, `usage`; lỗi 429 có `retry-after` lấy từ `RetryInfo.retryDelay`, "per day (RPD/TPD)" khi `quotaId` có
+>   `PerDay`). Tin system gộp vào `systemInstruction`. KHÔNG đặt `responseMimeType` (cùng lý do cũ: Gemini vẫn viết
+>   LaTeX một dấu `\`, `parseModelJson` tự sửa). Token "suy nghĩ" nằm trong `maxOutputTokens` nên cộng `THINKING_HEADROOM`
+>   (1.500); mức suy nghĩ mặc định `low` (`thinkingLevel`, đổi bằng `FINDER_GEMINI_THINKING_LEVEL`).
+> - **Hạn mức Gemini tính theo dự án và theo từng model** (không có bảng số trong tài liệu — xem `aistudio.google.com/rate-limit`).
+>   Vì vậy `primaryBlockMs` (`lib/finderAnswer.js`): 429 theo PHÚT của model chính cũng chuyển ngay sang model dự phòng
+>   (trước đây chỉ 429 theo NGÀY mới chuyển), nhớ mốc `retry-after` (tối đa 60s) để các câu sau vào thẳng model dự phòng;
+>   503/500 chuyển và nhớ 20s. Cả hai model cùng 429 → vẫn "AI đang bận" + hoàn lượt như cũ, `retryAfter` là số thật của Gemini.
+> - Đã test bằng Gemini giả (`test/geminiChat.test.js`, gồm mô phỏng "1 yêu cầu/phút"). **CHƯA chạy thật** (môi trường dev không
+>   có key): trước khi deploy chạy `GEMINI_EVAL_API_KEY=... node backend/scripts/finder-live-check.mjs` — key chấm ở dự án Google
+>   riêng, thiếu thì script dừng. Tên model mặc định chưa kiểm bằng lần chạy thật. Mặc định `gemini-3.5-flash-lite` (dự phòng `gemini-3.1-flash-lite`): hạn mức free 15 RPM, 500 RPD mỗi model, dùng chung với đọc ảnh (xem bảng AI Studio 2026-10-30 trong finderPrompt.js).
+> - Chất lượng hướng dẫn (lộ số, chọn công thức) trên Gemini CHƯA được chấm lại so với `gpt-oss-120b`; bộ lọc phía backend không đổi.
 
 AI trình bày cách giải dựa trên công thức trong thư viện, **học sinh tự tính**. Câu trả lời gồm:
 "Công thức sử dụng" (thẻ công thức) → "Các bước giải" (Bước 1..n, chỗ cần tính để ô `?`) → một
@@ -457,7 +474,7 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 - Sau deploy kiểm tra `GET /api/health` → `formulasLoaded` phải bằng số công thức trong
   `formulas.js` (hiện 249). Bằng 0 hoặc lỗi = backend không đọc được file.
 - Backend bắt buộc `NODE_ENV=production` (xem mục Hiệu năng & bảo mật).
-- Đọc ảnh đề cần `GEMINI_API_KEY` trên Render (thiếu thì `/api/ocr` trả 500, log khởi động báo ❌).
+- `GEMINI_API_KEY` trên Render dùng cho CẢ AI Finder lẫn đọc ảnh đề (thiếu thì `/api/chat` và `/api/ocr` trả 500, log khởi động báo ❌). `GROQ_API_KEY` không còn được đọc.
 - Theo dõi kênh: migration 010 chạy trước backend; `ADMIN_EMAILS` trên Render (trống = không ai xem
   được thống kê, không ai vào được trang quản trị). Trang quản trị: migration 011 chạy trước backend.
 
@@ -549,7 +566,7 @@ Chế độ khách (Supabase anonymous, "Dùng thử không cần đăng nhập"
 ## Việc không nên làm
 
 - Không tự thêm thư viện UI/component ngoài Tailwind (đã duyệt, xem mục Giao diện) nếu không được yêu cầu — dự án đang tối giản có chủ đích.
-- Không đổi AI provider mà không xác nhận với người dùng trước. Hiện chỉ còn đúng một SDK trong `backend/package.json` là `groq-sdk` (Gemini đọc ảnh gọi qua REST) — đừng cài thêm SDK provider khác "để sẵn đó".
+- Không đổi AI provider mà không xác nhận với người dùng trước. Gemini gọi qua REST (`lib/geminiChat.js`); `groq-sdk` còn trong `backend/package.json` nhưng không còn import trong `server.js` — gỡ sau khi Gemini chạy ổn trên production, và đừng cài thêm SDK provider khác "để sẵn đó".
 - Không sửa hàng loạt `formulas.js`/`questions.js` mà không có bước xác nhận riêng — đây là dữ liệu lõi cho USP "chống hallucination" của sản phẩm, sai ở đây ảnh hưởng trực tiếp uy tín dự án.
 - **Không truy vấn database production (Supabase thật) khi chưa hỏi người dùng — kể cả truy vấn chỉ đọc**, kể cả bằng `SUPABASE_SERVICE_ROLE_KEY` có sẵn trong `backend/.env`. Khi được phép: chỉ in **số liệu tổng hợp** (số bản ghi, số tài khoản, tỉ lệ…), không in `google_id`, email, tên hay bất kỳ dữ liệu cá nhân nào; script chỉ đọc, không ghi/xoá.
 

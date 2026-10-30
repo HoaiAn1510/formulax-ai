@@ -133,6 +133,21 @@ export function dailyLimitBlockMs(err) {
   return textMs > 0 ? textMs : DEFAULT_DAILY_BLOCK_MS;
 }
 
+// Hạn mức Gemini tính RIÊNG từng model và theo phút rất thấp ở gói miễn phí → 429 theo phút của model
+// chính cũng chuyển ngay sang model dự phòng (trước đây chỉ 429 theo ngày mới chuyển, nên cứ 429 là học
+// sinh phải chờ ~60 giây). Nhớ mốc để các câu kế tiếp vào thẳng model dự phòng trong lúc model chính nghỉ.
+// 503/500 (model quá tải) cũng chuyển, nhưng chỉ nhớ ngắn: lỗi tạm thời, không phải hết hạn mức.
+const MINUTE_BLOCK_MAX_MS = 60_000;
+const OVERLOAD_BLOCK_MS = 20_000;
+/** Số ms nên tránh model chính sau lỗi này; null nếu lỗi không phải loại nên chuyển sang dự phòng. */
+export function primaryBlockMs(err) {
+  const daily = dailyLimitBlockMs(err);
+  if (daily !== null) return daily;
+  if (err?.status === 429) return Math.min(MINUTE_BLOCK_MAX_MS, retryAfterSeconds(err) * 1000);
+  if (err?.status === 503 || err?.status === 500) return OVERLOAD_BLOCK_MS;
+  return null;
+}
+
 /**
  * Hỏi AI Finder một câu và trả về câu trả lời ĐÃ KIỂM TRA. Toàn bộ luồng nằm ở đây để server.js
  * và bộ chấm so sánh model (chạy ngoài) dùng chung đúng một đoạn code.
@@ -167,7 +182,10 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
     // previous call is a lower bound when retry messages append the previous response.
     const promptKey = JSON.stringify([callModel, callMessages]);
     const prompt = measuredPrompts.get(promptKey) ?? Math.max(meta.lastPromptTokens || 0, Math.ceil(callMessages.reduce((n, m) => n + m.content.length, 0) / 2.6) + 100);
-    const initialCap = completionBudget(prompt, retry);
+    // Trần "prompt + completion ≤ 7.800" chỉ để tránh lỗi 413 của Groq (8.000 token/yêu cầu). Gemini không có
+    // trần đó (client khai enforcesTpmCap = false): giữ trần cố định, nếu không thì hỏi nối tiếp vài lượt là
+    // prompt dài làm completionBudget trả null → 503 giả "Insufficient completion budget" dù Gemini nhận được.
+    const initialCap = groq.enforcesTpmCap === false ? (retry ? 2000 : 2300) : completionBudget(prompt, retry);
     if (initialCap === null) throw Object.assign(new Error("Insufficient completion budget"), { status: 503 });
     const call = (maxTokens, timeoutMs) => groq.chat.completions.create(
       { model: callModel, messages: callMessages, ...FINDER_PARAMS, max_completion_tokens: maxTokens },
@@ -217,12 +235,12 @@ export async function askFinder({ groq, message, history = [], grade = null, mod
     } catch (err) {
       // Model chính hết hạn mức NGÀY → chuyển sang model dự phòng (chỉ một lần mỗi request, và chỉ
       // khi còn đủ thời gian). Lần bị 429 không tính là một lần gọi (không có câu trả lời nào).
-      const blockMs = canFallBack && activeModel === FINDER_MODEL ? dailyLimitBlockMs(err) : null;
+      const blockMs = canFallBack && activeModel === FINDER_MODEL ? primaryBlockMs(err) : null;
       if (blockMs !== null) {
         fallbackState.primaryBlockedUntil = now() + blockMs;
         if (deadline - now() < MIN_CALL_MS) throw err;
         activeModel = FINDER_FALLBACK_MODEL;
-        meta.fallback = { from: model, to: activeModel, reason: "daily_limit" };
+        meta.fallback = { from: model, to: activeModel, reason: dailyLimitBlockMs(err) !== null ? "daily_limit" : err?.status === 429 ? "minute_limit" : "unavailable" };
         meta.attempts--;
         continue;
       }

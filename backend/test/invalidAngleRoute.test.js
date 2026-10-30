@@ -39,7 +39,7 @@ test("POST /api/chat: mọi đề vô lý rõ ràng trả invalid_data trước 
   const port = await freePort();
   const child = spawn(process.execPath, ["--import", pathToFileURL(probe).href, "server.js"], {
     cwd: backendDir,
-    env: { ...process.env, PORT: String(port), NODE_ENV: "test", GROQ_API_KEY: "local_test_only",
+    env: { ...process.env, PORT: String(port), NODE_ENV: "test", GEMINI_API_KEY: "local_test_only",
       SUPABASE_URL: `http://127.0.0.1:${fakeSupabase.address().port}`,
       SUPABASE_SERVICE_ROLE_KEY: "local_test_service_role" },
     stdio: ["ignore", "pipe", "pipe"],

@@ -210,13 +210,54 @@ test("model chính hết hạn mức ngày → trả lời bằng model dự ph�
   fallbackState.primaryBlockedUntil = 0;
 });
 
-test("429 theo PHÚT không chuyển model dự phòng — ném lỗi cho server báo 'AI đang bận' và hoàn lượt", async () => {
+test("429 theo PHÚT của model chính → chuyển ngay sang model dự phòng (hạn mức tính riêng từng model), nhớ mốc ngắn", async () => {
   fallbackState.primaryBlockedUntil = 0;
   const clock = { t: 0 };
   const groq = modelGroq({ [FINDER_MODEL]: groq429(TPM, 15), [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  const first = await askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.equal(first.answer.type, "solution");
+  assert.deepEqual(groq.calls, [FINDER_MODEL, FINDER_FALLBACK_MODEL]);
+  assert.equal(first.meta.fallback.reason, "minute_limit");
+  assert.equal(first.meta.attempts, 1);
+  // câu kế tiếp trong lúc model chính còn nghỉ (15s) vào thẳng model dự phòng — không tốn thêm một lần 429
+  const second = await askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.deepEqual(groq.calls.slice(2), [FINDER_FALLBACK_MODEL]);
+  assert.equal(second.meta.fallback.reason, "daily_limit_known");
+  clock.t += 20_000; // hết 15s → thử lại model chính
+  const ok = modelGroq({ [FINDER_MODEL]: GOOD, [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  await askFinder({ groq: ok, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.deepEqual(ok.calls, [FINDER_MODEL]);
+  fallbackState.primaryBlockedUntil = 0;
+});
+
+test("429 theo phút ở CẢ HAI model → ném lỗi (server báo 'AI đang bận' và hoàn lượt)", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const groq = modelGroq({ [FINDER_MODEL]: groq429(TPM, 15), [FINDER_FALLBACK_MODEL]: groq429(TPM, 20) }, clock);
   await assert.rejects(askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS }), (e) => e.status === 429);
+  assert.deepEqual(groq.calls, [FINDER_MODEL, FINDER_FALLBACK_MODEL]);
+  fallbackState.primaryBlockedUntil = 0;
+});
+
+test("model chính quá tải (503) → thử model dự phòng", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const overloaded = Object.assign(new Error("gemini 503"), { status: 503 });
+  const groq = modelGroq({ [FINDER_MODEL]: overloaded, [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  const out = await askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS });
+  assert.equal(out.answer.type, "solution");
+  assert.deepEqual(groq.calls, [FINDER_MODEL, FINDER_FALLBACK_MODEL]);
+  assert.equal(out.meta.fallback.reason, "unavailable");
+  fallbackState.primaryBlockedUntil = 0;
+});
+
+test("lỗi khác (401, mạng) KHÔNG chuyển model dự phòng", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const clock = { t: 0 };
+  const bad = Object.assign(new Error("gemini 401"), { status: 401 });
+  const groq = modelGroq({ [FINDER_MODEL]: bad, [FINDER_FALLBACK_MODEL]: GOOD }, clock);
+  await assert.rejects(askFinder({ groq, message: Q, now: () => clock.t, deadline: clock.t + CHAT_BUDGET_MS }), (e) => e.status === 401);
   assert.deepEqual(groq.calls, [FINDER_MODEL]);
-  assert.equal(fallbackState.primaryBlockedUntil, 0);
 });
 
 test("model dự phòng cũng hết hạn mức → ném lỗi (server báo 'AI đang bận' và hoàn lượt)", async () => {

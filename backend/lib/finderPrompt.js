@@ -3,13 +3,21 @@ import { formatForPrompt } from "./formulaCatalog.js";
 // 120b thay 20b sau khi chấm cùng bộ câu: chọn công thức ngang nhau nhưng 120b lộ số ít hơn
 // (2/12 so với 5/12 câu), không làm mất dấu \ của LaTeX và không bị Groq từ chối JSON. Đổi lại
 // chậm hơn khoảng 1 giây mỗi câu.
-export const FINDER_MODEL = "openai/gpt-oss-120b";
+// 2026-10-30: AI Finder chuyển sang Gemini (chủ dự án chốt) vì Groq gói Free chỉ cho 8.000 token/phút
+// cho cả app — mỗi câu ~6.000 token nên một phút chỉ trả lời được một câu. Tên model đặt được bằng
+// biến môi trường (Render) để đổi khi model bị 503 / hết hạn mức mà không phải deploy lại code.
+// Hạn mức gói miễn phí dự án FormulaX (AI Studio, 2026-10-30): 3.5 Flash-Lite và 3.1 Flash-Lite đều 15 RPM, 500 RPD,
+// 250K TPM; 3.8 Flash chỉ 5 RPM / 20 RPD, 2.5 Flash 5 RPM / 20 RPD (không dùng nổi cho Finder). "gemini-3.5-flash"
+// KHÔNG có trong bảng hạn mức. Ràng buộc thật là RPM/RPD, không phải token. Đọc ảnh (ocrReader.js) cũng dùng đúng
+// hai model này → chung hạn mức 500 RPD. KHÔNG gọi thử được Gemini từ môi trường dev nên tên model chưa kiểm bằng lần chạy thật: dùng
+// scripts/finder-live-check.mjs (key chấm riêng) trước khi deploy.
+export const FINDER_MODEL = process.env.FINDER_GEMINI_MODEL || "gemini-3.5-flash-lite";
 
 // Model dự phòng khi FINDER_MODEL hết hạn mức NGÀY của gói Groq miễn phí (200k token/ngày). Hạn
 // mức tính riêng từng model — đã kiểm chứng 2026-09-30: 120b bị chặn TPD, 20b vẫn trả lời cùng câu.
 // 20b kém hơn (lộ số 5/12 so với 2/12 khi chấm), nhưng bộ lọc vẫn chặn phần lộ số — tốt hơn báo
 // "AI đang bận" suốt phần còn lại của ngày.
-export const FINDER_FALLBACK_MODEL = "openai/gpt-oss-20b";
+export const FINDER_FALLBACK_MODEL = process.env.FINDER_GEMINI_FALLBACK_MODEL || "gemini-3.1-flash-lite";
 
 // Tham số gọi Groq cho AI Finder. reasoning_effort "low" nhanh hơn nhưng khi thử nghiệm chọn sai
 // công thức nhiều (báo "thư viện chưa có" dù công thức nằm ngay trong danh sách ứng viên) —

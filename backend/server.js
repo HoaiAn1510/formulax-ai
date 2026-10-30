@@ -4,7 +4,7 @@ import cors from "cors";
 import compression from "compression";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import Groq from "groq-sdk";
+import { createGeminiClient } from "./lib/geminiChat.js";
 import payosPaymentRouter from "./routes/payosPayment.js";
 import { createChannelRouter } from "./routes/channelTracking.js";
 import { createAdminRouter } from "./routes/admin.js";
@@ -93,7 +93,10 @@ app.use("/api", createChannelRouter({ db: supabaseAdmin, verifyUser: verifySupab
 // sách thời gian của request (CHAT_BUDGET_MS = 40 giây, xem lib/finderAnswer.js) — ngân sách đó
 // PHẢI nhỏ hơn timeout 45 giây của frontend (FormulaFinder.jsx), nếu không học sinh có thể mất
 // lượt mà không thấy câu trả lời.
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY, maxRetries: 0 });
+// AI Finder chạy trên Gemini từ 2026-10-30 (REST, không SDK). Biến `groq` giữ tên cũ vì askFinder nhận
+// bất kỳ client có chat.completions.create; thinkingLevel đặt bằng FINDER_GEMINI_THINKING_LEVEL.
+// maxRetries 0 như trước: không tự gọi lại ngầm — thử lại do askFinder quyết định theo ngân sách thời gian.
+const groq = createGeminiClient({ apiKey: process.env.GEMINI_API_KEY, thinkingLevel: process.env.FINDER_GEMINI_THINKING_LEVEL || undefined });
 
 // Trần độ dài input — chặn việc nhồi prompt khổng lồ để đốt token của Groq. Câu hỏi toán THPT
 // thực tế hiếm khi vượt 2000 ký tự; mỗi lượt history cũng cắt bớt thay vì gửi nguyên văn.
@@ -182,8 +185,8 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
       });
     }
 
-    if (!process.env.GROQ_API_KEY) {
-      return res.status(500).json({ error: "GROQ_API_KEY chưa được cấu hình trong file .env" });
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: "GEMINI_API_KEY chưa được cấu hình trong file .env" });
     }
 
     // Xác thực người gọi bằng Supabase JWT — bắt buộc để biết chắc đây là tài khoản Google nào
@@ -323,7 +326,7 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
       console.error("[FormulaX Backend] increment_ai_usage lỗi:", error.message);
       return res.status(503).json({ error: "Không kiểm tra được hạn mức AI, thử lại sau." });
     }
-    console.error("[FormulaX Backend] Groq error:", error.message);
+    console.error("[FormulaX Backend] Finder AI error:", error.message);
     // Lượt đã được hoàn trong runWithQuota; gửi kèm số lượt còn lại để frontend cập nhật bộ đếm.
     const remainingInfo = typeof error.remaining === "number" ? { remaining: error.remaining } : {};
     const status = error.status || error.statusCode || 500;
@@ -542,7 +545,7 @@ const DEPLOYED_COMMIT = (process.env.RENDER_GIT_COMMIT || "").slice(0, 7) || "lo
 app.get("/api/health", (req, res) => {
   res.json({
     status: "ok",
-    model: `${FINDER_MODEL} (Groq)`,
+    model: `${FINDER_MODEL} (Gemini)`,
     formulasLoaded: FORMULA_COUNT,
     commit: DEPLOYED_COMMIT
   });
@@ -551,7 +554,7 @@ app.get("/api/health", (req, res) => {
 app.listen(PORT, () => {
   console.log(`\n🚀 FormulaX AI Backend đang chạy tại http://localhost:${PORT}`);
   console.log(`📚 Đã tải ${FORMULA_COUNT} công thức từ FormulaX-AI/src/data/formulas.js`);
-  console.log(`🔑 Groq API Key: ${process.env.GROQ_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
+  console.log(`🔑 Gemini API Key (AI Finder + đọc ảnh): ${process.env.GEMINI_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);
   console.log(`📷 Gemini (đọc ảnh đề): ${process.env.GEMINI_API_KEY ? "✅ Đã cấu hình" : "❌ Chưa cấu hình — /api/ocr sẽ trả lỗi (.env)"}`);
   const payosOk = process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY;
   console.log(`💳 PayOS Payment: ${payosOk ? "✅ Đã cấu hình" : "❌ Chưa cấu hình (.env)"}`);

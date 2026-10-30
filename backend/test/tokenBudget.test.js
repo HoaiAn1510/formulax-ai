@@ -137,9 +137,12 @@ test("413 vượt quá nhiều (còn dưới 1.200 token) → không gọi lại
 test("lỗi 429 và 413 không phải TPM không bị gọi lại bằng cơ chế 413", async () => {
   const clock = { t: 0 };
   const e429 = Object.assign(new Error("429 rate limit (TPM): Limit 8000, Requested 8100"), { status: 429 });
-  const groq429 = seqGroq([e429, GOOD], clock);
+  // 2026-10-30: 429 của model chính giờ chuyển sang model dự phòng (một lần gọi khác model), không phải
+  // gọi lại bằng cơ chế 413 — nên cho cả hai model cùng 429: mỗi model đúng một lần, cùng max_completion_tokens.
+  const groq429 = seqGroq([e429, e429, GOOD], clock);
   await assert.rejects(askFinder({ groq: groq429, message: Q, now: () => clock.t, deadline: CHAT_BUDGET_MS }), (e) => e.status === 429);
-  assert.equal(groq429.bodies.length, 1);
+  assert.equal(groq429.bodies.length, 2);
+  assert.equal(groq429.bodies[0].max_completion_tokens, groq429.bodies[1].max_completion_tokens);
   const groqOther413 = seqGroq([Object.assign(new Error("413 Payload too large"), { status: 413 }), GOOD], clock);
   await assert.rejects(askFinder({ groq: groqOther413, message: Q, now: () => clock.t, deadline: CHAT_BUDGET_MS }), (e) => e.status === 413);
   assert.equal(groqOther413.bodies.length, 1);
