@@ -187,3 +187,18 @@ test("Gemini: lịch sử dài KHÔNG bị chặn bởi trần token kiểu Groq
   }
   assert.ok(bodies.every((b) => b.generationConfig.maxOutputTokens === 2300 + THINKING_HEADROOM));
 });
+
+test("429 thật của Gemini (đo 2026-10-30): RPM, retry 16s từ RetryInfo; thiếu RetryInfo thì đọc từ câu thông báo", () => {
+  const message = "You exceeded your current quota. \n* Quota exceeded for metric: generate_content_free_tier_requests, limit: 15, model: gemini-3.5-flash-lite\nPlease retry in 16.312201539s.";
+  const real = { error: { code: 429, message, status: "RESOURCE_EXHAUSTED", details: [
+    { "@type": "type.googleapis.com/google.rpc.QuotaFailure", violations: [{ quotaId: "GenerateRequestsPerMinutePerProjectPerModel-FreeTier" }] },
+    { "@type": "type.googleapis.com/google.rpc.RetryInfo", retryDelay: "16s" },
+  ] } };
+  const err = geminiHttpError(429, real);
+  assert.equal(rateLimitKind(err), "RPM");
+  assert.equal(retryAfterSeconds(err), 16);
+  assert.equal(dailyLimitBlockMs(err), null);
+  assert.equal(primaryBlockMs(err), 16_000);
+  const noInfo = geminiHttpError(429, { error: { message, details: [] } });
+  assert.equal(retryAfterSeconds(noInfo), 17);
+});

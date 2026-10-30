@@ -52,7 +52,10 @@ export function geminiHttpError(status, body) {
   const retryInfo = details.find((d) => String(d?.["@type"] || "").endsWith("RetryInfo"));
   const violations = details.filter((d) => String(d?.["@type"] || "").endsWith("QuotaFailure")).flatMap((d) => d.violations || []);
   const quotaText = violations.map((v) => `${v.quotaId || ""} ${v.quotaMetric || ""}`).join(" ");
-  const retryS = parseRetryDelay(retryInfo?.retryDelay);
+  // Body 429 thật (đo 2026-10-30): có RetryInfo.retryDelay "16s"; không có header Retry-After. Phòng khi một lần
+  // 429 thiếu RetryInfo, đọc "Please retry in 16.3s" trong chính câu thông báo.
+  const inMessage = /retry in ([\d.]+)s/i.exec(String(e.message || ""));
+  const retryS = parseRetryDelay(retryInfo?.retryDelay) ?? (inMessage ? Number(inMessage[1]) : null);
   let message = `gemini ${status}: ${String(e.message || e.status || "error").slice(0, 300)}`;
   const headers = {};
   if (status === 429) {
