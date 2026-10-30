@@ -3,3 +3,6 @@ node_modules/
 .env.*
 !.env.example
 *.log
+
+# Báo cáo chấm AI Finder (scripts/finder-eval.mjs) — có câu trả lời thật, không đưa lên repo public
+scripts/out/
