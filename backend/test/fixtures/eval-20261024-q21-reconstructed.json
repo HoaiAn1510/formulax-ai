@@ -1,0 +1,23 @@
+{
+  "type": "solution",
+  "formula_ids": ["hh10-herong"],
+  "intro": "Bài này dùng công thức Hê‑rông tính diện tích tam giác khi biết ba cạnh.",
+  "steps": [
+    {
+      "title": "Xác định dữ kiện",
+      "detail": "Tam giác có độ dài ba cạnh $a = 3.5$, $b = 4.5$, $c = 6$.",
+      "expression": ""
+    },
+    {
+      "title": "Tính nửa chu vi",
+      "detail": "Tính $p = \\frac{a+b+c}{2}$ với các cạnh đã cho. Bạn tự tính $p$.",
+      "expression": "p = \\frac{a+b+c}{2}, \\text{ với } a = 3.5, b = 4.5, c = 6 \\Rightarrow p = ?"
+    },
+    {
+      "title": "Áp dụng công thức Hê‑rông",
+      "detail": "Thay $p$, $a$, $b$, $c$ vào công thức $S = \\sqrt{p(p-a)(p-b)(p-c)}$. Bạn tự tính $S$.",
+      "expression": "S = \\sqrt{p(p-a)(p-b)(p-c)}, \\text{ với } a = 3.5, b = 4.5, c = 6 \\Rightarrow S = ?"
+    }
+  ],
+  "reminder": "Bạn tự tính các ô ? rồi ghi kết quả."
+}
