@@ -1,0 +1,5 @@
+{
+  "note": "Câu trả lời thô thật của Gemini (gemini-3.5-flash-lite) cho ca 9 của bộ chấm, 2026-10-30; đề chỉ viết \"bán kính 2\" (không có \"R =\"). Trước khi sửa R4 bị circleAnswerGuard chặn nhầm 3/3 lần.",
+  "message": "Viết phương trình đường tròn tâm I(2; 1), bán kính 2.",
+  "raw": "{\"type\":\"solution\",\"formula_ids\":[\"hh10-duongtron-phuongtrinh\"],\"intro\":\"Bài này dùng phương trình đường tròn nhé.\",\"steps\":[{\"title\":\"Xác định dữ kiện\",\"detail\":\"Đề cho tâm $I(a; b)$ với $a = 2$, $b = 1$ và bán kính $R = 2$.\",\"expression\":\"\"},{\"title\":\"Áp dụng phương trình đường tròn\",\"detail\":\"Dùng công thức phương trình đường tròn với $a = 2$, $b = 1$, $R = 2$. Bạn tự thay số và rút gọn.\",\"expression\":\"(x - a)^2 + (y - b)^2 = R^2, \\\\text{ với } a = 2, b = 1, R = 2 \\\\Rightarrow (x - ?)^2 + (y - ?)^2 = ?\"}],\"reminder\":\"Bạn tự thay các số vào ô ? rồi thu gọn phương trình nhé!\"}"
+}
