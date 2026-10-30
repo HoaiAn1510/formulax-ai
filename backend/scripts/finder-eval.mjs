@@ -176,7 +176,7 @@ async function runCase(c, rep) {
       model: meta.model ?? null, fallback: meta.fallback?.reason ?? null, attempts: meta.attempts ?? null,
       promptTokens: meta.promptTokens ?? null, completionTokens: meta.completionTokens ?? null,
       candidates: meta.candidates ?? null, rawIds: meta.rawIds ?? null, formulaIds: ids, steps: steps.length,
-      truncated: Boolean(meta.truncated), jsonFailed: Boolean(meta.jsonFailed), baseKnowledge: meta.baseKnowledge ?? null,
+      truncated: Boolean(meta.truncated), jsonFailed: Boolean(meta.jsonFailed), baseKnowledge: meta.baseKnowledge ?? null, retriedForInvalidData: meta.retriedForInvalidData ?? null,
       rawLeak: Boolean(meta.retriedForLeaks), rawLeaked: meta.retriedForLeaks?.leaked ?? [],
       rewriteError: meta.retriedForLeaks?.error ?? null, stillLeakedAfterRewrite: meta.retriedForLeaks?.stillLeaked ?? [],
       rawForbiddenHits: forbiddenHits(rawOutputs[0] ?? "", c.forbidden),
@@ -227,6 +227,7 @@ const summary = {
   formulaOkWhenSolution: { yes: count((r) => r.type === "solution" && r.formulaOk), ofSolutions: solutions.length, rate: pct(count((r) => r.type === "solution" && r.formulaOk), solutions.length) },
   expectedMissingFromCandidates: results.filter((r) => r.type !== "error" && !r.expectedInCandidates).map((r) => r.caseId),
   ms: { avg: msList.length ? Math.round(msList.reduce((a, b) => a + b, 0) / msList.length) : null, max: msList.length ? Math.max(...msList) : null },
+  invalidDataRechecked: { runs: count((r) => r.retriedForInvalidData), toSolution: count((r) => r.retriedForInvalidData?.outcome === "solution") },
   fallbackModelUsed: count((r) => r.model && r.model === FINDER_FALLBACK_MODEL),
 };
 
@@ -244,6 +245,7 @@ lines.push(`finalLeak (chuỗi cấm còn lại ở phần HIỂN THỊ — PH�
 lines.push(`Bước cuối có ô ?: ${summary.endsWithBlank.yes}/${summary.endsWithBlank.ofSolutions} ca solution`);
 lines.push(`formulaOk: ${summary.formulaOk.yes}/${summary.formulaOk.ofRuns} = ${summary.formulaOk.rate} (trong các ca solution: ${summary.formulaOkWhenSolution.yes}/${summary.formulaOkWhenSolution.ofSolutions} = ${summary.formulaOkWhenSolution.rate})`);
 lines.push(`Thẻ mong đợi KHÔNG nằm trong ứng viên gửi AI (lỗi chọn ứng viên của app) ở ca: ${summary.expectedMissingFromCandidates.join(", ") || "không có"}`);
+lines.push(`AI báo invalid_data không kiểm chứng được → hỏi lại: ${summary.invalidDataRechecked.runs} lượt (ra solution sau khi hỏi lại: ${summary.invalidDataRechecked.toSolution})`);
 lines.push(`Thời gian: trung bình ${summary.ms.avg}ms · lớn nhất ${summary.ms.max}ms · ca dùng model dự phòng: ${summary.fallbackModelUsed}`);
 const text = lines.join("\n");
 console.log("\n" + text);
