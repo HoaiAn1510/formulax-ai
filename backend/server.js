@@ -21,6 +21,7 @@ import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
 import { decodeImagePayload, readProblemsFromImage, OcrError, OCR_BUDGET_MS, MAX_IMAGE_BYTES } from "./lib/ocrReader.js";
 import { createPerKeyLimiter } from "./lib/perKeyLimiter.js";
+import { generateVariant, VariantError, VARIANT_BUDGET_MS, MAX_FORMULA_IDS } from "./lib/quizVariant.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -401,6 +402,147 @@ app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
   } catch (err) {
     console.error("[FormulaX Backend] /api/chat/usage error:", err.message);
     res.status(500).json({ error: "Không đọc được hạn mức AI." });
+  }
+});
+
+// ─── POST /api/quiz/variant — "Luyện lại dạng bài đã hỏi" (QuizView) ──────────
+// Từ một đề học sinh đã hỏi AI Finder (+ id công thức của câu trả lời), Gemini sinh MỘT câu trắc nghiệm cùng
+// dạng, đổi số liệu, có đáp án + lời giải. Mỗi câu = 1 lượt AI Finder (chủ dự án chốt 2026-11-01), đếm ở cùng
+// bảng ai_usage_daily, hoàn lượt khi không giao được đề (lỗi Gemini, không qua kiểm) — xem lib/quizVariant.js.
+// Frontend gọi lần lượt từng bài (không song song) để không dồn hạn mức theo phút của Gemini.
+app.post("/api/quiz/variant", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
+  const requestDeadline = Date.now() + VARIANT_BUDGET_MS;
+  try {
+    const problem = typeof req.body?.problem === "string" ? req.body.problem.trim() : "";
+    if (!problem) return res.status(400).json({ error: "Thiếu đề gốc." });
+    if (problem.length > MAX_MESSAGE_CHARS) {
+      return res.status(400).json({ error: `Đề quá dài (tối đa ${MAX_MESSAGE_CHARS} ký tự).` });
+    }
+    const formulaIds = (Array.isArray(req.body?.formulaIds) ? req.body.formulaIds : [])
+      .filter((id) => typeof id === "string").slice(0, MAX_FORMULA_IDS);
+    const grade = [10, 11, 12].includes(Number(req.body?.grade)) ? Number(req.body.grade) : null;
+
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ error: "Lỗi cấu hình phía máy chủ, vui lòng thử lại sau" });
+    }
+
+    let authUser;
+    try {
+      authUser = await verifySupabaseUser(req);
+    } catch (err) {
+      return res.status(err.status || 401).json({ error: err.message });
+    }
+    if (authUser.is_anonymous) {
+      return res.status(403).json({ error: "Đăng nhập Google để dùng AI" });
+    }
+    const googleId = extractGoogleId(authUser);
+    if (!googleId) {
+      return res.status(403).json({ error: "Tài khoản chưa liên kết Google." });
+    }
+
+    const { data: userRow, error: userRowError } = await supabaseAdmin
+      .from("users")
+      .select("is_premium, premium_expiry")
+      .eq("google_id", googleId)
+      .maybeSingle();
+    if (userRowError) {
+      console.error("[FormulaX Backend] Đọc trạng thái Premium lỗi:", userRowError.message);
+      return res.status(503).json({ error: "Không xác thực được trạng thái tài khoản, thử lại sau." });
+    }
+    const isPremium = computeIsPremium(userRow);
+
+    const startedAt = Date.now();
+    const run = async () => ({
+      delivered: true,
+      ...(await generateVariant({ groq, problem, formulaIds, grade, deadline: requestDeadline })),
+    });
+
+    let outcome;
+    if (isPremium) {
+      outcome = { result: await run(), remaining: null };
+      bumpMetric("ai_premium_turn");
+    } else {
+      outcome = await runWithQuota({
+        limit: FREE_AI_DAILY_LIMIT,
+        reserve: async () => {
+          const { data, error } = await supabaseAdmin.rpc("increment_ai_usage", { p_google_id: googleId });
+          if (error) throw Object.assign(new Error(error.message), { quotaUnavailable: true });
+          return data;
+        },
+        refund: async () => {
+          const { data, error } = await supabaseAdmin.rpc("refund_ai_usage", { p_google_id: googleId });
+          if (error) throw new Error(error.message);
+          return data;
+        },
+        run,
+        onRefundError: (err) => console.error("[FormulaX Backend] refund_ai_usage lỗi:", err.message),
+      });
+      if (outcome.limited) {
+        bumpMetric("ai_quota_exceeded");
+        return res.status(429).json({
+          error: `Bạn đã dùng hết ${FREE_AI_DAILY_LIMIT} lượt AI miễn phí hôm nay. Nâng cấp Premium để luyện không giới hạn!`,
+          code: "quota_exceeded",
+          remaining: 0,
+        });
+      }
+    }
+
+    const { variant, meta } = outcome.result;
+    // Chỉ số liệu + id công thức — không ghi đề, google_id hay email.
+    console.log("[quiz:variant]", JSON.stringify({
+      model: meta.model, attempts: meta.attempts, fallback: meta.fallback?.reason || null,
+      verified: meta.verified, ids: variant.formulaIds, rejected: meta.errors.length, ms: Date.now() - startedAt,
+    }));
+    res.json({ ...variant, verified: meta.verified, remaining: outcome.remaining });
+  } catch (error) {
+    if (error.quotaUnavailable) {
+      console.error("[FormulaX Backend] increment_ai_usage lỗi:", error.message);
+      return res.status(503).json({ error: "Không kiểm tra được hạn mức AI, thử lại sau." });
+    }
+    const remainingInfo = typeof error.remaining === "number" ? { remaining: error.remaining } : {};
+    // Đề không qua kiểm: lượt đã hoàn, báo như Finder lúc AI bận. Log chỉ có danh sách lỗi (không có đề).
+    if (error instanceof VariantError) {
+      console.warn("[quiz:variant_rejected]", JSON.stringify({ attempts: error.meta?.attempts, errors: error.meta?.errors }));
+      return res.status(error.status).json({ error: "AI đang bận, bạn thử lại sau ít phút nhé", code: error.code, ...remainingInfo });
+    }
+    const status = error.status || error.statusCode || 500;
+    console.error("[FormulaX Backend] /api/quiz/variant error:", error.message);
+    if (status === 429) {
+      bumpMetric("ai_busy");
+      const retryAfter = retryAfterSeconds(error);
+      res.set("Retry-After", String(retryAfter));
+      return res.status(429).json({ error: "AI đang bận, bạn thử lại sau ít phút nhé", code: "ai_busy", retryAfter, ...remainingInfo });
+    }
+    res.status(status >= 400 && status < 600 ? status : 500).json({ error: "Không thể kết nối AI", ...remainingInfo });
+  }
+});
+
+// POST /api/quiz/variant/report — học sinh bấm "Báo đề sai" trên câu do AI tạo. Chỉ ghi một dòng log (chủ dự
+// án chốt 2026-11-01: không có bảng riêng): đề + lý do cắt ngắn, id công thức. KHÔNG ghi google_id/email —
+// xác thực chỉ để chặn spam ẩn danh.
+app.post("/api/quiz/variant/report", chatBurstLimiter, async (req, res) => {
+  try {
+    let authUser;
+    try {
+      authUser = await verifySupabaseUser(req);
+    } catch (err) {
+      return res.status(err.status || 401).json({ error: err.message });
+    }
+    if (authUser.is_anonymous) return res.status(403).json({ error: "Đăng nhập Google để gửi báo cáo" });
+    const clip = (v, n) => (typeof v === "string" ? v.replace(/\s+/g, " ").trim().slice(0, n) : "");
+    const question = clip(req.body?.question, 300);
+    if (!question) return res.status(400).json({ error: "Thiếu nội dung đề." });
+    console.warn("[quiz:variant_report]", JSON.stringify({
+      q: question,
+      reason: clip(req.body?.reason, 200),
+      answer: clip(req.body?.answer, 80),
+      ids: (Array.isArray(req.body?.formulaIds) ? req.body.formulaIds : []).filter((id) => typeof id === "string").slice(0, MAX_FORMULA_IDS),
+      verified: clip(req.body?.verified, 40) || null,
+    }));
+    res.status(204).end();
+  } catch (err) {
+    console.error("[FormulaX Backend] /api/quiz/variant/report error:", err.message);
+    res.status(500).json({ error: "Chưa gửi được báo cáo." });
   }
 });
 
