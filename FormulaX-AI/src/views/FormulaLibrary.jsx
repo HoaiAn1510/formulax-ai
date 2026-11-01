@@ -213,6 +213,8 @@ export default function FormulaLibrary({
 
   return (
     <PageShell
+      // Rộng 1440px, không có nét vẽ trang trí hai bên (chủ dự án chọn 2026-11-01: thư viện cần chỗ cho lưới thẻ).
+      width="wide"
       title="Thư viện công thức"
       description={savedActive
         ? `${filteredFormulas.length} công thức yêu thích`
