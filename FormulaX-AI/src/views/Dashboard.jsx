@@ -48,11 +48,12 @@ function getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, 
 }
 
 // 4 phím tắt — mỗi nút kèm một dòng nói rõ chức năng (góp ý của cô hướng dẫn).
+// bg: nền nhạt dần từ màu của mục sang trắng, cùng kiểu nền khung lời chào (bg-hero-amber). Bản tối giữ nền phẳng.
 const SHORTCUTS = [
-  { tab: "library", icon: BookOpen, label: "Thư viện", hint: "Tra công thức Toán 10–12 kèm ví dụ, mẹo nhớ", tone: "bg-[#DBEAFE] text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]" },
-  { tab: "finder", icon: Search, label: "Tìm kiếm AI", hint: "Gõ hoặc chụp đề, AI chỉ công thức cần dùng", tone: "bg-[#EDE9FE] text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]" },
-  { tab: "flashcard", icon: Zap, label: "Flashcard", hint: "Lật thẻ để thuộc công thức, app nhắc lại đúng lúc", tone: "bg-accent-light text-accent dark:bg-accent/20 dark:text-[#FCD34D]" },
-  { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", hint: "Làm đề có lời giải, luyện lại dạng bài đã hỏi AI", tone: "bg-[#FFE4E6] text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]" },
+  { tab: "library", icon: BookOpen, label: "Thư viện", hint: "Tra công thức Toán 10–12 kèm ví dụ, mẹo nhớ", tone: "bg-white text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]", bg: "bg-[linear-gradient(135deg,#DCEBFF_0%,#F3F8FF_55%,#FFFFFF_100%)]" },
+  { tab: "finder", icon: Search, label: "Tìm kiếm AI", hint: "Gõ hoặc chụp đề, AI chỉ công thức cần dùng", tone: "bg-white text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]", bg: "bg-[linear-gradient(135deg,#EDE6FF_0%,#F8F5FF_55%,#FFFFFF_100%)]" },
+  { tab: "flashcard", icon: Zap, label: "Flashcard", hint: "Lật thẻ để thuộc công thức, app nhắc lại đúng lúc", tone: "bg-white text-accent dark:bg-accent/20 dark:text-[#FCD34D]", bg: "bg-hero-amber" },
+  { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", hint: "Làm đề có lời giải, luyện lại dạng bài đã hỏi AI", tone: "bg-white text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]", bg: "bg-[linear-gradient(135deg,#FFE1E7_0%,#FFF5F7_55%,#FFFFFF_100%)]" },
 ];
 
 const CARD = "fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none";
@@ -220,14 +221,14 @@ export default function Dashboard({
 
           {/* ─── 4 phím tắt có chú thích (góp ý của cô hướng dẫn) — một hàng gọn ───── */}
           <section aria-label="Lối tắt" className="md:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-            {SHORTCUTS.map(({ tab, icon: Icon, label, hint, tone }) => (
+            {SHORTCUTS.map(({ tab, icon: Icon, label, hint, tone, bg }) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`${CARD} flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3.5 p-3.5 md:p-4 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
+                className={`${CARD} ${bg} dark:bg-none flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3.5 p-3.5 md:p-4 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
               >
-                <span className={`w-9 h-9 md:w-10 md:h-10 rounded-[10px] flex items-center justify-center shrink-0 ${tone}`}><Icon size={18} /></span>
+                <span className={`w-9 h-9 md:w-10 md:h-10 rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${tone}`}><Icon size={18} /></span>
                 <span className="min-w-0 flex flex-col gap-0.5">
                   <span className="text-[0.88rem] md:text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0]">{label}</span>
                   <span className="text-[0.72rem] leading-[1.4] text-text-muted dark:text-[#94A3B8]">{hint}</span>
