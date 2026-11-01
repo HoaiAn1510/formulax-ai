@@ -1,4 +1,5 @@
 import { ArrowLeft } from "lucide-react";
+import MathDecor from "./MathDecor";
 
 // Khung chung của mọi trang (theo mockup đã duyệt 2026-11-01): nền #F6F7FA phủ hết vùng nội dung, nội dung CĂN
 // GIỮA và có bề rộng tối đa — không trang nào trải hết chiều ngang màn hình lớn. Tiêu đề + mô tả cùng kiểu.
@@ -8,6 +9,12 @@ import { ArrowLeft } from "lucide-react";
 //   top: phần tử nằm NGOÀI khối căn giữa, ngay đầu trang (vd thanh CTA dính của Premium)
 // Không dùng overflow-hidden ở đây: position:sticky của con cháu sẽ hỏng (xem PremiumUpgrade.jsx).
 const WIDTHS = { narrow: "max-w-[760px]", default: "max-w-[1200px]", wide: "max-w-[1440px]" };
+// Nền trang trí toán học (MathDecor) ở hai dải lề trống: mỗi dải = (bề rộng khối nền − bề rộng nội dung) / 2.
+// Chỉ hiện khi mỗi dải còn khoảng 200px trở lên — khối nền ≈ màn hình − thanh bên 88px. Trang rộng 1440px không có.
+const DECOR = {
+  narrow: { gutter: "calc((100% - 760px) / 2)", show: "hidden min-[1250px]:block" },
+  default: { gutter: "calc((100% - 1200px) / 2)", show: "hidden min-[1690px]:block" },
+};
 
 export default function PageShell({
   title,
@@ -38,6 +45,7 @@ export default function PageShell({
       {top}
       {/* Có `top` thì phần tử đó đã kéo sát mép trên (-mt) — khối nền không kéo lên nữa để khỏi chui dưới nó. */}
       <div className={`relative min-h-full overflow-x-clip bg-page dark:bg-[#0F172A] ${top ? "" : "-mt-6 md:-mt-8"} -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 md:px-8 pb-8 md:pb-12`}>
+        {DECOR[width] && <MathDecor gutter={DECOR[width].gutter} show={DECOR[width].show} />}
         <div className={`relative z-[1] w-full mx-auto ${WIDTHS[width] || WIDTHS.default} ${innerClassName}`}>
           {onBack && (
             <button

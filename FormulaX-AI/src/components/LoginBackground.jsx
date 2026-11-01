@@ -1,4 +1,5 @@
 import { MathElement } from "../utils/katexHelper";
+import { DECOR_FORMULAS } from "../utils/decorFormulas";
 
 /**
  * Nền trang đăng nhập — thiết kế riêng của FormulaX: nền navy, hình học toán phát sáng xanh
@@ -22,15 +23,8 @@ import { MathElement } from "../utils/katexHelper";
  * dùng bật "giảm chuyển động" (prefers-reduced-motion).
  */
 
-const FORMULAS = {
-  cosin: "a² = b² + c² − 2bc·cos A", //          hh10-cosin
-  circle: "(x − a)² + (y − b)² = R²", //         hh10-duongtron-phuongtrinh
-  cone: "V = ⅓ π r² h", //                       hh12-khino-thetich
-  log: "y = logₐ x", //                          ds11-hamso-log
-  derivative: "(xⁿ)′ = n · xⁿ⁻¹", //             gt12-daoham-basic
-  trig: "sin²x + cos²x = 1", //                  lg11-congthuc-coban
-  sphere: "V = ⁴⁄₃ π R³", //                     hh12-matcau-thetich
-};
+// Danh sách công thức dùng chung với nền các trang trong app (components/MathDecor.jsx).
+const FORMULAS = DECOR_FORMULAS;
 
 // Công thức của lớp phụ: chuỗi LaTeX CHÉP NGUYÊN VĂN từ trường `latex` trong formulas.js, hiển thị
 // bằng KaTeX (ký hiệu vectơ, phân số không vẽ được đúng bằng ký tự Unicode thường).
