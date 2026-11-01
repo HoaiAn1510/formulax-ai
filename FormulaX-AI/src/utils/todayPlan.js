@@ -4,10 +4,11 @@
 // File thuần, không import gì — test bằng `npm run test:asked`.
 
 /**
- * Ba nhiệm vụ đo được sau khi tải lại trang (todayStats.formulasViewed reset mỗi lần refresh nên không
- * dùng). Việc học sinh chọn hôm nay được đưa lên đầu và đổi lời cho đúng ý.
+ * Hai nhiệm vụ đo được sau khi tải lại trang (todayStats.formulasViewed reset mỗi lần refresh nên không
+ * dùng). Việc học sinh chọn hôm nay được đưa lên đầu và đổi lời cho đúng ý. Nhiệm vụ "Trả lời thử thách
+ * hôm nay" đã bỏ cùng thẻ Thử thách trên Dashboard (chủ dự án chốt 2026-11-02).
  */
-export function buildGoals({ intent = null, todayStats = {}, challengeDone = false, weakTopic = null } = {}) {
+export function buildGoals({ intent = null, todayStats = {}, weakTopic = null } = {}) {
   const flash = todayStats.flashcardsStudied ?? 0;
   const quizzes = todayStats.quizzesCompleted ?? 0;
   const goals = [
@@ -21,7 +22,6 @@ export function buildGoals({ intent = null, todayStats = {}, challengeDone = fal
       label: weakTopic ? `Làm 1 bài kiểm tra (gợi ý: ${weakTopic})` : "Hoàn thành 1 bài kiểm tra",
       progress: `${Math.min(quizzes, 1)}/1`,
     },
-    { key: "challenge", tab: null, done: Boolean(challengeDone), label: "Trả lời thử thách hôm nay", progress: challengeDone ? "1/1" : "0/1" },
   ];
   const first = intent === "memorize" || intent === "forgot" ? "flashcard" : intent === "test" ? "quiz" : null;
   return first ? [...goals.filter((g) => g.key === first), ...goals.filter((g) => g.key !== first)] : goals;

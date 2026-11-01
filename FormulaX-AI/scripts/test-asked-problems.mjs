@@ -100,7 +100,7 @@ test("runSequential: gọi lần lượt, không song song; dừng khi hết lư
 
 test("buildGoals: việc chọn hôm nay lên đầu, gợi ý chủ đề yếu", () => {
   const stats = { flashcardsStudied: 6, quizzesCompleted: 0 };
-  assert.deepEqual(buildGoals({ todayStats: stats }).map((g) => g.key), ["flashcard", "quiz", "challenge"]);
+  assert.deepEqual(buildGoals({ todayStats: stats }).map((g) => g.key), ["flashcard", "quiz"]);
   const test = buildGoals({ intent: "test", todayStats: stats, weakTopic: "Lượng giác" });
   assert.equal(test[0].key, "quiz");
   assert.match(test[0].label, /Lượng giác/);
@@ -113,10 +113,10 @@ test("headline + isNewLearner", () => {
   assert.equal(isNewLearner({ streak: 2 }), false);
   assert.equal(isNewLearner({ viewedCount: 1 }), false);
   assert.match(headline({ isNew: true }), /Chào mừng/);
-  const goals = buildGoals({ todayStats: { flashcardsStudied: 5, quizzesCompleted: 1 }, challengeDone: true });
+  const goals = buildGoals({ todayStats: { flashcardsStudied: 5, quizzesCompleted: 1 } });
   assert.match(headline({ goals, streak: 3, todayStats: { flashcardsStudied: 5 } }), /Xong hết/);
   assert.match(headline({ goals: buildGoals({}), streak: 4, todayStats: {} }), /giữ chuỗi 4 ngày/);
-  assert.match(headline({ goals: buildGoals({}), streak: 0, todayStats: {} }), /Còn 3 nhiệm vụ/);
+  assert.match(headline({ goals: buildGoals({}), streak: 0, todayStats: {} }), /Còn 2 nhiệm vụ/);
 });
 
 test("nextStep: theo lựa chọn hôm nay, rồi tới công thức gợi ý", () => {

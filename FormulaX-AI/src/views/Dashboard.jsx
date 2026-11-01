@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, Search, Zap, ClipboardList, ChevronRight, ArrowRight, Flame, Check, Lock, BarChart2, Gem, GraduationCap, Sparkles } from "lucide-react";
 import CountUp from "../components/CountUp";
 import Confetti from "../components/Confetti";
-import DailyChallengeCard from "../components/DailyChallengeCard";
 import GuestLockNotice from "../components/GuestLockNotice";
 import MimiMascot from "../components/MimiMascot";
 import { getActivityData } from "../lib/supabase";
@@ -73,8 +72,6 @@ export default function Dashboard({
   weakTopics,
   recentTopic,
   viewedFormulaIds,
-  dailyChallenge,
-  onSaveDailyChallenge,
   flashcardProgress = {},
 }) {
   // Khách: chuỗi ngày học, nhiệm vụ, thống kê là tiến độ cá nhân → khóa. Gợi ý công thức và
@@ -111,8 +108,7 @@ export default function Dashboard({
   // Nhiệm vụ hôm nay — chỉ dùng tiêu chí có số liệu đáng tin cậy sau khi tải lại trang.
   // todayStats.formulasViewed reset về 0 mỗi lần refresh (không có truy vấn "hôm nay" từ
   // Supabase cho mục này như quiz/flashcard) nên không dùng làm tiêu chí ở đây.
-  const [dailyChallengeDone, setDailyChallengeDone] = useState(false);
-  const goals = buildGoals({ intent, todayStats, challengeDone: dailyChallengeDone, weakTopic: weakTopics?.[0] || null });
+  const goals = buildGoals({ intent, todayStats, weakTopic: weakTopics?.[0] || null });
   const doneCount = goals.filter(g => g.done).length;
   const prevDoneCountRef = useRef(doneCount);
   const [showGoalConfetti, setShowGoalConfetti] = useState(false);
@@ -129,11 +125,7 @@ export default function Dashboard({
   });
   const step = nextStep({ intent, weakTopics, recentTopic, userGrade, formula: recommendedFormulas[0] || null, dueCount });
   const goNext = () => (step.formula ? onViewDetail(step.formula) : setActiveTab(step.tab));
-  const challengeRef = useRef(null);
-  const openGoal = (g) => {
-    if (g.tab) setActiveTab(g.tab);
-    else challengeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
+  const openGoal = (g) => setActiveTab(g.tab);
 
   return (
     <PageShell innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
@@ -309,13 +301,9 @@ export default function Dashboard({
             </section>
           )}
 
-          {/* ─── Cột phải: Thử thách hôm nay + Gợi ý hôm nay (danh sách gọn ngay dưới) ─── */}
-          <div className={`${isNew ? "md:col-span-12" : "md:col-span-7"} flex flex-col gap-3 md:gap-5`}>
-            <div ref={challengeRef} className="[&>*]:!mb-0">
-              <DailyChallengeCard user={user} userGrade={userGrade} savedRecord={dailyChallenge} onSave={onSaveDailyChallenge} onAnswered={() => setDailyChallengeDone(true)} />
-            </div>
-
-            <section aria-label="Gợi ý hôm nay" className={`${CARD} p-4 md:p-6`}>
+          {/* ─── Cột phải: Gợi ý hôm nay (thẻ Thử thách hôm nay đã bỏ — chủ dự án chốt 2026-11-02) ─── */}
+          <div className={`${isNew ? "md:col-span-12" : "md:col-span-7"} flex flex-col`}>
+            <section aria-label="Gợi ý hôm nay" className={`${CARD} flex-1 p-4 md:p-6`}>
               <div className="flex justify-between items-baseline gap-3 mb-2 md:mb-3">
                 <div className={LABEL}>Gợi ý hôm nay</div>
                 <span className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] font-medium truncate">
