@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   LayoutDashboard, BookOpen, Sparkles, Layers, GraduationCap,
-  LogOut, Bell, ChevronDown, User, Settings, LogIn, Lock, UserRound, BookOpenText,
+  LogOut, Bell, ChevronDown, User, Settings, LogIn, Lock, UserRound, BookOpenText, Crown,
 } from "lucide-react";
 import { useGuestGate } from "../utils/useGuestGate";
 import { USER_MANUAL_URL } from "../config/links";
@@ -54,6 +54,9 @@ export default function BottomNav({
     { id: "finder",    label: "Finder AI",  icon: Sparkles },
     { id: "flashcard", label: "Flashcard",  icon: Layers },
     { id: "quiz",      label: "Luyện đề",   icon: GraduationCap },
+    // Lối vào trang Premium luôn có trên thanh điều hướng (trước đây chỉ qua các nút "Nâng cấp" rải trong app).
+    // highlight: vương miện màu amber khi chưa chọn để dễ thấy.
+    { id: "premium",   label: "Premium",    icon: Crown, highlight: true },
   ];
 
   const notifList = notifications || [];
@@ -111,7 +114,7 @@ export default function BottomNav({
             title={tab.label}
           >
             <ActiveAccentBar show={active} />
-            <div className={navIconClass(active)}><Icon size={20} /></div>
+            <div className={`${navIconClass(active)} ${tab.highlight && !active ? "!text-premium" : ""}`}><Icon size={20} /></div>
             <span className={collapsibleLabel}>{tab.label}</span>
           </button>
         );
