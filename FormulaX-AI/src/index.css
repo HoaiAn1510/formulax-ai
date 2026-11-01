@@ -22,6 +22,14 @@
   --shadow-glass-card-hover: 0 8px 20px rgba(15, 23, 42, 0.08);
 
   /* Dashboard "Hôm nay" + Thư viện theo mockup đã duyệt (2026-11-01): nền sáng hơi lạnh, viền thẻ mảnh. */
+  /* Màn rất rộng (≥ 1800px) — Thư viện lên 5 cột. Phải khai báo tên breakpoint: dạng viết tay min-[1800px]: bị
+     xl: đè vì Tailwind xếp breakpoint viết tay trước breakpoint có tên. */
+  --breakpoint-3xl: 112.5rem;
+
+  /* Nền nút chính: cùng màu mục đang chọn ở thanh bên (chủ dự án chọn 2026-11-01, thay cho #0F172A gần đen)
+     + màu rê chuột. Bản tối vẫn amber. */
+  --color-navy-btn: #29589C;
+  --color-navy-btn-hover: #1E3A5F;
   --color-page: #F6F7FA;
   --color-line: #E6E9F0;
   --shadow-fx-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 22px -14px rgba(15, 23, 42, 0.12);
@@ -44,6 +52,11 @@
    ngoài không có tác dụng. Thêm .rt-inherit vào khung để chữ ăn theo cỡ/khoảng dòng của khung (đề Kiểm tra). */
 .rt-inherit .detail-paragraph-line { font-size: inherit; line-height: inherit; margin: 0; color: inherit; }
 .rt-inherit .detail-paragraph-line + .detail-paragraph-line { margin-top: 0.4em; }
+
+/* Nét vẽ toán học hai bên lề (components/MathDecor.jsx): quầng xanh navy rất nhẹ cho cảm giác "dạ quang". Bản tối
+   dùng quầng xanh lơ giống nền trang đăng nhập. */
+.math-decor-glow { filter: drop-shadow(0 0 3px rgba(41, 88, 156, 0.35)) drop-shadow(0 0 8px rgba(59, 130, 246, 0.18)); }
+.dark-mode .math-decor-glow { filter: drop-shadow(0 0 3px rgba(56, 189, 248, 0.45)) drop-shadow(0 0 10px rgba(56, 189, 248, 0.2)); }
 
 /* Linh vật Mimi (components/MimiMascot.jsx): chớp mắt, vẫy tai, ký hiệu toán bay nhẹ. Tắt hẳn khi người
    dùng bật "giảm chuyển động". */

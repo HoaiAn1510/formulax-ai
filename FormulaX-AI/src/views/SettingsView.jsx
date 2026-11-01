@@ -71,7 +71,7 @@ export default function SettingsView({
   };
 
   return (
-    <PageShell width="narrow">
+    <PageShell width="narrow" decor={false}>
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
             <button aria-label="Về trang chủ"

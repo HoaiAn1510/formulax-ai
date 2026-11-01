@@ -794,7 +794,7 @@ export default function FormulaFinder({
     // min-height, nên kích thước của nó tính theo nội dung: chat dài hoặc ví dụ của khách kéo giãn
     // cả khung và đẩy ô nhập ra khỏi màn hình thay vì cuộn bên trong. contain-size bỏ phần nội
     // dung ra khỏi phép tính đó — view chỉ lấp đúng phần trống giữa header và thanh điều hướng.
-    <PageShell fill width="wide" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
+    <PageShell fill width="full" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
 
       {/* Tiêu đề + lượt còn lại (mockup Tìm kiếm AI) */}
       <div className="flex justify-between items-end gap-3 mb-3 md:mb-4 md:pt-2">
@@ -846,7 +846,7 @@ export default function FormulaFinder({
           {/* New chat button */}
           <button
             onClick={startNewChat}
-            className="w-full flex items-center justify-center gap-2 py-3 px-3 mb-3 bg-primary dark:bg-accent text-white border-none rounded-[12px] cursor-pointer text-[0.85rem] font-semibold transition-colors hover:bg-navy-secondary dark:hover:bg-accent-hover"
+            className="w-full flex items-center justify-center gap-2 py-3 px-3 mb-3 bg-navy-btn dark:bg-accent text-white border-none rounded-[12px] cursor-pointer text-[0.85rem] font-semibold transition-colors hover:bg-navy-btn-hover dark:hover:bg-accent-hover"
           >
             <Plus size={15} />
             Chat mới
@@ -1178,7 +1178,7 @@ export default function FormulaFinder({
               </span>
               <button
                 onClick={() => setActiveTab("premium")}
-                className="flex items-center gap-1 bg-primary dark:bg-accent text-white border-none rounded-full py-1 px-2.5 text-[0.7rem] font-semibold cursor-pointer"
+                className="flex items-center gap-1 bg-navy-btn dark:bg-accent text-white border-none rounded-full py-1 px-2.5 text-[0.7rem] font-semibold cursor-pointer"
               >
                 <Crown size={11} className="text-[#FBBF24] dark:text-white" />
                 <span className="sm:hidden">Nâng cấp</span>
@@ -1238,7 +1238,7 @@ export default function FormulaFinder({
                 aria-label="Gửi câu hỏi"
                 className={`w-10 h-10 md:w-11 md:h-11 rounded-[12px] border-none flex items-center justify-center cursor-pointer transition-colors shrink-0 ${
                   query.trim() && (isPremium || aiQueriesLeft !== 0)
-                    ? "bg-primary text-white dark:bg-accent"
+                    ? "bg-navy-btn text-white dark:bg-accent"
                     : "bg-[#EEF1F6] dark:bg-[#334155] text-text-muted"
                 }`}
                 disabled={isAnalyzing || !query.trim() || (!isPremium && aiQueriesLeft === 0)}

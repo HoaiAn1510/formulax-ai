@@ -168,12 +168,12 @@ export default function FormulaLibrary({
 
   const searchBox = (
     <div className="relative w-full md:w-[420px]" ref={searchContainerRef}>
-      <div className="relative flex items-center w-full h-[46px] px-4 rounded-[14px] bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] focus-within:border-accent transition-colors">
-        <Search size={18} className="text-text-muted dark:text-[#94A3B8] mr-2.5 shrink-0" />
+      <div className="relative flex items-center w-full h-12 px-4 rounded-[14px] bg-white dark:bg-[#1E293B] border-[1.5px] border-[#CBD5E1] dark:border-[#475569] shadow-[0_6px_18px_-10px_rgba(41,88,156,0.45)] focus-within:border-navy-btn dark:focus-within:border-accent focus-within:ring-4 focus-within:ring-navy-btn/15 dark:focus-within:ring-accent/20 transition-[border-color,box-shadow]">
+        <Search size={19} strokeWidth={2.4} className="text-navy-btn dark:text-accent mr-2.5 shrink-0" />
         <input
           type="text"
           aria-label="Tìm công thức"
-          className="flex-1 min-w-0 border-none outline-none bg-transparent text-[0.92rem] text-primary dark:text-[#E2E8F0] placeholder:text-text-muted dark:placeholder:text-[#94A3B8]"
+          className="flex-1 min-w-0 border-none outline-none bg-transparent text-[0.95rem] font-medium text-primary dark:text-[#E2E8F0] placeholder:text-[#475569] dark:placeholder:text-[#CBD5E1]"
           placeholder="Tìm công thức, ví dụ: đạo hàm, cos..."
           value={searchQuery}
           onChange={handleSearchChange}
@@ -213,6 +213,8 @@ export default function FormulaLibrary({
 
   return (
     <PageShell
+      // Giãn hết bề ngang, không có nét vẽ trang trí hai bên (chủ dự án chọn 2026-11-01: thư viện cần chỗ cho lưới thẻ).
+      width="full"
       title="Thư viện công thức"
       description={savedActive
         ? `${filteredFormulas.length} công thức yêu thích`
@@ -253,7 +255,7 @@ export default function FormulaLibrary({
           aria-label="Yêu thích"
           title="Yêu thích"
           onClick={() => handleTopicClick(savedActive ? "Tất cả" : "Yêu thích")}
-          className={`w-11 h-11 shrink-0 rounded-[12px] border flex items-center justify-center cursor-pointer transition-colors ${savedActive ? "bg-primary border-primary text-white dark:bg-accent dark:border-accent" : "bg-white dark:bg-[#1E293B] border-line dark:border-[#334155] text-[#E11D48]"}`}
+          className={`w-11 h-11 shrink-0 rounded-[12px] border flex items-center justify-center cursor-pointer transition-colors ${savedActive ? "bg-navy-btn border-navy-btn text-white dark:bg-accent dark:border-accent" : "bg-white dark:bg-[#1E293B] border-line dark:border-[#334155] text-[#E11D48]"}`}
         >
           {isGuest ? <Lock size={16} className="text-accent" /> : <Heart size={17} fill={savedActive ? "currentColor" : "none"} />}
         </button>
@@ -329,7 +331,7 @@ export default function FormulaLibrary({
         </h2>
         <span className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">{filteredFormulas.length} công thức</span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-3 md:gap-5">
         {filteredFormulas.length > 0 ? (
           filteredFormulas.map((formula) => {
             const isBookmarked = bookmarkedIds.includes(formula.id);
@@ -361,7 +363,7 @@ export default function FormulaLibrary({
                 <div className="flex gap-2 mt-auto pt-1">
                   <button
                     type="button"
-                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-primary dark:bg-accent text-white text-[0.8rem] font-semibold border-none cursor-pointer transition-colors hover:bg-navy-secondary dark:hover:bg-accent-hover"
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white text-[0.8rem] font-semibold border-none cursor-pointer transition-colors hover:bg-navy-btn-hover dark:hover:bg-accent-hover"
                     onClick={() => onViewDetail(formula)}
                   >
                     <BookOpen size={14} />

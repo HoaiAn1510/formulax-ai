@@ -427,7 +427,7 @@ export default function QuizView({
   };
 
   return (
-    <PageShell
+    <PageShell width="full"
       title={quizState === "setup" ? "Kiểm tra" : undefined}
       description={quizState === "setup" ? "Làm đề có sẵn có lời giải, hoặc luyện lại đúng dạng bài bạn đã hỏi AI với số liệu mới." : undefined}
       onBack={quizState === "setup" ? () => setActiveTab("dashboard") : undefined}
@@ -510,7 +510,7 @@ export default function QuizView({
                     aria-selected={setupMode === id}
                     onClick={() => setSetupMode(id)}
                     className={`flex flex-col items-center gap-0.5 rounded-[11px] py-2.5 px-2 border-none cursor-pointer transition-colors ${
-                      setupMode === id ? "bg-primary text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"
+                      setupMode === id ? "bg-navy-btn text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"
                     }`}
                   >
                     <span className="flex items-center gap-1.5 text-[0.85rem] font-semibold"><Icon size={15} /> {label}</span>
@@ -711,7 +711,7 @@ export default function QuizView({
                               }
                             }}
                             className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 rounded-[10px] py-2.5 px-1 border-none cursor-pointer text-[0.78rem] sm:text-[0.85rem] font-semibold transition-colors ${
-                              quizType === id ? "bg-primary text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"
+                              quizType === id ? "bg-navy-btn text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"
                             }`}
                           >
                             <Icon size={15} />
