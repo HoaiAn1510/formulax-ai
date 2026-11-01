@@ -172,7 +172,7 @@ export default function Dashboard({
                   <button
                     type="button"
                     onClick={goNext}
-                    className="mt-3 md:mt-5 w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-[13px] bg-primary dark:bg-accent text-white font-semibold text-[0.95rem] px-6 py-[13px] border-none cursor-pointer shadow-[0_10px_22px_-10px_rgba(15,23,42,0.6)] transition-colors hover:bg-navy-secondary dark:hover:bg-accent-hover"
+                    className="mt-3 md:mt-5 w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-[13px] bg-navy-btn dark:bg-accent text-white font-semibold text-[0.95rem] px-6 py-[13px] border-none cursor-pointer shadow-[0_10px_22px_-10px_rgba(15,23,42,0.6)] transition-colors hover:bg-navy-btn-hover dark:hover:bg-accent-hover"
                   >
                     Học tiếp <ArrowRight size={16} strokeWidth={2.6} />
                   </button>

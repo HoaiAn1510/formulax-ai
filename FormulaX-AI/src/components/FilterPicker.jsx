@@ -78,7 +78,7 @@ export default function FilterPicker({ label, summary, options, onToggle, highli
             <button
               type="button"
               onClick={() => setOpen(false)}
-              className="w-full h-10 rounded-[10px] bg-primary dark:bg-accent text-white text-[0.85rem] font-semibold border-none cursor-pointer"
+              className="w-full h-10 rounded-[10px] bg-navy-btn dark:bg-accent text-white text-[0.85rem] font-semibold border-none cursor-pointer"
             >
               Xong
             </button>

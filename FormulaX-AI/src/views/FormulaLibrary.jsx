@@ -253,7 +253,7 @@ export default function FormulaLibrary({
           aria-label="Yêu thích"
           title="Yêu thích"
           onClick={() => handleTopicClick(savedActive ? "Tất cả" : "Yêu thích")}
-          className={`w-11 h-11 shrink-0 rounded-[12px] border flex items-center justify-center cursor-pointer transition-colors ${savedActive ? "bg-primary border-primary text-white dark:bg-accent dark:border-accent" : "bg-white dark:bg-[#1E293B] border-line dark:border-[#334155] text-[#E11D48]"}`}
+          className={`w-11 h-11 shrink-0 rounded-[12px] border flex items-center justify-center cursor-pointer transition-colors ${savedActive ? "bg-navy-btn border-navy-btn text-white dark:bg-accent dark:border-accent" : "bg-white dark:bg-[#1E293B] border-line dark:border-[#334155] text-[#E11D48]"}`}
         >
           {isGuest ? <Lock size={16} className="text-accent" /> : <Heart size={17} fill={savedActive ? "currentColor" : "none"} />}
         </button>
@@ -361,7 +361,7 @@ export default function FormulaLibrary({
                 <div className="flex gap-2 mt-auto pt-1">
                   <button
                     type="button"
-                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-primary dark:bg-accent text-white text-[0.8rem] font-semibold border-none cursor-pointer transition-colors hover:bg-navy-secondary dark:hover:bg-accent-hover"
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white text-[0.8rem] font-semibold border-none cursor-pointer transition-colors hover:bg-navy-btn-hover dark:hover:bg-accent-hover"
                     onClick={() => onViewDetail(formula)}
                   >
                     <BookOpen size={14} />
