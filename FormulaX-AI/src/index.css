@@ -40,6 +40,11 @@
   background: linear-gradient(135deg, #FFF1CC 0%, #FFFBF0 55%, #FFFFFF 100%);
 }
 
+/* RichTextRenderer bọc mỗi dòng trong .detail-paragraph-line (App.css: cỡ 0.88rem, lề 8px) — cỡ chữ đặt ở khung
+   ngoài không có tác dụng. Thêm .rt-inherit vào khung để chữ ăn theo cỡ/khoảng dòng của khung (đề Kiểm tra). */
+.rt-inherit .detail-paragraph-line { font-size: inherit; line-height: inherit; margin: 0; color: inherit; }
+.rt-inherit .detail-paragraph-line + .detail-paragraph-line { margin-top: 0.4em; }
+
 /* Linh vật Mimi (components/MimiMascot.jsx): chớp mắt, vẫy tai, ký hiệu toán bay nhẹ. Tắt hẳn khi người
    dùng bật "giảm chuyển động". */
 @keyframes mimi-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
