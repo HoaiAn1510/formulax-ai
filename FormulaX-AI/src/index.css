@@ -20,6 +20,36 @@
 
   --shadow-glass-card: 0 2px 6px rgba(15, 23, 42, 0.05);
   --shadow-glass-card-hover: 0 8px 20px rgba(15, 23, 42, 0.08);
+
+  /* Dashboard "Hôm nay" + Thư viện theo mockup đã duyệt (2026-11-01): nền sáng hơi lạnh, viền thẻ mảnh. */
+  --color-page: #F6F7FA;
+  --color-line: #E6E9F0;
+  --shadow-fx-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 22px -14px rgba(15, 23, 42, 0.12);
+}
+
+/* Thẻ của Dashboard "Hôm nay" (mockup): trắng, viền mảnh, bo 18px. Bản tối thêm bằng dark: ở nơi dùng. */
+@utility fx-card {
+  background: #FFFFFF;
+  border: 1px solid var(--color-line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-fx-card);
+}
+
+/* Nền hero lời chào — amber rất nhạt (mockup). Bản tối dùng dark:bg-[...] phẳng ở nơi dùng. */
+@utility bg-hero-amber {
+  background: linear-gradient(135deg, #FFF1CC 0%, #FFFBF0 55%, #FFFFFF 100%);
+}
+
+/* Linh vật Mimi (components/MimiMascot.jsx): chớp mắt, vẫy tai, ký hiệu toán bay nhẹ. Tắt hẳn khi người
+   dùng bật "giảm chuyển động". */
+@keyframes mimi-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
+@keyframes mimi-ear { 0%, 88%, 100% { transform: rotate(0); } 92% { transform: rotate(-8deg); } 96% { transform: rotate(3deg); } }
+@keyframes mimi-sym { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.mimi-blink { transform-box: fill-box; transform-origin: center; animation: mimi-blink 4.5s infinite; }
+.mimi-ear { transform-box: fill-box; transform-origin: 50% 100%; animation: mimi-ear 6s ease-in-out infinite; }
+.mimi-sym { animation: mimi-sym 3.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .mimi-blink, .mimi-ear, .mimi-sym { animation: none; }
 }
 
 /* Design tokens Navy+Amber dùng chung. Đây là nguồn sự thật duy nhất về màu/shadow/radius,
