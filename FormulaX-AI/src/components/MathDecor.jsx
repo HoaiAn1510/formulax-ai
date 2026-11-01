@@ -5,9 +5,11 @@ import { DECOR_FORMULAS as F } from "../utils/decorFormulas";
 // aria-hidden, không bắt chuột, dính theo khi cuộn (sticky). Công thức lấy từ utils/decorFormulas.js (chép từ
 // formulas.js, có ghi id). Chỉ hiện khi lề đủ rộng — lớp `show` do PageShell truyền theo bề rộng nội dung.
 
-const LINE = "stroke-[#CBD5E1] dark:stroke-[#334155]";
+// Nét và chữ: xanh navy phát sáng nhẹ (chủ dự án chọn 2026-11-01, thay cho xám) — quầng sáng do lớp `.math-decor-glow`
+// (index.css). Điểm nhấn amber giữ nguyên.
+const LINE = "stroke-[#3B6FB6]/60 dark:stroke-[#38BDF8]/45";
 const ACCENT = "stroke-[#F59E0B]/55 dark:stroke-[#D97706]/50";
-const TEXT = "fill-[#94A3B8] dark:fill-[#475569]";
+const TEXT = "fill-[#29589C]/75 dark:fill-[#7DD3FC]/60";
 const LABEL = "fill-[#B45309]/60 dark:fill-[#D97706]/55";
 
 function Formula({ x, y, children, anchor = "start", size = 14 }) {
@@ -20,7 +22,7 @@ function Formula({ x, y, children, anchor = "start", size = 14 }) {
 
 function LeftArt() {
   return (
-    <svg viewBox="0 0 260 820" preserveAspectRatio="xMidYMin meet" className="w-full h-full overflow-visible" fill="none" strokeWidth="1.4" strokeLinecap="round">
+    <svg viewBox="0 0 260 820" preserveAspectRatio="xMidYMin meet" className="math-decor-glow w-full h-full overflow-visible" fill="none" strokeWidth="1.4" strokeLinecap="round">
       {/* Tam giác + định lý côsin (hh10-cosin) */}
       <path d="M48 70 L48 210 L214 210 Z" className={LINE} />
       <path d="M48 196 L62 196 L62 210" className={ACCENT} />
@@ -48,7 +50,7 @@ function LeftArt() {
 
 function RightArt() {
   return (
-    <svg viewBox="0 0 260 820" preserveAspectRatio="xMidYMin meet" className="w-full h-full overflow-visible" fill="none" strokeWidth="1.4" strokeLinecap="round">
+    <svg viewBox="0 0 260 820" preserveAspectRatio="xMidYMin meet" className="math-decor-glow w-full h-full overflow-visible" fill="none" strokeWidth="1.4" strokeLinecap="round">
       {/* Đường tròn + phương trình đường tròn (hh10-duongtron-phuongtrinh) */}
       <circle cx="140" cy="150" r="78" className={LINE} />
       <path d="M140 150 L196 96" className={ACCENT} />

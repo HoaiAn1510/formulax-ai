@@ -49,6 +49,11 @@
 .rt-inherit .detail-paragraph-line { font-size: inherit; line-height: inherit; margin: 0; color: inherit; }
 .rt-inherit .detail-paragraph-line + .detail-paragraph-line { margin-top: 0.4em; }
 
+/* Nét vẽ toán học hai bên lề (components/MathDecor.jsx): quầng xanh navy rất nhẹ cho cảm giác "dạ quang". Bản tối
+   dùng quầng xanh lơ giống nền trang đăng nhập. */
+.math-decor-glow { filter: drop-shadow(0 0 3px rgba(41, 88, 156, 0.35)) drop-shadow(0 0 8px rgba(59, 130, 246, 0.18)); }
+.dark-mode .math-decor-glow { filter: drop-shadow(0 0 3px rgba(56, 189, 248, 0.45)) drop-shadow(0 0 10px rgba(56, 189, 248, 0.2)); }
+
 /* Linh vật Mimi (components/MimiMascot.jsx): chớp mắt, vẫy tai, ký hiệu toán bay nhẹ. Tắt hẳn khi người
    dùng bật "giảm chuyển động". */
 @keyframes mimi-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
