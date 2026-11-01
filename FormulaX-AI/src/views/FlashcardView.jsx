@@ -586,7 +586,7 @@ export default function FlashcardView({
     );
 
     return (
-      <PageShell title="Flashcard" description="Lật thẻ để thuộc công thức. App nhắc lại đúng lúc bạn sắp quên." onBack={() => setActiveTab("dashboard")}>
+      <PageShell width="full" title="Flashcard" description="Lật thẻ để thuộc công thức. App nhắc lại đúng lúc bạn sắp quên." onBack={() => setActiveTab("dashboard")}>
         {!hasDecks ? (
           /* EMPTY STATE */
           <div className={`${CARD} relative max-w-[640px] mx-auto mt-[60px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-10 flex flex-col items-center text-center gap-3`}>
@@ -611,7 +611,7 @@ export default function FlashcardView({
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:items-start">
             {/* Cột trái: ôn tập hôm nay + tạo bộ mới */}
-            <aside className="lg:col-span-4 flex flex-col gap-3 md:gap-4">
+            <aside className="lg:col-span-4 2xl:col-span-3 flex flex-col gap-3 md:gap-4">
               {dueReviewPreviewIds.length > 0 && (
                 <button
                   type="button"
@@ -640,11 +640,11 @@ export default function FlashcardView({
             </aside>
 
             {/* Cột phải: các bộ thẻ */}
-            <section className="lg:col-span-8 flex flex-col gap-5 md:gap-6">
+            <section className="lg:col-span-8 2xl:col-span-9 flex flex-col gap-5 md:gap-6">
               {filteredDecks.length > 0 && (
                 <div>
                   <div className={`${LABEL} mb-3`}>Theo chủ đề</div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
                     {filteredDecks.map(deck => deckCard(deck, "filtered"))}
                   </div>
                 </div>
@@ -652,7 +652,7 @@ export default function FlashcardView({
               {favoriteDecks.length > 0 && (
                 <div>
                   <div className={`${LABEL} mb-3`}>Yêu thích</div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
                     {favoriteDecks.map(deck => deckCard(deck, "favorite"))}
                   </div>
                 </div>
@@ -680,7 +680,7 @@ export default function FlashcardView({
     // No cards in deck
     if (cards.length === 0) {
       return (
-        <PageShell>
+        <PageShell width="full">
           <div className={`${CARD} max-w-[520px] mx-auto p-8 flex flex-col items-center text-center gap-3`}>
             <HelpCircle size={32} className="text-[#CBD5E1]" />
             <h2 className="m-0 text-[1.15rem] font-bold text-primary dark:text-[#E2E8F0]">Bộ thẻ trống</h2>
@@ -696,7 +696,7 @@ export default function FlashcardView({
     const isFavoriteDeck = activeDeck?.type === "favorite";
 
     return (
-      <PageShell onBack={() => setView("list")} backLabel="Danh sách bộ thẻ">
+      <PageShell width="full" onBack={() => setView("list")} backLabel="Danh sách bộ thẻ">
         <div className="flex flex-col items-center w-full max-w-[820px] mx-auto gap-4 md:gap-5 [animation:fadeIn_0.3s_ease-out]">
           {/* Tiến độ */}
           <div className="w-full flex items-center gap-3 md:gap-4">
@@ -810,7 +810,7 @@ export default function FlashcardView({
   if (view === "summary") {
     const rate = cards.length > 0 ? Math.round((rememberedCount / cards.length) * 100) : 0;
     return (
-      <PageShell>
+      <PageShell width="full">
         <div className={`${CARD} relative max-w-[560px] mx-auto mt-[70px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-9 flex flex-col items-center text-center gap-3`}>
           <MimiMascot width={170} className="absolute left-1/2 -translate-x-1/2 -top-[96px]" />
           <div className={`${LABEL} mt-6`}>Hoàn thành bộ thẻ</div>

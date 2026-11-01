@@ -794,7 +794,7 @@ export default function FormulaFinder({
     // min-height, nên kích thước của nó tính theo nội dung: chat dài hoặc ví dụ của khách kéo giãn
     // cả khung và đẩy ô nhập ra khỏi màn hình thay vì cuộn bên trong. contain-size bỏ phần nội
     // dung ra khỏi phép tính đó — view chỉ lấp đúng phần trống giữa header và thanh điều hướng.
-    <PageShell fill width="wide" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
+    <PageShell fill width="full" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
 
       {/* Tiêu đề + lượt còn lại (mockup Tìm kiếm AI) */}
       <div className="flex justify-between items-end gap-3 mb-3 md:mb-4 md:pt-2">

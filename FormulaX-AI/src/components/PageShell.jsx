@@ -26,6 +26,8 @@ export default function PageShell({
   width = "default",
   className = "",
   innerClassName = "",
+  // decor={false}: tắt nét vẽ toán học hai bên lề dù bề rộng có hỗ trợ (trang Cài đặt).
+  decor = true,
   // fill: trang tự lo chiều cao (khung chat của Tìm kiếm AI) — không đệm/nền tràn, chỉ căn giữa + giới hạn bề rộng.
   fill = false,
   children,
@@ -47,7 +49,7 @@ export default function PageShell({
       {top}
       {/* Có `top` thì phần tử đó đã kéo sát mép trên (-mt) — khối nền không kéo lên nữa để khỏi chui dưới nó. */}
       <div className={`relative min-h-full overflow-x-clip bg-page dark:bg-[#0F172A] ${top ? "" : "-mt-6 md:-mt-8"} -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 md:px-8 pb-8 md:pb-12`}>
-        {DECOR[width] && <MathDecor gutter={DECOR[width].gutter} show={DECOR[width].show} />}
+        {decor && DECOR[width] && <MathDecor gutter={DECOR[width].gutter} show={DECOR[width].show} />}
         <div className={`relative z-[1] w-full mx-auto ${WIDTHS[width] || WIDTHS.default} ${innerClassName}`}>
           {onBack && (
             <button

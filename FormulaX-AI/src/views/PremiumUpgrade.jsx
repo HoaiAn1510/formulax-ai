@@ -286,7 +286,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   }, []);
 
   return (
-    <PageShell top={(<>
+    <PageShell width="full" top={(<>
       {/* Thanh CTA dính - phải nằm NGOÀI div overflow-hidden bên dưới, vì position:sticky
           không hoạt động nếu có tổ tiên nào đó overflow:hidden/auto/scroll (giới hạn CSS). */}
       {!isPremium && (

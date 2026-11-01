@@ -427,7 +427,7 @@ export default function QuizView({
   };
 
   return (
-    <PageShell
+    <PageShell width="full"
       title={quizState === "setup" ? "Kiểm tra" : undefined}
       description={quizState === "setup" ? "Làm đề có sẵn có lời giải, hoặc luyện lại đúng dạng bài bạn đã hỏi AI với số liệu mới." : undefined}
       onBack={quizState === "setup" ? () => setActiveTab("dashboard") : undefined}
