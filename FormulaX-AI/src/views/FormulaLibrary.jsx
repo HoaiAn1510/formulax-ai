@@ -165,16 +165,6 @@ export default function FormulaLibrary({
     return 0;
   });
 
-  // Số công thức mỗi chủ đề theo bộ lọc lớp hiện tại — hiện trên thẻ chủ đề.
-  const topicCounts = useMemo(() => {
-    const counts = {};
-    for (const f of formulas) {
-      if (gradeMode === "custom" && !selectedGrades.includes(f.grade.toString())) continue;
-      counts[f.topic] = (counts[f.topic] || 0) + 1;
-    }
-    return counts;
-  }, [formulas, gradeMode, selectedGrades]);
-
   const searchBox = (
     <div className="relative w-full md:w-[420px]" ref={searchContainerRef}>
       <div className="relative flex items-center w-full h-[46px] px-4 rounded-[14px] bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] focus-within:border-accent transition-colors">
@@ -266,7 +256,8 @@ export default function FormulaLibrary({
           </button>
         )}
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-7 md:mb-9">
+      {/* Nút gọn (biểu tượng + tên) — số công thức đã hiện ở tiêu đề danh sách bên dưới, không lặp lại ở đây. */}
+      <div className="flex flex-wrap gap-2 mb-6 md:mb-8">
         {topics.filter((t) => TOPIC_STYLE[t]).map((topic) => {
           const isActive = topicMode === "custom" && selectedTopics.includes(topic);
           const { glyph, tone } = TOPIC_STYLE[topic];
@@ -276,13 +267,14 @@ export default function FormulaLibrary({
               type="button"
               aria-pressed={isActive}
               onClick={() => handleTopicClick(topic)}
-              className={`${CARD} p-3.5 md:p-4 flex flex-col items-start gap-3 text-left cursor-pointer transition-[transform,border-color] duration-200 hover:-translate-y-0.5 ${isActive ? "!border-accent ring-2 ring-accent/20" : ""}`}
+              className={`inline-flex items-center gap-2 h-10 pl-1 pr-3.5 rounded-full border text-[0.85rem] font-semibold cursor-pointer transition-colors ${
+                isActive
+                  ? "border-accent bg-accent-light text-[#92400E] dark:bg-accent/15 dark:text-[#FCD34D]"
+                  : "border-line dark:border-[#334155] bg-white dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0] hover:border-[#CBD5E1] dark:hover:border-[#475569]"
+              }`}
             >
-              <span className={`w-10 h-10 md:w-11 md:h-11 rounded-[12px] flex items-center justify-center font-[Georgia,serif] italic font-bold text-[1rem] ${tone}`}>{glyph}</span>
-              <span>
-                <span className="block text-[0.9rem] md:text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0] leading-[1.3]">{topic}</span>
-                <span className="block mt-0.5 text-[0.75rem] text-text-muted dark:text-[#94A3B8]">{topicCounts[topic] || 0} công thức</span>
-              </span>
+              <span className={`min-w-8 h-8 px-1.5 rounded-full flex items-center justify-center font-[Georgia,serif] italic font-bold text-[0.78rem] shrink-0 ${tone}`}>{glyph}</span>
+              {topic}
             </button>
           );
         })}
