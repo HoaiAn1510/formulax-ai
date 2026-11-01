@@ -15,6 +15,7 @@ import { checkFillAnswer, isFillEligible } from "../utils/fillAnswer";
 import { extractAskedProblems, togglePick, MAX_VARIANT_PICK } from "../utils/askedProblems";
 import { toVariantQuestion, variantQuizTopic, runSequential } from "../utils/variantQuiz";
 import PageShell from "../components/PageShell";
+import FilterPicker from "../components/FilterPicker";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 // 45 giây PHẢI lớn hơn ngân sách 40 giây/request của backend (VARIANT_BUDGET_MS trong
@@ -607,7 +608,31 @@ export default function QuizView({
                   <section className={`${CARD} lg:col-span-7 p-4 md:p-8 flex flex-col gap-6`}>
                     <h2 className="m-0 text-[1.05rem] md:text-[1.2rem] font-bold text-primary dark:text-[#E2E8F0]">Tùy chỉnh bài kiểm tra</h2>
 
-                    <div>
+                    {/* Điện thoại: hai ô chọn bấm mở danh sách (giống Thư viện) thay cho hai hàng chip. */}
+                    <div className="md:hidden flex items-stretch gap-2">
+                      <FilterPicker
+                        label="Lớp"
+                        summary={allGradeMode || selectedGrades.length === 0 ? "Tất cả các lớp" : selectedGrades.map((g) => `Lớp ${g}`).join(", ")}
+                        highlighted={!allGradeMode}
+                        options={[
+                          { value: "Tất cả các lớp", label: "Tất cả các lớp", active: allGradeMode },
+                          ...[10, 11, 12].map((g) => ({ value: g, label: `Lớp ${g}`, active: !allGradeMode && selectedGrades.includes(g) })),
+                        ]}
+                        onToggle={handleGradeClick}
+                      />
+                      <FilterPicker
+                        label="Chủ đề"
+                        summary={allMode || selectedTopics.length === 0 ? "Tất cả chủ đề" : (selectedTopics.length > 1 ? `${selectedTopics[0]} +${selectedTopics.length - 1}` : selectedTopics[0])}
+                        highlighted={!allMode}
+                        options={[
+                          { value: "Tất cả chủ đề", label: "Tất cả chủ đề", active: allMode },
+                          ...specificTopics.map((t) => ({ value: t, label: t, active: !allMode && selectedTopics.includes(t) })),
+                        ]}
+                        onToggle={handleTopicClick}
+                      />
+                    </div>
+
+                    <div className="hidden md:block">
                       <div className="flex items-center gap-2 mb-3">
                         <div className={LABEL}>Chủ đề</div>
                         {!allMode && selectedTopics.length > 0 && (
@@ -628,7 +653,7 @@ export default function QuizView({
                       )}
                     </div>
 
-                    <div>
+                    <div className="hidden md:block">
                       <div className="flex items-center gap-2 mb-3">
                         <div className={LABEL}>Lớp</div>
                         {!allGradeMode && selectedGrades.length > 0 && (
