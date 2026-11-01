@@ -33,7 +33,9 @@ export default function PageShell({
   if (fill) {
     return (
       <div className={`view-container ${className}`}>
-        <div className={`w-full h-full min-h-0 mx-auto flex flex-col ${WIDTHS[width] || WIDTHS.default} ${innerClassName}`}>
+        {/* flex-1 (không chỉ h-full): trên điện thoại h-full không giãn theo khung ngoài → khung chat chỉ cao bằng
+            nội dung, chừa khoảng trắng lớn phía dưới. */}
+        <div className={`w-full h-full flex-1 min-h-0 mx-auto flex flex-col ${WIDTHS[width] || WIDTHS.default} ${innerClassName}`}>
           {children}
         </div>
       </div>
