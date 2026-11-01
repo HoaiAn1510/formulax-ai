@@ -2,7 +2,7 @@ import { DECOR_FORMULAS as F } from "../utils/decorFormulas";
 
 // Nền trang trí cho các trang trong app (PageShell): nét vẽ toán học mảnh, mờ ở HAI DẢI LỀ TRỐNG hai bên nội dung
 // — cùng ý với nền trang đăng nhập (LoginBackground.jsx) nhưng tông sáng hợp nền #F6F7FA, có bản tối. Chỉ trang trí:
-// aria-hidden, không bắt chuột, dính theo khi cuộn (sticky). Công thức lấy từ utils/decorFormulas.js (chép từ
+// aria-hidden, không bắt chuột, cuộn cùng trang. Công thức lấy từ utils/decorFormulas.js (chép từ
 // formulas.js, có ghi id). Chỉ hiện khi lề đủ rộng — lớp `show` do PageShell truyền theo bề rộng nội dung.
 
 // Nét và chữ: xanh navy phát sáng nhẹ (chủ dự án chọn 2026-11-01, thay cho xám) — quầng sáng do lớp `.math-decor-glow`
@@ -78,20 +78,24 @@ function RightArt() {
 }
 
 // gutter: bề rộng mỗi dải lề tính bằng CSS (truyền từ PageShell), show: lớp ẩn/hiện theo breakpoint.
+// Cuộn cùng trang (không dính): mỗi bên là một cột hình vẽ lặp lại theo chiều dọc, đổi bên xen kẽ cho đỡ trùng lặp;
+// trang dài hơn số khối này thì phần dưới để trống, khối thừa bị cắt (overflow-hidden).
+const REPEAT = 4;
+
 export default function MathDecor({ gutter, show }) {
-  const side = "absolute top-0 bottom-0 pointer-events-none select-none";
+  const side = "absolute top-0 bottom-0 overflow-hidden pointer-events-none select-none";
+  const column = (first) => Array.from({ length: REPEAT }, (_, k) => {
+    const Art = (k % 2 === 0) === first ? LeftArt : RightArt;
+    return (
+      <div key={k} className="h-[900px] px-6 pt-16 pb-10 opacity-90">
+        <Art />
+      </div>
+    );
+  });
   return (
     <div aria-hidden="true" className={`${show} absolute inset-0 z-0 pointer-events-none`}>
-      <div className={`${side} left-0`} style={{ width: gutter }}>
-        <div className="sticky top-0 h-screen max-h-[900px] px-6 pt-16 pb-10 opacity-90">
-          <LeftArt />
-        </div>
-      </div>
-      <div className={`${side} right-0`} style={{ width: gutter }}>
-        <div className="sticky top-0 h-screen max-h-[900px] px-6 pt-16 pb-10 opacity-90">
-          <RightArt />
-        </div>
-      </div>
+      <div className={`${side} left-0`} style={{ width: gutter }}>{column(true)}</div>
+      <div className={`${side} right-0`} style={{ width: gutter }}>{column(false)}</div>
     </div>
   );
 }
