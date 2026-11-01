@@ -213,8 +213,8 @@ export default function FormulaLibrary({
 
   return (
     <PageShell
-      // Rộng 1440px, không có nét vẽ trang trí hai bên (chủ dự án chọn 2026-11-01: thư viện cần chỗ cho lưới thẻ).
-      width="wide"
+      // Giãn hết bề ngang, không có nét vẽ trang trí hai bên (chủ dự án chọn 2026-11-01: thư viện cần chỗ cho lưới thẻ).
+      width="full"
       title="Thư viện công thức"
       description={savedActive
         ? `${filteredFormulas.length} công thức yêu thích`
@@ -331,7 +331,7 @@ export default function FormulaLibrary({
         </h2>
         <span className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">{filteredFormulas.length} công thức</span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-3 md:gap-5">
         {filteredFormulas.length > 0 ? (
           filteredFormulas.map((formula) => {
             const isBookmarked = bookmarkedIds.includes(formula.id);

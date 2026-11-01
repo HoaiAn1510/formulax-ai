@@ -3,12 +3,12 @@ import MathDecor from "./MathDecor";
 
 // Khung chung của mọi trang (theo mockup đã duyệt 2026-11-01): nền #F6F7FA phủ hết vùng nội dung, nội dung CĂN
 // GIỮA và có bề rộng tối đa — không trang nào trải hết chiều ngang màn hình lớn. Tiêu đề + mô tả cùng kiểu.
-//   width: "narrow" (760px — làm bài, cài đặt), "default" (1200px), "wide" (1440px)
+//   width: "narrow" (760px — làm bài, cài đặt), "default" (1200px), "wide" (1440px), "full" (giãn hết bề ngang — Thư viện)
 //   onBack: có thì hiện nút "Về trang chủ" (hoặc backLabel) phía trên tiêu đề
 //   actions: phần tử đặt bên phải tiêu đề (ô tìm kiếm, nút…); xuống dòng dưới tiêu đề trên điện thoại
 //   top: phần tử nằm NGOÀI khối căn giữa, ngay đầu trang (vd thanh CTA dính của Premium)
 // Không dùng overflow-hidden ở đây: position:sticky của con cháu sẽ hỏng (xem PremiumUpgrade.jsx).
-const WIDTHS = { narrow: "max-w-[760px]", default: "max-w-[1200px]", wide: "max-w-[1440px]" };
+const WIDTHS = { narrow: "max-w-[760px]", default: "max-w-[1200px]", wide: "max-w-[1440px]", full: "max-w-none" };
 // Nền trang trí toán học (MathDecor) ở hai dải lề trống: mỗi dải = (bề rộng khối nền − bề rộng nội dung) / 2.
 // Chỉ hiện khi mỗi dải còn khoảng 200px trở lên — khối nền ≈ màn hình − thanh bên 88px. Trang rộng 1440px không có.
 const DECOR = {

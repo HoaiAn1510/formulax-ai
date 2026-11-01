@@ -22,6 +22,10 @@
   --shadow-glass-card-hover: 0 8px 20px rgba(15, 23, 42, 0.08);
 
   /* Dashboard "Hôm nay" + Thư viện theo mockup đã duyệt (2026-11-01): nền sáng hơi lạnh, viền thẻ mảnh. */
+  /* Màn rất rộng (≥ 1800px) — Thư viện lên 5 cột. Phải khai báo tên breakpoint: dạng viết tay min-[1800px]: bị
+     xl: đè vì Tailwind xếp breakpoint viết tay trước breakpoint có tên. */
+  --breakpoint-3xl: 112.5rem;
+
   /* Nền nút chính: cùng màu mục đang chọn ở thanh bên (chủ dự án chọn 2026-11-01, thay cho #0F172A gần đen)
      + màu rê chuột. Bản tối vẫn amber. */
   --color-navy-btn: #29589C;
