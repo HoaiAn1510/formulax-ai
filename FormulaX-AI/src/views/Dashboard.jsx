@@ -128,7 +128,7 @@ export default function Dashboard({
   const openGoal = (g) => setActiveTab(g.tab);
 
   return (
-    <PageShell innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
+    <PageShell width="wide" innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
 
           {/* ─── Hero: lời chào + Học tiếp ─────────────────────────────────── */}
           <section
