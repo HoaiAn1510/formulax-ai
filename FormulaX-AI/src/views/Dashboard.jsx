@@ -48,11 +48,12 @@ function getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, 
 }
 
 // 4 phím tắt — mỗi nút kèm một dòng nói rõ chức năng (góp ý của cô hướng dẫn).
+// bg: nền nhạt dần từ màu của mục sang trắng, cùng kiểu nền khung lời chào (bg-hero-amber). Bản tối giữ nền phẳng.
 const SHORTCUTS = [
-  { tab: "library", icon: BookOpen, label: "Thư viện", hint: "Tra công thức Toán 10–12 kèm ví dụ, mẹo nhớ", tone: "bg-[#DBEAFE] text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]" },
-  { tab: "finder", icon: Search, label: "Tìm kiếm AI", hint: "Gõ hoặc chụp đề, AI chỉ công thức cần dùng", tone: "bg-[#EDE9FE] text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]" },
-  { tab: "flashcard", icon: Zap, label: "Flashcard", hint: "Lật thẻ để thuộc công thức, app nhắc lại đúng lúc", tone: "bg-accent-light text-accent dark:bg-accent/20 dark:text-[#FCD34D]" },
-  { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", hint: "Làm đề có lời giải, luyện lại dạng bài đã hỏi AI", tone: "bg-[#FFE4E6] text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]" },
+  { tab: "library", icon: BookOpen, label: "Thư viện", hint: "Tra công thức Toán 10–12 kèm ví dụ, mẹo nhớ", tone: "bg-white text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]", bg: "bg-[linear-gradient(135deg,#DCEBFF_0%,#F3F8FF_55%,#FFFFFF_100%)]" },
+  { tab: "finder", icon: Search, label: "Tìm kiếm AI", hint: "Gõ hoặc chụp đề, AI chỉ công thức cần dùng", tone: "bg-white text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]", bg: "bg-[linear-gradient(135deg,#EDE6FF_0%,#F8F5FF_55%,#FFFFFF_100%)]" },
+  { tab: "flashcard", icon: Zap, label: "Flashcard", hint: "Lật thẻ để thuộc công thức, app nhắc lại đúng lúc", tone: "bg-white text-accent dark:bg-accent/20 dark:text-[#FCD34D]", bg: "bg-hero-amber" },
+  { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", hint: "Làm đề có lời giải, luyện lại dạng bài đã hỏi AI", tone: "bg-white text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]", bg: "bg-[linear-gradient(135deg,#FFE1E7_0%,#FFF5F7_55%,#FFFFFF_100%)]" },
 ];
 
 const CARD = "fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none";
@@ -128,7 +129,7 @@ export default function Dashboard({
   const openGoal = (g) => setActiveTab(g.tab);
 
   return (
-    <PageShell innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
+    <PageShell width="wide" innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
 
           {/* ─── Hero: lời chào + Học tiếp ─────────────────────────────────── */}
           <section
@@ -220,14 +221,14 @@ export default function Dashboard({
 
           {/* ─── 4 phím tắt có chú thích (góp ý của cô hướng dẫn) — một hàng gọn ───── */}
           <section aria-label="Lối tắt" className="md:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-            {SHORTCUTS.map(({ tab, icon: Icon, label, hint, tone }) => (
+            {SHORTCUTS.map(({ tab, icon: Icon, label, hint, tone, bg }) => (
               <button
                 key={tab}
                 type="button"
                 onClick={() => setActiveTab(tab)}
-                className={`${CARD} flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3.5 p-3.5 md:p-4 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
+                className={`${CARD} ${bg} dark:bg-none flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3.5 p-3.5 md:p-4 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
               >
-                <span className={`w-9 h-9 md:w-10 md:h-10 rounded-[10px] flex items-center justify-center shrink-0 ${tone}`}><Icon size={18} /></span>
+                <span className={`w-9 h-9 md:w-10 md:h-10 rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${tone}`}><Icon size={18} /></span>
                 <span className="min-w-0 flex flex-col gap-0.5">
                   <span className="text-[0.88rem] md:text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0]">{label}</span>
                   <span className="text-[0.72rem] leading-[1.4] text-text-muted dark:text-[#94A3B8]">{hint}</span>
@@ -255,29 +256,28 @@ export default function Dashboard({
                   <div className="h-1 rounded-full bg-[#EEF1F6] dark:bg-[#334155] mt-2.5 mb-3 md:mt-3.5 md:mb-4">
                     <div className="h-full rounded-full bg-[linear-gradient(90deg,#10B981,#F59E0B)] transition-[width] duration-500" style={{ width: `${(doneCount / goals.length) * 100}%` }} />
                   </div>
-                  <ul className="list-none m-0 p-0 flex flex-col gap-1 md:gap-1.5">
-                    {goals.map((g, i) => {
-                      const current = !g.done && goals.findIndex((x) => !x.done) === i;
-                      return (
+                  {/* Mọi nhiệm vụ cùng một kiểu khung (trước đây nhiệm vụ đầu tiên chưa xong được tô vàng riêng —
+                      trông lệch, chủ dự án góp ý 2026-11-02). */}
+                  <ul className="list-none m-0 p-0 flex flex-col gap-2">
+                    {goals.map((g) => (
                         <li key={g.key}>
                           <button
                             type="button"
                             onClick={() => openGoal(g)}
-                            className={`w-full flex items-center gap-2.5 md:gap-3 text-left border-none px-2 py-2 md:py-2.5 rounded-[10px] cursor-pointer transition-colors ${current ? "bg-accent-light/60 dark:bg-accent/10" : "bg-transparent hover:bg-page dark:hover:bg-white/5"}`}
+                            className="w-full flex items-center gap-2.5 md:gap-3 text-left rounded-[12px] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] px-3 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
                           >
                             {g.done ? (
                               <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-success text-white flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
                             ) : (
-                              <span className={`w-5 h-5 md:w-6 md:h-6 rounded-full border-2 shrink-0 ${current ? "border-premium" : "border-[#CBD5E1] dark:border-[#475569]"}`} />
+                              <span className="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#CBD5E1] dark:border-[#475569] shrink-0" />
                             )}
-                            <span className={`flex-1 text-[0.85rem] md:text-[0.9rem] font-semibold ${g.done ? "text-text-muted dark:text-[#94A3B8] line-through decoration-1" : current ? "text-[#B45309] dark:text-[#FCD34D]" : "text-primary dark:text-[#E2E8F0]"}`}>
+                            <span className={`flex-1 text-[0.85rem] md:text-[0.9rem] font-semibold ${g.done ? "text-text-muted dark:text-[#94A3B8] line-through decoration-1" : "text-primary dark:text-[#E2E8F0]"}`}>
                               {g.label}
                             </span>
                             {!g.done && <ChevronRight size={15} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
                           </button>
                         </li>
-                      );
-                    })}
+                    ))}
                   </ul>
                 </>
               )}

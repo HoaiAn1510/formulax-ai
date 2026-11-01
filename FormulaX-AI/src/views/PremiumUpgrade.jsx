@@ -42,10 +42,20 @@ class Gem3DErrorBoundary extends React.Component {
 }
 
 const GEM_FALLBACK = (
-  <div className="absolute inset-0 flex items-start justify-center pt-10">
+  <div className="absolute inset-0 flex items-center justify-center">
     <Crown size={100} fill="#F59E0B" color="#F59E0B" />
   </div>
 );
+
+// Tiêu đề từng phần của trang — canh trái như các trang khác (trước đây canh giữa, chữ đậm hơn).
+function SectionTitle({ title, sub }) {
+  return (
+    <div className="mb-4 md:mb-5">
+      <h2 className="m-0 text-[1.1rem] md:text-[1.25rem] font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">{title}</h2>
+      {sub && <p className="m-0 mt-1 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">{sub}</p>}
+    </div>
+  );
+}
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -286,7 +296,11 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   }, []);
 
   return (
-    <PageShell width="full" top={(<>
+    <PageShell
+      width="full"
+      title="Premium"
+      description="Hỏi AI không giới hạn, luyện đề đủ dạng và xem phân tích tiến độ chi tiết."
+      top={(<>
       {/* Thanh CTA dính - phải nằm NGOÀI div overflow-hidden bên dưới, vì position:sticky
           không hoạt động nếu có tổ tiên nào đó overflow:hidden/auto/scroll (giới hạn CSS). */}
       {!isPremium && (
@@ -306,7 +320,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
       )}
 
       </>)}>
-          <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-12">
+          <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-8 md:gap-10">
 
             {/* Payment notice — hiện sau khi PayOS redirect người dùng quay lại */}
             {paymentNotice && (
@@ -332,57 +346,36 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               </div>
             )}
 
-            {/* Section 1: Hero Banner */}
-            <div className="bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] py-10 px-6 rounded-2xl text-center text-white relative shadow-[0_10px_30px_rgba(15,23,42,0.15)] overflow-hidden">
-              {/* Lưới chấm mờ trang trí nền — thuần CSS, tạo chiều sâu cho hero, không ảnh hưởng nội dung */}
-              <div
-                className="absolute inset-0 pointer-events-none opacity-[0.15]"
-                style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
-              />
-
-              {/* Viên đá 3D + sao trải kín — canvas full-bleed phủ trọn khung hero, không còn là
-                  ô vuông nhỏ. Sparkles bên trong PremiumGem3D.jsx tự lo phần "đầy sao khắp khung". */}
-              <div className="absolute inset-0 z-0">
-                {WEBGL_SUPPORTED ? (
-                  <Gem3DErrorBoundary fallback={GEM_FALLBACK}>
-                    <Suspense fallback={GEM_FALLBACK}>
-                      <PremiumGem3D />
-                    </Suspense>
-                  </Gem3DErrorBoundary>
-                ) : (
-                  GEM_FALLBACK
-                )}
-              </div>
-
-              {/* pointer-events-none để chuột "xuyên" xuống canvas 3D bên dưới (kéo xoay viên
-                  đá) — chỉ bật lại pointer-events-auto cho từng nút thật cần bấm được. */}
-              <div className="relative z-[1] pointer-events-none">
-                <div className="mb-3">
-                  <span className="bg-premium/15 text-premium text-xs font-bold py-1 px-3 rounded-[20px]">
-                    {isPremium ? "THÀNH VIÊN PREMIUM" : "CHƯƠNG TRÌNH KHUYÊN DÙNG"}
-                  </span>
-                </div>
-
-                {/* Chỗ trống giữ đúng nhịp bố cục cũ — viên đá thật render ở lớp nền phía sau (canvas full-bleed) */}
-                <div style={{ height: 260 }} aria-hidden="true" />
+            {/* Section 1: Hero — giao diện mới (2026-11-02): bên trái chữ + chọn gói trên nền amber nhạt (cùng kiểu
+                khung lời chào Dashboard), bên phải ô navy riêng cho viên đá 3D + sao. */}
+            <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+              <div className="bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-10 flex flex-col">
+                <span className="self-start text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#B45309] dark:text-[#FCD34D] bg-white/70 dark:bg-accent/15 border border-[#F1E3BF] dark:border-accent/30 rounded-full py-1 px-3">
+                  {isPremium ? "Thành viên Premium" : "Chương trình khuyên dùng"}
+                </span>
 
                 {isPremium ? (
-                  <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
-                    Bạn đang là{" "}
-                    <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">Premium</span>
-                    !
-                  </h1>
+                  <h2 className="mt-4 mb-0 text-[1.6rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">
+                    Bạn đang là <span className="text-accent dark:text-[#FCD34D]">Premium</span>!
+                  </h2>
                 ) : (
-                  <h1 className="text-[1.5rem] font-extrabold text-white mb-2">
-                    Mở khóa toàn bộ sức mạnh{" "}
-                    <span className="bg-[linear-gradient(90deg,#FCD34D_0%,#D97706_100%)] bg-clip-text text-transparent">FormulaX AI</span>
-                  </h1>
+                  <h2 className="mt-4 mb-0 text-[1.6rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">
+                    Mở khóa toàn bộ sức mạnh <span className="text-accent dark:text-[#FCD34D]">FormulaX AI</span>
+                  </h2>
                 )}
+
+                <p className="m-0 mt-2.5 text-[0.88rem] md:text-[0.95rem] text-text-muted dark:text-[#94A3B8] leading-[1.6] max-w-[520px]">
+                  {isPremium
+                    ? "Cảm ơn bạn đã đồng hành cùng FormulaX AI! Gia hạn sớm để việc ôn tập không bị gián đoạn."
+                    : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý AI hướng dẫn cách giải."}
+                </p>
 
                 {/* Trạng thái gói — chỉ hiện khi đã là Premium và biết ngày hết hạn */}
                 {isPremium && expiryInfo && (
                   <div
-                    className={`inline-flex items-center gap-2 mx-auto mb-4 py-2 px-4 rounded-xl text-[0.8rem] font-bold ${expiryInfo.daysLeft <= 7 ? "bg-premium/15 text-premium" : "bg-success/15 text-success"
+                    className={`self-start inline-flex items-center gap-2 mt-4 py-2 px-3.5 rounded-[12px] text-[0.8rem] font-semibold border ${expiryInfo.daysLeft <= 7
+                        ? "bg-accent-light/70 text-[#92400E] border-[#F1E3BF] dark:bg-accent/15 dark:text-[#FCD34D] dark:border-accent/30"
+                        : "bg-[#DCFCE7]/70 text-[#047857] border-[#BBF7D0] dark:bg-success/15 dark:text-[#6EE7B7] dark:border-success/30"
                       }`}
                   >
                     <Clock size={15} className="shrink-0" />
@@ -395,42 +388,38 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 )}
 
                 {/* Plan selector — user Premium cũng dùng để gia hạn thêm (thời gian cộng dồn vào hạn hiện có) */}
-                <div className="flex items-stretch justify-center gap-2.5 my-4 max-w-[420px] mx-auto">
+                <div className="grid grid-cols-2 gap-2.5 md:gap-3 mt-6 max-w-[460px]">
                   {["monthly", "6months"].map((planId) => {
                     const isSelected = selectedPlan === planId;
                     return (
                       <button
                         key={planId}
                         type="button"
+                        aria-pressed={isSelected}
                         onClick={() => setSelectedPlan(planId)}
-                        className={`relative flex-1 rounded-xl py-2.5 px-3 text-left border-[1.5px] transition-all duration-200 cursor-pointer pointer-events-auto ${isSelected
-                            ? "border-premium bg-premium/10"
-                            : "border-white/15 bg-white/5 hover:border-white/30"
+                        className={`relative rounded-[14px] py-3 px-3.5 text-left border-[1.5px] transition-colors duration-200 cursor-pointer ${isSelected
+                            ? "border-accent bg-white dark:bg-[#0F172A] shadow-[0_8px_20px_-12px_rgba(217,119,6,0.6)]"
+                            : "border-line bg-white/70 dark:border-[#334155] dark:bg-[#0F172A]/60 hover:border-[#F1E3BF]"
                           }`}
                       >
                         {planId === "6months" && (
-                          <span className="absolute -top-2 right-2 bg-success text-white text-[0.62rem] font-extrabold py-0.5 px-1.5 rounded-full">
+                          <span className="absolute -top-2.5 right-2.5 bg-success text-white text-[0.62rem] font-bold py-0.5 px-2 rounded-full">
                             Tiết kiệm {SIX_MONTH_SAVINGS_PERCENT}%
                           </span>
                         )}
-                        <div className="text-[0.72rem] font-bold text-[#CBD5E1] uppercase tracking-[0.03em]">{PLAN_DISPLAY[planId].label}</div>
-                        <div className="text-[1.05rem] font-extrabold text-white">
-                          {PLAN_DISPLAY[planId].price}
-                          <span className="text-[0.68rem] font-semibold text-[#94A3B8] ml-1">{PLAN_DISPLAY[planId].unit}</span>
+                        <div className="text-[0.68rem] font-semibold tracking-[0.06em] text-text-muted dark:text-[#94A3B8] uppercase">{PLAN_DISPLAY[planId].label}</div>
+                        <div className="mt-0.5 text-[1.05rem] md:text-[1.15rem] font-bold text-primary dark:text-[#E2E8F0]">
+                          <span className="whitespace-nowrap">{PLAN_DISPLAY[planId].price}</span>
+                          {/* Điện thoại: đơn vị xuống dòng riêng — trước đây "49.000 đ /tháng" bị ngắt giữa số và "đ". */}
+                          <span className="block sm:inline text-[0.7rem] font-medium text-text-muted dark:text-[#94A3B8] sm:ml-1">{PLAN_DISPLAY[planId].unit}</span>
                         </div>
                       </button>
                     );
                   })}
                 </div>
 
-                <p className="text-[0.85rem] text-[#CBD5E1] max-w-[480px] mx-auto mb-5 leading-[1.5]">
-                  {isPremium
-                    ? "Cảm ơn bạn đã đồng hành cùng FormulaX AI! Gia hạn sớm để việc ôn tập không bị gián đoạn."
-                    : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý AI hướng dẫn cách giải."}
-                </p>
-
                 <button
-                  className="btn btn-premium vibrate w-full max-w-[300px] h-[46px] text-[0.95rem] rounded-lg disabled:opacity-60 disabled:cursor-not-allowed pointer-events-auto"
+                  className="btn btn-premium vibrate mt-5 w-full max-w-[460px] h-[48px] text-[0.95rem] rounded-[13px] disabled:opacity-60 disabled:cursor-not-allowed"
                   onClick={() => handleUpgrade(selectedPlan)}
                   disabled={isProcessing}
                 >
@@ -449,34 +438,48 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     loại hẳn nút này (import.meta.env.DEV = false), người dùng thật không thấy. */}
                 {import.meta.env.DEV && isPremium && (
                   <button
-                    className="block mx-auto mt-3 bg-transparent border-none text-[0.72rem] text-[#94A3B8] underline cursor-pointer pointer-events-auto"
+                    className="self-start mt-3 bg-transparent border-none p-0 text-[0.72rem] text-text-muted dark:text-[#94A3B8] underline cursor-pointer"
                     onClick={handleDowngrade}
                   >
                     Trở về gói Free (giả lập — chỉ để test)
                   </button>
                 )}
               </div>
+
+              {/* Ô viên đá 3D — nền navy + lưới chấm mờ; canvas phủ trọn ô (kéo để xoay viên đá). */}
+              <div className="relative min-h-[260px] md:min-h-[340px] bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] overflow-hidden">
+                <div
+                  className="absolute inset-0 pointer-events-none opacity-[0.15]"
+                  style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
+                />
+                <div className="absolute inset-0">
+                  {WEBGL_SUPPORTED ? (
+                    <Gem3DErrorBoundary fallback={GEM_FALLBACK}>
+                      <Suspense fallback={GEM_FALLBACK}>
+                        <PremiumGem3D centered />
+                      </Suspense>
+                    </Gem3DErrorBoundary>
+                  ) : (
+                    GEM_FALLBACK
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Section 3: Goals Grid */}
             <div>
-              <div className="text-center mb-6">
-                <h2 className="text-[1.25rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">
-                  Mọi thứ bạn cần để đạt điểm cao
-                </h2>
-                <p className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] mt-1">Đầy đủ tính năng hỗ trợ thi THPT Quốc gia tốt nhất</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SectionTitle title="Mọi thứ bạn cần để đạt điểm cao" sub="Đầy đủ tính năng hỗ trợ thi THPT Quốc gia tốt nhất" />
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
                 {goals.map((goal, idx) => {
                   const GoalIcon = goal.icon;
                   return (
-                    <div key={idx} className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none flex gap-3 p-4 transition-transform duration-300 [transform-style:preserve-3d] hover:[transform:perspective(700px)_rotateX(3deg)_rotateY(-3deg)_translateY(-2px)]">
-                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${GOAL_COLOR_CLASSES[goal.color]}`}>
+                    <div key={idx} className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none flex flex-col gap-3 p-5 transition-transform duration-200 hover:-translate-y-0.5">
+                      <div className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 ${GOAL_COLOR_CLASSES[goal.color]}`}>
                         <GoalIcon size={18} />
                       </div>
                       <div>
-                        <h3 className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-1">{goal.title}</h3>
-                        <p className="text-xs text-text-muted dark:text-[#94A3B8] m-0 leading-[1.4]">{goal.desc}</p>
+                        <h3 className="text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0] mb-1">{goal.title}</h3>
+                        <p className="text-[0.78rem] text-text-muted dark:text-[#94A3B8] m-0 leading-[1.5]">{goal.desc}</p>
                       </div>
                     </div>
                   );
@@ -486,14 +489,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Section 4: Detailed Compare Table */}
             <div>
-              <div className="text-center mb-5">
-                <h2 className="text-[1.3rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">
-                  So sánh các gói học tập
-                </h2>
-                <p className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] mt-1">
-                  Lựa chọn thông minh để bứt phá điểm số tối đa
-                </p>
-              </div>
+              <SectionTitle title="So sánh các gói học tập" sub="Lựa chọn thông minh để bứt phá điểm số tối đa" />
 
               {/* Desktop: bảng đầy đủ. Mobile: bảng cuộn ngang khó đọc — thay bằng thẻ xếp dọc bên dưới. */}
               <div className="hidden md:block fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none overflow-x-auto">
@@ -641,13 +637,13 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Section 7: FAQs Accordion */}
             <div>
-              <h2 className="text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center justify-center gap-2 mb-2">Câu hỏi thường gặp</h2>
-              <div className="flex flex-col">
+              <SectionTitle title="Câu hỏi thường gặp" />
+              <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none flex flex-col px-4 md:px-6 py-1 [&>*:last-child]:border-b-0">
                 {FAQS.map((faq, idx) => {
                   const isOpen = openFaqIdx === idx;
                   const FaqIcon = faq.icon;
                   return (
-                    <div key={idx} className="border-b border-[#E2E8F0] dark:border-[#334155] py-2">
+                    <div key={idx} className="border-b border-line dark:border-[#334155] py-2">
                       <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center gap-3 bg-transparent border-none py-3 px-1 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer text-left">
                         <span className="flex items-center gap-2.5 min-w-0">
                           <span className="w-7 h-7 rounded-lg bg-accent/8 text-accent flex items-center justify-center shrink-0">

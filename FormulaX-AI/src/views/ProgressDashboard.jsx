@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award, LogIn } from "lucide-react";
+import { Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award, LogIn, ChevronRight } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import CountUp from "../components/CountUp";
@@ -7,8 +7,32 @@ import { showToast } from "../components/Toast";
 import { BADGES } from "../data/badges";
 import { vietnamToday, shiftDay } from "../utils/vietnamDate";
 import PageShell from "../components/PageShell";
+import { CARD, LABEL, BTN_PRIMARY } from "../utils/shellStyle";
 
 const BADGE_ICONS = { Flame, ClipboardList, Layers, BookOpen };
+
+// Đầu mỗi thẻ: ô biểu tượng màu nhạt + nhãn chữ in hoa nhỏ (cùng kiểu Dashboard/Flashcard) + phần phụ bên phải.
+function SectionHeader({ icon: Icon, tone, title, aside }) {
+  return (
+    <div className="flex items-center gap-2.5 mb-4">
+      <span className={`w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0 ${tone}`}><Icon size={16} /></span>
+      <h2 className={`${LABEL} m-0 flex-1 min-w-0 truncate`}>{title}</h2>
+      {aside}
+    </div>
+  );
+}
+
+const TONE = {
+  amber: "bg-accent-light text-accent dark:bg-accent/15 dark:text-[#FCD34D]",
+  blue: "bg-[#DBEAFE] text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]",
+  green: "bg-[#DCFCE7] text-[#059669] dark:bg-[#059669]/20 dark:text-[#6EE7B7]",
+  orange: "bg-[#FFEDD5] text-[#EA580C] dark:bg-[#EA580C]/20 dark:text-[#FDBA74]",
+  purple: "bg-[#EDE9FE] text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]",
+};
+
+const DayTag = ({ children }) => (
+  <span className="text-[0.7rem] font-semibold text-text-muted dark:text-[#94A3B8] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] rounded-full py-0.5 px-2 shrink-0">{children}</span>
+);
 
 function evaluateBadges(streak, stats) {
   const values = {
@@ -23,21 +47,17 @@ function evaluateBadges(streak, stats) {
 function BadgesSection({ badges }) {
   const unlockedCount = badges.filter(b => b.unlocked).length;
   return (
-    <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4 mb-4">
-      <div className="flex items-center gap-2 mb-3.5">
-        <Award size={16} color="#D97706" />
-        <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">Huy hiệu</h2>
-        <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {unlockedCount}/{badges.length}</span>
-      </div>
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+    <div className={`${CARD} p-4 md:p-6 mb-4 md:mb-5`}>
+      <SectionHeader icon={Award} tone={TONE.amber} title="Huy hiệu" aside={<DayTag>{unlockedCount}/{badges.length} đã mở</DayTag>} />
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5 md:gap-3">
         {badges.map(b => {
           const Icon = BADGE_ICONS[b.icon] || Flame;
           return (
             <div
               key={b.id}
               title={b.description}
-              className={`flex flex-col items-center gap-1.5 rounded-xl p-2.5 border ${
-                b.unlocked ? "border-accent/25 bg-accent/6" : "border-[#F1F5F9] dark:border-[#334155] opacity-50"
+              className={`flex flex-col items-center gap-1.5 rounded-[12px] p-3 border ${
+                b.unlocked ? "border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10" : "border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] opacity-60"
               }`}
             >
               <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
@@ -45,7 +65,7 @@ function BadgesSection({ badges }) {
               }`}>
                 <Icon size={16} />
               </div>
-              <span className="text-[0.62rem] font-bold text-center text-primary dark:text-[#E2E8F0] leading-tight">{b.label}</span>
+              <span className="text-[0.68rem] font-semibold text-center text-primary dark:text-[#E2E8F0] leading-tight">{b.label}</span>
             </div>
           );
         })}
@@ -56,13 +76,17 @@ function BadgesSection({ badges }) {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StatCard({ icon, value, label, sublabel, color }) {
+// Ô số liệu cùng kiểu trang Flashcard: ô biểu tượng, số lớn, nhãn.
+function StatCard({ icon: Icon, tone, value, label, sublabel }) {
   return (
-    <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none py-3.5 px-3 flex flex-col items-center gap-1">
-      <div style={{ color }} className="mb-0.5">{icon}</div>
-      <div className="text-[1.35rem] font-extrabold text-primary dark:text-[#E2E8F0] leading-[1.2]">{value}</div>
-      <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold text-center">{label}</div>
-      {sublabel && <div className="text-[0.62rem] text-[#94A3B8] text-center">{sublabel}</div>}
+    <div className={`${CARD} p-4 md:p-5 flex flex-col gap-3`}>
+      <span className={`w-9 h-9 rounded-[10px] flex items-center justify-center ${tone}`}><Icon size={17} /></span>
+      <div>
+        <div className="text-[1.5rem] md:text-[1.75rem] font-bold tracking-[-0.02em] leading-none text-primary dark:text-[#E2E8F0]"><CountUp value={value} /></div>
+        <div className="mt-1.5 text-[0.78rem] text-text-muted dark:text-[#94A3B8]">
+          {label}{sublabel && <span className="text-[#94A3B8]"> · {sublabel}</span>}
+        </div>
+      </div>
     </div>
   );
 }
@@ -145,7 +169,7 @@ function getLongestStreak(activityDates) {
 
 function StreakStat({ icon, label, value, unit }) {
   return (
-    <div className="flex-1 md:flex-none bg-[#F8FAFC] dark:bg-[#0F172A]/40 border border-[#F1F5F9] dark:border-[#334155] rounded-xl p-3 flex flex-col items-center md:items-start gap-1">
+    <div className="flex-1 md:flex-none bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] rounded-[12px] p-3 flex flex-col items-center md:items-start gap-1">
       <div className="flex items-center gap-1.5 text-[#94A3B8] text-[0.62rem] font-bold uppercase tracking-wide">
         {icon} {label}
       </div>
@@ -160,7 +184,7 @@ function DayDetail({ date, quizzes, flashcardIds, formulaMap }) {
   const hasActivity = quizzes.length > 0 || flashcardIds.length > 0;
 
   return (
-    <div className="border-t border-[#F1F5F9] dark:border-[#334155] mt-4 pt-3.5">
+    <div className="border-t border-line dark:border-[#334155] mt-4 pt-3.5">
       <div className="flex items-center gap-2 mb-2.5">
         <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
         <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.85rem]">{formatDateLabel(date)}</span>
@@ -209,7 +233,7 @@ function DayDetail({ date, quizzes, flashcardIds, formulaMap }) {
   );
 }
 
-function StreakChart({ activityDates, streak, selectedDate, onSelectDate, selectedDayData, formulaMap }) {
+function StreakChart({ activityDates, selectedDate, onSelectDate, selectedDayData, formulaMap }) {
   const todayStr = vietnamToday();
   const dateSet = new Set(activityDates);
 
@@ -234,14 +258,9 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
   const daysThisMonth = activityDates.filter(d => d.startsWith(monthPrefix)).length;
 
   return (
-    <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-3.5 h-full">
-      <div className="flex justify-between items-center mb-2.5">
-        <div className="flex items-center gap-1.5">
-          <Flame size={16} color="#F97316" />
-          <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.88rem]">Chuỗi học</span>
-        </div>
-        <span className="font-extrabold text-[#F97316] text-[1.1rem]"><CountUp value={streak} /> ngày</span>
-      </div>
+    <div className={`${CARD} p-4 md:p-6 h-full`}>
+      {/* Số ngày liên tiếp đã có ở ô số liệu đầu trang — đầu thẻ chỉ còn tên. */}
+      <SectionHeader icon={Flame} tone={TONE.orange} title="Chuỗi học" />
 
       <div className="md:flex md:gap-5 md:items-start">
         <div className="md:flex-1 md:max-w-[520px]">
@@ -262,10 +281,10 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
                     key={dateStr}
                     title={dateStr}
                     onClick={() => !isFuture && onSelectDate(dateStr)}
-                    className={`aspect-square rounded flex items-center justify-center text-[0.62rem] md:text-[0.85rem] font-bold ${
+                    className={`aspect-square rounded-[7px] flex items-center justify-center text-[0.62rem] md:text-[0.8rem] font-semibold ${
                       isFuture ? "bg-transparent" : "cursor-pointer hover:opacity-80"
                     } ${
-                      isFuture ? "" : active ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
+                      isFuture ? "" : active ? "bg-[linear-gradient(180deg,#FBBF24,#F59E0B)] text-white" : "bg-[#EEF1F6] dark:bg-[#334155] text-[#94A3B8]"
                     }`}
                     style={{ border: isSelected ? "2px solid #D97706" : "1.5px solid transparent" }}
                   >
@@ -310,7 +329,7 @@ function EmptyState({ message, ctaLabel, onCta }) {
       <BarChart2 size={36} color="#CBD5E1" className="mx-auto mb-2.5" />
       <p className="text-[0.85rem] text-[#94A3B8] font-medium m-0 mb-3">{message}</p>
       {onCta && (
-        <button onClick={onCta} className="bg-accent text-white border-none rounded-[10px] py-2 px-[18px] text-[0.8rem] font-bold cursor-pointer">
+        <button type="button" onClick={onCta} className={`${BTN_PRIMARY} !py-2.5 !text-[0.85rem]`}>
           {ctaLabel}
         </button>
       )}
@@ -407,7 +426,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
   const selectedDateLabel = formatDateLabel(selectedDate);
 
   return (
-    <PageShell title="Tiến độ học tập" description="Phân tích từ lịch sử quiz và flashcard. Chọn một ngày trên lịch để xem chi tiết." onBack={() => setActiveTab("dashboard")}>
+    <PageShell width="wide" title="Tiến độ học tập" description="Phân tích từ lịch sử quiz và flashcard. Chọn một ngày trên lịch để xem chi tiết." onBack={() => setActiveTab("dashboard")}>
 
           {/* Guest gate — khách chưa có tài khoản nên mời đăng nhập, không mời mua Premium */}
           {isGuest && (
@@ -446,18 +465,19 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
           )}
 
           <div className={isGuest ? "blur-[3px] pointer-events-none select-none opacity-70" : undefined} inert={isGuest}>
-          {/* Stat cards: 2-column row — scoped to the day selected on the calendar below */}
-          <div className="grid grid-cols-2 gap-2.5 mb-3">
-            <StatCard icon={<ClipboardList size={20} />} value={selectedDayData.quizzes.length}      label="Quiz đã làm" sublabel={selectedDateLabel} color="#3B82F6" />
-            <StatCard icon={<Layers size={20} />}        value={selectedDayData.flashcardIds.length} label="Thẻ đã ôn"   sublabel={selectedDateLabel} color="#10B981" />
+          {/* Ô số liệu: hai ô đầu theo ngày đang chọn trên lịch, hai ô sau là tổng (chuỗi, huy hiệu). */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-5">
+            <StatCard icon={ClipboardList} tone={TONE.blue}   value={selectedDayData.quizzes.length}      label="Quiz đã làm" sublabel={selectedDateLabel} />
+            <StatCard icon={Layers}        tone={TONE.green}  value={selectedDayData.flashcardIds.length} label="Thẻ đã ôn"   sublabel={selectedDateLabel} />
+            <StatCard icon={Flame}         tone={TONE.orange} value={streak}                              label="Ngày học liên tiếp" />
+            <StatCard icon={Award}         tone={TONE.amber}  value={badges.filter(b => b.unlocked).length} label={`Huy hiệu / ${badges.length}`} />
           </div>
 
           {/* Chuỗi học + Hiệu suất theo chủ đề + Coach gợi ý ôn tập — 1 hàng ngang trên desktop */}
-          <div className="flex flex-col gap-4 lg:grid lg:grid-cols-3 lg:items-stretch mb-4">
+          <div className="flex flex-col gap-4 md:gap-5 lg:grid lg:grid-cols-3 lg:items-stretch mb-4 md:mb-5">
             {/* Streak activity chart — click a day to see what was studied that day */}
             <StreakChart
               activityDates={activityDates}
-              streak={streak}
               selectedDate={selectedDate}
               onSelectDate={setSelectedDate}
               selectedDayData={selectedDayData}
@@ -465,14 +485,8 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             />
 
             {/* Topic performance — scoped to the day selected on the calendar above */}
-            <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4 relative overflow-hidden">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart2 size={16} color="#D97706" />
-                <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
-                  Hiệu suất theo chủ đề
-                </h2>
-                <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
-              </div>
+            <div className={`${CARD} p-4 md:p-6 relative overflow-hidden`}>
+              <SectionHeader icon={BarChart2} tone={TONE.blue} title="Hiệu suất theo chủ đề" aside={<DayTag>{selectedDateLabel}</DayTag>} />
 
               {loading ? (
                 <div className="animate-pulse">
@@ -519,14 +533,8 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             </div>
 
             {/* AI Coach suggestions — scoped to the same selected day, giờ nằm chung hàng với Chuỗi học/Hiệu suất */}
-            <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4">
-              <div className="flex items-center gap-2 mb-3.5">
-                <Target size={16} color="#10B981" />
-                <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
-                  Coach gợi ý ôn tập
-                </h2>
-                <span className="text-[0.7rem] text-[#94A3B8] font-semibold">— {selectedDateLabel}</span>
-              </div>
+            <div className={`${CARD} p-4 md:p-6`}>
+              <SectionHeader icon={Target} tone={TONE.green} title="Coach gợi ý ôn tập" aside={<DayTag>{selectedDateLabel}</DayTag>} />
 
               {loading ? (
                 <div className="animate-pulse flex flex-col gap-3.5">
@@ -613,13 +621,14 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
           <button
             type="button"
             onClick={() => setActiveTab("flashcard")}
-            className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none w-full flex items-center gap-4 text-left py-4 px-4 md:px-6 cursor-pointer mb-2 transition-transform duration-200 hover:-translate-y-0.5"
+            className={`${CARD} w-full flex items-center gap-4 text-left py-4 px-4 md:px-6 cursor-pointer mb-2 transition-transform duration-200 hover:-translate-y-0.5`}
           >
             <span className="w-11 h-11 rounded-xl bg-primary dark:bg-[#0F172A] text-[#FBBF24] flex items-center justify-center shrink-0"><Layers size={19} /></span>
             <span className="flex-1 min-w-0">
               <span className="block text-[0.92rem] font-bold text-primary dark:text-[#E2E8F0]">Ôn tập ngay với Flashcard</span>
               <span className="block text-[0.75rem] text-text-muted dark:text-[#94A3B8] mt-0.5">Tạo bộ thẻ theo chủ đề yếu để cải thiện điểm số</span>
             </span>
+            <ChevronRight size={18} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />
           </button>
           </div>
         </PageShell>
