@@ -168,12 +168,12 @@ export default function FormulaLibrary({
 
   const searchBox = (
     <div className="relative w-full md:w-[420px]" ref={searchContainerRef}>
-      <div className="relative flex items-center w-full h-[46px] px-4 rounded-[14px] bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] focus-within:border-accent transition-colors">
-        <Search size={18} className="text-text-muted dark:text-[#94A3B8] mr-2.5 shrink-0" />
+      <div className="relative flex items-center w-full h-12 px-4 rounded-[14px] bg-white dark:bg-[#1E293B] border-[1.5px] border-[#CBD5E1] dark:border-[#475569] shadow-[0_6px_18px_-10px_rgba(41,88,156,0.45)] focus-within:border-navy-btn dark:focus-within:border-accent focus-within:ring-4 focus-within:ring-navy-btn/15 dark:focus-within:ring-accent/20 transition-[border-color,box-shadow]">
+        <Search size={19} strokeWidth={2.4} className="text-navy-btn dark:text-accent mr-2.5 shrink-0" />
         <input
           type="text"
           aria-label="Tìm công thức"
-          className="flex-1 min-w-0 border-none outline-none bg-transparent text-[0.92rem] text-primary dark:text-[#E2E8F0] placeholder:text-text-muted dark:placeholder:text-[#94A3B8]"
+          className="flex-1 min-w-0 border-none outline-none bg-transparent text-[0.95rem] font-medium text-primary dark:text-[#E2E8F0] placeholder:text-[#475569] dark:placeholder:text-[#CBD5E1]"
           placeholder="Tìm công thức, ví dụ: đạo hàm, cos..."
           value={searchQuery}
           onChange={handleSearchChange}
@@ -331,7 +331,7 @@ export default function FormulaLibrary({
         </h2>
         <span className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">{filteredFormulas.length} công thức</span>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-5">
         {filteredFormulas.length > 0 ? (
           filteredFormulas.map((formula) => {
             const isBookmarked = bookmarkedIds.includes(formula.id);
