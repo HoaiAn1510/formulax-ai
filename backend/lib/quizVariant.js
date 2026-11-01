@@ -5,7 +5,10 @@
 //   - đúng 4 phương án A–D khác nhau, đúng 1 đáp án; blankAnswer không có $ và không phải nhãn A–D;
 //   - số liệu khác đề gốc; dữ kiện không vô lý (precheckInvalidQuestion của Finder);
 //   - formula_ids chỉ là id có thật trong formulas.js VÀ thuộc danh sách gửi cho AI;
-//   - dạng bài đã có bộ kiểm (tổng ba góc, Pytago, phương trình bậc hai) thì backend TỰ TÍNH lại đáp án.
+//   - dạng bài đã có bộ kiểm (tổng ba góc, Pytago, phương trình bậc hai) thì backend TỰ TÍNH lại đáp án;
+//   - dạng khác: KIỂM CHÉO — gọi Gemini lần nữa giải độc lập đề mới (chỉ gửi đề), đáp số phải khớp phương án
+//     đúng; lỗi gọi → thử model dự phòng một lần, vẫn lỗi → VariantError. CHỈ khi còn < 8 giây trong ngân sách
+//     mới giao đề không kiểm chéo (meta.crossChecked = false).
 // Không qua kiểm → hỏi lại AI một lần kèm danh sách lỗi; vẫn không qua → VariantError (server hoàn lượt,
 // báo "AI đang bận" như Finder).
 
@@ -390,16 +393,88 @@ export function validateVariant(parsed, { original, allowedIds, requireIds = tru
   return { variant, errors, expected };
 }
 
+// ─── Kiểm chéo: giải độc lập đề mới ────────────────────────────────────────
+// Đề không thuộc dạng backend tự tính lại được (expectedAnswer = null): gọi Gemini lần nữa để GIẢI đề mới,
+// CHỈ gửi đề — không gửi 4 phương án, đáp án hay lời giải đã tạo, để lần giải không bị dẫn theo — rồi so
+// đáp số với phương án đúng. Lần gọi này không trừ thêm lượt của học sinh.
+export const SOLVER_SYSTEM_PROMPT = String.raw`Bạn là giáo viên Toán THPT Việt Nam. Giải bài toán học sinh gửi, tự tính cẩn thận từng bước trong đầu. CHỈ trả về một đối tượng JSON, không có chữ nào khác:
+{"answer": "đáp số cuối cùng, viết LaTeX KHÔNG có dấu $ (vd \frac{a}{b}, k\sqrt{n}, x = x_1; x = x_2, (m; +\infty)). Không ghi đơn vị, không giải thích."}`;
+export const SOLVER_PARAMS = { temperature: 0, max_completion_tokens: 600 };
+
+export function buildSolverMessages(question) {
+  return [
+    { role: "system", content: SOLVER_SYSTEM_PROMPT },
+    { role: "user", content: question },
+  ];
+}
+
+// So chuỗi khi đáp án không phải số: bỏ $, khoảng trắng, \left \right, "x =" ở đầu, dấu chấm cuối; \dfrac → \frac.
+export function normalizeAnswerText(s) {
+  let t = String(s ?? "").replace(/\$/g, "").replace(/\\left|\\right|\\[,;!]|\\ /g, "").replace(/\\[dt]frac/g, "\\frac")
+    .replace(/[−–]/g, "-").replace(/\s+/g, "").replace(/\.$/, "").toLowerCase();
+  if ((t.match(/=/g) || []).length === 1) t = t.replace(/^[a-z_{}0-9']{1,6}=/, "");
+  return t;
+}
+
+/** Đáp số của lần giải độc lập có khớp phương án đúng không. Số thì so giá trị, không phải số thì so chuỗi. */
+export function crossCheckMatches(correctText, solverAnswer) {
+  const a = optionNumbers(correctText);
+  const b = optionNumbers(solverAnswer);
+  if (a && b) return sameSet([...new Set(a)], [...new Set(b)]);
+  return normalizeAnswerText(correctText) !== "" && normalizeAnswerText(correctText) === normalizeAnswerText(solverAnswer);
+}
+
 // ─── Gọi Gemini ────────────────────────────────────────────────────────────
 /**
- * Sinh một đề cùng dạng ĐÃ KIỂM. Lỗi của Gemini (429, mạng, timeout) ném ra cho server xử lý;
+ * Sinh một đề cùng dạng ĐÃ KIỂM. Lỗi của Gemini (429, mạng, timeout) khi SINH đề ném ra cho server xử lý;
  * không qua kiểm cả hai lần → VariantError.
+ * meta.verified = dạng backend tự tính lại (null nếu không thuộc dạng nào);
+ * meta.crossChecked = true (giải độc lập khớp) | false (còn < 8 giây, không kịp kiểm chéo) | null (đã tự tính, không cần).
  * @param {{ groq: object, problem: string, formulaIds?: string[], grade?: number|null, now?: () => number, deadline?: number }} opts
  */
 export async function generateVariant({ groq, problem, formulaIds = [], grade = null, now = Date.now, deadline = now() + VARIANT_BUDGET_MS }) {
   const { formulas, requireIds } = allowedFormulas(problem, formulaIds, grade);
   const allowedIds = formulas.map((f) => f.id);
-  const meta = { model: FINDER_MODEL, attempts: 0, allowedIds, errors: [] };
+  const meta = { model: FINDER_MODEL, attempts: 0, allowedIds, errors: [], crossChecked: null, crossCheckCalls: 0 };
+
+  // Một lần giải độc lập (chủ dự án chốt 2026-11-01):
+  //   - còn < MIN_CALL_MS trong ngân sách → null: giao đề không kiểm chéo (crossChecked = false) — trường hợp DUY NHẤT;
+  //   - lần gọi lỗi (429, 500/503, hết giờ, mạng…) → thử MỘT lần bằng model dự phòng;
+  //   - vẫn lỗi, hoặc JSON không đọc được → VariantError (server hoàn lượt, báo "AI đang bận").
+  const solve = async (question) => {
+    let solverModel = model;
+    for (let call = 0; call < 2; call++) {
+      const timeLeft = deadline - now();
+      if (timeLeft < MIN_CALL_MS) {
+        // Lần đầu đã lỗi mà không còn giờ thử model dự phòng → coi như vẫn lỗi, không giao đề chưa kiểm.
+        if (call === 1) throw new VariantError("Kiểm chéo lỗi, hết giờ thử model dự phòng", { meta: { ...meta, crossCheckFailed: "error_no_time" } });
+        meta.crossCheckSkipped = "budget";
+        return null;
+      }
+      meta.crossCheckCalls++;
+      let completion;
+      try {
+        completion = await groq.chat.completions.create(
+          { model: solverModel, messages: buildSolverMessages(question), ...SOLVER_PARAMS },
+          { timeout: Math.max(1, Math.min(PER_CALL_TIMEOUT_MS, timeLeft)) },
+        );
+      } catch (err) {
+        meta.crossCheckErrors = [...(meta.crossCheckErrors || []), `${solverModel}:${err?.status ?? "unknown"}`];
+        if (call === 1) throw new VariantError("Kiểm chéo lỗi cả hai lần", { meta: { ...meta, crossCheckFailed: "error" } });
+        const blockMs = solverModel === FINDER_MODEL ? primaryBlockMs(err) : null;
+        if (blockMs !== null) fallbackState.primaryBlockedUntil = now() + blockMs;
+        solverModel = FINDER_FALLBACK_MODEL;
+        meta.crossCheckFallback = true;
+        continue;
+      }
+      const answer = parseVariantJson(completion.choices?.[0]?.message?.content)?.answer;
+      if (typeof answer !== "string" || !answer.trim() || completion.choices?.[0]?.finish_reason === "length") {
+        throw new VariantError("Kiểm chéo không đọc được đáp số", { meta: { ...meta, crossCheckFailed: "unreadable" } });
+      }
+      return answer.trim();
+    }
+    return null; // không tới được: vòng lặp luôn return hoặc throw
+  };
 
   const messages = buildVariantMessages({ problem, formulas });
   let model = FINDER_MODEL;
@@ -434,9 +509,26 @@ export async function generateVariant({ groq, problem, formulaIds = [], grade = 
     const { variant, errors, expected } = truncated
       ? { variant: null, errors: ["câu trả lời bị cắt giữa chừng"], expected: null }
       : validateVariant(parseVariantJson(content), { original: problem, allowedIds, requireIds });
-    if (!errors.length) {
-      meta.verified = expected ? expected.kind : null;
+    if (!errors.length && expected) {
+      meta.verified = expected.kind;
+      meta.crossChecked = null;
       return { variant, meta };
+    }
+    if (!errors.length) {
+      meta.verified = null;
+      const correct = variant.options.find((o) => o.isCorrect);
+      const solved = await solve(variant.question);
+      if (solved === null) {
+        meta.crossChecked = false;
+        return { variant, meta };
+      }
+      if (crossCheckMatches(correct.text, solved)) {
+        meta.crossChecked = true;
+        delete meta.crossCheckSkipped;
+        return { variant, meta };
+      }
+      // Lệch: tính vào số lần hỏi lại hiện có (MAX_ATTEMPTS), không giao đề này.
+      errors.push(`kiểm chéo lệch: giải độc lập ra ${solved.slice(0, 80)}, phương án đúng đã đánh dấu là ${correct.letter}`);
     }
     meta.errors.push(errors);
     // Lần sau: đưa lại câu trả lời cũ + danh sách lỗi để AI sửa đúng chỗ.

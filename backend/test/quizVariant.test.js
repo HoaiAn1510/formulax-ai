@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   latexNumber, optionNumber, optionNumbers, quadraticCoefficients, expectedAnswer, matchesExpected,
-  validateVariant, generateVariant, parseVariantJson, allowedFormulas, buildVariantMessages, VariantError, VARIANT_SYSTEM_PROMPT,
+  validateVariant, generateVariant, parseVariantJson, crossCheckMatches, normalizeAnswerText, allowedFormulas, buildVariantMessages, VariantError, VARIANT_SYSTEM_PROMPT,
 } from "../lib/quizVariant.js";
 import { parseModelJson } from "../lib/solutionGuard.js";
 import { fallbackState } from "../lib/finderAnswer.js";
@@ -244,6 +244,160 @@ test("model chính 429 → chuyển sang model dự phòng, không tính là m�
   assert.equal(meta.attempts, 1);
   assert.equal(meta.fallback.reason, "minute_limit");
   fallbackState.primaryBlockedUntil = 0;
+});
+
+// ─── Kiểm chéo (đề không có bộ tự tính lại) ──────────────────────────────
+const COS_ORIGINAL = "Cho tam giác $ABC$ có $a = 7$, $b = 8$, $c = 9$. Tính $\\cos A$.";
+const COS_IDS = ["hh10-hequa-cosin"];
+const cosAnswer = (over = {}) => rawAnswer({
+  question: "Cho tam giác $ABC$ có các cạnh $a = 5$, $b = 7$, $c = 8$. Tính $\\cos A$.",
+  options: [
+    { letter: "A", text: "$\\frac{1}{2}$" }, { letter: "B", text: "$\\frac{11}{14}$" },
+    { letter: "C", text: "$\\frac{5}{7}$" }, { letter: "D", text: "$\\frac{19}{28}$" },
+  ],
+  answer: "B", blank_answer: "11/14",
+  explanation: "Áp dụng hệ quả định lý côsin: $\\cos A = \\frac{49 + 64 - 25}{112} = \\frac{11}{14}$.",
+  formula_ids: COS_IDS,
+  ...over,
+});
+const solverReply = (answer) => JSON.stringify({ answer }).replace(/\\\\/g, "\\");
+
+test("crossCheckMatches: số so giá trị, không phải số so chuỗi chuẩn hoá", () => {
+  assert.ok(crossCheckMatches("$\\frac{11}{14}$", "\\dfrac{22}{28}"));
+  assert.ok(crossCheckMatches("$x = 2; x = 5$", "x = 5; x = 2"));
+  assert.ok(!crossCheckMatches("$\\frac{11}{14}$", "\\frac{1}{2}"));
+  assert.ok(crossCheckMatches("$(1; +\\infty)$", "(1;+\\infty)"));
+  assert.ok(crossCheckMatches("$y = 2x + 1$", "2x+1"));
+  assert.ok(!crossCheckMatches("$(1; +\\infty)$", "(-\\infty; 1)"));
+  assert.equal(normalizeAnswerText("$x = \\dfrac{1}{2}$."), "\\frac{1}{2}");
+});
+
+test("kiểm chéo khớp → giao đề, crossChecked = true; lần giải chỉ nhận đề (không phương án, không lời giải)", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const groq = fakeGroq([cosAnswer(), solverReply("\\frac{11}{14}")]);
+  const { variant, meta } = await generateVariant({ groq, problem: COS_ORIGINAL, formulaIds: COS_IDS });
+  assert.equal(groq.calls.length, 2);
+  assert.equal(meta.verified, null);
+  assert.equal(meta.crossChecked, true);
+  assert.equal(meta.attempts, 1);
+  assert.equal(variant.options.find((o) => o.isCorrect).letter, "B");
+  const sent = JSON.stringify(groq.calls[1].messages);
+  assert.equal(groq.calls[1].messages.at(-1).content, variant.question);
+  for (const leak of ["11}{14}", "19}{28}", "hệ quả định lý côsin", "\"answer\": \"B\""]) assert.ok(!sent.includes(leak), leak);
+});
+
+test("kiểm chéo lệch → hỏi lại (tính vào số lần hiện có); lệch lần nữa → VariantError", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const groq = fakeGroq([cosAnswer(), solverReply("\\frac{1}{2}"), cosAnswer(), solverReply("\\frac{5}{7}")]);
+  await assert.rejects(
+    generateVariant({ groq, problem: COS_ORIGINAL, formulaIds: COS_IDS }),
+    (err) => err instanceof VariantError && err.meta.attempts === 2 && err.meta.crossCheckCalls === 2
+      && err.meta.errors.every((e) => e.some((x) => x.startsWith("kiểm chéo lệch"))),
+  );
+  assert.match(groq.calls[2].messages.at(-1).content, /kiểm chéo lệch/);
+});
+
+test("kiểm chéo lệch lần 1, lần 2 khớp → giao đề lần 2", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const groq = fakeGroq([cosAnswer(), solverReply("\\frac{1}{2}"), cosAnswer(), solverReply("\\frac{11}{14}")]);
+  const { meta } = await generateVariant({ groq, problem: COS_ORIGINAL, formulaIds: COS_IDS });
+  assert.equal(meta.attempts, 2);
+  assert.equal(meta.crossChecked, true);
+});
+
+test("hết ngân sách → bỏ kiểm chéo, giao đề với crossChecked = false", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  let t = 0;
+  const groq = fakeGroq([cosAnswer()]);
+  // Còn 5 giây (< 8 giây tối thiểu cho một lần gọi) sau khi sinh đề.
+  const { meta } = await generateVariant({ groq, problem: COS_ORIGINAL, formulaIds: COS_IDS, now: () => t, deadline: 5_000 });
+  assert.equal(groq.calls.length, 1);
+  assert.equal(meta.crossChecked, false);
+  assert.equal(meta.crossCheckSkipped, "budget");
+});
+
+for (const [label, err] of [
+  ["429", Object.assign(new Error("gemini 429: quota per minute (RPM)"), { status: 429, headers: { "retry-after": "20" } })],
+  ["500", Object.assign(new Error("gemini 500"), { status: 500 })],
+  ["hết giờ (408)", Object.assign(new Error("gemini timeout"), { status: 408 })],
+]) {
+  test(`lần giải lỗi ${label} → thử lại MỘT lần bằng model dự phòng, khớp thì giao đề`, async () => {
+    fallbackState.primaryBlockedUntil = 0;
+    const groq = fakeGroq([cosAnswer(), err, solverReply("\\frac{11}{14}")]);
+    const { meta } = await generateVariant({ groq, problem: COS_ORIGINAL, formulaIds: COS_IDS });
+    assert.equal(groq.calls[1].model, FINDER_MODEL);
+    assert.equal(groq.calls[2].model, FINDER_FALLBACK_MODEL);
+    assert.equal(meta.crossChecked, true);
+    assert.equal(meta.crossCheckFallback, true);
+    fallbackState.primaryBlockedUntil = 0;
+  });
+}
+
+test("lần giải lỗi cả với model dự phòng → VariantError (không giao đề chưa kiểm)", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const e500 = Object.assign(new Error("gemini 500"), { status: 500 });
+  const e408 = Object.assign(new Error("gemini timeout"), { status: 408 });
+  const groq = fakeGroq([cosAnswer(), e500, e408]);
+  await assert.rejects(
+    generateVariant({ groq, problem: COS_ORIGINAL, formulaIds: COS_IDS }),
+    (e) => e instanceof VariantError && e.meta.crossCheckFailed === "error" && e.meta.crossCheckErrors.length === 2,
+  );
+  assert.equal(groq.calls.length, 3);
+  fallbackState.primaryBlockedUntil = 0;
+});
+
+test("lần giải trả JSON không đọc được → VariantError", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  await assert.rejects(
+    generateVariant({ groq: fakeGroq([cosAnswer(), "Đáp án là 11/14"]), problem: COS_ORIGINAL, formulaIds: COS_IDS }),
+    (e) => e instanceof VariantError && e.meta.crossCheckFailed === "unreadable",
+  );
+});
+
+test("lần giải đầu lỗi, không còn đủ 8 giây cho model dự phòng → VariantError, không giao", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  let t = 0;
+  const e500 = Object.assign(new Error("gemini 500"), { status: 500 });
+  // Mỗi lần gọi tốn 6 giây: sinh đề (còn 13s), giải lần 1 lỗi, sau đó còn 7s < 8s → không thử dự phòng.
+  const groq = fakeGroq([cosAnswer(), e500]);
+  const create = groq.chat.completions.create;
+  groq.chat.completions.create = async (...a) => { t += 6_000; return create(...a); };
+  await assert.rejects(
+    generateVariant({ groq, problem: COS_ORIGINAL, formulaIds: COS_IDS, now: () => t, deadline: 19_000 }),
+    (e) => e instanceof VariantError && e.meta.crossCheckFailed === "error_no_time",
+  );
+  assert.equal(groq.calls.length, 2);
+});
+
+test("đáp án không phải số → so chuỗi chuẩn hoá (khớp và lệch)", async () => {
+  const original = "Tìm khoảng đồng biến của hàm số $y = x^2 - 2x + 3$.";
+  const ids = ["hh10-parabola"];
+  const variantRaw = rawAnswer({
+    question: "Tìm khoảng đồng biến của hàm số $y = x^2 - 4x + 1$.",
+    options: [
+      { letter: "A", text: "$(2; +\\infty)$" }, { letter: "B", text: "$(-\\infty; 2)$" },
+      { letter: "C", text: "$(-2; +\\infty)$" }, { letter: "D", text: "$(-\\infty; -2)$" },
+    ],
+    answer: "A", blank_answer: "(2;+inf)", formula_ids: ids,
+    explanation: "Hệ số $a = 1 > 0$, đỉnh có hoành độ $x = 2$ nên hàm số đồng biến trên $(2; +\\infty)$.",
+  });
+  fallbackState.primaryBlockedUntil = 0;
+  const ok = await generateVariant({ groq: fakeGroq([variantRaw, solverReply("(2; +\\infty)")]), problem: original, formulaIds: ids });
+  assert.equal(ok.meta.crossChecked, true);
+  fallbackState.primaryBlockedUntil = 0;
+  await assert.rejects(
+    generateVariant({ groq: fakeGroq([variantRaw, solverReply("(-\\infty; 2)"), variantRaw, solverReply("(-\\infty; 2)")]), problem: original, formulaIds: ids }),
+    (err) => err instanceof VariantError,
+  );
+});
+
+test("đề đã có bộ tự tính lại → không gọi kiểm chéo, crossChecked = null", async () => {
+  fallbackState.primaryBlockedUntil = 0;
+  const groq = fakeGroq([rawAnswer()]);
+  const { meta } = await generateVariant({ groq, problem: ORIGINAL, formulaIds: IDS });
+  assert.equal(groq.calls.length, 1);
+  assert.equal(meta.verified, "quadratic_roots");
+  assert.equal(meta.crossChecked, null);
 });
 
 test("lỗi không chuyển dự phòng được (401) → ném ra cho server", async () => {

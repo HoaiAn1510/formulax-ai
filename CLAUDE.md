@@ -425,19 +425,34 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
 Ngoại lệ có chủ đích với nguyên tắc "AI không tính ra kết quả": đây là ĐỀ LUYỆN TẬP nên AI được viết đáp số,
 nhưng backend không tin AI — mọi câu phải qua kiểm.
 - **"Bài đã hỏi"** lấy từ `chat_sessions` (khách: localStorage), không có bảng riêng: tin user + tin bot ngay sau
-  có `answer.type === "solution"` (`utils/askedProblems.js`). Chọn tối đa 5 bài; frontend gọi LẦN LƯỢT, không song song.
+  có `answer.type === "solution"` (`utils/askedProblems.js`). Chọn tối đa 3 bài (`MAX_VARIANT_PICK`, hạ từ 5
+  vì mỗi câu dùng 2 lần gọi Gemini, hạn mức free 15/phút chung với Finder); frontend gọi LẦN LƯỢT, không song song.
 - **`POST /api/quiz/variant`** (`backend/lib/quizVariant.js`): theo đúng mẫu `/api/chat` (xác thực, khách 403, limiter
   chat). **Mỗi câu = 1 lượt AI Finder** (`ai_usage_daily`), hoàn lượt khi lỗi / không qua kiểm; nộp bài KHÔNG trừ
   lượt quiz (chủ dự án chốt). Model + dự phòng + `fallbackState` dùng chung với Finder. Ngân sách 40s < timeout 45s
   của frontend (`VARIANT_TIMEOUT_MS` trong `QuizView.jsx`).
-- **Lớp kiểm** (`validateVariant`): đúng 4 phương án khác nhau (cả so giá trị số), đúng 1 đáp án, `blankAnswer` không
-  `$`/không phải nhãn và khớp số với phương án đúng, số liệu khác đề gốc, `precheckInvalidQuestion` của Finder,
-  `formula_ids` ⊆ id gửi cho AI (bắt buộc khi câu trả lời Finder gốc có id; kiến thức nền thì không). Dạng có bộ kiểm
-  thì backend TỰ TÍNH lại đáp án: tổng ba góc, Pytago, phương trình bậc hai (nghiệm / tổng / tích). Không qua → hỏi lại
-  AI một lần kèm lỗi → vẫn không qua thì 502 `variant_invalid` "AI đang bận" + hoàn lượt. Log `[quiz:variant]`,
-  `[quiz:variant_rejected]` chỉ có số liệu + id công thức.
+- **Kiểm hình thức — MỌI câu** (`validateVariant`): đúng 4 phương án khác nhau (cả so giá trị số), đúng 1 đáp án,
+  `blankAnswer` không `$`/không phải nhãn và khớp số với phương án đúng, số liệu khác đề gốc, `precheckInvalidQuestion`
+  của Finder, `formula_ids` ⊆ id gửi cho AI (bắt buộc khi câu trả lời Finder gốc có id; kiến thức nền thì không).
+- **Kiểm đáp án — ba mức, theo dạng bài** (log `[quiz:variant]` ghi `verified` + `crossChecked`):
+  1. **Tự tính lại** (`expectedAnswer`): CHỈ tổng ba góc, Pytago, phương trình bậc hai (nghiệm / tổng / tích) — backend
+     tính đáp số bằng code, phương án đúng phải khớp. `verified` = tên dạng, `crossChecked = null`.
+  2. **Kiểm chéo** — mọi dạng còn lại: gọi Gemini lần nữa GIẢI ĐỘC LẬP đề mới (`SOLVER_SYSTEM_PROMPT`, CHỈ gửi đề — không
+     gửi 4 phương án, đáp án, lời giải), so đáp số với phương án đúng (`crossCheckMatches`: số thì so giá trị bằng
+     `optionNumbers`, không phải số thì so chuỗi chuẩn hoá). Lệch → tính vào lần hỏi lại hiện có. Lần gọi này KHÔNG trừ
+     thêm lượt. `crossChecked = true`. Lần giải lỗi (429, 500/503, hết giờ, mạng…) → thử MỘT lần bằng
+     `FINDER_FALLBACK_MODEL`; vẫn lỗi, không còn đủ 8s để thử dự phòng, hoặc JSON không đọc được → KHÔNG giao đề:
+     `VariantError`, hoàn lượt, "AI đang bận" (log `[quiz:variant_rejected]` có `crossCheckFailed`, `crossCheckErrors`).
+     Đây là hai lần model đồng ý với nhau, KHÔNG phải chứng minh đúng: cùng hiểu sai đề thì vẫn lọt; so chuỗi có thể
+     chặn nhầm đáp án đúng viết khác dạng (`x+1` / `1+x`).
+  3. **Chỉ kiểm hình thức**: CHỈ khi sinh đề xong mà còn < 8s trong ngân sách 40s (không kịp gọi lần giải). Vẫn GIAO đề
+     (chủ dự án chốt), `crossChecked = false`, `crossCheckSkipped: "budget"`. Theo dõi tỉ lệ dòng log này; cao thì cân
+     nhắc tăng ngân sách hoặc không giao.
+  Không qua → hỏi lại AI một lần kèm lỗi → vẫn không qua thì 502 `variant_invalid` "AI đang bận" + hoàn lượt.
+  `[quiz:variant_rejected]` chỉ có số liệu + danh sách lỗi.
 - JSON parse bằng `parseVariantJson` = `keepOcrNewlines` + `parseModelJson` ("\nThay số" là xuống dòng, không phải lệnh LaTeX).
-- Giao diện: nhãn "Đề do AI tạo, hãy đối chiếu lời giải"; thẻ công thức ở phần xem lại lấy từ `formulas.js` theo id.
+- Giao diện: thẻ nhỏ trung tính "Đề do AI tạo" trên câu hỏi và phần xem lại — KHÔNG kèm câu kiểu "có thể sai, hãy đối
+  chiếu" (chủ dự án chốt 2026-11-01); thẻ công thức ở phần xem lại lấy từ `formulas.js` theo id.
   **"Báo đề sai"** → `POST /api/quiz/variant/report`, CHỈ ghi log `[quiz:variant_report]` (đề + đáp án cắt ngắn, id;
   không google_id/email) — không có bảng (chủ dự án chốt). Đọc log trên Render để soát đề sai.
 - Test: `backend/test/quizVariant.test.js`, `npm run test:asked`. CHƯA chấm chất lượng đề trên bộ câu thử bằng key chấm.

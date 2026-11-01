@@ -10,7 +10,7 @@ import { showToast } from "../components/Toast";
 import { useGuestGate } from "../utils/useGuestGate";
 import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from "../utils/guestQuiz";
 import { checkFillAnswer, isFillEligible } from "../utils/fillAnswer";
-import { extractAskedProblems, togglePick } from "../utils/askedProblems";
+import { extractAskedProblems, togglePick, MAX_VARIANT_PICK } from "../utils/askedProblems";
 import { toVariantQuestion, variantQuizTopic, runSequential } from "../utils/variantQuiz";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
@@ -205,7 +205,8 @@ export default function QuizView({
     return () => { alive = false; };
   }, [setupMode, isGuest, user?.googleId, askedKey]);
 
-  const startVariantQuiz = async (items) => {
+  const startVariantQuiz = async (picked) => {
+    const items = picked.slice(0, MAX_VARIANT_PICK); // chặn lần nữa ở đây, không chỉ ở ô chọn
     if (!items.length) return;
     if (isGuest) { handleGuestLogin(); return; }
     setGenProgress({ done: 0, total: items.length });
@@ -541,11 +542,11 @@ export default function QuizView({
                     <div>
                       <h3 className="m-0 text-[1rem] font-bold text-primary dark:text-[#E2E8F0]">Bài đã hỏi</h3>
                       <p className="m-0 mt-1 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
-                        Chọn tối đa 5 bài. Mỗi bài, AI viết một câu cùng dạng với số liệu khác để bạn tự làm lại.
+                        Chọn tối đa {MAX_VARIANT_PICK} bài. Mỗi bài, AI viết một câu cùng dạng với số liệu khác để bạn tự làm lại.
                       </p>
                     </div>
                     {pickedKeys.length > 0 && (
-                      <span className="text-[0.72rem] font-bold text-accent bg-accent/10 rounded-full px-2.5 py-1">{pickedKeys.length}/5 đã chọn</span>
+                      <span className="text-[0.72rem] font-bold text-accent bg-accent/10 rounded-full px-2.5 py-1">{pickedKeys.length}/{MAX_VARIANT_PICK} đã chọn</span>
                     )}
                   </div>
                   <AskedProblemsPicker
@@ -562,7 +563,7 @@ export default function QuizView({
                   />
                   <p className="m-0 flex items-start gap-1.5 text-[0.75rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
                     <Sparkles size={13} className="text-accent shrink-0 mt-0.5" />
-                    <span>Đề do AI tạo và được máy kiểm lại cấu trúc, nhưng vẫn có thể sai — hãy đối chiếu lời giải. {isPremium ? "Premium: không giới hạn." : "Mỗi câu dùng 1 lượt AI (chung 10 lượt/ngày với Tìm kiếm AI), lỗi thì được hoàn lượt."}</span>
+                    <span>{isPremium ? "Premium: tạo đề không giới hạn." : "Mỗi câu dùng 1 lượt AI (chung 10 lượt/ngày với Tìm kiếm AI), lỗi thì được hoàn lượt."}</span>
                   </p>
                   {!isGuest && askedItems.length > 0 && (
                     <button
@@ -873,7 +874,7 @@ export default function QuizView({
               <div className="bg-white/95 dark:bg-[rgba(30,41,59,0.95)] border border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-2xl p-6 shadow-[0_4px_20px_rgba(30,58,95,0.04)] mb-6 backdrop-blur-[10px] flex flex-col gap-6 [animation:fadeIn_0.4s_ease-out]">
                 {currentQ.isAiGenerated && (
                   <div className="-mb-2 flex items-center gap-1.5 self-start rounded-full bg-accent-light dark:bg-accent/15 text-[#92400E] dark:text-[#FCD34D] text-[0.72rem] font-bold px-2.5 py-1">
-                    <Sparkles size={12} /> Đề do AI tạo, hãy đối chiếu lời giải
+                    <Sparkles size={12} /> Đề do AI tạo
                   </div>
                 )}
                 <div className="quiz-question-text text-[1.15rem] font-bold leading-[1.6] text-primary dark:text-[#E2E8F0] break-words">

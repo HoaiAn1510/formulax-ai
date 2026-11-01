@@ -39,12 +39,13 @@ test("extractAskedProblems: chỉ lấy đề có câu trả lời hướng dẫ
   assert.deepEqual(extractAskedProblems(null), []);
 });
 
-test("togglePick: bật/tắt, không vượt quá 5 bài", () => {
+test("togglePick: bật/tắt, không vượt quá 3 bài", () => {
+  assert.equal(MAX_VARIANT_PICK, 3);
   let s = [];
-  for (const k of ["a", "b", "c", "d", "e", "f"]) s = togglePick(s, k);
-  assert.equal(s.length, MAX_VARIANT_PICK);
-  assert.ok(!s.includes("f"));
-  assert.deepEqual(togglePick(s, "c"), ["a", "b", "d", "e"]);
+  for (const k of ["a", "b", "c", "d", "e"]) s = togglePick(s, k);
+  assert.deepEqual(s, ["a", "b", "c"]);
+  assert.deepEqual(togglePick(s, "b"), ["a", "c"]);
+  assert.deepEqual(togglePick(togglePick(s, "b"), "d"), ["a", "c", "d"]);
 });
 
 test("formatAskedAt theo giờ Việt Nam", () => {
