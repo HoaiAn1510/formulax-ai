@@ -3,6 +3,7 @@ import { Search, Heart, HelpCircle, XCircle, BookOpen, Layers, Lock } from "luci
 import { normalizeVi } from "../utils/textSearch";
 import { useGuestGate } from "../utils/useGuestGate";
 import PageShell from "../components/PageShell";
+import FilterPicker from "../components/FilterPicker";
 import { CARD, LABEL, CHIP, CHIP_OFF, CHIP_ON } from "../utils/shellStyle";
 
 // Ô biểu tượng của từng chủ đề (mockup Thư viện): ký hiệu toán + màu nhạt. Chủ đề lấy đúng enum của formulas.js.
@@ -219,8 +220,47 @@ export default function FormulaLibrary({
       onBack={() => setActiveTab("dashboard")}
       actions={searchBox}
     >
-      {/* Lớp + Yêu thích */}
-      <div className="flex gap-2 overflow-x-auto pb-1 mb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* Điện thoại: hai ô chọn (Lớp, Chủ đề) mở danh sách khi bấm + nút Yêu thích — thay cho các hàng chip
+          trải ngang. Máy tính giữ hàng chip bên dưới. Cùng dùng handleGradeClick / handleTopicClick. */}
+      <div className="md:hidden flex items-stretch gap-2 mb-5">
+        <FilterPicker
+          label="Lớp"
+          summary={gradeMode === "all" || selectedGrades.length === 0 ? "Tất cả các lớp" : selectedGrades.map((g) => `Lớp ${g}`).join(", ")}
+          highlighted={gradeMode === "custom"}
+          options={["Tất cả", "10", "11", "12"].map((g) => ({
+            value: g,
+            label: g === "Tất cả" ? "Tất cả các lớp" : `Lớp ${g}`,
+            active: g === "Tất cả" ? gradeMode === "all" : gradeMode === "custom" && selectedGrades.includes(g),
+          }))}
+          onToggle={handleGradeClick}
+        />
+        <FilterPicker
+          label="Chủ đề"
+          summary={topicMode === "custom" ? (selectedTopics.length > 1 ? `${selectedTopics[0]} +${selectedTopics.length - 1}` : selectedTopics[0]) : "Tất cả chủ đề"}
+          highlighted={topicMode === "custom"}
+          options={[
+            { value: "Tất cả", label: "Tất cả chủ đề", active: topicMode !== "custom" },
+            ...topics.filter((t) => TOPIC_STYLE[t]).map((t) => ({
+              value: t, label: t, glyph: TOPIC_STYLE[t].glyph, tone: TOPIC_STYLE[t].tone,
+              active: topicMode === "custom" && selectedTopics.includes(t),
+            })),
+          ]}
+          onToggle={handleTopicClick}
+        />
+        <button
+          type="button"
+          aria-pressed={savedActive}
+          aria-label="Yêu thích"
+          title="Yêu thích"
+          onClick={() => handleTopicClick(savedActive ? "Tất cả" : "Yêu thích")}
+          className={`w-11 h-11 shrink-0 rounded-[12px] border flex items-center justify-center cursor-pointer transition-colors ${savedActive ? "bg-primary border-primary text-white dark:bg-accent dark:border-accent" : "bg-white dark:bg-[#1E293B] border-line dark:border-[#334155] text-[#E11D48]"}`}
+        >
+          {isGuest ? <Lock size={16} className="text-accent" /> : <Heart size={17} fill={savedActive ? "currentColor" : "none"} />}
+        </button>
+      </div>
+
+      {/* Lớp + Yêu thích (máy tính) */}
+      <div className="hidden md:flex gap-2 overflow-x-auto pb-1 mb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {["Tất cả", "10", "11", "12"].map((grade) => {
           const isActive = grade === "Tất cả" ? gradeMode === "all" : gradeMode === "custom" && selectedGrades.includes(grade);
           return (
@@ -247,7 +287,8 @@ export default function FormulaLibrary({
         </button>
       </div>
 
-      {/* Chủ đề — bấm để lọc (chọn được nhiều chủ đề) */}
+      {/* Chủ đề — bấm để lọc (chọn được nhiều chủ đề) — máy tính */}
+      <div className="hidden md:block">
       <div className="flex items-center justify-between mb-3">
         <div className={LABEL}>Chủ đề</div>
         {topicMode === "custom" && (
@@ -278,6 +319,7 @@ export default function FormulaLibrary({
             </button>
           );
         })}
+      </div>
       </div>
 
       {/* Danh sách công thức (không vẽ LaTeX trên thẻ — 249 công thức KaTeX cùng lúc rất nặng) */}
