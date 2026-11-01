@@ -1,14 +1,46 @@
-import React, { useState, useEffect } from "react";
-import { GraduationCap, Timer, CheckCircle, XCircle, Award, Crown, Lock, ArrowLeft, ArrowRight, Play, BookOpen, Layers, Check, Clipboard, BarChart2, List, Pencil, Shuffle } from "lucide-react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { GraduationCap, Timer, CheckCircle, XCircle, Award, Crown, Lock, ArrowLeft, ArrowRight, Play, BookOpen, Layers, Check, Clipboard, BarChart2, List, Pencil, Shuffle, Sparkles, Flag, History } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { questionsPool as pool } from "../data/questions";
-import { saveQuizResult } from "../lib/supabase";
+import { saveQuizResult, loadChatSessions, getAccessToken } from "../lib/supabase";
 import Confetti from "../components/Confetti";
+import AskedProblemsPicker from "../components/AskedProblemsPicker";
 import { showConfirm } from "../components/ConfirmDialog";
 import { showToast } from "../components/Toast";
 import { useGuestGate } from "../utils/useGuestGate";
 import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from "../utils/guestQuiz";
 import { checkFillAnswer, isFillEligible } from "../utils/fillAnswer";
+import { extractAskedProblems, togglePick } from "../utils/askedProblems";
+import { toVariantQuestion, variantQuizTopic, runSequential } from "../utils/variantQuiz";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
+// 45 giây PHẢI lớn hơn ngân sách 40 giây/request của backend (VARIANT_BUDGET_MS trong
+// backend/lib/quizVariant.js) — frontend bỏ cuộc trước thì backend vẫn tính lượt mà học sinh không thấy đề.
+const VARIANT_TIMEOUT_MS = 45_000;
+
+// Một câu "Luyện lại dạng bài" = 1 lượt AI (backend đếm, hoàn lượt khi lỗi). Lỗi ném ra có code/status/remaining
+// để QuizView quyết định dừng hay gọi bài tiếp theo.
+async function callVariant(item, grade) {
+  const token = await getAccessToken();
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), VARIANT_TIMEOUT_MS);
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/quiz/variant`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: JSON.stringify({ problem: item.text, formulaIds: item.formulaIds, grade }),
+      signal: controller.signal,
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Object.assign(new Error(data.error || "Không thể kết nối AI"), { status: res.status, code: data.code, remaining: data.remaining });
+    return data;
+  } catch (err) {
+    if (err.name === "AbortError") throw Object.assign(new Error("AI phản hồi quá lâu, bạn thử lại sau nhé"), { code: "timeout" });
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export default function QuizView({
   setActiveTab,
@@ -18,13 +50,39 @@ export default function QuizView({
   stats,
   setStats,
   user,
+  formulas = [],
+  userGrade = null,
+  // "asked" khi mở từ nơi khác (Dashboard / Tìm kiếm AI) để vào thẳng chế độ "Luyện lại dạng bài đã hỏi".
+  initialMode = null,
+  onConsumeInitialMode,
 }) {
   const { loginNow: handleGuestLogin } = useGuestGate();
   // Khách làm bài và xem đáp án bình thường, chỉ khác 2 điểm: lượt/ngày đếm ở localStorage
   // (utils/guestQuiz.js) và kết quả không được lưu (saveQuizResult chỉ chạy khi có googleId).
   const isGuest = Boolean(user?.isAnonymous);
+  const formulasById = useMemo(() => new Map(formulas.map((f) => [f.id, f])), [formulas]);
 
-  const [quizState, setQuizState] = useState("setup"); // setup, active, result
+  const [quizState, setQuizState] = useState("setup"); // setup, generating, active, result
+  // Màn chọn đề: "pool" = đề có sẵn (questions.js), "asked" = luyện lại dạng bài đã hỏi AI.
+  const [setupMode, setSetupMode] = useState(initialMode === "asked" ? "asked" : "pool");
+  // Nguồn của bộ đề đang làm — "variant" không trừ lượt quiz (mỗi câu đã tính 1 lượt AI ở backend).
+  const [quizSource, setQuizSource] = useState("pool");
+  // Danh sách đã tải cho khoá lưu nào — khác khoá của tài khoản hiện tại nghĩa là đang tải.
+  const [asked, setAsked] = useState({ key: null, items: [] });
+  const askedKey = `formulax_chat_sessions_${user?.googleId || "guest"}`;
+  const askedItems = asked.items;
+  const askedLoading = asked.key !== askedKey;
+  const [pickedKeys, setPickedKeys] = useState([]);
+  const [genProgress, setGenProgress] = useState({ done: 0, total: 0 });
+  const [reportedIds, setReportedIds] = useState(() => new Set());
+  const genAliveRef = useRef(true);
+  // Đặt lại true trong thân effect: StrictMode (dev) chạy cleanup một lần ngay lúc mount.
+  useEffect(() => {
+    genAliveRef.current = true;
+    return () => { genAliveRef.current = false; };
+  }, []);
+  // initialMode đã được đọc vào setupMode lúc mount → báo App xoá.
+  useEffect(() => { if (initialMode) onConsumeInitialMode?.(); }, [initialMode, onConsumeInitialMode]);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   // Topic: allMode=true → tất cả chủ đề (other buttons disabled); allMode=false → chọn nhiều chủ đề
   const [allMode, setAllMode] = useState(true);
@@ -117,6 +175,7 @@ export default function QuizView({
     });
 
     setQuestions(questionsWithShuffledOptions);
+    setQuizSource("pool");
     setCurrentQIdx(0);
     setUserAnswers({});
     setFillInputs({});
@@ -134,10 +193,85 @@ export default function QuizView({
     setQuizState("active");
   };
 
+  // ─── Luyện lại dạng bài đã hỏi ─────────────────────────────────────────
+  // Lịch sử AI Finder: Supabase với tài khoản Google (lỗi mạng thì dùng bản ở máy), localStorage với khách.
+  useEffect(() => {
+    if (setupMode !== "asked" || isGuest) return;
+    let alive = true;
+    const fromLocal = () => { try { return JSON.parse(localStorage.getItem(askedKey) || "[]"); } catch { return []; } };
+    (user?.googleId ? loadChatSessions(user.googleId) : Promise.resolve(null))
+      .then((cloud) => { if (alive) setAsked({ key: askedKey, items: extractAskedProblems(cloud ?? fromLocal()) }); })
+      .catch(() => { if (alive) setAsked({ key: askedKey, items: extractAskedProblems(fromLocal()) }); });
+    return () => { alive = false; };
+  }, [setupMode, isGuest, user?.googleId, askedKey]);
+
+  const startVariantQuiz = async (items) => {
+    if (!items.length) return;
+    if (isGuest) { handleGuestLogin(); return; }
+    setGenProgress({ done: 0, total: items.length });
+    setQuizState("generating");
+    const { results, failures, stoppedBy } = await runSequential(
+      items,
+      async (item) => {
+        const data = await callVariant(item, userGrade);
+        const q = toVariantQuestion(data, item, (id) => formulasById.get(id));
+        if (!q) throw Object.assign(new Error("Đề không hợp lệ"), { code: "variant_invalid" });
+        return q;
+      },
+      {
+        // Hết lượt / AI bận / quá giờ: gọi tiếp gần như chắc chắn lỗi y hệt → dừng, làm với các câu đã có.
+        shouldStop: (e) => e.code === "quota_exceeded" || e.code === "ai_busy" || e.code === "timeout" || e.status === 401 || e.status === 403,
+        onProgress: (done) => { if (genAliveRef.current) setGenProgress((p) => ({ ...p, done })); },
+      },
+    );
+    if (!genAliveRef.current) return;
+    if (failures.length) {
+      const reason = stoppedBy?.code === "quota_exceeded" ? stoppedBy.message : stoppedBy?.message || "AI đang bận, bạn thử lại sau ít phút nhé";
+      showToast(results.length
+        ? `Tạo được ${results.length}/${items.length} câu. ${reason}`
+        : reason, results.length ? "info" : "error");
+    }
+    if (!results.length) { setQuizState("setup"); return; }
+    setQuestions(results);
+    setQuizSource("variant");
+    setCurrentQIdx(0);
+    setUserAnswers({});
+    setFillInputs({});
+    setScore(0);
+    setReportedIds(new Set());
+    setTimeLeft(9999);
+    setTimerActive(false);
+    setQuizState("active");
+  };
+
+  const reportVariant = async (q) => {
+    if (reportedIds.has(q.id)) return;
+    setReportedIds((prev) => new Set(prev).add(q.id));
+    try {
+      const token = await getAccessToken();
+      const res = await fetch(`${BACKEND_URL}/api/quiz/variant/report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({
+          question: q.text,
+          answer: q.options.find((o) => o.isCorrect)?.text || "",
+          formulaIds: q.formulaIds,
+          verified: q.verified,
+          reason: "Học sinh báo đề hoặc đáp án sai",
+        }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      showToast("Cảm ơn bạn! Mình đã ghi nhận câu này để kiểm tra lại.", "success");
+    } catch {
+      setReportedIds((prev) => { const next = new Set(prev); next.delete(q.id); return next; });
+      showToast("Chưa gửi được báo cáo, bạn thử lại sau nhé.", "error");
+    }
+  };
+
   // Câu ở vị trí idx có làm dạng điền không. Kết hợp: câu chẵn (thứ 2, 4…) là điền, nhưng câu không
-  // gõ được đáp án (isFillEligible) thì giữ dạng trắc nghiệm.
-  const isFillQuestion = (idx) =>
-    (quizType === "fill-in" || (quizType === "hybrid" && idx % 2 === 1)) && isFillEligible(questions[idx]);
+  // gõ được đáp án (isFillEligible) thì giữ dạng trắc nghiệm. Đề AI tạo luôn là trắc nghiệm.
+  const isFillQuestion = (idx) => quizSource !== "variant"
+    && (quizType === "fill-in" || (quizType === "hybrid" && idx % 2 === 1)) && isFillEligible(questions[idx]);
 
   // Chấm theo blankAnswer (checkFillAnswer), không so với chữ của phương án đúng — chữ đó có $ và
   // LaTeX nên trước đây gõ đúng vẫn bị chấm sai ở 405/428 câu.
@@ -177,7 +311,8 @@ export default function QuizView({
     setScore(finalScore);
     setQuizState("result");
 
-    if (!isPremium) {
+    // Đề AI tạo đã tính 1 lượt AI cho mỗi câu ở backend → không trừ thêm lượt quiz (chủ dự án chốt 2026-11-01).
+    if (!isPremium && quizSource !== "variant") {
       if (isGuest) setRemainingQuizzes(consumeGuestQuiz());
       else setRemainingQuizzes(prev => Math.max(0, prev - 1));
     }
@@ -188,9 +323,11 @@ export default function QuizView({
     }));
 
     if (user?.googleId) {
-      const topicName = (allMode || selectedTopics.length === 0 || selectedTopics.length > 1)
-        ? "Tổng hợp"
-        : selectedTopics[0];
+      const topicName = quizSource === "variant"
+        ? variantQuizTopic(questions)
+        : (allMode || selectedTopics.length === 0 || selectedTopics.length > 1)
+          ? "Tổng hợp"
+          : selectedTopics[0];
       saveQuizResult(user.googleId, {
         topic: topicName,
         questionsTotal: questions.length,
@@ -371,11 +508,77 @@ export default function QuizView({
                 <h2 className="text-[1.45rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0 tracking-[-0.5px]">
                   Làm bài kiểm tra
                 </h2>
-                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] font-medium m-0">
-                  Tùy chỉnh bài kiểm tra theo ý muốn
+                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] font-medium m-0 text-center">
+                  Làm đề có sẵn, hoặc luyện lại đúng dạng bài bạn đã hỏi AI với số liệu mới
                 </p>
               </div>
 
+              {/* Chọn kiểu đề */}
+              <div role="tablist" aria-label="Kiểu đề" className="grid grid-cols-2 gap-1 p-1 mb-4 rounded-2xl border border-[#E6E9F0] dark:border-[#334155] bg-[#F6F7FA] dark:bg-[#0F172A]">
+                {[
+                  { id: "pool", icon: List, label: "Đề có sẵn", hint: "Trắc nghiệm theo lớp, chủ đề" },
+                  { id: "asked", icon: History, label: "Luyện lại bài đã hỏi", hint: "AI đổi số liệu, giữ dạng bài" },
+                ].map(({ id, icon: Icon, label, hint }) => (
+                  <button
+                    key={id}
+                    type="button"
+                    role="tab"
+                    aria-selected={setupMode === id}
+                    onClick={() => setSetupMode(id)}
+                    className={`flex flex-col items-center gap-0.5 rounded-xl py-2.5 px-2 border-none cursor-pointer transition-colors ${
+                      setupMode === id ? "bg-primary text-white dark:bg-[#334155]" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"
+                    }`}
+                  >
+                    <span className="flex items-center gap-1.5 text-[0.85rem] font-bold"><Icon size={15} /> {label}</span>
+                    <span className={`text-[0.68rem] font-medium ${setupMode === id ? "text-white/70" : ""}`}>{hint}</span>
+                  </button>
+                ))}
+              </div>
+
+              {setupMode === "asked" && (
+                <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-5 md:p-6 flex flex-col gap-4 mb-4">
+                  <div className="flex items-start justify-between gap-3 flex-wrap">
+                    <div>
+                      <h3 className="m-0 text-[1rem] font-bold text-primary dark:text-[#E2E8F0]">Bài đã hỏi</h3>
+                      <p className="m-0 mt-1 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
+                        Chọn tối đa 5 bài. Mỗi bài, AI viết một câu cùng dạng với số liệu khác để bạn tự làm lại.
+                      </p>
+                    </div>
+                    {pickedKeys.length > 0 && (
+                      <span className="text-[0.72rem] font-bold text-accent bg-accent/10 rounded-full px-2.5 py-1">{pickedKeys.length}/5 đã chọn</span>
+                    )}
+                  </div>
+                  <AskedProblemsPicker
+                    items={askedItems}
+                    loading={askedLoading}
+                    selected={pickedKeys}
+                    onToggle={(key) => setPickedKeys((prev) => togglePick(prev, key))}
+                    onPracticeOne={(item) => startVariantQuiz([item])}
+                    formulasById={formulasById}
+                    isGuest={isGuest}
+                    onLogin={handleGuestLogin}
+                    onGoFinder={() => setActiveTab("finder")}
+                    busy={false}
+                  />
+                  <p className="m-0 flex items-start gap-1.5 text-[0.75rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
+                    <Sparkles size={13} className="text-accent shrink-0 mt-0.5" />
+                    <span>Đề do AI tạo và được máy kiểm lại cấu trúc, nhưng vẫn có thể sai — hãy đối chiếu lời giải. {isPremium ? "Premium: không giới hạn." : "Mỗi câu dùng 1 lượt AI (chung 10 lượt/ngày với Tìm kiếm AI), lỗi thì được hoàn lượt."}</span>
+                  </p>
+                  {!isGuest && askedItems.length > 0 && (
+                    <button
+                      type="button"
+                      className="btn btn-primary w-full h-12 rounded-lg text-[0.95rem] font-bold flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={!pickedKeys.length}
+                      onClick={() => startVariantQuiz(pickedKeys.map((k) => askedItems.find((i) => i.key === k)).filter(Boolean))}
+                    >
+                      <Sparkles size={15} />
+                      <span>{pickedKeys.length ? `Tạo ${pickedKeys.length} câu luyện tập` : "Chọn ít nhất 1 bài"}</span>
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {setupMode === "pool" && (<>
               {/* Figma Setup Card Container */}
               <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-6 flex flex-col gap-6 mb-4">
 
@@ -612,6 +815,25 @@ export default function QuizView({
                 <Play size={14} fill="white" />
                 <span>Bắt đầu làm bài</span>
               </button>
+              </>)}
+            </div>
+          )}
+
+          {/* Đang tạo đề AI — gọi lần lượt từng bài */}
+          {quizState === "generating" && (
+            <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-8 mt-6 flex flex-col items-center text-center gap-4" role="status" aria-live="polite">
+              <div className="w-12 h-12 rounded-full bg-accent-light dark:bg-accent/15 text-accent flex items-center justify-center">
+                <Sparkles size={22} className="animate-pulse" />
+              </div>
+              <div>
+                <div className="text-[1.05rem] font-bold text-primary dark:text-[#E2E8F0]">
+                  Đang tạo câu {Math.min(genProgress.done + 1, genProgress.total)}/{genProgress.total}
+                </div>
+                <p className="m-0 mt-1 text-[0.8rem] text-text-muted dark:text-[#94A3B8]">AI đổi số liệu và máy kiểm lại đáp án, mỗi câu vài giây.</p>
+              </div>
+              <div className="w-full max-w-[320px] h-1.5 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+                <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${genProgress.total ? (genProgress.done / genProgress.total) * 100 : 0}%` }} />
+              </div>
             </div>
           )}
 
@@ -620,7 +842,7 @@ export default function QuizView({
             <div>
               <div className="bg-white/95 dark:bg-[rgba(30,41,59,0.95)] border border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-2xl py-4 px-5 shadow-[0_4px_20px_rgba(30,58,95,0.04)] mb-4 flex flex-col gap-3 backdrop-blur-[10px]">
                 <div className="flex justify-between items-center text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] mb-0.5">
-                  <span>Chủ đề: {currentQ.topic} • Lớp {currentQ.grade}</span>
+                  <span>Chủ đề: {currentQ.topic}{currentQ.grade ? ` • Lớp ${currentQ.grade}` : ""}</span>
                   <div className={`flex items-center gap-1.5 py-1.5 px-3.5 rounded-full font-mono text-[0.9rem] font-extrabold transition-all duration-300 shadow-[0_2px_8px_rgba(217,119,6,0.04)] ${
                     timeLeft < 60 && timerActive ? "bg-error/10 text-error [animation:pulse-timer_1s_infinite_alternate]" : "bg-accent/8 text-accent"
                   }`}>
@@ -649,6 +871,11 @@ export default function QuizView({
               </div>
 
               <div className="bg-white/95 dark:bg-[rgba(30,41,59,0.95)] border border-[rgba(30,58,95,0.07)] dark:border-[#334155] rounded-2xl p-6 shadow-[0_4px_20px_rgba(30,58,95,0.04)] mb-6 backdrop-blur-[10px] flex flex-col gap-6 [animation:fadeIn_0.4s_ease-out]">
+                {currentQ.isAiGenerated && (
+                  <div className="-mb-2 flex items-center gap-1.5 self-start rounded-full bg-accent-light dark:bg-accent/15 text-[#92400E] dark:text-[#FCD34D] text-[0.72rem] font-bold px-2.5 py-1">
+                    <Sparkles size={12} /> Đề do AI tạo, hãy đối chiếu lời giải
+                  </div>
+                )}
                 <div className="quiz-question-text text-[1.15rem] font-bold leading-[1.6] text-primary dark:text-[#E2E8F0] break-words">
                   <RichTextRenderer text={currentQ.text} />
                 </div>
@@ -820,7 +1047,10 @@ export default function QuizView({
                         <div key={q.id} className={`flex flex-col gap-3 rounded-xl p-4 border-[1.5px] ${cardClass}`}>
                           {/* Review Card Header */}
                           <div className="flex justify-between items-center text-[0.75rem] font-bold">
-                            <span className="text-text-muted dark:text-[#94A3B8]">Câu {idx + 1}: {q.topic} • Lớp {q.grade}</span>
+                            <span className="text-text-muted dark:text-[#94A3B8]">
+                              Câu {idx + 1}: {q.topic}{q.grade ? ` • Lớp ${q.grade}` : ""}
+                              {q.isAiGenerated && <span className="bg-accent/10 text-accent rounded ml-1 py-px px-1.5">Đề do AI tạo</span>}
+                            </span>
                             <span className={`py-1 px-2 rounded ${statusClass}`}>
                               {statusLabel}
                             </span>
@@ -872,6 +1102,33 @@ export default function QuizView({
                             </strong>
                             <RichTextRenderer text={q.explanation} />
                           </div>
+
+                          {/* Đề AI tạo: công thức lấy từ thư viện (formulas.js theo id, không lấy chữ của AI),
+                              đề gốc đã hỏi, và nút báo đề sai. */}
+                          {q.isAiGenerated && (
+                            <div className="flex flex-col gap-2">
+                              {q.formulaIds.map((id) => formulasById.get(id)).filter(Boolean).map((f) => (
+                                <div key={f.id} className="rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A]/40 px-3 py-2">
+                                  <div className="text-[0.72rem] font-bold text-text-muted dark:text-[#94A3B8]">Công thức trong thư viện: {f.name}</div>
+                                  <div className="overflow-x-auto text-primary dark:text-[#E2E8F0]"><MathElement math={f.latex} block={true} /></div>
+                                </div>
+                              ))}
+                              {q.sourceText && (
+                                <div className="text-[0.75rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
+                                  <span className="font-semibold">Luyện từ bài đã hỏi: </span>
+                                  <span className="quiz-question-text"><RichTextRenderer text={q.sourceText.length > 160 ? `${q.sourceText.slice(0, 160)}…` : q.sourceText} /></span>
+                                </div>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => reportVariant(q)}
+                                disabled={reportedIds.has(q.id)}
+                                className="self-end inline-flex items-center gap-1.5 min-h-[36px] rounded-lg border border-[#E2E8F0] dark:border-[#475569] bg-white dark:bg-[#1E293B] px-3 text-[0.75rem] font-bold text-text-muted dark:text-[#CBD5E1] cursor-pointer hover:border-error hover:text-error disabled:cursor-default disabled:opacity-60 disabled:hover:border-[#E2E8F0] disabled:hover:text-text-muted"
+                              >
+                                <Flag size={13} /> {reportedIds.has(q.id) ? "Đã báo" : "Báo đề sai"}
+                              </button>
+                            </div>
+                          )}
                         </div>
                       );
                     })}

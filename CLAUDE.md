@@ -24,6 +24,7 @@ cd FormulaX-AI && npm run test:ocr # hàm thuần của luồng ảnh đề (tô
 cd FormulaX-AI && npm run test:math # tách biểu thức dài của AI Finder thành nhiều dòng (utils/mathLines.js)
 cd FormulaX-AI && npm run test:channel # kênh giới thiệu phía trình duyệt (utils/channelRef.js)
 cd FormulaX-AI && npm run test:admin # khoảng ngày trang quản trị + dấu gợi ý admin
+cd FormulaX-AI && npm run test:asked # "Bài đã hỏi", đề luyện lại do AI tạo, kế hoạch Dashboard "Hôm nay"
 ```
 
 ## Schema `formulas.js` — bắt buộc tuân thủ khi thêm/sửa công thức
@@ -418,6 +419,28 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
 - **Thông báo quyền riêng tư** nằm ở hằng số `OCR_PRIVACY_NOTICE` (`src/config/features.js`). Đang dùng
   gói Gemini MIỄN PHÍ — Google có thể dùng nội dung để cải thiện dịch vụ, câu thông báo phải nói thật
   điều đó. Khi bật thanh toán cho key Gemini thì sửa câu này.
+
+### Kiểm tra › "Luyện lại bài đã hỏi" — Gemini ra đề cùng dạng (từ 2026-11-01)
+
+Ngoại lệ có chủ đích với nguyên tắc "AI không tính ra kết quả": đây là ĐỀ LUYỆN TẬP nên AI được viết đáp số,
+nhưng backend không tin AI — mọi câu phải qua kiểm.
+- **"Bài đã hỏi"** lấy từ `chat_sessions` (khách: localStorage), không có bảng riêng: tin user + tin bot ngay sau
+  có `answer.type === "solution"` (`utils/askedProblems.js`). Chọn tối đa 5 bài; frontend gọi LẦN LƯỢT, không song song.
+- **`POST /api/quiz/variant`** (`backend/lib/quizVariant.js`): theo đúng mẫu `/api/chat` (xác thực, khách 403, limiter
+  chat). **Mỗi câu = 1 lượt AI Finder** (`ai_usage_daily`), hoàn lượt khi lỗi / không qua kiểm; nộp bài KHÔNG trừ
+  lượt quiz (chủ dự án chốt). Model + dự phòng + `fallbackState` dùng chung với Finder. Ngân sách 40s < timeout 45s
+  của frontend (`VARIANT_TIMEOUT_MS` trong `QuizView.jsx`).
+- **Lớp kiểm** (`validateVariant`): đúng 4 phương án khác nhau (cả so giá trị số), đúng 1 đáp án, `blankAnswer` không
+  `$`/không phải nhãn và khớp số với phương án đúng, số liệu khác đề gốc, `precheckInvalidQuestion` của Finder,
+  `formula_ids` ⊆ id gửi cho AI (bắt buộc khi câu trả lời Finder gốc có id; kiến thức nền thì không). Dạng có bộ kiểm
+  thì backend TỰ TÍNH lại đáp án: tổng ba góc, Pytago, phương trình bậc hai (nghiệm / tổng / tích). Không qua → hỏi lại
+  AI một lần kèm lỗi → vẫn không qua thì 502 `variant_invalid` "AI đang bận" + hoàn lượt. Log `[quiz:variant]`,
+  `[quiz:variant_rejected]` chỉ có số liệu + id công thức.
+- JSON parse bằng `parseVariantJson` = `keepOcrNewlines` + `parseModelJson` ("\nThay số" là xuống dòng, không phải lệnh LaTeX).
+- Giao diện: nhãn "Đề do AI tạo, hãy đối chiếu lời giải"; thẻ công thức ở phần xem lại lấy từ `formulas.js` theo id.
+  **"Báo đề sai"** → `POST /api/quiz/variant/report`, CHỈ ghi log `[quiz:variant_report]` (đề + đáp án cắt ngắn, id;
+  không google_id/email) — không có bảng (chủ dự án chốt). Đọc log trên Render để soát đề sai.
+- Test: `backend/test/quizVariant.test.js`, `npm run test:asked`. CHƯA chấm chất lượng đề trên bộ câu thử bằng key chấm.
 
 ### Hướng phát triển đợt 2 / Phase 3 — suy ra công thức (CHƯA làm; dời sau 26/10/2026)
 

@@ -25,6 +25,8 @@ import Header from "./components/Header";
 import BottomNav from "./components/BottomNav";
 import FormulaDetailModal from "./components/FormulaDetailModal";
 import OnboardingModal from "./components/OnboardingModal";
+import DailyIntentModal from "./components/DailyIntentModal";
+import { hasSeenIntentThisSession, markIntentSeen } from "./utils/dailyIntent";
 import { ToastContainer, showToast } from "./components/Toast";
 import { ConfirmDialogHost } from "./components/ConfirmDialog";
 
@@ -63,6 +65,11 @@ export default function App() {
   const { isGuest, requireGoogle } = useGuestGate();
 
   const [activeTab, setActiveTab]   = useState("dashboard");
+  // "asked" = mở Kiểm tra thẳng vào chế độ "Luyện lại bài đã hỏi" (từ Tìm kiếm AI). QuizView chỉ đọc lúc mount
+  // rồi gọi onConsumeInitialMode để xoá — lần sau mở Kiểm tra bằng lối khác thì vào màn mặc định.
+  const [quizEntryMode, setQuizEntryMode] = useState(null);
+  const openAskedPractice = useCallback(() => { setQuizEntryMode("asked"); setActiveTab("quiz"); }, []);
+  const consumeQuizEntryMode = useCallback(() => setQuizEntryMode(null), []);
   // payOS trả người dùng về /?payment=success|failed (backend/routes/payosPayment.js → /return).
   // Thông báo kết quả nằm ở trang Premium, nên lần tải dữ liệu đầu tiên mở thẳng trang đó thay vì
   // Dashboard. Đọc một lần lúc khởi tạo; PremiumUpgrade tự xoá tham số khỏi URL.
@@ -123,6 +130,8 @@ export default function App() {
     return (gId && localStorage.getItem(`formulax_display_name_${gId}`)) || "";
   });
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showIntent, setShowIntent] = useState(false);
+  const [dataReady, setDataReady] = useState(false); // đã tải xong dữ liệu tài khoản ít nhất một lần
   const [userGrade, setUserGrade] = useState(() => {
     const saved = localStorage.getItem("formulax_user");
     const gId = saved ? JSON.parse(saved)?.googleId : null;
@@ -315,7 +324,7 @@ export default function App() {
         if (!prefs.onboarded && !hasAnyData) setShowOnboarding(true);
       })
       .catch((err) => console.error("[Supabase] loadUserData:", err))
-      .finally(() => setIsLoadingData(false));
+      .finally(() => { setIsLoadingData(false); setDataReady(true); });
   }, [user?.googleId]);
 
   // ─── Đồng bộ trạng thái Premium từ Supabase (nguồn sự thật do backend ghi sau khi PayOS xác nhận) ──
@@ -385,6 +394,20 @@ export default function App() {
     }, 1500);
     return () => clearTimeout(viewedTimer.current);
   }, [viewedFormulaIds, user?.googleId]);
+
+  // ─── Hộp "Hôm nay bạn gặp khó khăn gì?" ─────────────────────────────────
+  // Hiện một lần mỗi lượt mở app (sessionStorage → F5 không hỏi lại). Chờ tải xong dữ liệu để
+  // biết có phải người mới không: người mới đã có onboarding riêng nên không chồng hai hộp.
+  // Không chen vào khi vừa quay về từ trang thanh toán.
+  useEffect(() => {
+    if (!isLoggedIn || isLoadingData || showIntent) return;
+    const gid = user?.googleId;
+    if (gid && !dataReady) return;
+    if (hasSeenIntentThisSession(gid)) return;
+    markIntentSeen(gid);
+    if (showOnboarding || paymentReturnRef.current) return;
+    setShowIntent(true);
+  }, [isLoggedIn, isLoadingData, dataReady, showOnboarding, showIntent, user?.googleId]);
 
   // ─── Cài đặt đổi trên máy khác — tải lại khi app được mở lại ────────────
   // App (nhất là bản cài trên điện thoại) thường chỉ bị ẩn chứ không tải lại trang, nên đổi chế
@@ -640,6 +663,7 @@ export default function App() {
             viewedFormulaIds={viewedFormulaIds}
             dailyChallenge={dailyChallenge}
             onSaveDailyChallenge={handleSaveDailyChallenge}
+            flashcardProgress={flashcardProgress}
           />
         );
       case "library":
@@ -666,6 +690,7 @@ export default function App() {
             setActiveTab={setActiveTab}
             isPremium={isPremium}
             grade={userGrade}
+            onPracticeAsked={openAskedPractice}
           />
         );
       case "flashcard":
@@ -696,6 +721,10 @@ export default function App() {
             stats={stats}
             setStats={setStats}
             user={user}
+            formulas={formulas}
+            userGrade={userGrade}
+            initialMode={quizEntryMode}
+            onConsumeInitialMode={consumeQuizEntryMode}
           />
         );
       case "progress":
@@ -753,6 +782,7 @@ export default function App() {
             viewedFormulaIds={viewedFormulaIds}
             dailyChallenge={dailyChallenge}
             onSaveDailyChallenge={handleSaveDailyChallenge}
+            flashcardProgress={flashcardProgress}
           />
         );
     }
@@ -793,6 +823,15 @@ export default function App() {
           onFinish={handleOnboardingFinish}
           onGoToFinder={() => setActiveTab("finder")}
           onGoToQuiz={() => setActiveTab("quiz")}
+        />
+      )}
+
+      {showIntent && (
+        <DailyIntentModal
+          gid={user?.googleId}
+          firstName={displayName || undefined}
+          onPick={(o) => { setShowIntent(false); setActiveTab(o.tab); }}
+          onClose={() => setShowIntent(false)}
         />
       )}
 

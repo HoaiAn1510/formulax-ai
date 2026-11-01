@@ -94,6 +94,8 @@ export default function FormulaFinder({
   isPremium = false,
   // Lớp học sinh chọn ở onboarding (10/11/12, có thể chưa có) — backend dùng để xếp hạng công thức.
   grade = null,
+  // Mở Kiểm tra ở chế độ "Luyện lại bài đã hỏi" (App.jsx).
+  onPracticeAsked,
 }) {
   const { user } = useAuth();
   const { loginNow: handleGuestLogin } = useGuestGate();
@@ -837,6 +839,20 @@ export default function FormulaFinder({
             <Plus size={14} />
             Chat mới
           </button>
+
+          {/* Bài AI đã hướng dẫn → Kiểm tra › "Luyện lại bài đã hỏi" (đề cùng dạng, số liệu mới). */}
+          {!isGuest && onPracticeAsked && sessions.length > 0 && (
+            <button
+              onClick={() => { setSidebarOpen(false); onPracticeAsked(); }}
+              className="w-full flex items-start gap-2 py-2.5 px-3 -mt-1.5 mb-3 bg-accent-light dark:bg-accent/15 text-[#92400E] dark:text-[#FCD34D] border border-[#FDE68A] dark:border-accent/30 rounded-[10px] cursor-pointer text-left"
+            >
+              <History size={14} className="shrink-0 mt-0.5" />
+              <span>
+                <span className="block text-[0.8rem] font-bold">Luyện lại bài đã hỏi</span>
+                <span className="block text-[0.7rem] font-medium opacity-80 leading-[1.4]">AI ra đề cùng dạng, đổi số liệu</span>
+              </span>
+            </button>
+          )}
 
           <div className="text-[0.85rem] max-md:text-[0.8rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-2">Cuộc trò chuyện đã lưu</div>
 
