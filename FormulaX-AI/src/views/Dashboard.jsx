@@ -10,6 +10,7 @@ import { useGuestGate } from "../utils/useGuestGate";
 import { vietnamToday } from "../utils/vietnamDate";
 import { readIntentToday } from "../utils/dailyIntent";
 import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../utils/todayPlan";
+import PageShell from "../components/PageShell";
 
 // Số ngẫu nhiên có seed (từ chuỗi ngày hôm nay) — cùng 1 ngày luôn ra cùng thứ tự,
 // sang ngày khác thì đổi. Dùng để: (1) phá đồng hạng ổn định trong ngày, (2) cho user
@@ -135,9 +136,7 @@ export default function Dashboard({
   };
 
   return (
-    <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 md:px-8 pb-8 md:pb-12">
-        <div className="relative z-[1] max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
+    <PageShell innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
 
           {/* ─── Hero: lời chào + Học tiếp ─────────────────────────────────── */}
           <section
@@ -386,9 +385,7 @@ export default function Dashboard({
               </button>
             </section>
           )}
-        </div>
-      </div>
-    </div>
+        </PageShell>
   );
 }
 

@@ -70,6 +70,13 @@ export default function App() {
   const [quizEntryMode, setQuizEntryMode] = useState(null);
   const openAskedPractice = useCallback(() => { setQuizEntryMode("asked"); setActiveTab("quiz"); }, []);
   const consumeQuizEntryMode = useCallback(() => setQuizEntryMode(null), []);
+  // Bấm lại tab đang mở trên thanh điều hướng: setActiveTab cùng giá trị không vẽ lại view, nên đang ở màn kết
+  // quả Kiểm tra mà bấm "Luyện đề" thì đứng yên. Tăng key để QuizView mở lại từ màn chọn đề.
+  const [quizViewKey, setQuizViewKey] = useState(0);
+  const navigateTab = useCallback((tab) => {
+    if (tab === "quiz" && activeTab === "quiz") setQuizViewKey((k) => k + 1);
+    setActiveTab(tab);
+  }, [activeTab]);
   // payOS trả người dùng về /?payment=success|failed (backend/routes/payosPayment.js → /return).
   // Thông báo kết quả nằm ở trang Premium, nên lần tải dữ liệu đầu tiên mở thẳng trang đó thay vì
   // Dashboard. Đọc một lần lúc khởi tạo; PremiumUpgrade tự xoá tham số khỏi URL.
@@ -714,6 +721,7 @@ export default function App() {
       case "quiz":
         return (
           <QuizView
+            key={quizViewKey}
             setActiveTab={setActiveTab}
             isPremium={isPremium}
             remainingQuizzes={quizzesLeft}
@@ -808,7 +816,7 @@ export default function App() {
 
       <BottomNav
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        setActiveTab={navigateTab}
         displayName={displayName}
         onLogout={handleLogout}
         user={user}

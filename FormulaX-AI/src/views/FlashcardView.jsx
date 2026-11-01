@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import PageShell from "../components/PageShell";
+import MimiMascot from "../components/MimiMascot";
+import { CARD, LABEL, BTN_PRIMARY, BTN_SECONDARY } from "../utils/shellStyle";
 import {
   Layers, ArrowLeft, ArrowRight, RotateCw, CheckCircle, AlertTriangle,
   Plus, FileDown, Lock, ChevronRight, Book, HelpCircle, BarChart3, Clock,
@@ -524,224 +527,139 @@ export default function FlashcardView({
     const favoriteDecks = decks.filter(d => d.type === "favorite");
     const hasDecks = decks.length > 0;
 
+    const deckCard = (deck, kind) => (
+      <div
+        key={deck.id}
+        role="button"
+        tabIndex={deck.formulaIds.length === 0 ? -1 : 0}
+        onKeyDown={e => { if ((e.key === "Enter" || e.key === " ") && e.target === e.currentTarget && deck.formulaIds.length > 0 && renamingDeckId !== deck.id) { e.preventDefault(); handleStartDeck(deck.id); } }}
+        className={`${CARD} p-4 md:p-5 flex items-center gap-3.5 transition-[transform,border-color] duration-200 ${deck.formulaIds.length === 0 ? "cursor-default opacity-60" : "cursor-pointer hover:-translate-y-0.5 hover:border-[#CBD5E1] dark:hover:border-[#475569]"}`}
+        onClick={() => {
+          if (renamingDeckId === deck.id) return;
+          if (deck.formulaIds.length === 0) return;
+          handleStartDeck(deck.id);
+        }}
+      >
+        <span className={`w-11 h-11 rounded-[12px] flex items-center justify-center shrink-0 ${kind === "favorite" ? "bg-[#FFE4E6] text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]" : "bg-[#DBEAFE] text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]"}`}>
+          {kind === "favorite" ? <Heart size={19} /> : <BarChart3 size={19} />}
+        </span>
+        <div className="flex-1 min-w-0">
+          {renamingDeckId === deck.id ? (
+            <input
+              ref={renameInputRef}
+              value={renameValue}
+              onChange={e => setRenameValue(e.target.value)}
+              onKeyDown={handleRenameKeyDown}
+              onBlur={handleConfirmRename}
+              onClick={e => e.stopPropagation()}
+              aria-label="Tên bộ thẻ"
+              className="text-[0.92rem] font-semibold text-primary dark:text-[#E2E8F0] border border-accent rounded-[8px] py-1 px-2 w-full outline-none bg-white dark:bg-[#0F172A]"
+            />
+          ) : (
+            <h3 className="m-0 text-[0.95rem] font-semibold text-primary dark:text-[#E2E8F0] truncate">{deck.name}</h3>
+          )}
+          <div className="mt-0.5 flex items-center gap-1.5 flex-wrap text-[0.75rem] text-text-muted dark:text-[#94A3B8]">
+            <span>{deck.formulaIds.length === 0 ? "Chưa có thẻ — thêm từ Thư viện" : `${deck.formulaIds.length} thẻ`}</span>
+            {deck.topic && <span>· {deck.topic}</span>}
+            {deck.grade && <span>· Lớp {deck.grade}</span>}
+          </div>
+        </div>
+        <div className="flex items-center gap-0.5 shrink-0">
+          {kind === "favorite" && (
+            <button aria-label="Đổi tên bộ thẻ" title="Đổi tên" onClick={e => { e.stopPropagation(); handleStartRename(deck); }} className="w-8 h-8 bg-transparent border-none cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0] rounded-[8px] flex items-center justify-center">
+              <Pencil size={15} />
+            </button>
+          )}
+          <button
+            aria-label="Xuất PDF"
+            title="Xuất PDF"
+            onClick={e => { e.stopPropagation(); handlePdfExport({ name: deck.name, cards: deck.formulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean) }); }}
+            className="w-8 h-8 bg-transparent border-none cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0] rounded-[8px] flex items-center justify-center"
+          >
+            <FileDown size={15} />
+          </button>
+          <button aria-label="Xoá bộ thẻ" title="Xoá bộ thẻ" onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }} className="w-8 h-8 bg-transparent border-none cursor-pointer text-[#94A3B8] hover:text-error rounded-[8px] flex items-center justify-center">
+            <Trash2 size={15} />
+          </button>
+        </div>
+      </div>
+    );
+
     return (
-      <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="relative z-[1]">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-2">
-              <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0] mb-0" onClick={() => setActiveTab("dashboard")}>
-                <ArrowLeft size={12} />
-                <span>Về trang chủ</span>
+      <PageShell title="Flashcard" description="Lật thẻ để thuộc công thức. App nhắc lại đúng lúc bạn sắp quên." onBack={() => setActiveTab("dashboard")}>
+        {!hasDecks ? (
+          /* EMPTY STATE */
+          <div className={`${CARD} relative max-w-[640px] mx-auto mt-[60px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-10 flex flex-col items-center text-center gap-3`}>
+            <MimiMascot width={160} className="absolute left-1/2 -translate-x-1/2 -top-[86px]" />
+            <h2 className="m-0 mt-6 text-[1.25rem] md:text-[1.5rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">Chưa có bộ thẻ nào</h2>
+            <p className="m-0 text-[0.88rem] text-text-muted dark:text-[#94A3B8] max-w-[420px] leading-[1.6]">
+              {isGuest
+                ? "Đăng nhập Google để tạo bộ thẻ, lưu lịch ôn tập và theo dõi thẻ đến hạn mỗi ngày."
+                : "Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức."}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto mt-2">
+              <button className={BTN_PRIMARY} onClick={handleOpenCreateFiltered}>
+                {isGuest ? <Lock size={15} /> : <Layers size={15} />}
+                <span>Tạo theo chủ đề</span>
+              </button>
+              <button className={BTN_SECONDARY} onClick={handleCreateFavoriteDeck}>
+                {isGuest ? <Lock size={15} /> : <Heart size={15} />}
+                <span>Tạo bộ yêu thích</span>
               </button>
             </div>
-
-            <div className="mb-5">
-              <h2 className="text-[1.6rem] font-extrabold text-primary dark:text-[#E2E8F0] tracking-[-0.5px]">
-                Flashcard
-              </h2>
-              <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] font-medium mt-1">
-                Học công thức qua thẻ ghi nhớ
-              </p>
-            </div>
-
-            {/* Ôn tập hôm nay — gộp thẻ đến hạn/mới từ mọi bộ thẻ theo lịch spaced-repetition */}
-            {hasDecks && dueReviewPreviewIds.length > 0 && (
-              <div
-                onClick={handleStartDueReview}
-                className="flex items-center justify-between bg-banner-orange rounded-2xl px-4 py-[13px] cursor-pointer text-white mb-5 shadow-[0_2px_6px_rgba(15,23,42,0.05)]"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-[10px] bg-white/15 flex items-center justify-center shrink-0">
-                    <Sparkles size={18} />
-                  </div>
-                  <div>
-                    <div className="text-[0.88rem] font-bold">Ôn tập hôm nay</div>
-                    <div className="text-[0.7rem] opacity-75 mt-[1px]">
-                      {dueReviewPreviewIds.length} thẻ đến hạn ôn lại
-                    </div>
-                  </div>
-                </div>
-                <ChevronRight size={18} className="opacity-70 shrink-0" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:items-start">
+            {/* Cột trái: ôn tập hôm nay + tạo bộ mới */}
+            <aside className="lg:col-span-4 flex flex-col gap-3 md:gap-4">
+              {dueReviewPreviewIds.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleStartDueReview}
+                  className="w-full text-left rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white p-5 border-none cursor-pointer flex items-center gap-4 shadow-[0_10px_24px_-12px_rgba(15,23,42,0.6)] transition-transform hover:-translate-y-0.5"
+                >
+                  <span className="w-11 h-11 rounded-[12px] bg-white/10 text-[#FBBF24] flex items-center justify-center shrink-0"><Sparkles size={20} /></span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-[0.98rem] font-semibold">Ôn tập hôm nay</span>
+                    <span className="block text-[0.78rem] text-[#CBD5E1] mt-0.5">{dueReviewPreviewIds.length} thẻ đến hạn ôn lại</span>
+                  </span>
+                  <ChevronRight size={18} className="text-[#FBBF24] shrink-0" />
+                </button>
+              )}
+              <div className={`${CARD} p-4 md:p-5 flex flex-col gap-2.5`}>
+                <div className={LABEL}>Tạo bộ thẻ mới</div>
+                <button className={`${BTN_SECONDARY} w-full justify-start`} onClick={handleOpenCreateFiltered}>
+                  <Plus size={15} />
+                  <span>Bộ theo chủ đề</span>
+                </button>
+                <button className={`${BTN_SECONDARY} w-full justify-start`} onClick={handleCreateFavoriteDeck}>
+                  <Plus size={15} />
+                  <span>Bộ yêu thích</span>
+                </button>
               </div>
-            )}
+            </aside>
 
-            {/* EMPTY STATE */}
-            {!hasDecks && (
-              <div className="flex flex-col items-center justify-center py-10 px-6 text-center gap-3">
-                <div className="w-20 h-20 rounded-full bg-secondary/8 flex items-center justify-center mb-2">
-                  <Layers size={36} color="#3B82F6" />
-                </div>
-                <h3 className="text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Chưa có bộ thẻ nào</h3>
-                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] max-w-[280px] leading-[1.5] m-0">
-                  {isGuest
-                    ? "Đăng nhập Google để tạo bộ thẻ, lưu lịch ôn tập và theo dõi thẻ đến hạn mỗi ngày."
-                    : "Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức."}
-                </p>
-                <div className="flex flex-col gap-2.5 w-full max-w-[300px] mt-2">
-                  <button
-                    className="btn btn-primary w-full justify-center"
-                    onClick={handleOpenCreateFiltered}
-                  >
-                    {isGuest ? <Lock size={15} /> : <Layers size={15} />}
-                    <span>Tạo theo chủ đề</span>
-                  </button>
-                  <button
-                    className="btn btn-secondary w-full justify-center"
-                    onClick={handleCreateFavoriteDeck}
-                  >
-                    {isGuest ? <Lock size={15} /> : <Heart size={15} />}
-                    <span>Tạo bộ yêu thích</span>
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* DECK LIST */}
-            {hasDecks && (
-              <div>
-                {/* Filtered decks section */}
-                {filteredDecks.length > 0 && (
-                  <div className="mb-5">
-                    <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-[0.05em] mb-2.5">
-                      Theo chủ đề
-                    </p>
-                    <div className="deck-stack-list">
-                      {filteredDecks.map(deck => (
-                        <div
-                          key={deck.id}
-                          className={`deck-list-card-figma dark:bg-[#1E293B] dark:border-[#334155] ${deck.formulaIds.length === 0 ? "cursor-default opacity-60" : "cursor-pointer"}`}
-                          onClick={() => {
-                            if (renamingDeckId === deck.id) return;
-                            if (deck.formulaIds.length === 0) return;
-                            handleStartDeck(deck.id);
-                          }}
-                        >
-                          <div className="deck-card-left">
-                            <div className="w-11 h-11 rounded-full flex items-center justify-center bg-secondary/10 text-secondary">
-                              <BarChart3 size={20} />
-                            </div>
-                            <div>
-                              <h3 className="deck-card-name">{deck.name}</h3>
-                              <div className="deck-card-stats">{deck.formulaIds.length} thẻ</div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            {deck.topic && (
-                              <span className="tag tag-blue text-[0.7rem] py-0.5 px-2">{deck.topic}</span>
-                            )}
-                            {deck.grade && (
-                              <span className="tag text-[0.7rem] py-0.5 px-2 bg-[#F1F5F9] !text-[#475569]">Lớp {deck.grade}</span>
-                            )}
-                            <button
-                              onClick={e => { e.stopPropagation(); handlePdfExport({ name: deck.name, cards: deck.formulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean) }); }}
-                              title="Xuất PDF"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
-                            >
-                              <FileDown size={15} />
-                            </button>
-                            <button aria-label="Xoá bộ thẻ"
-                              onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
-                              title="Xoá bộ thẻ"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+            {/* Cột phải: các bộ thẻ */}
+            <section className="lg:col-span-8 flex flex-col gap-5 md:gap-6">
+              {filteredDecks.length > 0 && (
+                <div>
+                  <div className={`${LABEL} mb-3`}>Theo chủ đề</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {filteredDecks.map(deck => deckCard(deck, "filtered"))}
                   </div>
-                )}
-
-                {/* Favorite decks section */}
-                {favoriteDecks.length > 0 && (
-                  <div className="mb-5">
-                    <p className="text-xs font-bold text-[#94A3B8] uppercase tracking-[0.05em] mb-2.5">
-                      Yêu thích
-                    </p>
-                    <div className="deck-stack-list">
-                      {favoriteDecks.map(deck => (
-                        <div
-                          key={deck.id}
-                          className={`deck-list-card-figma dark:bg-[#1E293B] dark:border-[#334155] ${deck.formulaIds.length === 0 ? "cursor-default opacity-60" : "cursor-pointer"}`}
-                          onClick={() => {
-                            if (renamingDeckId === deck.id) return;
-                            if (deck.formulaIds.length === 0) return;
-                            handleStartDeck(deck.id);
-                          }}
-                        >
-                          <div className="deck-card-left flex-1 min-w-0">
-                            <div className="w-11 h-11 rounded-full flex items-center justify-center bg-error/8 text-error">
-                              <Heart size={20} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              {renamingDeckId === deck.id ? (
-                                <input
-                                  ref={renameInputRef}
-                                  value={renameValue}
-                                  onChange={e => setRenameValue(e.target.value)}
-                                  onKeyDown={handleRenameKeyDown}
-                                  onBlur={handleConfirmRename}
-                                  onClick={e => e.stopPropagation()}
-                                  className="text-[0.9rem] font-bold text-[#1E3A5F] border-[1.5px] border-accent rounded-md py-0.5 px-2 w-full outline-none bg-white"
-                                />
-                              ) : (
-                                <h3 className="deck-card-name">{deck.name}</h3>
-                              )}
-                              <div className="deck-card-stats">
-                                {deck.formulaIds.length === 0 ? "Chưa có thẻ — thêm từ Thư viện" : `${deck.formulaIds.length} thẻ`}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <button aria-label="Đổi tên bộ thẻ"
-                              onClick={e => { e.stopPropagation(); handleStartRename(deck); }}
-                              title="Đổi tên"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
-                            >
-                              <Pencil size={15} />
-                            </button>
-                            <button
-                              onClick={e => { e.stopPropagation(); handlePdfExport({ name: deck.name, cards: deck.formulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean) }); }}
-                              title="Xuất PDF"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
-                            >
-                              <FileDown size={15} />
-                            </button>
-                            <button aria-label="Xoá bộ thẻ"
-                              onClick={e => { e.stopPropagation(); onDeleteDeck(deck.id); }}
-                              title="Xoá bộ thẻ"
-                              className="bg-transparent border-none cursor-pointer p-1 text-[#94A3B8] rounded-md flex items-center"
-                            >
-                              <Trash2 size={15} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Add buttons */}
-                <div className="flex flex-col gap-2.5 mt-2">
-                  <button
-                    className="btn btn-secondary w-full justify-center !border-dashed"
-                    onClick={handleOpenCreateFiltered}
-                  >
-                    <Plus size={15} />
-                    <span>Thêm bộ theo chủ đề</span>
-                  </button>
-                  <button
-                    className="btn btn-secondary w-full justify-center !border-dashed"
-                    onClick={handleCreateFavoriteDeck}
-                  >
-                    <Plus size={15} />
-                    <span>Thêm bộ yêu thích</span>
-                  </button>
                 </div>
-              </div>
-            )}
+              )}
+              {favoriteDecks.length > 0 && (
+                <div>
+                  <div className={`${LABEL} mb-3`}>Yêu thích</div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {favoriteDecks.map(deck => deckCard(deck, "favorite"))}
+                  </div>
+                </div>
+              )}
+            </section>
+          </div>
+        )}
 
             {/* Create Filtered Deck Modal */}
             {showCreateFiltered && (
@@ -752,9 +670,7 @@ export default function FlashcardView({
                 onConfirm={handleCreateFilteredDeck}
               />
             )}
-          </div>
-        </div>
-      </div>
+      </PageShell>
     );
   }
 
@@ -764,188 +680,168 @@ export default function FlashcardView({
     // No cards in deck
     if (cards.length === 0) {
       return (
-        <div className="view-container">
-          <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-            <div className="relative z-[1]">
-              <div className="summary-card !bg-white/72 !border !border-white/60 !rounded-[20px] !shadow-[0_8px_32px_rgba(31,38,135,0.10)] !backdrop-blur-[20px]">
-                <HelpCircle size={32} />
-                <h2>Bộ thẻ trống</h2>
-                <p>Không có công thức nào trong bộ thẻ này.</p>
-                <button className="btn btn-primary" onClick={() => setView("list")}>
-                  Quay lại danh sách
-                </button>
-              </div>
-            </div>
+        <PageShell>
+          <div className={`${CARD} max-w-[520px] mx-auto p-8 flex flex-col items-center text-center gap-3`}>
+            <HelpCircle size={32} className="text-[#CBD5E1]" />
+            <h2 className="m-0 text-[1.15rem] font-bold text-primary dark:text-[#E2E8F0]">Bộ thẻ trống</h2>
+            <p className="m-0 text-[0.85rem] text-text-muted dark:text-[#94A3B8]">Không có công thức nào trong bộ thẻ này.</p>
+            <button className={BTN_PRIMARY} onClick={() => setView("list")}>
+              Quay lại danh sách
+            </button>
           </div>
-        </div>
+        </PageShell>
       );
     }
 
     const isFavoriteDeck = activeDeck?.type === "favorite";
 
     return (
-      <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="relative z-[1]">
-            <div className="flex flex-col items-center w-full max-w-[500px] mx-auto gap-4 [animation:fadeIn_0.3s_ease-out]">
-              <div className="flex justify-between items-center w-full mb-2">
-                <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.85rem] font-bold flex items-center gap-1.5 cursor-pointer transition duration-200 py-1.5 px-3 rounded-lg hover:text-primary dark:hover:text-[#E2E8F0] hover:bg-[#f1f5f9]" onClick={() => setView("list")}>
-                  <ArrowLeft size={14} />
-                  <span>Danh sách bộ thẻ</span>
-                </button>
-                <span className="text-[0.85rem] font-bold text-secondary bg-secondary/8 py-1 px-3 rounded-full">
-                  Thẻ: {currentIndex + 1} / {cards.length}
-                </span>
-              </div>
+      <PageShell onBack={() => setView("list")} backLabel="Danh sách bộ thẻ">
+        <div className="flex flex-col items-center w-full max-w-[820px] mx-auto gap-4 md:gap-5 [animation:fadeIn_0.3s_ease-out]">
+          {/* Tiến độ */}
+          <div className="w-full flex items-center gap-3 md:gap-4">
+            <span className="text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0] shrink-0">Thẻ {currentIndex + 1}/{cards.length}</span>
+            <div className="flex-1 h-2 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+              <div className="h-full rounded-full bg-[linear-gradient(90deg,#F59E0B,#FBBF24)] transition-[width] duration-300" style={{ width: `${((currentIndex + 1) / cards.length) * 100}%` }} />
+            </div>
+            <span className="hidden sm:block text-[0.8rem] text-text-muted dark:text-[#94A3B8] shrink-0 truncate max-w-[200px]">{isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}</span>
+          </div>
 
-              {/* 3D Flip Card */}
-              <div className="w-full h-[380px] [perspective:1000px] cursor-pointer mb-2 active:scale-[0.98] transition-transform duration-200" onClick={() => setIsFlipped(!isFlipped)}>
-                <div className={`w-full h-full relative transition-transform duration-[0.6s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}>
-                  {/* Front */}
-                  <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden">
-                    <span className="text-[0.7rem] font-bold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.5px]">Mặt trước - Tên công thức</span>
-                    <div className="flex flex-col items-center gap-4 text-center flex-1 justify-center">
-                      <span className="tag bg-[#f1f5f9] !text-[#1E3A5F]">
-                        Lớp {currentCard.grade} • {currentCard.topic}
-                      </span>
-                      <div className="text-[1.4rem] font-extrabold text-primary dark:text-[#E2E8F0] leading-[1.4]">{currentCard.name}</div>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-text-muted dark:text-[#94A3B8] font-bold">
-                      <RotateCw size={12} /> Chạm để lật
-                    </div>
+          {/* Thẻ lật 3D */}
+          <div className="relative w-full mt-[58px] md:mt-[64px]">
+            <MimiMascot width={104} className="md:hidden absolute right-2 -top-[60px] z-[2] pointer-events-none" />
+            <MimiMascot width={190} className="hidden md:block absolute right-10 -top-[86px] z-[2] pointer-events-none" />
+            <div
+              role="button"
+              tabIndex={0}
+              aria-label={isFlipped ? "Lật lại mặt trước" : "Lật thẻ xem công thức"}
+              onKeyDown={e => { if (e.key === "Enter") setIsFlipped(!isFlipped); }}
+              className="w-full h-[380px] md:h-[430px] [perspective:1200px] cursor-pointer transition-transform duration-200 active:scale-[0.99]"
+              onClick={() => setIsFlipped(!isFlipped)}
+            >
+              <div className={`w-full h-full relative transition-transform duration-[0.6s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}>
+                {/* Mặt trước */}
+                <div className={`${CARD} absolute inset-0 [backface-visibility:hidden] bg-[linear-gradient(160deg,#FFF8E1,#FFFFFF_55%)] dark:bg-none dark:bg-[#1E293B] p-6 md:p-10 flex flex-col justify-between items-center text-center overflow-hidden`}>
+                  <span className={LABEL}>Mặt trước · Tên công thức</span>
+                  <div className="flex flex-col items-center gap-4 flex-1 justify-center">
+                    <span className="inline-block py-1 px-3 rounded-full text-[0.75rem] font-semibold bg-[#DBEAFE] text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]">
+                      {currentCard.topic} · Lớp {currentCard.grade}
+                    </span>
+                    <div className="text-[1.4rem] md:text-[1.9rem] font-semibold tracking-[-0.02em] leading-[1.35] max-w-[620px] text-primary dark:text-[#E2E8F0]">{currentCard.name}</div>
                   </div>
-
-                  {/* Back */}
-                  <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] absolute w-full h-full [backface-visibility:hidden] p-6 flex flex-col justify-between items-center overflow-hidden [transform:rotateY(180deg)]">
-                    <span className="text-[0.7rem] font-bold text-secondary uppercase tracking-[0.5px]">Mặt sau - Công thức</span>
-                    <div className="flex flex-col items-center gap-3 w-full flex-1 min-h-0 justify-start overflow-y-auto overflow-x-hidden">
-                      <div className="bg-[#f1f5f9] dark:bg-[#0F172A]/60 rounded-xl p-4 flex items-center justify-center min-h-[70px] max-h-[200px] overflow-auto shrink-0 border border-[#e2e8f0] dark:border-[#334155] w-full !text-[#1E3A5F] dark:!text-[#E2E8F0]">
-                        <MathElement math={currentCard.latex} block={true} />
-                      </div>
-                      <div className="flashcard-explanation text-[0.8rem] text-[#475569] dark:text-[#CBD5E1] text-left w-full overflow-x-auto">
-                        <strong>Giải thích:</strong>
-                        <div className="mt-0.5">
-                          <RichTextRenderer text={currentCard.explanation} />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-text-muted dark:text-[#94A3B8] font-bold">
-                      <RotateCw size={12} /> Chạm để lật lại
-                    </div>
+                  <div className="flex items-center gap-2 text-[0.8rem] text-text-muted dark:text-[#94A3B8]">
+                    <RotateCw size={14} /> Chạm vào thẻ hoặc nhấn Space để lật
                   </div>
                 </div>
-              </div>
 
-              {/* Arrows */}
-              <div className="flex justify-between items-center w-full mt-2 gap-4">
-                <button aria-label="Thẻ trước" className="arrow-btn !text-[#1E3A5F]" onClick={handlePrev} disabled={currentIndex === 0}>
-                  <ArrowLeft size={18} />
-                </button>
-                <span className="text-[0.8rem] text-text-muted font-bold self-center">
-                  Lật thẻ xem đáp án trước khi chấm
-                </span>
-                <button aria-label="Thẻ tiếp theo" className="arrow-btn !text-[#1E3A5F]" onClick={handleNext} disabled={currentIndex === cards.length - 1}>
-                  <ArrowRight size={18} />
-                </button>
-              </div>
-
-              <div className="hidden md:block text-[0.72rem] text-[#94A3B8] font-semibold -mt-1">
-                Phím tắt: <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">Space</kbd> lật thẻ, <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#F1F5F9] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển thẻ / chấm điểm
-              </div>
-
-              {/* Grading panel */}
-              {isFlipped && (
-                <div className="grid grid-cols-2 gap-4 w-full mt-2 [animation:slideUp_0.3s_cubic-bezier(0.16,1,0.3,1)]">
-                  <button className="btn btn-error" onClick={() => handleGrade(false)}>
-                    <AlertTriangle size={16} />
-                    <span>Cần ôn thêm</span>
-                  </button>
-                  <button className="btn btn-success" onClick={() => handleGrade(true)}>
-                    <CheckCircle size={16} />
-                    <span>Nhớ rồi</span>
-                  </button>
+                {/* Mặt sau */}
+                <div className={`${CARD} absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] p-5 md:p-8 flex flex-col justify-between items-center overflow-hidden`}>
+                  <span className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>Mặt sau · Công thức</span>
+                  <div className="flex flex-col items-center gap-3 w-full flex-1 min-h-0 justify-start overflow-y-auto overflow-x-hidden mt-3">
+                    <div className="bg-page dark:bg-[#0F172A] rounded-[14px] p-4 flex items-center justify-center min-h-[80px] max-h-[200px] overflow-auto shrink-0 border border-line dark:border-[#334155] w-full text-primary dark:text-[#E2E8F0]">
+                      <MathElement math={currentCard.latex} block={true} />
+                    </div>
+                    <div className="flashcard-explanation text-[0.82rem] text-[#475569] dark:text-[#CBD5E1] text-left w-full overflow-x-auto">
+                      <strong className="text-primary dark:text-[#E2E8F0]">Giải thích:</strong>
+                      <div className="mt-0.5">
+                        <RichTextRenderer text={currentCard.explanation} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-[0.8rem] text-text-muted dark:text-[#94A3B8] mt-2">
+                    <RotateCw size={14} /> Chạm để lật lại
+                  </div>
                 </div>
-              )}
-
-              {/* Remove from favorite deck button */}
-              {isFavoriteDeck && isFlipped && (
-                <div className="mt-2 text-center">
-                  <button
-                    onClick={e => { e.stopPropagation(); handleRemoveFromDeck(); }}
-                    className="bg-transparent border-none cursor-pointer text-xs text-error font-semibold inline-flex items-center gap-1 py-1 px-2 rounded-md"
-                  >
-                    <X size={13} />
-                    Xóa khỏi bộ này
-                  </button>
-                </div>
-              )}
+              </div>
             </div>
           </div>
+
+          {/* Chấm điểm (sau khi lật) hoặc chuyển thẻ */}
+          {isFlipped ? (
+            <div className="grid grid-cols-2 gap-3 md:gap-4 w-full md:w-auto [animation:slideUp_0.3s_cubic-bezier(0.16,1,0.3,1)]">
+              <button
+                className="md:w-[230px] inline-flex items-center justify-center gap-2 rounded-[13px] py-3 px-4 text-[0.95rem] font-semibold cursor-pointer border border-[#FDA4AF] bg-[#FFF1F2] text-[#BE123C] dark:bg-[#E11D48]/15 dark:border-[#E11D48]/40 dark:text-[#FDA4AF] transition-colors hover:bg-[#FFE4E6]"
+                onClick={() => handleGrade(false)}
+              >
+                <AlertTriangle size={16} />
+                <span>Cần ôn thêm</span>
+              </button>
+              <button
+                className="md:w-[230px] inline-flex items-center justify-center gap-2 rounded-[13px] py-3 px-4 text-[0.95rem] font-semibold cursor-pointer border-none bg-[#059669] text-white shadow-[0_10px_24px_-10px_rgba(5,150,105,0.6)] transition-colors hover:bg-[#047857]"
+                onClick={() => handleGrade(true)}
+              >
+                <CheckCircle size={16} />
+                <span>Nhớ rồi</span>
+              </button>
+            </div>
+          ) : (
+            <div className="flex justify-between items-center w-full gap-4">
+              <button aria-label="Thẻ trước" className={`${BTN_SECONDARY} !px-3.5`} onClick={handlePrev} disabled={currentIndex === 0}>
+                <ArrowLeft size={18} />
+              </button>
+              <span className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] text-center">Lật thẻ xem đáp án trước khi chấm</span>
+              <button aria-label="Thẻ tiếp theo" className={`${BTN_SECONDARY} !px-3.5`} onClick={handleNext} disabled={currentIndex === cards.length - 1}>
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          )}
+
+          <div className="hidden md:block text-[0.75rem] text-text-muted dark:text-[#94A3B8]">
+            Phím tắt: <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">Space</kbd> lật thẻ, <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển thẻ / chấm điểm
+          </div>
+
+          {/* Remove from favorite deck button */}
+          {isFavoriteDeck && isFlipped && (
+            <button
+              onClick={e => { e.stopPropagation(); handleRemoveFromDeck(); }}
+              className="bg-transparent border-none cursor-pointer text-[0.78rem] text-error font-semibold inline-flex items-center gap-1 py-1 px-2 rounded-md"
+            >
+              <X size={13} />
+              Xóa khỏi bộ này
+            </button>
+          )}
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   // ─── SUMMARY VIEW ─────────────────────────────────────────────────────────
 
   if (view === "summary") {
+    const rate = cards.length > 0 ? Math.round((rememberedCount / cards.length) * 100) : 0;
     return (
-      <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="relative z-[1]">
-            <div className="summary-card">
-              <div className="summary-icon">
-                <CheckCircle size={32} />
-              </div>
-              <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">Hoàn thành bộ thẻ!</h2>
-              <p className="text-[0.85rem] text-[#64748B] dark:text-[#94A3B8]">
-                Bạn đã ôn tập xong <strong>{isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}</strong>.
-              </p>
+      <PageShell>
+        <div className={`${CARD} relative max-w-[560px] mx-auto mt-[70px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-9 flex flex-col items-center text-center gap-3`}>
+          <MimiMascot width={170} className="absolute left-1/2 -translate-x-1/2 -top-[96px]" />
+          <div className={`${LABEL} mt-6`}>Hoàn thành bộ thẻ</div>
+          <h2 className="m-0 text-[1.3rem] md:text-[1.6rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">
+            {isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}
+          </h2>
+          <div className="grid grid-cols-2 gap-3 w-full mt-2">
+            <div className="rounded-[14px] bg-white dark:bg-[#0F172A] border border-line dark:border-[#334155] p-4">
+              <div className="text-[2rem] font-bold text-[#059669] dark:text-[#6EE7B7]">{rememberedCount}</div>
+              <div className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">Đã nhớ tốt</div>
+            </div>
+            <div className="rounded-[14px] bg-white dark:bg-[#0F172A] border border-line dark:border-[#334155] p-4">
+              <div className="text-[2rem] font-bold text-[#BE123C] dark:text-[#FDA4AF]">{reviewCount}</div>
+              <div className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">Cần ôn thêm</div>
+            </div>
+          </div>
+          <div className="text-[0.95rem] font-semibold text-primary dark:text-[#E2E8F0]">Tỷ lệ ghi nhớ: {rate}%</div>
 
-              <div className="summary-stats-grid">
-                <div className="summary-stat-box">
-                  <div className="summary-stat-val good">{rememberedCount}</div>
-                  <div className="summary-stat-lbl">Đã nhớ tốt</div>
-                </div>
-                <div className="summary-stat-box">
-                  <div className="summary-stat-val retry">{reviewCount}</div>
-                  <div className="summary-stat-lbl">Cần ôn thêm</div>
-                </div>
-              </div>
-
-              <div className="text-[0.9rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">
-                Tỷ lệ ghi nhớ: {cards.length > 0 ? Math.round((rememberedCount / cards.length) * 100) : 0}%
-              </div>
-
-              <div className="summary-actions">
-                <div className="relative">
-                  <button
-                    className={`btn ${isPremium ? "btn-primary" : "btn-secondary"} w-full`}
-                    onClick={() => handlePdfExport()}
-                  >
-                    <FileDown size={16} />
-                    <span>Xuất bộ thẻ ra PDF</span>
-                    {!isPremium && <Lock size={14} className="ml-1 text-premium" />}
-                  </button>
-                  {!isPremium && (
-                    <span className="absolute -top-2 -right-2 bg-premium text-white text-[0.65rem] font-extrabold py-0.5 px-2 rounded-full shadow-[0_2px_6px_rgba(245,158,11,0.4)]">
-                      Pro
-                    </span>
-                  )}
-                </div>
-
-                <button className="btn btn-primary" onClick={handleRestartDeck}>
-                  Luyện tập lại
-                </button>
-
-                <button className="btn btn-secondary" onClick={() => setView("list")}>
-                  Về danh sách bộ thẻ
-                </button>
-              </div>
+          <div className="w-full flex flex-col gap-2.5 mt-2">
+            <button className={`${BTN_PRIMARY} w-full`} onClick={handleRestartDeck}>Luyện tập lại</button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button className={`${BTN_SECONDARY} w-full relative`} onClick={() => handlePdfExport()}>
+                <FileDown size={16} />
+                <span>Xuất PDF</span>
+                {!isPremium && <span className="inline-flex items-center gap-0.5 text-[0.65rem] font-bold text-white bg-premium rounded-full py-0.5 px-1.5"><Lock size={10} /> Pro</span>}
+              </button>
+              <button className={`${BTN_SECONDARY} w-full`} onClick={() => setView("list")}>Về danh sách bộ thẻ</button>
             </div>
           </div>
         </div>
-      </div>
+      </PageShell>
     );
   }
 

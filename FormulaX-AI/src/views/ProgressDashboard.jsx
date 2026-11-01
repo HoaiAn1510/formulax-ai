@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ArrowLeft, Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award, LogIn } from "lucide-react";
+import { Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award, LogIn } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import CountUp from "../components/CountUp";
 import { showToast } from "../components/Toast";
 import { BADGES } from "../data/badges";
 import { vietnamToday, shiftDay } from "../utils/vietnamDate";
+import PageShell from "../components/PageShell";
 
 const BADGE_ICONS = { Flame, ClipboardList, Layers, BookOpen };
 
@@ -22,7 +23,7 @@ function evaluateBadges(streak, stats) {
 function BadgesSection({ badges }) {
   const unlockedCount = badges.filter(b => b.unlocked).length;
   return (
-    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
+    <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4 mb-4">
       <div className="flex items-center gap-2 mb-3.5">
         <Award size={16} color="#D97706" />
         <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">Huy hiệu</h2>
@@ -57,7 +58,7 @@ function BadgesSection({ badges }) {
 
 function StatCard({ icon, value, label, sublabel, color }) {
   return (
-    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] py-3.5 px-3 flex flex-col items-center gap-1">
+    <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none py-3.5 px-3 flex flex-col items-center gap-1">
       <div style={{ color }} className="mb-0.5">{icon}</div>
       <div className="text-[1.35rem] font-extrabold text-primary dark:text-[#E2E8F0] leading-[1.2]">{value}</div>
       <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold text-center">{label}</div>
@@ -233,7 +234,7 @@ function StreakChart({ activityDates, streak, selectedDate, onSelectDate, select
   const daysThisMonth = activityDates.filter(d => d.startsWith(monthPrefix)).length;
 
   return (
-    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-3.5 h-full">
+    <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-3.5 h-full">
       <div className="flex justify-between items-center mb-2.5">
         <div className="flex items-center gap-1.5">
           <Flame size={16} color="#F97316" />
@@ -406,30 +407,11 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
   const selectedDateLabel = formatDateLabel(selectedDate);
 
   return (
-    <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-5">
-            <button aria-label="Về trang chủ"
-              onClick={() => setActiveTab("dashboard")}
-              className="flex items-center justify-center w-[34px] h-[34px] rounded-[10px] bg-[#F1F5F9] dark:bg-[#334155] border-none cursor-pointer text-primary dark:text-[#E2E8F0]"
-            >
-              <ArrowLeft size={18} />
-            </button>
-            <div>
-              <h1 className="m-0 text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0]">
-                Tiến độ học tập
-              </h1>
-              <p className="m-0 text-[0.72rem] text-text-muted dark:text-[#94A3B8]">
-                Phân tích từ lịch sử quiz & flashcard
-              </p>
-            </div>
-          </div>
+    <PageShell title="Tiến độ học tập" description="Phân tích từ lịch sử quiz và flashcard. Chọn một ngày trên lịch để xem chi tiết." onBack={() => setActiveTab("dashboard")}>
 
           {/* Guest gate — khách chưa có tài khoản nên mời đăng nhập, không mời mua Premium */}
           {isGuest && (
-            <div className="bg-banner-purple rounded-2xl p-5 text-white text-center mb-5 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+            <div className="bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] rounded-[18px] p-5 md:p-7 text-white text-center mb-5 shadow-[0_10px_24px_-12px_rgba(15,23,42,0.6)]">
               <Lock size={26} color="#F59E0B" className="mx-auto mb-2.5" />
               <h3 className="m-0 mb-1.5 text-base font-extrabold">Đăng nhập Google để xem tiến độ học tập</h3>
               <p className="m-0 mb-3.5 text-[0.8rem] opacity-85">
@@ -447,7 +429,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
 
           {/* Premium gate */}
           {!isGuest && !isPremium && (
-            <div className="bg-banner-purple rounded-2xl p-5 text-white text-center mb-5 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+            <div className="bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] rounded-[18px] p-5 md:p-7 text-white text-center mb-5 shadow-[0_10px_24px_-12px_rgba(15,23,42,0.6)]">
               <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-2.5" />
               <h3 className="m-0 mb-1.5 text-base font-extrabold">Tính năng Premium</h3>
               <p className="m-0 mb-3.5 text-[0.8rem] opacity-85">
@@ -483,7 +465,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             />
 
             {/* Topic performance — scoped to the day selected on the calendar above */}
-            <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 relative overflow-hidden">
+            <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4 relative overflow-hidden">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart2 size={16} color="#D97706" />
                 <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
@@ -537,7 +519,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             </div>
 
             {/* AI Coach suggestions — scoped to the same selected day, giờ nằm chung hàng với Chuỗi học/Hiệu suất */}
-            <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4">
+            <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4">
               <div className="flex items-center gap-2 mb-3.5">
                 <Target size={16} color="#10B981" />
                 <h2 className="m-0 text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">
@@ -628,21 +610,18 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
           )}
 
           {/* CTA: flashcard practice */}
-          <div
+          <button
+            type="button"
             onClick={() => setActiveTab("flashcard")}
-            className="flex items-center justify-between bg-banner-purple rounded-2xl py-3.5 px-4 cursor-pointer text-white mb-2 shadow-[0_2px_6px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 transition duration-200"
+            className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none w-full flex items-center gap-4 text-left py-4 px-4 md:px-6 cursor-pointer mb-2 transition-transform duration-200 hover:-translate-y-0.5"
           >
-            <div>
-              <div className="text-[0.88rem] font-bold">Ôn tập ngay với Flashcard</div>
-              <div className="text-[0.72rem] opacity-75 mt-0.5">
-                Tạo bộ thẻ theo chủ đề yếu để cải thiện điểm số
-              </div>
-            </div>
-            <Layers size={22} className="opacity-90 shrink-0" />
+            <span className="w-11 h-11 rounded-xl bg-primary dark:bg-[#0F172A] text-[#FBBF24] flex items-center justify-center shrink-0"><Layers size={19} /></span>
+            <span className="flex-1 min-w-0">
+              <span className="block text-[0.92rem] font-bold text-primary dark:text-[#E2E8F0]">Ôn tập ngay với Flashcard</span>
+              <span className="block text-[0.75rem] text-text-muted dark:text-[#94A3B8] mt-0.5">Tạo bộ thẻ theo chủ đề yếu để cải thiện điểm số</span>
+            </span>
+          </button>
           </div>
-          </div>
-        </div>
-      </div>
-    </div>
+        </PageShell>
   );
 }

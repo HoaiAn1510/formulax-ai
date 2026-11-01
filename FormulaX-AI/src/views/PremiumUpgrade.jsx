@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import { useGuestGate } from "../utils/useGuestGate";
 import { supabase, checkPremiumStatus } from "../lib/supabase";
 import { showToast } from "../components/Toast";
+import PageShell from "../components/PageShell";
+import MimiMascot from "../components/MimiMascot";
 
 // three.js/@react-three/fiber/@react-three/drei chỉ tải khi người dùng thực sự mở trang
 // Premium — lazy-load để không đội thêm bundle chính cho toàn app.
@@ -284,11 +286,11 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   }, []);
 
   return (
-    <div className="view-container">
+    <PageShell top={(<>
       {/* Thanh CTA dính - phải nằm NGOÀI div overflow-hidden bên dưới, vì position:sticky
           không hoạt động nếu có tổ tiên nào đó overflow:hidden/auto/scroll (giới hạn CSS). */}
       {!isPremium && (
-        <div className="sticky top-[65px] md:top-0 z-20 -mx-4 md:-mx-8 -mt-6 md:-mt-8 mb-6 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-sm border-b border-[rgba(30,58,95,0.07)] dark:border-[#334155] py-2.5 px-4 md:px-8 shadow-[0_2px_10px_rgba(0,0,0,0.04)]">
+        <div className="sticky top-[65px] md:top-0 z-20 -mx-4 md:-mx-8 -mt-6 md:-mt-8 mb-6 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-sm border-b border-line dark:border-[#334155] py-2.5 px-4 md:px-8">
           <div className="flex items-center gap-2 min-w-0">
             <Crown size={16} fill="#F59E0B" color="#F59E0B" className="shrink-0" />
             <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0] truncate">Premium chỉ từ {PLAN_DISPLAY.monthly.price}{PLAN_DISPLAY.monthly.unit}</span>
@@ -303,8 +305,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
         </div>
       )}
 
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
+      </>)}>
           <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-12">
 
             {/* Payment notice — hiện sau khi PayOS redirect người dùng quay lại */}
@@ -469,7 +470,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 {goals.map((goal, idx) => {
                   const GoalIcon = goal.icon;
                   return (
-                    <div key={idx} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] flex gap-3 p-4 transition-transform duration-300 [transform-style:preserve-3d] hover:[transform:perspective(700px)_rotateX(3deg)_rotateY(-3deg)_translateY(-2px)]">
+                    <div key={idx} className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none flex gap-3 p-4 transition-transform duration-300 [transform-style:preserve-3d] hover:[transform:perspective(700px)_rotateX(3deg)_rotateY(-3deg)_translateY(-2px)]">
                       <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${GOAL_COLOR_CLASSES[goal.color]}`}>
                         <GoalIcon size={18} />
                       </div>
@@ -495,7 +496,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               </div>
 
               {/* Desktop: bảng đầy đủ. Mobile: bảng cuộn ngang khó đọc — thay bằng thẻ xếp dọc bên dưới. */}
-              <div className="hidden md:block glass-card dark:bg-[#1E293B] dark:border-[#334155] overflow-x-auto">
+              <div className="hidden md:block fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none overflow-x-auto">
                 <table className="w-full border-collapse text-[0.85rem] text-left">
                   <thead>
                     <tr>
@@ -539,7 +540,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
               <div className="md:hidden flex flex-col gap-3">
                 {features.map((feat, idx) => (
-                  <div key={idx} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 flex flex-col gap-3">
+                  <div key={idx} className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4 flex flex-col gap-3">
                     <div className="font-bold text-primary dark:text-[#E2E8F0] text-[0.9rem]">{feat.name}</div>
                     <div className="flex gap-2.5">
                       <div className="flex-1 rounded-lg bg-[#f8fafc] dark:bg-[#0F172A]/40 p-2.5">
@@ -570,43 +571,50 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Section 5: Gold Card - Nâng cấp trải nghiệm học */}
             {!isPremium && (
-              <div className="flex flex-col items-center">
-                <div className="mb-2">
-                  <span className="bg-success text-white text-[0.7rem] font-extrabold py-0.5 px-2 rounded">MỞ KHÓA NGAY</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 max-w-[1000px] w-full mx-auto mt-16 md:mt-10">
+                {/* Gói miễn phí — các hạn mức đang áp dụng (CLAUDE.md: Giới hạn tài khoản Free) */}
+                <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-6 md:p-9 flex flex-col gap-5">
+                  <div>
+                    <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">Miễn phí</div>
+                    <div className="text-[2.2rem] md:text-[2.6rem] font-bold tracking-[-0.03em] mt-1 text-primary dark:text-[#E2E8F0]">0 đ</div>
+                  </div>
+                  <div className="flex flex-col gap-3">
+                    {["10 quiz trắc nghiệm mỗi ngày", "10 lượt Tìm kiếm AI mỗi ngày", "5 lần quét ảnh đề mỗi ngày", "Toàn bộ thư viện công thức", "Flashcard và theo dõi chuỗi học"].map((t) => (
+                      <div key={t} className="flex items-center gap-3 text-[0.9rem] text-primary dark:text-[#E2E8F0]">
+                        <span className="w-[22px] h-[22px] rounded-full bg-success text-white flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
+                        <span>{t}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-auto inline-flex items-center justify-center rounded-[13px] py-3 px-5 border border-[#D5DAE5] dark:border-[#475569] text-[0.9rem] font-semibold text-text-muted dark:text-[#94A3B8]">
+                    {isGuest ? "Chế độ khách" : "Gói hiện tại"}
+                  </div>
                 </div>
 
-                <div className="border-2 border-premium rounded-[20px] p-6 max-w-[400px] w-full bg-white dark:bg-[#1E293B] shadow-[0_2px_6px_rgba(15,23,42,0.05)] transition-transform duration-300 [transform-style:preserve-3d] hover:[transform:perspective(800px)_rotateX(2deg)_translateY(-3px)]">
-                  <div className="text-center mb-4">
-                    <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-1.5" />
-                    <h3 className="text-[1.1rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Premium {PLAN_DISPLAY[selectedPlan].label}</h3>
-                    <p className="text-xs text-text-muted dark:text-[#94A3B8] mt-0.5 mb-0">Gói tài khoản ưu việt nhất</p>
-                    <h3 className="text-[1.8rem] font-extrabold text-premium mt-2.5 mb-0">{PLAN_DISPLAY[selectedPlan].price}</h3>
-                    <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] font-semibold">{PLAN_DISPLAY[selectedPlan].unit}</span>
-                  </div>
-
-                  <div className="h-px bg-[#E2E8F0] dark:bg-[#334155] my-4" />
-
-                  <div className="flex flex-col gap-2.5 mb-5">
-                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
-                      <Check size={14} className="text-success shrink-0" />
-                      <span>Hỏi AI Finder không giới hạn lượt</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
-                      <Check size={14} className="text-success shrink-0" />
-                      <span>Quiz không giới hạn lượt, thêm dạng Điền đáp án và Kết hợp</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
-                      <Check size={14} className="text-success shrink-0" />
-                      <span>Xem Hiệu suất theo chủ đề và Coach gợi ý ôn tập</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-[0.8rem] text-[#334155] dark:text-[#CBD5E1]">
-                      <Check size={14} className="text-success shrink-0" />
-                      <span>Xuất bộ thẻ Flashcard ra PDF để in hoặc ôn ngoài ứng dụng</span>
+                {/* Gói Premium — thẻ navy có Mimi (mockup) */}
+                <div className="relative mt-16 md:mt-0 rounded-[20px] p-6 md:p-9 bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white flex flex-col gap-5 shadow-[0_24px_50px_-24px_rgba(15,23,42,0.6)]">
+                  <MimiMascot width={170} className="absolute right-5 -top-[78px] pointer-events-none" />
+                  <div>
+                    <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#FBBF24]">Premium {PLAN_DISPLAY[selectedPlan].label}</div>
+                    <div className="text-[2.2rem] md:text-[2.6rem] font-bold tracking-[-0.03em] mt-1">
+                      {PLAN_DISPLAY[selectedPlan].price}<span className="text-[0.95rem] font-medium text-[#94A3B8]"> {PLAN_DISPLAY[selectedPlan].unit}</span>
                     </div>
                   </div>
-
+                  <div className="flex flex-col gap-3">
+                    {[
+                      "Hỏi AI Finder không giới hạn lượt",
+                      "Quiz không giới hạn lượt, thêm dạng Điền đáp án và Kết hợp",
+                      "Xem Hiệu suất theo chủ đề và Coach gợi ý ôn tập",
+                      "Xuất bộ thẻ Flashcard ra PDF để in hoặc ôn ngoài ứng dụng",
+                    ].map((t) => (
+                      <div key={t} className="flex items-center gap-3 text-[0.9rem]">
+                        <span className="w-[22px] h-[22px] rounded-full bg-[#FBBF24] text-primary flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
+                        <span>{t}</span>
+                      </div>
+                    ))}
+                  </div>
                   <button
-                    className="btn btn-premium vibrate w-full h-11 text-[0.9rem] rounded-lg border-none disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="btn btn-premium w-full h-12 mt-auto text-[0.95rem] rounded-[13px] border-none disabled:opacity-60 disabled:cursor-not-allowed"
                     onClick={() => handleUpgrade(selectedPlan)}
                     disabled={isProcessing}
                   >
@@ -662,9 +670,9 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Section 9: Bottom CTA Banner */}
             {!isPremium && (
-              <div className="bg-[#FFFBEB] border-[1.5px] border-premium rounded-2xl p-6 text-center flex flex-col items-center gap-3">
-                <h3 className="text-[1.1rem] font-extrabold text-primary m-0">Điểm cao không chờ đợi</h3>
-                <p className="text-[0.8rem] text-text-muted m-0 max-w-[340px] leading-[1.4]">
+              <div className="fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-6 md:p-8 text-center flex flex-col items-center gap-3">
+                <h3 className="text-[1.15rem] md:text-[1.35rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0] m-0">Điểm cao không chờ đợi</h3>
+                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] m-0 max-w-[380px] leading-[1.5]">
                   Đăng ký ngay tài khoản Premium để đạt kết quả tốt nhất trong kỳ thi sắp tới.
                 </p>
                 <div className="flex gap-3 w-full justify-center flex-wrap mt-1">
@@ -686,8 +694,6 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             )}
 
           </div>
-        </div>
-      </div>
-    </div>
+        </PageShell>
   );
 }

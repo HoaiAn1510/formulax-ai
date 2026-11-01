@@ -410,6 +410,7 @@ app.get("/api/chat/usage", chatBurstLimiter, async (req, res) => {
 // dạng, đổi số liệu, có đáp án + lời giải. Mỗi câu = 1 lượt AI Finder (chủ dự án chốt 2026-11-01), đếm ở cùng
 // bảng ai_usage_daily, hoàn lượt khi không giao được đề (lỗi Gemini, không qua kiểm) — xem lib/quizVariant.js.
 // Frontend gọi lần lượt từng bài (không song song) để không dồn hạn mức theo phút của Gemini.
+// Đề không có bộ tự tính lại được kiểm chéo bằng một lần gọi Gemini nữa — KHÔNG trừ thêm lượt của học sinh.
 app.post("/api/quiz/variant", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
   const requestDeadline = Date.now() + VARIANT_BUDGET_MS;
   try {
@@ -491,7 +492,10 @@ app.post("/api/quiz/variant", chatBurstLimiter, chatDailyLimiter, async (req, re
     // Chỉ số liệu + id công thức — không ghi đề, google_id hay email.
     console.log("[quiz:variant]", JSON.stringify({
       model: meta.model, attempts: meta.attempts, fallback: meta.fallback?.reason || null,
-      verified: meta.verified, ids: variant.formulaIds, rejected: meta.errors.length, ms: Date.now() - startedAt,
+      // crossChecked false = còn < 8 giây nên giao đề không kiểm chéo (crossCheckSkipped: "budget").
+      verified: meta.verified, crossChecked: meta.crossChecked, crossCheckSkipped: meta.crossCheckSkipped || null,
+      crossCheckFallback: Boolean(meta.crossCheckFallback),
+      ids: variant.formulaIds, rejected: meta.errors.length, ms: Date.now() - startedAt,
     }));
     res.json({ ...variant, verified: meta.verified, remaining: outcome.remaining });
   } catch (error) {
@@ -502,7 +506,11 @@ app.post("/api/quiz/variant", chatBurstLimiter, chatDailyLimiter, async (req, re
     const remainingInfo = typeof error.remaining === "number" ? { remaining: error.remaining } : {};
     // Đề không qua kiểm: lượt đã hoàn, báo như Finder lúc AI bận. Log chỉ có danh sách lỗi (không có đề).
     if (error instanceof VariantError) {
-      console.warn("[quiz:variant_rejected]", JSON.stringify({ attempts: error.meta?.attempts, errors: error.meta?.errors }));
+      console.warn("[quiz:variant_rejected]", JSON.stringify({
+        attempts: error.meta?.attempts, errors: error.meta?.errors,
+        // Lần giải kiểm chéo lỗi cả với model dự phòng / không đọc được đáp số.
+        crossCheckFailed: error.meta?.crossCheckFailed || null, crossCheckErrors: error.meta?.crossCheckErrors || [],
+      }));
       return res.status(error.status).json({ error: "AI đang bận, bạn thử lại sau ít phút nhé", code: error.code, ...remainingInfo });
     }
     const status = error.status || error.statusCode || 500;

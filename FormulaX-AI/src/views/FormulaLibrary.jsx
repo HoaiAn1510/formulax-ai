@@ -1,7 +1,24 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
-import { Search, Heart, HelpCircle, XCircle, ArrowLeft, BookOpen, Layers, Lock } from "lucide-react";
+import { Search, Heart, HelpCircle, XCircle, BookOpen, Layers, Lock } from "lucide-react";
 import { normalizeVi } from "../utils/textSearch";
 import { useGuestGate } from "../utils/useGuestGate";
+import PageShell from "../components/PageShell";
+import { CARD, LABEL, CHIP, CHIP_OFF, CHIP_ON } from "../utils/shellStyle";
+
+// Ô biểu tượng của từng chủ đề (mockup Thư viện): ký hiệu toán + màu nhạt. Chủ đề lấy đúng enum của formulas.js.
+const TOPIC_STYLE = {
+  "Đại số": { glyph: "x²", tone: "bg-[#DBEAFE] text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]" },
+  "Hình học": { glyph: "△", tone: "bg-[#DCFCE7] text-[#059669] dark:bg-[#059669]/20 dark:text-[#6EE7B7]" },
+  "Giải tích": { glyph: "f′", tone: "bg-[#FFE4E6] text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]" },
+  "Lượng giác": { glyph: "sin", tone: "bg-[#EDE9FE] text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]" },
+  "Xác suất & Thống kê": { glyph: "P(A)", tone: "bg-[#FFEDD5] text-[#EA580C] dark:bg-[#EA580C]/20 dark:text-[#FDBA74]" },
+  "Mở rộng": { glyph: "∑", tone: "bg-[#F1F5F9] text-[#475569] dark:bg-[#475569]/30 dark:text-[#CBD5E1]" },
+};
+const TOPIC_TEXT = {
+  "Đại số": "text-[#2563EB] dark:text-[#93C5FD]", "Hình học": "text-[#059669] dark:text-[#6EE7B7]",
+  "Giải tích": "text-[#E11D48] dark:text-[#FDA4AF]", "Lượng giác": "text-[#7C3AED] dark:text-[#C4B5FD]",
+  "Xác suất & Thống kê": "text-[#EA580C] dark:text-[#FDBA74]", "Mở rộng": "text-[#475569] dark:text-[#CBD5E1]",
+};
 
 export default function FormulaLibrary({
   formulas,
@@ -148,209 +165,196 @@ export default function FormulaLibrary({
     return 0;
   });
 
-  return (
-    <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
-          {/* Breadcrumb Back */}
-          <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer mb-3 transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0]" onClick={() => setActiveTab("dashboard")}>
-            <ArrowLeft size={12} />
-            <span>Về trang chủ</span>
-          </button>
+  // Số công thức mỗi chủ đề theo bộ lọc lớp hiện tại — hiện trên thẻ chủ đề.
+  const topicCounts = useMemo(() => {
+    const counts = {};
+    for (const f of formulas) {
+      if (gradeMode === "custom" && !selectedGrades.includes(f.grade.toString())) continue;
+      counts[f.topic] = (counts[f.topic] || 0) + 1;
+    }
+    return counts;
+  }, [formulas, gradeMode, selectedGrades]);
 
-          {/* Page Title & Subtitle */}
-          <div className="mb-5">
-            <h2 className="text-[1.6rem] font-extrabold text-primary dark:text-[#E2E8F0] tracking-[-0.5px]">
-              Thư viện công thức
-            </h2>
-            <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] font-medium mt-1">
-              {topicMode === "saved"
-                ? `${filteredFormulas.length} công thức yêu thích`
-                : `Khám phá ${filteredFormulas.length} công thức Toán THPT`}
+  const searchBox = (
+    <div className="relative w-full md:w-[420px]" ref={searchContainerRef}>
+      <div className="relative flex items-center w-full h-[46px] px-4 rounded-[14px] bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] focus-within:border-accent transition-colors">
+        <Search size={18} className="text-text-muted dark:text-[#94A3B8] mr-2.5 shrink-0" />
+        <input
+          type="text"
+          aria-label="Tìm công thức"
+          className="flex-1 min-w-0 border-none outline-none bg-transparent text-[0.92rem] text-primary dark:text-[#E2E8F0] placeholder:text-text-muted dark:placeholder:text-[#94A3B8]"
+          placeholder="Tìm công thức, ví dụ: đạo hàm, cos..."
+          value={searchQuery}
+          onChange={handleSearchChange}
+          onFocus={() => searchQuery.trim() !== "" && setShowSuggestions(true)}
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            aria-label="Xoá từ khoá"
+            onClick={() => { setSearchQuery(""); setShowSuggestions(false); }}
+            className="ml-2 bg-transparent border-none text-text-muted cursor-pointer flex items-center p-0"
+          >
+            <XCircle size={16} />
+          </button>
+        )}
+      </div>
+
+      {showSuggestions && suggestions.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#1E293B] rounded-[14px] border border-line dark:border-[#334155] shadow-[0_12px_28px_-12px_rgba(15,23,42,0.2)] z-20 max-h-[280px] overflow-y-auto">
+          {suggestions.map((item) => (
+            <button
+              type="button"
+              key={item.id}
+              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left bg-transparent border-none border-b border-[#F1F5F9] dark:border-[#334155] last:border-b-0 cursor-pointer hover:bg-page dark:hover:bg-white/5"
+              onClick={() => selectSuggestion(item.name)}
+            >
+              <span className="text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0] truncate">{item.name}</span>
+              <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] shrink-0 whitespace-nowrap">{item.topic} · Lớp {item.grade}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const savedActive = topicMode === "saved";
+
+  return (
+    <PageShell
+      title="Thư viện công thức"
+      description={savedActive
+        ? `${filteredFormulas.length} công thức yêu thích`
+        : `${formulas.length} công thức Toán THPT, sắp xếp theo chủ đề. Đang hiện ${filteredFormulas.length}.`}
+      onBack={() => setActiveTab("dashboard")}
+      actions={searchBox}
+    >
+      {/* Lớp + Yêu thích */}
+      <div className="flex gap-2 overflow-x-auto pb-1 mb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {["Tất cả", "10", "11", "12"].map((grade) => {
+          const isActive = grade === "Tất cả" ? gradeMode === "all" : gradeMode === "custom" && selectedGrades.includes(grade);
+          return (
+            <button
+              key={grade}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => handleGradeClick(grade)}
+              className={`${CHIP} shrink-0 ${isActive ? CHIP_ON : CHIP_OFF}`}
+            >
+              {grade === "Tất cả" ? "Tất cả các lớp" : `Lớp ${grade}`}
+            </button>
+          );
+        })}
+        <span className="w-px shrink-0 bg-line dark:bg-[#334155] mx-1" aria-hidden="true" />
+        <button
+          type="button"
+          aria-pressed={savedActive}
+          onClick={() => handleTopicClick(savedActive ? "Tất cả" : "Yêu thích")}
+          className={`${CHIP} shrink-0 ${savedActive ? CHIP_ON : CHIP_OFF}`}
+        >
+          {isGuest ? <Lock size={13} className="text-accent" /> : <Heart size={13} className={savedActive ? "" : "text-[#E11D48]"} fill={savedActive ? "currentColor" : "none"} />}
+          Yêu thích
+        </button>
+      </div>
+
+      {/* Chủ đề — bấm để lọc (chọn được nhiều chủ đề) */}
+      <div className="flex items-center justify-between mb-3">
+        <div className={LABEL}>Chủ đề</div>
+        {topicMode === "custom" && (
+          <button type="button" onClick={() => handleTopicClick("Tất cả")} className="bg-transparent border-none p-0 text-[0.78rem] font-semibold text-accent cursor-pointer">
+            Bỏ lọc chủ đề
+          </button>
+        )}
+      </div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-7 md:mb-9">
+        {topics.filter((t) => TOPIC_STYLE[t]).map((topic) => {
+          const isActive = topicMode === "custom" && selectedTopics.includes(topic);
+          const { glyph, tone } = TOPIC_STYLE[topic];
+          return (
+            <button
+              key={topic}
+              type="button"
+              aria-pressed={isActive}
+              onClick={() => handleTopicClick(topic)}
+              className={`${CARD} p-3.5 md:p-4 flex flex-col items-start gap-3 text-left cursor-pointer transition-[transform,border-color] duration-200 hover:-translate-y-0.5 ${isActive ? "!border-accent ring-2 ring-accent/20" : ""}`}
+            >
+              <span className={`w-10 h-10 md:w-11 md:h-11 rounded-[12px] flex items-center justify-center font-[Georgia,serif] italic font-bold text-[1rem] ${tone}`}>{glyph}</span>
+              <span>
+                <span className="block text-[0.9rem] md:text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0] leading-[1.3]">{topic}</span>
+                <span className="block mt-0.5 text-[0.75rem] text-text-muted dark:text-[#94A3B8]">{topicCounts[topic] || 0} công thức</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Danh sách công thức (không vẽ LaTeX trên thẻ — 249 công thức KaTeX cùng lúc rất nặng) */}
+      <div className="flex justify-between items-baseline mb-3">
+        <h2 className="m-0 text-[1.05rem] md:text-[1.15rem] font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">
+          {savedActive ? "Công thức yêu thích" : topicMode === "custom" ? selectedTopics.join(" · ") : "Tất cả công thức"}
+        </h2>
+        <span className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">{filteredFormulas.length} công thức</span>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
+        {filteredFormulas.length > 0 ? (
+          filteredFormulas.map((formula) => {
+            const isBookmarked = bookmarkedIds.includes(formula.id);
+            return (
+              <div key={formula.id} className={`${CARD} p-4 md:p-5 flex flex-col gap-3`}>
+                <div className="flex justify-between items-start gap-2">
+                  <span className="flex items-center gap-2 text-[0.72rem] font-semibold">
+                    <span className={TOPIC_TEXT[formula.topic] || "text-text-muted"}>{formula.topic}</span>
+                    <span className="text-text-muted dark:text-[#94A3B8]">· Lớp {formula.grade}</span>
+                  </span>
+                  <button
+                    type="button"
+                    className={`relative -mt-1 -mr-1 w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors shrink-0 hover:bg-[#FFE4E6] dark:hover:bg-white/5 ${isBookmarked ? "text-[#E11D48]" : "text-[#94A3B8]"}`}
+                    onClick={() => onToggleBookmark(formula.id)}
+                    title={isGuest ? "Đăng nhập Google để lưu yêu thích" : isBookmarked ? "Bỏ bookmark" : "Thêm bookmark"}
+                    aria-label={isGuest ? "Đăng nhập Google để lưu yêu thích" : isBookmarked ? "Bỏ bookmark" : "Thêm bookmark"}
+                  >
+                    <Heart size={18} fill={isBookmarked ? "currentColor" : "none"} />
+                    {isGuest && (
+                      <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-[#1E293B] flex items-center justify-center">
+                        <Lock size={9} className="text-accent" />
+                      </span>
+                    )}
+                  </button>
+                </div>
+
+                <h3 className="m-0 text-[0.98rem] md:text-[1.02rem] font-semibold leading-[1.4] text-primary dark:text-[#E2E8F0]">{formula.name}</h3>
+
+                <div className="flex gap-2 mt-auto pt-1">
+                  <button
+                    type="button"
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-primary dark:bg-accent text-white text-[0.8rem] font-semibold border-none cursor-pointer transition-colors hover:bg-navy-secondary dark:hover:bg-accent-hover"
+                    onClick={() => onViewDetail(formula)}
+                  >
+                    <BookOpen size={14} />
+                    <span>Chi tiết</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] text-[0.8rem] font-semibold border border-[#D5DAE5] dark:border-[#475569] cursor-pointer transition-colors hover:border-accent"
+                    onClick={() => onCreateFlashcard(formula)}
+                  >
+                    {isGuest ? <Lock size={14} /> : <Layers size={14} />}
+                    <span>Tạo Flashcard</span>
+                  </button>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className={`${CARD} flex flex-col items-center justify-center text-center gap-2 py-12 px-4 col-[1/-1]`}>
+            <HelpCircle size={40} className="text-[#CBD5E1]" />
+            <h3 className="m-0 text-base font-bold text-primary dark:text-[#E2E8F0]">Không tìm thấy công thức</h3>
+            <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">
+              Hãy thử từ khoá khác hoặc đổi bộ lọc lớp, chủ đề.
             </p>
           </div>
-
-          {/* Autocomplete Search Bar */}
-          <div className="relative w-full mb-4" ref={searchContainerRef}>
-            <div className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] relative flex items-center w-full px-4">
-              <Search size={18} className="text-[#94A3B8] mr-3 shrink-0" />
-              <input
-                type="text"
-                className="flex-1 border-none outline-none bg-transparent text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] py-3 placeholder:text-[#94A3B8]"
-                placeholder="Tìm công thức theo tên hoặc từ khóa..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={() => searchQuery.trim() !== "" && setShowSuggestions(true)}
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => { setSearchQuery(""); setShowSuggestions(false); }}
-                  className="absolute right-3 bg-transparent border-none text-[#666] cursor-pointer flex items-center"
-                >
-                  <XCircle size={16} />
-                </button>
-              )}
-            </div>
-
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-[#1E293B] rounded-xl border border-[#E2E8F0] dark:border-[#334155] shadow-[0_8px_24px_rgba(30,58,95,0.08)] z-20 max-h-[280px] overflow-y-auto overflow-hidden">
-                {suggestions.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between gap-2 px-4 py-2.5 cursor-pointer transition-colors duration-150 hover:bg-[#f8fafc] dark:hover:bg-white/5 border-b border-[#f1f5f9] dark:border-[#334155] last:border-b-0"
-                    onClick={() => selectSuggestion(item.name)}
-                  >
-                    <span className="text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0] truncate">{item.name}</span>
-                    <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] shrink-0 whitespace-nowrap ml-2">{item.topic} Lớp {item.grade}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Filter chips & Grade pills */}
-          <div className="flex flex-col gap-3 mb-4">
-            {/* Topics row */}
-            <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {topics.map((topic) => {
-                const isActive = topic === "Tất cả"
-                  ? topicMode === "all"
-                  : topic === "Yêu thích"
-                    ? topicMode === "saved"
-                    : topicMode === "custom" && selectedTopics.includes(topic);
-                return (
-                  <button
-                    key={topic}
-                    className={`whitespace-nowrap px-4 py-2 rounded-full border-[1.5px] text-[0.8rem] font-bold cursor-pointer transition duration-200 ${
-                      isActive
-                        ? "bg-primary border-primary text-white dark:bg-accent dark:border-accent"
-                        : "bg-white dark:bg-[#1E293B] border-[#E2E8F0] dark:border-[#334155] text-[#475569] dark:text-[#94A3B8] hover:border-[#cbd5e1] hover:bg-[#f8fafc] dark:hover:bg-[#334155]"
-                    }`}
-                    onClick={() => handleTopicClick(topic)}
-                    style={topic === "Yêu thích" && !isActive ? {
-                      borderColor: "#E74C3C", color: "#E74C3C"
-                    } : {}}
-                  >
-                    {topic === "Yêu thích" ? (
-                      <>
-                        {isGuest
-                          ? <Lock size={11} color="#E74C3C" className="inline mr-[3px] align-middle" />
-                          : <Heart size={11} fill={isActive ? "white" : "#E74C3C"} color={isActive ? "white" : "#E74C3C"} className="inline mr-[3px] align-middle" />}
-                        {" "}Yêu thích
-                      </>
-                    ) : topic}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Grade filters matching Screenshot 2 */}
-            <div className="flex items-center gap-3 mt-2">
-              <span className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0]">Lớp:</span>
-              <div className="flex gap-2">
-                {["Tất cả", "10", "11", "12"].map((grade) => {
-                  const isActive = grade === "Tất cả"
-                    ? gradeMode === "all"
-                    : gradeMode === "custom" && selectedGrades.includes(grade);
-                  const isAll = grade === "Tất cả";
-                  return (
-                    <button
-                      key={grade}
-                      onClick={() => handleGradeClick(grade)}
-                      style={{
-                        width: isAll ? "auto" : "36px",
-                        height: "36px",
-                        padding: isAll ? "0 14px" : "0",
-                        borderRadius: isAll ? "18px" : "50%",
-                        border: "1px solid #cbd5e1",
-                        backgroundColor: isActive ? "#D97706" : "white",
-                        color: isActive ? "white" : "#0F172A",
-                        fontWeight: "800",
-                        fontSize: "0.85rem",
-                        whiteSpace: "nowrap",
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        transition: "all 0.2s ease",
-                        boxShadow: isActive ? "0 2px 6px rgba(217,119,6,0.3)" : "none"
-                      }}
-                    >
-                      {grade}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* 3-Column Library Cards List (NO math equations on cards!) */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            {filteredFormulas.length > 0 ? (
-              filteredFormulas.map((formula) => {
-                const isBookmarked = bookmarkedIds.includes(formula.id);
-                return (
-                  <div key={formula.id} className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 flex flex-col gap-3 relative">
-                    {/* Header: Title and Heart */}
-                    <div className="flex justify-between items-start">
-                      <h3 className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0]">{formula.name}</h3>
-                      <button
-                        className={`relative w-8 h-8 rounded-full flex items-center justify-center bg-transparent border-none cursor-pointer transition-colors duration-150 shrink-0 hover:bg-error/8 hover:text-error ${isBookmarked ? "text-error" : "text-[#94A3B8]"}`}
-                        onClick={() => onToggleBookmark(formula.id)}
-                        title={isGuest ? "Đăng nhập Google để lưu yêu thích" : isBookmarked ? "Bỏ bookmark" : "Thêm bookmark"}
-                        aria-label={isGuest ? "Đăng nhập Google để lưu yêu thích" : isBookmarked ? "Bỏ bookmark" : "Thêm bookmark"}
-                      >
-                        <Heart size={18} fill={isBookmarked ? "#E74C3C" : "none"} />
-                        {isGuest && (
-                          <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-[#1E293B] flex items-center justify-center">
-                            <Lock size={9} className="text-accent" />
-                          </span>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Subtitle: Category and Grade tags */}
-                    <div className="flex gap-2 -mt-1">
-                      <span className="text-[0.75rem] font-bold text-secondary">
-                        {formula.topic}
-                      </span>
-                      <span className="text-[0.75rem] font-bold text-text-muted dark:text-[#94A3B8]">
-                        Lớp {formula.grade}
-                      </span>
-                    </div>
-
-                    {/* Footer Actions: Chi tiết & Tạo Flashcard side-by-side */}
-                    <div className="flex gap-2 mt-3">
-                      <button
-                        className="flex-1 bg-secondary/4 text-secondary border border-secondary/15 text-[0.8rem] font-bold py-2 px-3 rounded-xl min-h-[38px] inline-flex items-center justify-center gap-1.5 cursor-pointer transition duration-200 hover:bg-secondary/8 hover:-translate-y-px"
-                        onClick={() => onViewDetail(formula)}
-                      >
-                        <BookOpen size={12} />
-                        <span>Chi tiết</span>
-                      </button>
-                      <button
-                        className="flex-1 bg-success/4 text-success border border-success/15 text-[0.8rem] font-bold py-2 px-3 rounded-xl min-h-[38px] inline-flex items-center justify-center gap-1.5 cursor-pointer transition duration-200 hover:bg-success/8 hover:-translate-y-px"
-                        onClick={() => onCreateFlashcard(formula)}
-                      >
-                        {isGuest ? <Lock size={12} /> : <Layers size={12} />}
-                        <span>Tạo Flashcard</span>
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="flex flex-col items-center justify-center text-center gap-2 py-12 px-4 col-[1/-1]">
-                <HelpCircle size={48} className="text-[#cbd5e1] mb-2" />
-                <h3 className="text-base font-extrabold text-primary dark:text-[#E2E8F0]">Không tìm thấy công thức</h3>
-                <p className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] mt-1">
-                  Hãy thử tìm kiếm với các từ khóa khác hoặc thay đổi bộ lọc.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+        )}
       </div>
-    </div>
+    </PageShell>
   );
 }

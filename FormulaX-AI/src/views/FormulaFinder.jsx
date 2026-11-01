@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, MessageSquare, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock } from "lucide-react";
+import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import StepAnswer from "../components/StepAnswer";
+import PageShell from "../components/PageShell";
+import MimiMascot from "../components/MimiMascot";
 import ImageScanSheet from "../components/ImageScanSheet";
 import ImageProblemsPanel from "../components/ImageProblemsPanel";
 import ProblemTabs from "../components/ProblemTabs";
@@ -792,16 +794,26 @@ export default function FormulaFinder({
     // min-height, nên kích thước của nó tính theo nội dung: chat dài hoặc ví dụ của khách kéo giãn
     // cả khung và đẩy ô nhập ra khỏi màn hình thay vì cuộn bên trong. contain-size bỏ phần nội
     // dung ra khỏi phép tính đó — view chỉ lấp đúng phần trống giữa header và thanh điều hướng.
-    <div className="view-container !p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page-gradient dark:bg-[#0F172A]">
+    <PageShell fill width="wide" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
 
-      {/* Top action row */}
-      <div className="flex justify-between items-center mb-2">
-        <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0] mb-0" onClick={() => setActiveTab("dashboard")}>
-          <ArrowLeft size={12} />
-          <span>Về trang chủ</span>
-        </button>
+      {/* Tiêu đề + lượt còn lại (mockup Tìm kiếm AI) */}
+      <div className="flex justify-between items-end gap-3 mb-3 md:mb-4 md:pt-2">
+        <div className="min-w-0">
+          <button className="bg-transparent border-none p-0 text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors hover:text-primary dark:hover:text-[#E2E8F0]" onClick={() => setActiveTab("dashboard")}>
+            <ArrowLeft size={14} />
+            <span>Về trang chủ</span>
+          </button>
+          <h1 className="m-0 mt-1 text-[1.35rem] md:text-[1.9rem] font-bold tracking-[-0.03em] leading-[1.15] text-primary dark:text-[#E2E8F0]">Tìm kiếm AI</h1>
+        </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
+          {!isPremium && !isGuest && aiQueriesLeft !== null && (
+            <span className={`hidden sm:inline-flex items-center h-9 px-3 rounded-full border text-[0.78rem] font-semibold ${
+              aiQueriesLeft === 0 ? "bg-error/10 border-error/30 text-[#B91C1C] dark:text-[#FCA5A5]" : "bg-[#DCFCE7] border-[#BBF7D0] text-[#166534] dark:bg-success/15 dark:border-success/30 dark:text-[#6EE7B7]"
+            }`}>
+              {aiQueriesLeft === 0 ? "Hết lượt hôm nay" : `Còn ${aiQueriesLeft}/${FREE_AI_LIMIT} lượt hôm nay`}
+            </span>
+          )}
           <button
             className="md:hidden relative inline-flex items-center gap-1.5 bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-full px-3 py-2 text-[0.75rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer transition duration-200 hover:bg-[#f8fafc] dark:hover:bg-[#334155] hover:border-[#cbd5e1] mb-0"
             onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -828,15 +840,15 @@ export default function FormulaFinder({
       )}
 
       <div className="flex flex-col md:flex-row gap-4 flex-1 overflow-hidden h-full relative">
-        {/* ─── Session Sidebar ─── */}
-        <div className={`glass-card dark:bg-[#1E293B] ${sidebarOpen ? "flex" : "hidden"} md:flex flex-col gap-2 fixed md:relative top-[68px] md:top-auto left-0 md:left-auto right-0 md:right-auto bottom-14 md:bottom-auto z-[300] md:z-auto w-full md:w-[250px] md:shrink-0 p-4 overflow-y-auto`}>
+        {/* ─── Session Sidebar ─── (desktop: cột phải như mockup; mobile: ngăn trượt như cũ) */}
+        <div className={`fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none ${sidebarOpen ? "flex" : "hidden"} md:flex md:order-2 flex-col gap-2 fixed md:relative top-[68px] md:top-auto left-0 md:left-auto right-0 md:right-auto bottom-14 md:bottom-auto z-[300] md:z-auto w-full md:w-[300px] md:shrink-0 p-4 md:p-5 overflow-y-auto`}>
 
           {/* New chat button */}
           <button
             onClick={startNewChat}
-            className="w-full flex items-center gap-2 py-2.5 px-3 mb-3 bg-primary text-white border-none rounded-[10px] cursor-pointer text-[0.8rem] font-bold"
+            className="w-full flex items-center justify-center gap-2 py-3 px-3 mb-3 bg-primary dark:bg-accent text-white border-none rounded-[12px] cursor-pointer text-[0.85rem] font-semibold transition-colors hover:bg-navy-secondary dark:hover:bg-accent-hover"
           >
-            <Plus size={14} />
+            <Plus size={15} />
             Chat mới
           </button>
 
@@ -854,7 +866,7 @@ export default function FormulaFinder({
             </button>
           )}
 
-          <div className="text-[0.85rem] max-md:text-[0.8rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-2">Cuộc trò chuyện đã lưu</div>
+          <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8] mb-1.5">Lịch sử gần đây</div>
 
           {isGuest ? (
             <div className="flex flex-col items-center text-center gap-2 py-4 px-2">
@@ -871,8 +883,8 @@ export default function FormulaFinder({
             sessions.map((session) => (
               <div
                 key={session.id}
-                className={`mb-1.5 rounded-[10px] overflow-hidden border-[1.5px] ${
-                  currentSessionId === session.id ? "border-accent bg-accent/5" : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#1E293B]"
+                className={`mb-1.5 rounded-[12px] overflow-hidden border ${
+                  currentSessionId === session.id ? "border-accent bg-accent-light/50 dark:bg-accent/10" : "border-line dark:border-[#334155] bg-[#FAFBFD] dark:bg-[#0F172A]"
                 }`}
               >
                 {/* Rename mode */}
@@ -923,7 +935,7 @@ export default function FormulaFinder({
                       onClick={() => loadSession(session)}
                       className="flex-1 text-left py-2.5 px-2.5 bg-transparent border-none cursor-pointer min-w-0"
                     >
-                      <div className="text-[0.78rem] font-semibold text-[#1E3A5F] dark:text-[#E2E8F0] whitespace-nowrap overflow-hidden text-ellipsis">
+                      <div className="text-[0.82rem] font-medium text-primary dark:text-[#E2E8F0] whitespace-nowrap overflow-hidden text-ellipsis">
                         {session.name}
                       </div>
                       <div className="text-[0.68rem] text-[#94A3B8] mt-0.5">
@@ -955,8 +967,8 @@ export default function FormulaFinder({
         </div>
 
         {/* ─── Chat window ─── */}
-        <div className="glass-card dark:bg-[#0F172A] flex flex-col flex-1 overflow-hidden">
-          <div className="flex-1 py-5 px-4 overflow-y-auto flex flex-col gap-4 bg-transparent dark:bg-[#0F172A]" ref={chatMessagesRef}>
+        <div className="fx-card dark:bg-[#0F172A] dark:border-[#334155] dark:shadow-none flex flex-col flex-1 min-w-0 overflow-hidden">
+          <div className="flex-1 py-5 px-4 md:px-7 md:py-7 overflow-y-auto flex flex-col gap-4 bg-transparent dark:bg-[#0F172A]" ref={chatMessagesRef}>
             {isGuest ? (
               <div className="flex flex-col gap-4 w-full max-w-[640px] mx-auto">
                 <div className="flex flex-col items-center text-center gap-2 pt-2">
@@ -992,13 +1004,14 @@ export default function FormulaFinder({
             ) : ocr ? (
               renderOcrPanel()
             ) : messages.length === 0 ? (
-              <div className="flex flex-col items-center text-center py-8 md:py-12 max-w-[500px] mx-auto gap-4">
-                <div className="w-[68px] h-[68px] rounded-full bg-secondary/8 text-secondary flex items-center justify-center">
-                  <MessageSquare size={32} fill="rgba(59,130,246,0.1)" />
-                </div>
-                <h2 className="text-[1.35rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">
+              <div className="flex flex-col items-center text-center py-8 md:py-14 max-w-[520px] mx-auto gap-3">
+                <MimiMascot width={170} />
+                <h2 className="m-0 text-[1.3rem] md:text-[1.6rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">
                   Xin chào! Mình là FormulaX AI
                 </h2>
+                <p className="m-0 text-[0.88rem] text-text-muted dark:text-[#94A3B8] leading-[1.6]">
+                  Gõ hoặc chụp đề bài. Mình chỉ ra công thức cần dùng và các bước thay dữ kiện, phần tính bạn tự làm.
+                </p>
               </div>
             ) : (
               messages.map((msg) => {
@@ -1012,15 +1025,15 @@ export default function FormulaFinder({
                     : (msg.isImage || msg.isFile)
                       ? "p-2 bg-white border border-[#E2E8F0] text-[#1E3A5F]"
                       : isUser
-                        ? "bg-accent text-white"
-                        : "bg-white text-primary dark:text-[#E2E8F0]";
+                        ? "bg-primary text-white dark:bg-[#334155]"
+                        : "bg-white bg-[linear-gradient(135deg,#FFF8E1,#FFFFFF_45%)] dark:bg-none dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0]";
                 return (
                   <div
                     key={msg.id}
-                    className={`${msg.answer ? "w-full max-w-full" : "max-w-[85%]"} ${!isUser ? "md:max-w-[92%]" : ""} min-w-0 py-3 px-4 rounded-xl text-[0.85rem] leading-[1.5] break-words ${
+                    className={`${msg.answer ? "w-full max-w-full" : "max-w-[85%]"} ${!isUser ? "md:max-w-[92%]" : "md:max-w-[620px]"} min-w-0 py-3 px-4 md:py-3.5 md:px-5 text-[0.88rem] md:text-[0.95rem] leading-[1.5] break-words ${
                       isUser
-                        ? "self-end rounded-br-[2px] shadow-[0_4px_10px_rgba(217,119,6,0.15)]"
-                        : "self-start rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] dark:bg-[#1E293B]"
+                        ? "self-end rounded-[18px] rounded-br-[4px]"
+                        : "self-start rounded-[18px] rounded-bl-[4px] border border-line dark:border-[#334155]"
                     } ${bubbleStateClass}`}
                   >
                     {msg.isError && (
@@ -1152,8 +1165,8 @@ export default function FormulaFinder({
 
           {/* Free user AI query counter */}
           {!isPremium && !isGuest && (
-            <div className={`flex items-center justify-between py-1.5 px-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] text-[0.72rem] font-semibold ${
-              aiQueriesLeft === 0 ? "bg-[rgba(239,68,68,0.04)] text-[#DC2626]" : "bg-[rgba(245,158,11,0.04)] text-[#92400E]"
+            <div className={`flex items-center justify-between py-2 px-4 md:px-6 border-t border-line dark:border-[#334155] text-[0.75rem] font-medium ${
+              aiQueriesLeft === 0 ? "text-[#B91C1C] dark:text-[#FCA5A5]" : "text-text-muted dark:text-[#94A3B8]"
             }`}>
               <span>
                 {aiQueriesLeft === null
@@ -1165,10 +1178,11 @@ export default function FormulaFinder({
               </span>
               <button
                 onClick={() => setActiveTab("premium")}
-                className="flex items-center gap-1 bg-premium text-[#1E3A5F] border-none rounded-md py-[3px] px-2 text-[0.68rem] font-extrabold cursor-pointer"
+                className="flex items-center gap-1 bg-primary dark:bg-accent text-white border-none rounded-full py-1 px-2.5 text-[0.7rem] font-semibold cursor-pointer"
               >
-                <Crown size={10} fill="#1E3A5F" color="#1E3A5F" />
-                Nâng cấp
+                <Crown size={11} className="text-[#FBBF24] dark:text-white" />
+                <span className="sm:hidden">Nâng cấp</span>
+                <span className="hidden sm:inline">Không giới hạn với Premium</span>
               </button>
             </div>
           )}
@@ -1194,8 +1208,8 @@ export default function FormulaFinder({
               </div>
             </div>
           ) : ocr ? null : (
-          <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
-            <div className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] flex items-center gap-2 py-1.5 px-3">
+          <div className="p-3 md:p-4 border-t border-line dark:border-[#334155] bg-transparent">
+            <div className="flex items-center gap-2 py-1.5 pl-3 pr-1.5 rounded-[16px] bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] focus-within:border-accent transition-colors">
               {/* Nhập đề bằng ảnh — bật/tắt bằng cờ FINDER_IMAGE_INPUT_ENABLED (config/features.js) */}
               {FINDER_IMAGE_INPUT_ENABLED && (
                 <button type="button" onClick={openScanSheet} disabled={isAnalyzing}
@@ -1210,6 +1224,7 @@ export default function FormulaFinder({
                 ref={textareaRef}
                 className={`flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] bg-transparent dark:bg-transparent! py-2 ${FINDER_IMAGE_INPUT_ENABLED ? "px-2" : "pl-1 pr-2"} outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]`}
                 aria-label="Hỏi AI về công thức"
+                placeholder={FINDER_IMAGE_INPUT_ENABLED ? "Nhập đề bài hoặc chụp ảnh..." : "Nhập đề bài..."}
                 rows={1}
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -1220,10 +1235,11 @@ export default function FormulaFinder({
               />
               <button
                 type="button"
-                className={`w-9 h-9 rounded-full flex items-center justify-center cursor-pointer transition duration-200 shrink-0 ${
+                aria-label="Gửi câu hỏi"
+                className={`w-10 h-10 md:w-11 md:h-11 rounded-[12px] border-none flex items-center justify-center cursor-pointer transition-colors shrink-0 ${
                   query.trim() && (isPremium || aiQueriesLeft !== 0)
-                    ? "bg-accent text-white"
-                    : "bg-[#f1f5f9] text-text-muted"
+                    ? "bg-primary text-white dark:bg-accent"
+                    : "bg-[#EEF1F6] dark:bg-[#334155] text-text-muted"
                 }`}
                 disabled={isAnalyzing || !query.trim() || (!isPremium && aiQueriesLeft === 0)}
                 onClick={() => handleSend(textareaRef.current?.value || "")}
@@ -1274,6 +1290,6 @@ export default function FormulaFinder({
 
       {/* ─── Chọn nguồn ảnh đề (kèm thông báo quyền riêng tư) ─── */}
       {scanSheetOpen && <ImageScanSheet onPick={handlePickImage} onClose={() => setScanSheetOpen(false)} />}
-    </div>
+    </PageShell>
   );
 }
