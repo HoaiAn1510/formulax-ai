@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { Search, Heart, HelpCircle, XCircle, ArrowLeft, BookOpen, Layers, Lock } from "lucide-react";
 import { normalizeVi } from "../utils/textSearch";
 import { useGuestGate } from "../utils/useGuestGate";
+import PageShell from "../components/PageShell";
 
 export default function FormulaLibrary({
   formulas,
@@ -149,9 +150,7 @@ export default function FormulaLibrary({
   });
 
   return (
-    <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
+    <PageShell>
           {/* Breadcrumb Back */}
           <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer mb-3 transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0]" onClick={() => setActiveTab("dashboard")}>
             <ArrowLeft size={12} />
@@ -349,8 +348,6 @@ export default function FormulaLibrary({
               </div>
             )}
           </div>
-        </div>
-      </div>
-    </div>
+        </PageShell>
   );
 }

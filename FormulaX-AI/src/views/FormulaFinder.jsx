@@ -6,6 +6,7 @@ import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
 import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import StepAnswer from "../components/StepAnswer";
+import PageShell from "../components/PageShell";
 import ImageScanSheet from "../components/ImageScanSheet";
 import ImageProblemsPanel from "../components/ImageProblemsPanel";
 import ProblemTabs from "../components/ProblemTabs";
@@ -792,7 +793,7 @@ export default function FormulaFinder({
     // min-height, nên kích thước của nó tính theo nội dung: chat dài hoặc ví dụ của khách kéo giãn
     // cả khung và đẩy ô nhập ra khỏi màn hình thay vì cuộn bên trong. contain-size bỏ phần nội
     // dung ra khỏi phép tính đó — view chỉ lấp đúng phần trống giữa header và thanh điều hướng.
-    <div className="view-container !p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page-gradient dark:bg-[#0F172A]">
+    <PageShell fill width="wide" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
 
       {/* Top action row */}
       <div className="flex justify-between items-center mb-2">
@@ -1274,6 +1275,6 @@ export default function FormulaFinder({
 
       {/* ─── Chọn nguồn ảnh đề (kèm thông báo quyền riêng tư) ─── */}
       {scanSheetOpen && <ImageScanSheet onPick={handlePickImage} onClose={() => setScanSheetOpen(false)} />}
-    </div>
+    </PageShell>
   );
 }

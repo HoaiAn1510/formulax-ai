@@ -6,6 +6,7 @@ import CountUp from "../components/CountUp";
 import { showToast } from "../components/Toast";
 import { BADGES } from "../data/badges";
 import { vietnamToday, shiftDay } from "../utils/vietnamDate";
+import PageShell from "../components/PageShell";
 
 const BADGE_ICONS = { Flame, ClipboardList, Layers, BookOpen };
 
@@ -406,9 +407,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
   const selectedDateLabel = formatDateLabel(selectedDate);
 
   return (
-    <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
+    <PageShell>
           {/* Header */}
           <div className="flex items-center gap-3 mb-5">
             <button aria-label="Về trang chủ"
@@ -641,8 +640,6 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             <Layers size={22} className="opacity-90 shrink-0" />
           </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </PageShell>
   );
 }

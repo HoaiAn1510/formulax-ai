@@ -12,6 +12,7 @@ import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from 
 import { checkFillAnswer, isFillEligible } from "../utils/fillAnswer";
 import { extractAskedProblems, togglePick, MAX_VARIANT_PICK } from "../utils/askedProblems";
 import { toVariantQuestion, variantQuizTopic, runSequential } from "../utils/variantQuiz";
+import PageShell from "../components/PageShell";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 // 45 giây PHẢI lớn hơn ngân sách 40 giây/request của backend (VARIANT_BUDGET_MS trong
@@ -424,9 +425,7 @@ export default function QuizView({
   };
 
   return (
-    <div className="view-container">
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
+    <PageShell>
 
           {/* Modal hết quota */}
           {showQuotaModal && (
@@ -1197,8 +1196,6 @@ export default function QuizView({
               </div>
             </div>
           )}
-        </div>
-      </div>
-    </div>
+        </PageShell>
   );
 }

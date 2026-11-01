@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useGuestGate } from "../utils/useGuestGate";
 import { supabase, checkPremiumStatus } from "../lib/supabase";
 import { showToast } from "../components/Toast";
+import PageShell from "../components/PageShell";
 
 // three.js/@react-three/fiber/@react-three/drei chỉ tải khi người dùng thực sự mở trang
 // Premium — lazy-load để không đội thêm bundle chính cho toàn app.
@@ -284,7 +285,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   }, []);
 
   return (
-    <div className="view-container">
+    <PageShell top={(<>
       {/* Thanh CTA dính - phải nằm NGOÀI div overflow-hidden bên dưới, vì position:sticky
           không hoạt động nếu có tổ tiên nào đó overflow:hidden/auto/scroll (giới hạn CSS). */}
       {!isPremium && (
@@ -303,8 +304,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
         </div>
       )}
 
-      <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-        <div className="relative z-[1]">
+      </>)}>
           <div className="max-w-full md:max-w-full mx-auto flex flex-col gap-12">
 
             {/* Payment notice — hiện sau khi PayOS redirect người dùng quay lại */}
@@ -686,8 +686,6 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             )}
 
           </div>
-        </div>
-      </div>
-    </div>
+        </PageShell>
   );
 }

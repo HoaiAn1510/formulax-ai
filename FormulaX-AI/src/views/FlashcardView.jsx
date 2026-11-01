@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import PageShell from "../components/PageShell";
 import {
   Layers, ArrowLeft, ArrowRight, RotateCw, CheckCircle, AlertTriangle,
   Plus, FileDown, Lock, ChevronRight, Book, HelpCircle, BarChart3, Clock,
@@ -525,9 +526,7 @@ export default function FlashcardView({
     const hasDecks = decks.length > 0;
 
     return (
-      <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="relative z-[1]">
+      <PageShell>
             {/* Header */}
             <div className="flex justify-between items-center mb-2">
               <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-bold inline-flex items-center gap-1 cursor-pointer transition duration-200 hover:text-primary dark:hover:text-[#E2E8F0] mb-0" onClick={() => setActiveTab("dashboard")}>
@@ -752,9 +751,7 @@ export default function FlashcardView({
                 onConfirm={handleCreateFilteredDeck}
               />
             )}
-          </div>
-        </div>
-      </div>
+          </PageShell>
     );
   }
 
@@ -764,9 +761,7 @@ export default function FlashcardView({
     // No cards in deck
     if (cards.length === 0) {
       return (
-        <div className="view-container">
-          <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-            <div className="relative z-[1]">
+        <PageShell>
               <div className="summary-card !bg-white/72 !border !border-white/60 !rounded-[20px] !shadow-[0_8px_32px_rgba(31,38,135,0.10)] !backdrop-blur-[20px]">
                 <HelpCircle size={32} />
                 <h2>Bộ thẻ trống</h2>
@@ -775,18 +770,14 @@ export default function FlashcardView({
                   Quay lại danh sách
                 </button>
               </div>
-            </div>
-          </div>
-        </div>
+            </PageShell>
       );
     }
 
     const isFavoriteDeck = activeDeck?.type === "favorite";
 
     return (
-      <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="relative z-[1]">
+      <PageShell>
             <div className="flex flex-col items-center w-full max-w-[500px] mx-auto gap-4 [animation:fadeIn_0.3s_ease-out]">
               <div className="flex justify-between items-center w-full mb-2">
                 <button className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] text-[0.85rem] font-bold flex items-center gap-1.5 cursor-pointer transition duration-200 py-1.5 px-3 rounded-lg hover:text-primary dark:hover:text-[#E2E8F0] hover:bg-[#f1f5f9]" onClick={() => setView("list")}>
@@ -880,9 +871,7 @@ export default function FlashcardView({
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </div>
+          </PageShell>
     );
   }
 
@@ -890,9 +879,7 @@ export default function FlashcardView({
 
   if (view === "summary") {
     return (
-      <div className="view-container">
-        <div className="relative overflow-hidden min-h-full bg-page-gradient dark:bg-[#0F172A] -mt-6 md:-mt-8 -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 pb-8 md:pb-12">
-          <div className="relative z-[1]">
+      <PageShell>
             <div className="summary-card">
               <div className="summary-icon">
                 <CheckCircle size={32} />
@@ -943,9 +930,7 @@ export default function FlashcardView({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+          </PageShell>
     );
   }
 
