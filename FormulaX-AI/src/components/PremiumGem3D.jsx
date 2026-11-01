@@ -49,12 +49,11 @@ function HaloRing({ reducedMotion }) {
   );
 }
 
-// Cụm viên đá + vòng hào quang được đẩy lên phía trên (position Y dương) trong khung hình
-// full-bleed rộng hơn, để giữ đúng vị trí thị giác cũ (phía trên tiêu đề) thay vì rơi vào
-// giữa khung — kích thước bản thân viên đá không đổi, chỉ khung canvas rộng ra.
-function GemGroup({ reducedMotion }) {
+// Cụm viên đá + vòng hào quang: mặc định đẩy lên phía trên (y = 1.5) để nằm trên tiêu đề khi canvas phủ
+// cả khung; `centered` đặt giữa khung (Premium bản mới — viên đá nằm trong ô riêng bên phải).
+function GemGroup({ reducedMotion, y }) {
   return (
-    <group position={[0, 1.5, 0]}>
+    <group position={[0, y, 0]}>
       <Float speed={reducedMotion ? 0 : 1.8} rotationIntensity={reducedMotion ? 0 : 0.6} floatIntensity={reducedMotion ? 0 : 0.8}>
         <Gem reducedMotion={reducedMotion} />
       </Float>
@@ -63,7 +62,7 @@ function GemGroup({ reducedMotion }) {
   );
 }
 
-function Scene({ reducedMotion }) {
+function Scene({ reducedMotion, y }) {
   return (
     <>
       <ambientLight intensity={0.45} />
@@ -77,7 +76,7 @@ function Scene({ reducedMotion }) {
       <Sparkles count={160} scale={[9, 11, 5]} size={2.6} speed={reducedMotion ? 0 : 0.4} color="#FDE68A" />
       <Sparkles count={70} scale={[9, 11, 5]} size={4.5} speed={reducedMotion ? 0 : 0.22} color="#FFFFFF" />
       {reducedMotion ? (
-        <GemGroup reducedMotion={reducedMotion} />
+        <GemGroup reducedMotion={reducedMotion} y={y} />
       ) : (
         <PresentationControls
           global
@@ -86,7 +85,7 @@ function Scene({ reducedMotion }) {
           azimuth={[-0.6, 0.6]}
           config={{ mass: 1, tension: 170, friction: 26 }}
         >
-          <GemGroup reducedMotion={reducedMotion} />
+          <GemGroup reducedMotion={reducedMotion} y={y} />
         </PresentationControls>
       )}
     </>
@@ -96,7 +95,7 @@ function Scene({ reducedMotion }) {
 // Full-bleed — lấp đầy trọn khung chứa (hero banner), không còn là ô vuông nhỏ cố định.
 // Camera lùi xa hơn để giữ đúng kích thước viên đá trên màn hình dù khung canvas rộng ra
 // nhiều so với trước (260x260 → nguyên khung hero).
-export default function PremiumGem3D() {
+export default function PremiumGem3D({ centered = false }) {
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
@@ -115,7 +114,7 @@ export default function PremiumGem3D() {
         gl={{ antialias: true, alpha: true }}
         style={{ touchAction: "none" }}
       >
-        <Scene reducedMotion={reducedMotion} />
+        <Scene reducedMotion={reducedMotion} y={centered ? 0 : 1.5} />
       </Canvas>
     </div>
   );
