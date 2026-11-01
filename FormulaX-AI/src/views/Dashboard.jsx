@@ -256,29 +256,28 @@ export default function Dashboard({
                   <div className="h-1 rounded-full bg-[#EEF1F6] dark:bg-[#334155] mt-2.5 mb-3 md:mt-3.5 md:mb-4">
                     <div className="h-full rounded-full bg-[linear-gradient(90deg,#10B981,#F59E0B)] transition-[width] duration-500" style={{ width: `${(doneCount / goals.length) * 100}%` }} />
                   </div>
-                  <ul className="list-none m-0 p-0 flex flex-col gap-1 md:gap-1.5">
-                    {goals.map((g, i) => {
-                      const current = !g.done && goals.findIndex((x) => !x.done) === i;
-                      return (
+                  {/* Mọi nhiệm vụ cùng một kiểu khung (trước đây nhiệm vụ đầu tiên chưa xong được tô vàng riêng —
+                      trông lệch, chủ dự án góp ý 2026-11-02). */}
+                  <ul className="list-none m-0 p-0 flex flex-col gap-2">
+                    {goals.map((g) => (
                         <li key={g.key}>
                           <button
                             type="button"
                             onClick={() => openGoal(g)}
-                            className={`w-full flex items-center gap-2.5 md:gap-3 text-left border-none px-2 py-2 md:py-2.5 rounded-[10px] cursor-pointer transition-colors ${current ? "bg-accent-light/60 dark:bg-accent/10" : "bg-transparent hover:bg-page dark:hover:bg-white/5"}`}
+                            className="w-full flex items-center gap-2.5 md:gap-3 text-left rounded-[12px] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] px-3 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
                           >
                             {g.done ? (
                               <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-success text-white flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
                             ) : (
-                              <span className={`w-5 h-5 md:w-6 md:h-6 rounded-full border-2 shrink-0 ${current ? "border-premium" : "border-[#CBD5E1] dark:border-[#475569]"}`} />
+                              <span className="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#CBD5E1] dark:border-[#475569] shrink-0" />
                             )}
-                            <span className={`flex-1 text-[0.85rem] md:text-[0.9rem] font-semibold ${g.done ? "text-text-muted dark:text-[#94A3B8] line-through decoration-1" : current ? "text-[#B45309] dark:text-[#FCD34D]" : "text-primary dark:text-[#E2E8F0]"}`}>
+                            <span className={`flex-1 text-[0.85rem] md:text-[0.9rem] font-semibold ${g.done ? "text-text-muted dark:text-[#94A3B8] line-through decoration-1" : "text-primary dark:text-[#E2E8F0]"}`}>
                               {g.label}
                             </span>
                             {!g.done && <ChevronRight size={15} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
                           </button>
                         </li>
-                      );
-                    })}
+                    ))}
                   </ul>
                 </>
               )}
