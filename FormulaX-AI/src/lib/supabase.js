@@ -618,10 +618,13 @@ export async function getRecommendationContext(googleId) {
       .neq("formula_id", "sys_streak").order("created_at", { ascending: false }).limit(1),
   ]);
 
-  const weakTopics = topicPerf.filter(t => t.topic !== "Đề thi THPT" && t.rate < 60).map(t => t.topic);
+  // "Tổng hợp" là nhãn của bài kiểm tra trộn nhiều chủ đề (xem saveQuizResult), không phải chủ đề thật —
+  // trước đây Dashboard gợi ý "Làm 1 bài kiểm tra (gợi ý: Tổng hợp)".
+  const NOT_A_TOPIC = new Set(["Đề thi THPT", "Tổng hợp"]);
+  const weakTopics = topicPerf.filter(t => !NOT_A_TOPIC.has(t.topic) && t.rate < 60).map(t => t.topic);
 
   const recentCandidates = [...(recentQuizRes.data || []), ...(recentFlashRes.data || [])]
-    .filter(r => r.topic)
+    .filter(r => r.topic && !NOT_A_TOPIC.has(r.topic))
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
   return { weakTopics, recentTopic: recentCandidates[0]?.topic || null };
