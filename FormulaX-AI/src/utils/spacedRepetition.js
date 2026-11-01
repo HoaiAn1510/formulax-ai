@@ -61,3 +61,17 @@ export function getDueReviewQueue(formulaIds, progressMap, cap = 20) {
   due.sort((a, b) => a.dueTime - b.dueTime);
   return [...due.map(d => d.id), ...fresh].slice(0, cap);
 }
+
+// Đếm trạng thái các thẻ của một nhóm formulaIds (trang danh sách bộ thẻ): thẻ mới (chưa chấm lần nào),
+// đến hạn (đã tới ngày ôn), đang nhớ (đã chấm và chưa tới hạn).
+export function countCardStates(formulaIds, progressMap) {
+  const now = Date.now();
+  let fresh = 0, due = 0, remembered = 0;
+  formulaIds.forEach(id => {
+    const p = progressMap[id];
+    if (!p) fresh++;
+    else if (new Date(p.nextReviewAt).getTime() <= now) due++;
+    else remembered++;
+  });
+  return { total: formulaIds.length, fresh, due, remembered };
+}

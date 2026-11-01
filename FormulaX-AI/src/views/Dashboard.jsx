@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, Search, Zap, ClipboardList, ChevronRight, ArrowRight, Flame, Check, Lock, BarChart2, Gem, GraduationCap, Sparkles } from "lucide-react";
 import CountUp from "../components/CountUp";
 import Confetti from "../components/Confetti";
-import DailyChallengeCard from "../components/DailyChallengeCard";
 import GuestLockNotice from "../components/GuestLockNotice";
 import MimiMascot from "../components/MimiMascot";
 import { getActivityData } from "../lib/supabase";
@@ -73,8 +72,6 @@ export default function Dashboard({
   weakTopics,
   recentTopic,
   viewedFormulaIds,
-  dailyChallenge,
-  onSaveDailyChallenge,
   flashcardProgress = {},
 }) {
   // Khách: chuỗi ngày học, nhiệm vụ, thống kê là tiến độ cá nhân → khóa. Gợi ý công thức và
@@ -111,8 +108,7 @@ export default function Dashboard({
   // Nhiệm vụ hôm nay — chỉ dùng tiêu chí có số liệu đáng tin cậy sau khi tải lại trang.
   // todayStats.formulasViewed reset về 0 mỗi lần refresh (không có truy vấn "hôm nay" từ
   // Supabase cho mục này như quiz/flashcard) nên không dùng làm tiêu chí ở đây.
-  const [dailyChallengeDone, setDailyChallengeDone] = useState(false);
-  const goals = buildGoals({ intent, todayStats, challengeDone: dailyChallengeDone, weakTopic: weakTopics?.[0] || null });
+  const goals = buildGoals({ intent, todayStats, weakTopic: weakTopics?.[0] || null });
   const doneCount = goals.filter(g => g.done).length;
   const prevDoneCountRef = useRef(doneCount);
   const [showGoalConfetti, setShowGoalConfetti] = useState(false);
@@ -129,11 +125,7 @@ export default function Dashboard({
   });
   const step = nextStep({ intent, weakTopics, recentTopic, userGrade, formula: recommendedFormulas[0] || null, dueCount });
   const goNext = () => (step.formula ? onViewDetail(step.formula) : setActiveTab(step.tab));
-  const challengeRef = useRef(null);
-  const openGoal = (g) => {
-    if (g.tab) setActiveTab(g.tab);
-    else challengeRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
-  };
+  const openGoal = (g) => setActiveTab(g.tab);
 
   return (
     <PageShell innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
@@ -154,57 +146,52 @@ export default function Dashboard({
               {isNew ? (
                 <NewLearnerSteps userGrade={userGrade} setActiveTab={setActiveTab} />
               ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    className="mt-3.5 md:mt-6 w-full flex items-center gap-3 md:gap-4 text-left rounded-[14px] bg-white dark:bg-[#0F172A] border border-[#F1E3BF] dark:border-[#334155] px-3 md:px-4 py-2.5 md:py-3.5 cursor-pointer transition-colors hover:border-accent"
-                  >
-                    <span className="w-[34px] h-[34px] md:w-10 md:h-10 rounded-[10px] bg-accent-light dark:bg-accent/20 text-[#B45309] dark:text-[#FCD34D] flex items-center justify-center shrink-0">
-                      <Sparkles size={17} />
-                    </span>
-                    <span className="flex-1 min-w-0">
-                      <span className="block text-[0.7rem] md:text-[0.75rem] text-text-muted dark:text-[#94A3B8]">{step.kicker}</span>
-                      <span className="block text-[0.9rem] md:text-base font-semibold text-primary dark:text-[#E2E8F0] truncate">{step.title}</span>
-                      <span className="hidden md:block text-[0.75rem] text-text-muted dark:text-[#94A3B8] truncate">{step.sub}</span>
-                    </span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={goNext}
-                    className="mt-3 md:mt-5 w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-[13px] bg-navy-btn dark:bg-accent text-white font-semibold text-[0.95rem] px-6 py-[13px] border-none cursor-pointer shadow-[0_10px_22px_-10px_rgba(15,23,42,0.6)] transition-colors hover:bg-navy-btn-hover dark:hover:bg-accent-hover"
-                  >
-                    Học tiếp <ArrowRight size={16} strokeWidth={2.6} />
-                  </button>
-                </>
+                // Một khối duy nhất cho bước tiếp theo (trước đây có thêm nút "Học tiếp" riêng làm cùng việc).
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="group mt-3.5 md:mt-6 w-full flex items-center gap-3 md:gap-4 text-left rounded-[14px] bg-white dark:bg-[#0F172A] border border-[#F1E3BF] dark:border-[#334155] pl-3 md:pl-4 pr-2.5 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
+                >
+                  <span className="w-[34px] h-[34px] md:w-10 md:h-10 rounded-[10px] bg-accent-light dark:bg-accent/20 text-[#B45309] dark:text-[#FCD34D] flex items-center justify-center shrink-0">
+                    <Sparkles size={17} />
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-[0.7rem] md:text-[0.75rem] text-text-muted dark:text-[#94A3B8]">{step.kicker}</span>
+                    <span className="block text-[0.9rem] md:text-base font-semibold text-primary dark:text-[#E2E8F0] truncate">{step.title}</span>
+                    <span className="hidden md:block text-[0.75rem] text-text-muted dark:text-[#94A3B8] truncate">{step.sub}</span>
+                  </span>
+                  <span className="shrink-0 inline-flex items-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white font-semibold text-[0.85rem] md:text-[0.9rem] px-3 md:px-4 py-2 md:py-2.5 transition-colors group-hover:bg-navy-btn-hover dark:group-hover:bg-accent-hover">
+                    Học tiếp <ArrowRight size={15} strokeWidth={2.6} />
+                  </span>
+                </button>
               )}
             </div>
           </section>
 
-          {/* ─── Chuỗi học 7 ngày ──────────────────────────────────────────── */}
+          {/* ─── Hôm nay: chuỗi học 7 ngày + số liệu (gộp hai thẻ cũ cho đỡ rối) ────── */}
           <section
-            aria-label="Chuỗi học"
+            aria-label="Chuỗi học và số liệu hôm nay"
             onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
-            className={`${CARD} md:col-span-4 md:mt-[64px] p-4 md:p-7 flex flex-col justify-between gap-3 cursor-pointer`}
+            className={`${CARD} md:col-span-4 md:mt-[64px] p-4 md:p-6 flex flex-col justify-between gap-3 md:gap-4 cursor-pointer`}
           >
             <div className="flex items-center justify-between">
               <div className={LABEL}>Chuỗi học</div>
               {isGuest ? <Lock size={15} className="text-text-muted" /> : <Flame size={16} className="text-premium" />}
             </div>
             {isGuest ? (
-              <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">Đăng nhập Google để lưu chuỗi ngày học.</p>
+              <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">Đăng nhập Google để lưu chuỗi ngày học và số liệu mỗi ngày.</p>
             ) : (
               <>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-[2.5rem] md:text-[4.5rem] font-extrabold tracking-[-0.05em] leading-none bg-[linear-gradient(180deg,#FBBF24,#D97706)] bg-clip-text text-transparent">{streak}</span>
-                  <span className="text-[0.8rem] md:text-base font-medium text-text-muted dark:text-[#94A3B8]">{streak ? "ngày liên tiếp" : "ngày — học hôm nay để bắt đầu"}</span>
+                  <span className="text-[2.5rem] md:text-[3.25rem] font-extrabold tracking-[-0.05em] leading-none bg-[linear-gradient(180deg,#FBBF24,#D97706)] bg-clip-text text-transparent">{streak}</span>
+                  <span className="text-[0.8rem] md:text-[0.9rem] font-medium text-text-muted dark:text-[#94A3B8]">{streak ? "ngày liên tiếp" : "ngày — học hôm nay để bắt đầu"}</span>
                 </div>
-                <div className="flex gap-1 md:gap-2" aria-label="7 ngày gần đây">
+                <div className="flex gap-1 md:gap-1.5" aria-label="7 ngày gần đây">
                   {week.map((d) => (
                     <div key={d.date} className="flex-1 text-center">
                       <div
                         title={d.active ? "Có học" : "Chưa học"}
-                        className={`h-[18px] md:h-[30px] rounded-[5px] md:rounded-[9px] ${
+                        className={`h-[18px] md:h-6 rounded-[5px] md:rounded-[7px] ${
                           d.active ? "bg-[linear-gradient(180deg,#FBBF24,#F59E0B)]"
                             : d.isToday ? "border-[1.5px] border-dashed border-accent" : "bg-[#EEF1F6] dark:bg-[#334155]"
                         }`}
@@ -213,13 +200,45 @@ export default function Dashboard({
                     </div>
                   ))}
                 </div>
+                {!isNew && (
+                  <div className="grid grid-cols-3 border-t border-line dark:border-[#334155] pt-3 md:pt-4">
+                    {[
+                      { label: "Công thức xem", value: todayStats?.formulasViewed ?? 0 },
+                      { label: "Flashcard ôn", value: todayStats?.flashcardsStudied ?? 0 },
+                      { label: "Quiz hôm nay", value: todayStats?.quizzesCompleted ?? 0 },
+                    ].map((s, i) => (
+                      <div key={s.label} className={`text-center ${i === 1 ? "border-x border-line dark:border-[#334155]" : ""}`}>
+                        <div className="text-[1.25rem] md:text-[1.4rem] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]"><CountUp value={s.value} /></div>
+                        <div className="text-[0.66rem] font-semibold text-text-muted dark:text-[#94A3B8] mt-0.5">{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </section>
 
-          {/* ─── Nhiệm vụ hôm nay ──────────────────────────────────────────── */}
+          {/* ─── 4 phím tắt có chú thích (góp ý của cô hướng dẫn) — một hàng gọn ───── */}
+          <section aria-label="Lối tắt" className="md:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+            {SHORTCUTS.map(({ tab, icon: Icon, label, hint, tone }) => (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => setActiveTab(tab)}
+                className={`${CARD} flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3.5 p-3.5 md:p-4 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
+              >
+                <span className={`w-9 h-9 md:w-10 md:h-10 rounded-[10px] flex items-center justify-center shrink-0 ${tone}`}><Icon size={18} /></span>
+                <span className="min-w-0 flex flex-col gap-0.5">
+                  <span className="text-[0.88rem] md:text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0]">{label}</span>
+                  <span className="text-[0.72rem] leading-[1.4] text-text-muted dark:text-[#94A3B8]">{hint}</span>
+                </span>
+              </button>
+            ))}
+          </section>
+
+          {/* ─── Nhiệm vụ hôm nay (danh sách dọc, cạnh Thử thách) ─────────────────── */}
           {!isNew && (
-            <section aria-label="Nhiệm vụ hôm nay" className={`${CARD} md:col-span-8 p-4 md:px-8 md:py-6`}>
+            <section aria-label="Nhiệm vụ hôm nay" className={`${CARD} md:col-span-5 p-4 md:p-6 flex flex-col`}>
               <div className="flex justify-between items-center">
                 <div className={LABEL}>Nhiệm vụ hôm nay</div>
                 {!isGuest && <span className="text-[0.75rem] font-semibold text-[#B45309] dark:text-[#FCD34D]">{doneCount}/{goals.length} hoàn thành</span>}
@@ -233,122 +252,103 @@ export default function Dashboard({
                 />
               ) : (
                 <>
-                  <div className="h-1 rounded-full bg-[#EEF1F6] dark:bg-[#334155] mt-2.5 mb-3 md:hidden">
+                  <div className="h-1 rounded-full bg-[#EEF1F6] dark:bg-[#334155] mt-2.5 mb-3 md:mt-3.5 md:mb-4">
                     <div className="h-full rounded-full bg-[linear-gradient(90deg,#10B981,#F59E0B)] transition-[width] duration-500" style={{ width: `${(doneCount / goals.length) * 100}%` }} />
                   </div>
-                  <ul className="list-none m-0 p-0 flex flex-col md:flex-row gap-1 md:gap-3 md:mt-5">
+                  <ul className="list-none m-0 p-0 flex flex-col gap-1 md:gap-1.5">
                     {goals.map((g, i) => {
                       const current = !g.done && goals.findIndex((x) => !x.done) === i;
                       return (
-                        <li key={g.key} className="md:flex-1">
+                        <li key={g.key}>
                           <button
                             type="button"
                             onClick={() => openGoal(g)}
-                            className="w-full flex items-center gap-2.5 md:gap-3 text-left bg-transparent border-none p-1.5 -m-1.5 md:m-0 md:p-0 rounded-lg cursor-pointer"
+                            className={`w-full flex items-center gap-2.5 md:gap-3 text-left border-none px-2 py-2 md:py-2.5 rounded-[10px] cursor-pointer transition-colors ${current ? "bg-accent-light/60 dark:bg-accent/10" : "bg-transparent hover:bg-page dark:hover:bg-white/5"}`}
                           >
                             {g.done ? (
-                              <span className="w-[18px] h-[18px] md:w-7 md:h-7 rounded-full bg-success text-white flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
+                              <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-success text-white flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
                             ) : (
-                              <span className={`w-[18px] h-[18px] md:w-7 md:h-7 rounded-full border-2 shrink-0 ${current ? "border-premium shadow-[0_0_0_4px_rgba(245,158,11,0.15)]" : "border-[#CBD5E1] dark:border-[#475569]"}`} />
+                              <span className={`w-5 h-5 md:w-6 md:h-6 rounded-full border-2 shrink-0 ${current ? "border-premium" : "border-[#CBD5E1] dark:border-[#475569]"}`} />
                             )}
-                            <span className={`text-[0.82rem] md:text-[0.88rem] font-semibold ${g.done ? "text-text-muted dark:text-[#94A3B8]" : current ? "text-[#B45309] dark:text-[#FCD34D]" : "text-primary dark:text-[#E2E8F0]"}`}>
+                            <span className={`flex-1 text-[0.85rem] md:text-[0.9rem] font-semibold ${g.done ? "text-text-muted dark:text-[#94A3B8] line-through decoration-1" : current ? "text-[#B45309] dark:text-[#FCD34D]" : "text-primary dark:text-[#E2E8F0]"}`}>
                               {g.label}
                             </span>
+                            {!g.done && <ChevronRight size={15} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
                           </button>
                         </li>
                       );
                     })}
                   </ul>
-                  <div className="hidden md:block h-1 rounded-full bg-[#EEF1F6] dark:bg-[#334155] mt-5">
-                    <div className="h-full rounded-full bg-[linear-gradient(90deg,#10B981,#F59E0B)] transition-[width] duration-500" style={{ width: `${(doneCount / goals.length) * 100}%` }} />
-                  </div>
                 </>
               )}
+              {/* Lối vào trang Tiến độ nằm cuối thẻ nhiệm vụ (trước đây là một thẻ riêng ở cuối trang). */}
+              <div className="mt-auto pt-4">
+                <button
+                  type="button"
+                  onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
+                  className="w-full flex items-center gap-3 rounded-[12px] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] px-3 py-2.5 text-left cursor-pointer transition-colors hover:border-accent"
+                >
+                  <span className="w-8 h-8 rounded-[9px] bg-primary dark:bg-[#1E293B] text-[#FBBF24] flex items-center justify-center shrink-0">
+                    {isGuest ? <Lock size={15} /> : <BarChart2 size={15} />}
+                  </span>
+                  <span className="flex-1 min-w-0">
+                    <span className="block text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0]">Xem tiến độ học tập</span>
+                    <span className="block text-[0.7rem] text-text-muted dark:text-[#94A3B8] truncate">Điểm mạnh, điểm yếu theo chủ đề</span>
+                  </span>
+                  <ChevronRight size={16} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />
+                </button>
+              </div>
             </section>
           )}
 
-          {/* ─── Hôm nay (số liệu) ─────────────────────────────────────────── */}
-          {!isNew && (
-            <section aria-label="Số liệu hôm nay" className={`${CARD} md:col-span-4 grid grid-cols-3 py-4 md:py-6`}>
-              {isGuest ? (
-                <div className="col-span-3 px-4 text-[0.8rem] text-text-muted dark:text-[#94A3B8] flex items-center gap-2">
-                  <Lock size={14} className="text-accent shrink-0" /> Đăng nhập để lưu số liệu học mỗi ngày.
-                </div>
-              ) : [
-                { label: "Công thức xem", value: todayStats?.formulasViewed ?? 0, color: "text-[#2563EB] dark:text-[#93C5FD]" },
-                { label: "Flashcard ôn", value: todayStats?.flashcardsStudied ?? 0, color: "text-[#059669] dark:text-[#6EE7B7]" },
-                { label: "Quiz hôm nay", value: todayStats?.quizzesCompleted ?? 0, color: "text-accent dark:text-[#FCD34D]" },
-              ].map((s, i) => (
-                <div key={s.label} className={`px-3 md:px-4 text-center md:text-left ${i === 1 ? "border-x border-line dark:border-[#334155]" : ""}`}>
-                  <div className={`text-[1.6rem] md:text-[2rem] font-bold tracking-[-0.03em] ${s.color}`}><CountUp value={s.value} /></div>
-                  <div className="text-[0.68rem] font-semibold text-text-muted dark:text-[#94A3B8] mt-0.5">{s.label}</div>
-                </div>
-              ))}
+          {/* ─── Cột phải: Gợi ý hôm nay (thẻ Thử thách hôm nay đã bỏ — chủ dự án chốt 2026-11-02) ─── */}
+          <div className={`${isNew ? "md:col-span-12" : "md:col-span-7"} flex flex-col`}>
+            <section aria-label="Gợi ý hôm nay" className={`${CARD} flex-1 p-4 md:p-6`}>
+              <div className="flex justify-between items-baseline gap-3 mb-2 md:mb-3">
+                <div className={LABEL}>Gợi ý hôm nay</div>
+                <span className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] font-medium truncate">
+                  {isGuest ? "Đổi mới mỗi ngày" : userGrade ? `Theo lớp ${userGrade} và lịch sử học` : "Dựa trên lịch sử học"}
+                </span>
+              </div>
+              <ul className="list-none m-0 p-0 flex flex-col">
+                {/* Dữ liệu công thức được App tải động (chunk riêng, xem App.jsx) nên trong vài
+                    trăm ms đầu mảng còn rỗng — vẽ skeleton thay vì để trống, tránh nội dung
+                    nhảy chỗ khi danh sách gợi ý xuất hiện. */}
+                {formulas.length === 0 && [0, 1, 2].map((i) => (
+                  <li key={`skeleton-${i}`} className="py-2.5" aria-hidden="true">
+                    <div className="h-2.5 w-1/4 rounded bg-[#EEF1F6] dark:bg-[#334155] animate-pulse" />
+                    <div className="h-3.5 w-3/4 rounded bg-[#E5E7EB] dark:bg-[#334155] animate-pulse mt-2" />
+                  </li>
+                ))}
+                {recommendedFormulas.map((formula, i) => {
+                  const why = weakTopics?.includes(formula.topic) ? "Chủ đề bạn còn yếu"
+                    : recentTopic === formula.topic ? "Bạn vừa học chủ đề này"
+                      : userGrade && formula.grade === userGrade ? `Đúng chương trình lớp ${userGrade}` : "Công thức mới cho bạn";
+                  return (
+                    <li key={formula.id} className={i > 0 ? "border-t border-line dark:border-[#334155]" : ""}>
+                      <button
+                        type="button"
+                        onClick={() => onViewDetail(formula)}
+                        className="group w-full flex items-center gap-3 py-2.5 md:py-3 bg-transparent border-none text-left cursor-pointer"
+                      >
+                        <span className="flex-1 min-w-0">
+                          <span className="block text-[0.9rem] md:text-[0.95rem] font-semibold leading-[1.4] text-primary dark:text-[#E2E8F0] group-hover:text-navy-btn dark:group-hover:text-[#FCD34D] transition-colors">{formula.name}</span>
+                          <span className="block text-[0.72rem] text-text-muted dark:text-[#94A3B8] mt-0.5">{formula.topic} · Lớp {formula.grade} · {why}</span>
+                        </span>
+                        <ChevronRight size={16} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
             </section>
-          )}
-
-          {/* ─── Thử thách hôm nay ─────────────────────────────────────────── */}
-          <div ref={challengeRef} className="md:col-span-7 [&>*]:!mb-0 [&>*]:h-full">
-            <DailyChallengeCard user={user} userGrade={userGrade} savedRecord={dailyChallenge} onSave={onSaveDailyChallenge} onAnswered={() => setDailyChallengeDone(true)} />
           </div>
-
-          {/* ─── 4 phím tắt có chú thích ───────────────────────────────────── */}
-          <section aria-label="Lối tắt" className="md:col-span-5 grid grid-cols-2 gap-3 md:gap-4">
-            {SHORTCUTS.map(({ tab, icon: Icon, label, hint, tone }) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`${CARD} flex flex-col items-start gap-2 p-3.5 md:p-5 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
-              >
-                <span className={`w-9 h-9 md:w-10 md:h-10 rounded-[10px] flex items-center justify-center ${tone}`}><Icon size={18} /></span>
-                <span className="text-[0.88rem] md:text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0]">{label}</span>
-                <span className="text-[0.72rem] leading-[1.4] text-text-muted dark:text-[#94A3B8]">{hint}</span>
-              </button>
-            ))}
-          </section>
 
           <Confetti active={showGoalConfetti} />
 
-          {/* ─── Gợi ý hôm nay ─────────────────────────────────────────────── */}
-          <section aria-label="Gợi ý hôm nay" className="md:col-span-12 mt-2">
-            <div className="flex justify-between items-baseline mb-3">
-              <h2 className="m-0 text-base md:text-lg font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">Gợi ý hôm nay</h2>
-              <span className="text-xs text-text-muted dark:text-[#94A3B8] font-medium">
-                {isGuest ? "Đổi mới mỗi ngày" : userGrade ? `Theo lớp ${userGrade} và lịch sử học` : "Dựa trên lịch sử học"}
-              </span>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-5">
-              {/* Dữ liệu công thức được App tải động (chunk riêng, xem App.jsx) nên trong vài
-                  trăm ms đầu mảng còn rỗng — vẽ skeleton thay vì để trống, tránh nội dung
-                  nhảy chỗ khi danh sách gợi ý xuất hiện. */}
-              {formulas.length === 0 && [0, 1, 2].map((i) => (
-                <div key={`skeleton-${i}`} className={`${CARD} p-5`} aria-hidden="true">
-                  <div className="h-2.5 w-1/4 rounded bg-[#EEF1F6] dark:bg-[#334155] animate-pulse" />
-                  <div className="h-3.5 w-3/4 rounded bg-[#E5E7EB] dark:bg-[#334155] animate-pulse mt-3" />
-                </div>
-              ))}
-              {recommendedFormulas.map((formula) => {
-                const why = weakTopics?.includes(formula.topic) ? "Chủ đề bạn còn yếu"
-                  : recentTopic === formula.topic ? "Bạn vừa học chủ đề này"
-                    : userGrade && formula.grade === userGrade ? `Đúng chương trình lớp ${userGrade}` : "Công thức mới cho bạn";
-                return (
-                  <button
-                    key={formula.id}
-                    type="button"
-                    onClick={() => onViewDetail(formula)}
-                    className={`${CARD} p-4 md:p-5 flex flex-col gap-1.5 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
-                  >
-                    <span className="text-[0.72rem] font-semibold text-[#2563EB] dark:text-[#93C5FD]">{formula.topic} · Lớp {formula.grade}</span>
-                    <span className="text-[0.95rem] font-semibold leading-[1.4] text-primary dark:text-[#E2E8F0]">{formula.name}</span>
-                    <span className="text-[0.75rem] text-text-muted dark:text-[#94A3B8]">{why}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-
           {/* ─── Tiến độ + Premium ─────────────────────────────────────────── */}
+          {/* Người mới không có thẻ nhiệm vụ → lối vào Tiến độ vẫn đứng riêng ở đây. */}
+          {isNew && (
           <button
             type="button"
             onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
@@ -363,9 +363,10 @@ export default function Dashboard({
             </span>
             <ChevronRight size={18} className="text-[#CBD5E1] shrink-0" />
           </button>
+          )}
 
           {!isPremium && (
-            <section aria-label="Premium" className="md:col-span-5 rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-6 py-4 md:py-5 flex flex-col gap-2 justify-center">
+            <section aria-label="Premium" className={`${isNew ? "md:col-span-5" : "md:col-span-12"} rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-6 py-4 md:py-5 flex flex-col gap-2 justify-center`}>
               <div className="flex justify-between text-[0.8rem] font-semibold gap-2">
                 <span>{isGuest ? "Chế độ khách" : `Còn ${remainingQuizzes}/10 quiz miễn phí hôm nay`}</span>
                 <span className="text-[#FBBF24] shrink-0">49.000 đ/tháng</span>
