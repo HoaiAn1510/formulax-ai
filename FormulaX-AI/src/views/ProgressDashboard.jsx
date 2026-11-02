@@ -119,12 +119,12 @@ function BadgesSection({ state, showAll, onToggle }) {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 // Ô số liệu cùng kiểu trang Flashcard: ô biểu tượng, số lớn, nhãn.
-function StatCard({ icon: Icon, tone, value, label, sublabel }) {
+function StatCard({ icon: Icon, tone, value, suffix = "", label, sublabel }) {
   return (
     <div className={`${CARD} p-4 md:p-5 flex flex-col gap-3`}>
       <span className={`w-9 h-9 rounded-[10px] flex items-center justify-center ${tone}`}><Icon size={17} /></span>
       <div>
-        <div className="text-[1.5rem] md:text-[1.75rem] font-bold tracking-[-0.02em] leading-none text-primary dark:text-[#E2E8F0]"><CountUp value={value} /></div>
+        <div className="text-[1.5rem] md:text-[1.75rem] font-bold tracking-[-0.02em] leading-none text-primary dark:text-[#E2E8F0]"><CountUp value={value} />{suffix}</div>
         <div className="mt-1.5 text-[0.78rem] text-text-muted dark:text-[#94A3B8]">
           {label}{sublabel && <span className="text-[#94A3B8]"> · {sublabel}</span>}
         </div>
@@ -340,12 +340,13 @@ function StreakChart({ activityDates, selectedDate, detailDate, onSelectDate, se
         </div>
       </div>
 
-      <DayDetail
+      {/* Chi tiết ngày chỉ hiện khi đã bấm một ngày — trước đây luôn hiện "Hôm nay", thẻ dài hơn hẳn các thẻ khác. */}
+      {selectedDate && <DayDetail
         date={detailDate}
         quizzes={selectedDayData.quizzes}
         flashcardIds={selectedDayData.flashcardIds}
         formulaMap={formulaMap}
-      />
+      />}
     </div>
   );
 }
@@ -546,14 +547,16 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
           {/* Ô số liệu theo phạm vi đang xem. */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-5">
             <StatCard icon={ClipboardList} tone={TONE.blue}   value={summary.quizCount}     label="Bài kiểm tra" sublabel={scopeLabel} />
-            <StatCard icon={Target}        tone={TONE.green}  value={summary.accuracy ?? 0} label={summary.accuracy == null ? "Độ chính xác (chưa có bài)" : "% câu đúng"} sublabel={scopeLabel} />
+            <StatCard icon={Target}        tone={TONE.green}  value={summary.accuracy ?? 0} suffix={summary.accuracy == null ? "" : "%"} label={summary.accuracy == null ? "Câu đúng (chưa có bài)" : "Câu đúng"} sublabel={scopeLabel} />
             <StatCard icon={Layers}        tone={TONE.purple} value={summary.cardsReviewed} label="Lượt ôn flashcard" sublabel={scopeLabel} />
             <StatCard icon={Flame}         tone={TONE.orange} value={streak}                label="Ngày học liên tiếp" />
           </div>
 
-          {/* Chuỗi học + Hiệu suất theo chủ đề + Coach gợi ý ôn tập — 1 hàng ngang trên desktop */}
-          <div className="flex flex-col gap-4 md:gap-5 lg:grid lg:grid-cols-3 lg:items-start mb-4 md:mb-5">
+          {/* Bố cục (sửa 2026-11-02 sau khi xem bản deploy): hàng 1 = Hiệu suất (rộng) + Chuỗi học, cao bằng nhau;
+              hàng 2 = Coach trải hết bề ngang. Trước đây 3 thẻ một hàng canh trên, thẻ lịch dài hơn hẳn → hở lớn. */}
+          <div className="flex flex-col gap-4 md:gap-5 lg:grid lg:grid-cols-12 lg:items-stretch mb-4 md:mb-5">
             {/* Lịch: bấm một ngày để xem riêng ngày đó (bấm lại ngày đang chọn thì bỏ chọn) */}
+            <div className="lg:col-span-5 lg:order-2">
             <StreakChart
               activityDates={activityDates}
               selectedDate={selectedDay}
@@ -562,9 +565,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
               selectedDayData={detailDayData}
               formulaMap={formulaMap}
             />
+            </div>
 
             {/* Hiệu suất theo chủ đề — theo phạm vi đang xem */}
-            <div className={`${CARD} p-4 md:p-6 relative overflow-hidden`}>
+            <div className={`${CARD} lg:col-span-7 lg:order-1 p-4 md:p-6 relative overflow-hidden`}>
               <SectionHeader icon={BarChart2} tone={TONE.blue} title="Hiệu suất theo chủ đề" aside={scopeTag} />
 
               {loading ? (
@@ -612,7 +616,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             </div>
 
             {/* Coach gợi ý ôn tập — chủ đề dưới 60%: công thức nên xem lại + nút luyện ngay / tạo bộ thẻ */}
-            <div className={`${CARD} p-4 md:p-6`}>
+            <div className={`${CARD} lg:col-span-12 lg:order-3 p-4 md:p-6`}>
               <SectionHeader icon={Target} tone={TONE.green} title="Coach gợi ý ôn tập" aside={scopeTag} />
 
               {loading ? (
@@ -642,7 +646,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                   onCta={() => setActiveTab("quiz")}
                 />
               ) : (
-                <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 md:gap-4">
                   {weakTopics.map(t => {
                     const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
                     return (
