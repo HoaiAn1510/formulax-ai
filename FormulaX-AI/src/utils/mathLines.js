@@ -120,3 +120,29 @@ export function splitMathLines(latex) {
   }
   return lines.length ? lines : [[s]];
 }
+
+// Đổi chuỗi có LaTeX thành chữ thường dễ đọc, cho chỗ chỉ hiện MỘT dòng bị cắt (tên cuộc trò chuyện trong lịch sử
+// Tìm kiếm AI) — ở đó không vẽ KaTeX được vì chuỗi có thể bị cắt giữa chừng "$y …". Ví dụ
+// "Tìm cực trị của hàm số $y = x^3 - 3x + 1$" → "Tìm cực trị của hàm số y = x³ - 3x + 1". Không cố chính xác tuyệt
+// đối: lệnh lạ thì bỏ dấu "\" giữ tên lệnh.
+const LATEX_SYMBOLS = {
+  cdot: "·", times: "×", div: "÷", pm: "±", pi: "π", alpha: "α", beta: "β", gamma: "γ", Delta: "Δ", delta: "δ",
+  theta: "θ", lambda: "λ", varphi: "φ", phi: "φ", infty: "∞", le: "≤", leq: "≤", ge: "≥", geq: "≥", ne: "≠", neq: "≠",
+  approx: "≈", Rightarrow: "⇒", implies: "⇒", Leftrightarrow: "⇔", in: "∈", circ: "°", angle: "∠", perp: "⊥",
+  parallel: "∥", int: "∫", sum: "∑", vec: "",
+};
+const SUPERSCRIPT = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+export function latexToPlainText(input) {
+  let t = String(input || "");
+  t = t.replace(/\\[dt]?frac\{([^{}]*)\}\{([^{}]*)\}/g, "$1/$2");
+  t = t.replace(/\\sqrt\{([^{}]*)\}/g, "√($1)");
+  t = t.replace(/\\(?:text|mathrm|mathbf|operatorname)\{([^{}]*)\}/g, "$1");
+  t = t.replace(/\\(?:left|right)(?![A-Za-z])/g, "");
+  t = t.replace(/\\(?:[,;:! ]|q?quad(?![A-Za-z]))/g, " ");
+  t = t.replace(/\\([A-Za-z]+)/g, (_, name) => LATEX_SYMBOLS[name] ?? name);
+  t = t.replace(/\^\{?°\}?/g, "°");
+  t = t.replace(/\^\{([^{}]*)\}/g, "^$1").replace(/_\{([^{}]*)\}/g, "_$1");
+  t = t.replace(/\^([0-9])(?![0-9])/g, (_, d) => SUPERSCRIPT[d]);
+  t = t.replace(/[{}$]/g, "");
+  return t.replace(/\s+/g, " ").trim();
+}
