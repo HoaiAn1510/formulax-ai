@@ -67,7 +67,11 @@ export default function App() {
   // "asked" = mở Kiểm tra thẳng vào chế độ "Luyện lại bài đã hỏi" (từ Tìm kiếm AI). QuizView chỉ đọc lúc mount
   // rồi gọi onConsumeInitialMode để xoá — lần sau mở Kiểm tra bằng lối khác thì vào màn mặc định.
   const [quizEntryMode, setQuizEntryMode] = useState(null);
-  const openAskedPractice = useCallback(() => { setQuizEntryMode("asked"); setActiveTab("quiz"); }, []);
+  // preselect { text, formulaIds }: mở từ nút dưới một câu hướng dẫn của Tìm kiếm AI → chọn sẵn đúng bài đó.
+  const openAskedPractice = useCallback((preselect) => {
+    setQuizEntryMode(preselect?.text ? { mode: "asked", preselect } : "asked");
+    setActiveTab("quiz");
+  }, []);
   const consumeQuizEntryMode = useCallback(() => setQuizEntryMode(null), []);
   // Bấm lại tab đang mở trên thanh điều hướng: setActiveTab cùng giá trị không vẽ lại view, nên đang ở màn kết
   // quả Kiểm tra mà bấm "Luyện đề" thì đứng yên. Tăng key để QuizView mở lại từ màn chọn đề.
@@ -405,18 +409,19 @@ export default function App() {
   // Hỏi MỖI LẦN MỞ APP (chủ dự án chốt 2026-11-02): mỗi lần tải trang (kể cả F5) và mỗi lần đăng nhập lại — trước
   // đây chỉ một lần mỗi tab (sessionStorage), đăng xuất/đăng nhập lại hay F5 trong cùng tab không hỏi. Chỉ nhớ trong
   // bộ nhớ của lượt tải này (ref), theo tài khoản; đăng xuất thì quên để lần đăng nhập sau hỏi lại.
-  // Chờ tải xong dữ liệu để biết có phải người mới không: người mới đã có onboarding riêng nên không chồng hai hộp.
+  // Chờ tải xong dữ liệu để biết có phải người mới không. Người mới: không chồng hai hộp — CHỜ onboarding đóng rồi mới
+  // hỏi (trước đây lượt đó bị tính là đã hỏi nên tài khoản mới không bao giờ thấy hộp này, chủ dự án báo 2026-11-02).
   // Không chen vào khi vừa quay về từ trang thanh toán.
   const intentAskedForRef = useRef(null);
   useEffect(() => {
     if (!isLoggedIn) { intentAskedForRef.current = null; return; }
-    if (isLoadingData || showIntent) return;
+    if (isLoadingData || showIntent || showOnboarding) return;
     const gid = user?.googleId;
     if (gid && !dataReady) return;
     const who = gid || "guest";
     if (intentAskedForRef.current === who) return;
     intentAskedForRef.current = who;
-    if (showOnboarding || paymentReturnRef.current) return;
+    if (paymentReturnRef.current) return;
     setShowIntent(true);
   }, [isLoggedIn, isLoadingData, dataReady, showOnboarding, showIntent, user?.googleId]);
 

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock } from "lucide-react";
+import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock, ClipboardList, ChevronRight } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
@@ -1014,7 +1014,7 @@ export default function FormulaFinder({
                 </p>
               </div>
             ) : (
-              messages.map((msg) => {
+              messages.map((msg, msgIdx) => {
                 const isUser = msg.sender === "user";
                 const bubbleStateClass = msg.isError
                   ? "bg-[rgba(239,68,68,0.06)] border border-[rgba(239,68,68,0.2)] text-[#b91c1c]"
@@ -1071,6 +1071,27 @@ export default function FormulaFinder({
                     {msg.answer && (
                       <StepAnswer answer={msg.answer} formulas={formulas} onViewDetail={onViewDetail} />
                     )}
+
+                    {/* Ngay dưới câu hướng dẫn: mời làm đề luyện cùng dạng (Kiểm tra › Luyện lại bài đã hỏi), chọn sẵn đúng
+                        bài này. Chỉ cho câu trả lời có hướng dẫn thật (solution) và tài khoản Google. */}
+                    {msg.answer?.type === "solution" && !isGuest && onPracticeAsked && (() => {
+                      const asked = messages.slice(0, msgIdx).reverse().find((m) => m.sender === "user");
+                      if (!asked?.text?.trim()) return null;
+                      return (
+                        <button
+                          type="button"
+                          onClick={() => onPracticeAsked({ text: asked.text, formulaIds: msg.answer.formulaIds || [] })}
+                          className="mt-3 w-full flex items-center gap-3 text-left rounded-[12px] border border-dashed border-accent/50 bg-accent-light/40 dark:bg-accent/10 px-3 py-2.5 cursor-pointer transition-colors hover:border-accent hover:bg-accent-light/70 dark:hover:bg-accent/15"
+                        >
+                          <span className="w-8 h-8 rounded-[9px] bg-white dark:bg-[#0F172A] text-accent dark:text-[#FCD34D] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)]"><ClipboardList size={16} /></span>
+                          <span className="flex-1 min-w-0">
+                            <span className="block text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0]">Làm bài kiểm tra cùng dạng này</span>
+                            <span className="block text-[0.72rem] text-text-muted dark:text-[#94A3B8]">AI ra đề mới cùng dạng, số liệu khác — tự giải rồi xem đáp án</span>
+                          </span>
+                          <ChevronRight size={16} className="text-accent shrink-0" />
+                        </button>
+                      );
+                    })()}
 
                     {/* Thông báo (vd "AI đang bận") — chữ thường, không qua .chat-bot-text vì CSS dark
                         mode của lớp đó ghi đè màu amber. Cờ isNotice được lưu cùng phiên nên mở lại

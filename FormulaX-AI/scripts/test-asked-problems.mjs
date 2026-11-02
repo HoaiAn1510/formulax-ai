@@ -117,6 +117,10 @@ test("headline + isNewLearner", () => {
   assert.match(headline({ goals, streak: 3, todayStats: { flashcardsStudied: 5 } }), /Xong hết/);
   assert.match(headline({ goals: buildGoals({}), streak: 4, todayStats: {} }), /giữ chuỗi 4 ngày/);
   assert.match(headline({ goals: buildGoals({}), streak: 0, todayStats: {} }), /Còn 2 nhiệm vụ/);
+  // Dashboard gọi không kèm goals (đã bỏ thẻ Nhiệm vụ hôm nay)
+  assert.match(headline({ streak: 0, todayStats: {} }), /ôn gì/);
+  assert.match(headline({ streak: 4, todayStats: {} }), /giữ chuỗi 4 ngày/);
+  assert.match(headline({ streak: 4, todayStats: { quizzesCompleted: 1 } }), /học tốt/);
 });
 
 test("nextStep: theo lựa chọn hôm nay, rồi tới công thức gợi ý", () => {

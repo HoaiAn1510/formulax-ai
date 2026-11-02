@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { BookOpen, Search, Zap, ClipboardList, ChevronRight, ArrowRight, Flame, Check, Lock, BarChart2, Gem, GraduationCap, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { BookOpen, Search, Zap, ClipboardList, ChevronRight, ArrowRight, Flame, Lock, BarChart2, Gem, GraduationCap, Sparkles } from "lucide-react";
 import CountUp from "../components/CountUp";
-import Confetti from "../components/Confetti";
-import GuestLockNotice from "../components/GuestLockNotice";
 import MimiMascot from "../components/MimiMascot";
 import { getActivityData } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import { vietnamToday } from "../utils/vietnamDate";
 import { readIntentToday, writeLast, INTENT_OPTIONS } from "../utils/dailyIntent";
-import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../utils/todayPlan";
+import { isNewLearner, headline, nextStep, lastSevenDays } from "../utils/todayPlan";
 import PageShell from "../components/PageShell";
 
 // Số ngẫu nhiên có seed (từ chuỗi ngày hôm nay) — cùng 1 ngày luôn ra cùng thứ tự,
@@ -108,27 +106,11 @@ export default function Dashboard({
     [flashcardProgress, openedAt]
   );
 
-  // Nhiệm vụ hôm nay — chỉ dùng tiêu chí có số liệu đáng tin cậy sau khi tải lại trang.
-  // todayStats.formulasViewed reset về 0 mỗi lần refresh (không có truy vấn "hôm nay" từ
-  // Supabase cho mục này như quiz/flashcard) nên không dùng làm tiêu chí ở đây.
-  const goals = buildGoals({ intent, todayStats, weakTopic: weakTopics?.[0] || null });
-  const doneCount = goals.filter(g => g.done).length;
-  const prevDoneCountRef = useRef(doneCount);
-  const [showGoalConfetti, setShowGoalConfetti] = useState(false);
-  useEffect(() => {
-    if (doneCount === goals.length && prevDoneCountRef.current < goals.length) {
-      setShowGoalConfetti(true);
-      setTimeout(() => setShowGoalConfetti(false), 2500);
-    }
-    prevDoneCountRef.current = doneCount;
-  }, [doneCount, goals.length]);
-
   const isNew = !isGuest && activity !== null && isNewLearner({
     streak, stats, todayStats, viewedCount: viewedFormulaIds?.length || 0, recentTopic,
   });
   const step = nextStep({ intent, weakTopics, recentTopic, userGrade, formula: recommendedFormulas[0] || null, dueCount });
   const goNext = () => (step.formula ? onViewDetail(step.formula) : setActiveTab(step.tab));
-  const openGoal = (g) => setActiveTab(g.tab);
 
   return (
     <PageShell width="wide" innerClassName="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-5">
@@ -143,7 +125,7 @@ export default function Dashboard({
             <div className="relative max-w-[560px]">
               <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>Xin chào {firstName}</div>
               <h1 className="mt-1.5 md:mt-2.5 mb-0 text-[1.45rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">
-                {isGuest ? "Hôm nay mình ôn gì nhé?" : headline({ isNew, goals, streak, todayStats })}
+                {isGuest ? "Hôm nay mình ôn gì nhé?" : headline({ isNew, streak, todayStats })}
               </h1>
 
               {isNew ? (
@@ -257,72 +239,8 @@ export default function Dashboard({
             </div>
           </section>
 
-          {/* ─── Nhiệm vụ hôm nay (danh sách dọc, cạnh Thử thách) ─────────────────── */}
-          {!isNew && (
-            <section aria-label="Nhiệm vụ hôm nay" className={`${CARD} md:col-span-5 p-4 md:p-6 flex flex-col`}>
-              <div className="flex justify-between items-center">
-                <div className={LABEL}>Nhiệm vụ hôm nay</div>
-                {!isGuest && <span className="text-[0.75rem] font-semibold text-[#B45309] dark:text-[#FCD34D]">{doneCount}/{goals.length} hoàn thành</span>}
-              </div>
-              {isGuest ? (
-                <GuestLockNotice
-                  className="mt-3"
-                  title="Đăng nhập Google để theo dõi nhiệm vụ"
-                  description="Nhiệm vụ hằng ngày dựa trên tiến độ học được lưu theo tài khoản."
-                  onClick={() => requireGoogle()}
-                />
-              ) : (
-                <>
-                  <div className="h-1 rounded-full bg-[#EEF1F6] dark:bg-[#334155] mt-2.5 mb-3 md:mt-3.5 md:mb-4">
-                    <div className="h-full rounded-full bg-[linear-gradient(90deg,#10B981,#F59E0B)] transition-[width] duration-500" style={{ width: `${(doneCount / goals.length) * 100}%` }} />
-                  </div>
-                  {/* Mọi nhiệm vụ cùng một kiểu khung (trước đây nhiệm vụ đầu tiên chưa xong được tô vàng riêng —
-                      trông lệch, chủ dự án góp ý 2026-11-02). */}
-                  <ul className="list-none m-0 p-0 flex flex-col gap-2">
-                    {goals.map((g) => (
-                        <li key={g.key}>
-                          <button
-                            type="button"
-                            onClick={() => openGoal(g)}
-                            className="w-full flex items-center gap-2.5 md:gap-3 text-left rounded-[12px] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] px-3 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
-                          >
-                            {g.done ? (
-                              <span className="w-5 h-5 md:w-6 md:h-6 rounded-full bg-success text-white flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
-                            ) : (
-                              <span className="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-[#CBD5E1] dark:border-[#475569] shrink-0" />
-                            )}
-                            <span className={`flex-1 text-[0.85rem] md:text-[0.9rem] font-semibold ${g.done ? "text-text-muted dark:text-[#94A3B8] line-through decoration-1" : "text-primary dark:text-[#E2E8F0]"}`}>
-                              {g.label}
-                            </span>
-                            {!g.done && <ChevronRight size={15} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
-                          </button>
-                        </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-              {/* Lối vào trang Tiến độ nằm cuối thẻ nhiệm vụ (trước đây là một thẻ riêng ở cuối trang). */}
-              <div className="mt-auto pt-4">
-                <button
-                  type="button"
-                  onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
-                  className="w-full flex items-center gap-3 rounded-[12px] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] px-3 py-2.5 text-left cursor-pointer transition-colors hover:border-accent"
-                >
-                  <span className="w-8 h-8 rounded-[9px] bg-primary dark:bg-[#1E293B] text-[#FBBF24] flex items-center justify-center shrink-0">
-                    {isGuest ? <Lock size={15} /> : <BarChart2 size={15} />}
-                  </span>
-                  <span className="flex-1 min-w-0">
-                    <span className="block text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0]">Xem tiến độ học tập</span>
-                    <span className="block text-[0.7rem] text-text-muted dark:text-[#94A3B8] truncate">Điểm mạnh, điểm yếu theo chủ đề</span>
-                  </span>
-                  <ChevronRight size={16} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />
-                </button>
-              </div>
-            </section>
-          )}
-
-          {/* ─── Cột phải: Gợi ý hôm nay (thẻ Thử thách hôm nay đã bỏ — chủ dự án chốt 2026-11-02) ─── */}
-          <div className={`${isNew ? "md:col-span-12" : "md:col-span-7"} flex flex-col`}>
+          {/* ─── Gợi ý hôm nay (thẻ Thử thách và Nhiệm vụ hôm nay đã bỏ — chủ dự án chốt 2026-11-02) ─── */}
+          <div className="md:col-span-8 flex flex-col">
             <section aria-label="Gợi ý hôm nay" className={`${CARD} flex-1 p-4 md:p-6`}>
               <div className="flex justify-between items-baseline gap-3 mb-2 md:mb-3">
                 <div className={LABEL}>Gợi ý hôm nay</div>
@@ -364,15 +282,13 @@ export default function Dashboard({
             </section>
           </div>
 
-          <Confetti active={showGoalConfetti} />
 
-          {/* ─── Tiến độ + Premium ─────────────────────────────────────────── */}
-          {/* Người mới không có thẻ nhiệm vụ → lối vào Tiến độ vẫn đứng riêng ở đây. */}
-          {isNew && (
+          {/* ─── Cột phải cạnh Gợi ý: lối vào Tiến độ (+ thẻ Premium cho tài khoản chưa Premium) ─── */}
+          <div className="md:col-span-4 flex flex-col gap-3 md:gap-5">
           <button
             type="button"
             onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
-            className={`${CARD} ${isPremium ? "md:col-span-12" : "md:col-span-7"} flex items-center gap-4 px-4 md:px-7 py-4 md:py-5 text-left cursor-pointer`}
+            className={`${CARD} flex-1 flex items-center gap-4 px-4 md:px-6 py-4 md:py-5 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5`}
           >
             <span className="w-11 h-11 rounded-xl bg-primary dark:bg-[#0F172A] text-[#FBBF24] flex items-center justify-center shrink-0">
               {isGuest ? <Lock size={18} /> : <BarChart2 size={18} />}
@@ -383,10 +299,9 @@ export default function Dashboard({
             </span>
             <ChevronRight size={18} className="text-[#CBD5E1] shrink-0" />
           </button>
-          )}
 
           {!isPremium && (
-            <section aria-label="Premium" className={`${isNew ? "md:col-span-5" : "md:col-span-12"} rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-6 py-4 md:py-5 flex flex-col gap-2 justify-center`}>
+            <section aria-label="Premium" className={`rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-6 py-4 md:py-5 flex flex-col gap-2 justify-center`}>
               <div className="flex justify-between text-[0.8rem] font-semibold gap-2">
                 <span>{isGuest ? "Chế độ khách" : `Còn ${remainingQuizzes}/10 quiz miễn phí hôm nay`}</span>
                 <span className="text-[#FBBF24] shrink-0">49.000 đ/tháng</span>
@@ -406,6 +321,7 @@ export default function Dashboard({
               </button>
             </section>
           )}
+          </div>
         </PageShell>
   );
 }

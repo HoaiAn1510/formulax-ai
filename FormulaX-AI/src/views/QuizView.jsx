@@ -68,7 +68,10 @@ export default function QuizView({
 
   const [quizState, setQuizState] = useState("setup"); // setup, generating, active, result
   // Màn chọn đề: "pool" = đề có sẵn (questions.js), "asked" = luyện lại dạng bài đã hỏi AI.
-  const [setupMode, setSetupMode] = useState(initialMode === "asked" ? "asked" : "pool");
+  // initialMode: "asked" (nút trong lịch sử chat) hoặc { mode: "asked", preselect: { text, formulaIds } } (nút "Làm bài
+  // kiểm tra cùng dạng này" dưới một câu hướng dẫn của Tìm kiếm AI — chọn sẵn đúng bài đó).
+  const [setupMode, setSetupMode] = useState(initialMode === "asked" || initialMode?.mode === "asked" ? "asked" : "pool");
+  const [preselect] = useState(() => initialMode?.preselect || null);
   // Nguồn của bộ đề đang làm — "variant" không trừ lượt quiz (mỗi câu đã tính 1 lượt AI ở backend).
   const [quizSource, setQuizSource] = useState("pool");
   // Danh sách đã tải cho khoá lưu nào — khác khoá của tài khoản hiện tại nghĩa là đang tải.
@@ -203,11 +206,26 @@ export default function QuizView({
     if (setupMode !== "asked" || isGuest) return;
     let alive = true;
     const fromLocal = () => { try { return JSON.parse(localStorage.getItem(askedKey) || "[]"); } catch { return []; } };
+    // Bài được chọn sẵn: tìm trong danh sách theo đề (bỏ khác biệt khoảng trắng / hoa thường); chưa có (phiên chat vừa
+    // hỏi có thể chưa kịp lưu lên server) thì thêm vào đầu danh sách. Chọn sẵn đúng bài đó.
+    const apply = (sessions) => {
+      let items = extractAskedProblems(sessions);
+      if (preselect?.text?.trim()) {
+        const norm = (s) => String(s || "").replace(/\s+/g, " ").trim().toLowerCase();
+        let hit = items.find((it) => norm(it.text) === norm(preselect.text));
+        if (!hit) {
+          hit = { key: "finder:just-asked", sessionId: "", text: preselect.text.trim().slice(0, 2000), askedAt: Date.now(), formulaIds: (preselect.formulaIds || []).slice(0, 4) };
+          items = [hit, ...items];
+        }
+        setPickedKeys([hit.key]);
+      }
+      setAsked({ key: askedKey, items });
+    };
     (user?.googleId ? loadChatSessions(user.googleId) : Promise.resolve(null))
-      .then((cloud) => { if (alive) setAsked({ key: askedKey, items: extractAskedProblems(cloud ?? fromLocal()) }); })
-      .catch(() => { if (alive) setAsked({ key: askedKey, items: extractAskedProblems(fromLocal()) }); });
+      .then((cloud) => { if (alive) apply(cloud ?? fromLocal()); })
+      .catch(() => { if (alive) apply(fromLocal()); });
     return () => { alive = false; };
-  }, [setupMode, isGuest, user?.googleId, askedKey]);
+  }, [setupMode, isGuest, user?.googleId, askedKey, preselect]);
 
   const startVariantQuiz = async (picked) => {
     const items = picked.slice(0, MAX_VARIANT_PICK); // chặn lần nữa ở đây, không chỉ ở ô chọn
