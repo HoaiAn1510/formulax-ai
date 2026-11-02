@@ -768,8 +768,8 @@ export default function FlashcardView({
 
           {/* Thẻ lật 3D */}
           <div className="relative w-full mt-[58px] md:mt-[64px]">
-            <MimiMascot width={104} className="md:hidden absolute right-2 -top-[60px] z-[2] pointer-events-none" />
-            <MimiMascot width={190} className="hidden md:block absolute right-10 -top-[86px] z-[2] pointer-events-none" />
+            <MimiMascot width={104} className="md:hidden absolute right-2 -top-[60px] z-[2]" />
+            <MimiMascot width={190} className="hidden md:block absolute right-10 -top-[86px] z-[2]" />
             <div
               role="button"
               tabIndex={0}
