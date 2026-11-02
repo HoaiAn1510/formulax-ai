@@ -1101,7 +1101,9 @@ export default function FormulaFinder({
                       <div className="chat-bot-text leading-[1.65] text-[0.88rem]">
                         {msg.sender === "bot"
                           ? <RichTextRenderer text={msg.text || ""} />
-                          : <span className="whitespace-pre-wrap">{msg.text}</span>
+                          // Đề của học sinh cũng có LaTeX ($4^x - 3 \cdot 2^x$), nhất là đề đọc từ ảnh — trước đây hiện
+                          // nguyên văn ký hiệu $ và lệnh \cdot. rt-inherit: chữ ăn theo màu/cỡ của bong bóng tin nhắn.
+                          : <div className="rt-inherit"><RichTextRenderer text={msg.text || ""} /></div>
                         }
                       </div>
                     )}
