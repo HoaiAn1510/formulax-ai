@@ -2,7 +2,8 @@ import { useId } from "react";
 
 // Linh vật Mimi — mèo vàng đeo kính tròn, chữ π trên trán (mockup Dashboard đã duyệt 2026-11-01). Chỉ là
 // hình trang trí: aria-hidden. Hiệu ứng ở index.css (.mimi-*), tự tắt khi bật "giảm chuyển động".
-export default function MimiMascot({ width = 230, className = "", withSymbols = true }) {
+//   crown: đội vương miện vàng giữa hai tai (trang Premium).
+export default function MimiMascot({ width = 230, className = "", withSymbols = true, crown = false }) {
   const gid = useId().replace(/:/g, "");
   return (
     <svg
@@ -26,6 +27,19 @@ export default function MimiMascot({ width = 230, className = "", withSymbols = 
         <path d="M142 62 L136 6 L90 34Z" fill="#F59E0B" />
         <path d="M130 50 L127 20 L104 35Z" fill="#B45309" opacity=".45" />
         <path d="M14 84 C14 44 44 28 86 28 C128 28 158 44 158 84 L158 118 L14 118Z" fill={`url(#mimi-${gid})`} />
+        {crown && (
+          <g>
+            {/* Vương miện: 3 chóp có ngọc tròn, dải viền dưới, ngồi trên đỉnh đầu (y ≈ 32). */}
+            <path d="M56 33 L52 4 L70 18 L86 -6 L102 18 L120 4 L116 33Z" fill="#FCD34D" stroke="#B45309" strokeWidth="2.5" strokeLinejoin="round" />
+            <rect x="55" y="26" width="62" height="9" rx="3" fill="#F59E0B" stroke="#B45309" strokeWidth="2.5" />
+            <circle cx="52" cy="4" r="4.5" fill="#FDE68A" stroke="#B45309" strokeWidth="2" />
+            <circle cx="86" cy="-6" r="5" fill="#FDE68A" stroke="#B45309" strokeWidth="2" />
+            <circle cx="120" cy="4" r="4.5" fill="#FDE68A" stroke="#B45309" strokeWidth="2" />
+            <circle cx="86" cy="30.5" r="3.2" fill="#E11D48" />
+            <circle cx="70" cy="30.5" r="2.4" fill="#2563EB" />
+            <circle cx="102" cy="30.5" r="2.4" fill="#2563EB" />
+          </g>
+        )}
         <text x="86" y="56" textAnchor="middle" fontFamily="Georgia,serif" fontWeight="700" fontSize="24" fill="#B45309">π</text>
         <circle cx="60" cy="80" r="21" fill="#fff" fillOpacity=".55" stroke="#0F172A" strokeWidth="3.5" />
         <circle cx="112" cy="80" r="21" fill="#fff" fillOpacity=".55" stroke="#0F172A" strokeWidth="3.5" />

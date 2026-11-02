@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { Crown, Check, X, ShieldCheck, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useGuestGate } from "../utils/useGuestGate";
@@ -6,46 +6,6 @@ import { supabase, checkPremiumStatus } from "../lib/supabase";
 import { showToast } from "../components/Toast";
 import PageShell from "../components/PageShell";
 import MimiMascot from "../components/MimiMascot";
-
-// three.js/@react-three/fiber/@react-three/drei chỉ tải khi người dùng thực sự mở trang
-// Premium — lazy-load để không đội thêm bundle chính cho toàn app.
-const PremiumGem3D = lazy(() => import("../components/PremiumGem3D"));
-
-// Kiểm tra WebGL 1 lần khi module load — máy/trình duyệt không hỗ trợ thì không tải cả
-// ~267KB chunk Three.js làm gì, dùng thẳng icon Crown tĩnh thay thế.
-function detectWebGLSupport() {
-  try {
-    const canvas = document.createElement("canvas");
-    return !!(window.WebGLRenderingContext && (canvas.getContext("webgl2") || canvas.getContext("webgl")));
-  } catch {
-    return false;
-  }
-}
-const WEBGL_SUPPORTED = typeof window !== "undefined" && detectWebGLSupport();
-
-// Bắt lỗi runtime nếu Canvas 3D crash vì lý do khác (driver GPU crash, context mất và
-// không phục hồi được...) — không để cả banner Premium trắng xoá, rơi về icon tĩnh.
-class Gem3DErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-  componentDidCatch(error) {
-    console.error("[PremiumGem3D] Lỗi khi render, chuyển sang icon tĩnh:", error);
-  }
-  render() {
-    return this.state.hasError ? this.props.fallback : this.props.children;
-  }
-}
-
-const GEM_FALLBACK = (
-  <div className="absolute inset-0 flex items-center justify-center">
-    <Crown size={100} fill="#F59E0B" color="#F59E0B" />
-  </div>
-);
 
 // Tiêu đề từng phần của trang — canh trái như các trang khác (trước đây canh giữa, chữ đậm hơn).
 function SectionTitle({ title, sub }) {
@@ -452,23 +412,16 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 )}
               </div>
 
-              {/* Ô viên đá 3D — nền navy + lưới chấm mờ; canvas phủ trọn ô (kéo để xoay viên đá). */}
-              <div className="relative min-h-[260px] md:min-h-[340px] bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] overflow-hidden">
+              {/* Ô linh vật — Mimi đội vương miện trên nền navy + lưới chấm mờ + quầng vàng (thay viên đá 3D,
+                  chủ dự án chốt 2026-11-02; trang Premium không còn tải three.js). */}
+              <div className="relative min-h-[260px] md:min-h-[340px] bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] overflow-hidden flex items-end justify-center pt-14">
                 <div
                   className="absolute inset-0 pointer-events-none opacity-[0.15]"
                   style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
                 />
-                <div className="absolute inset-0">
-                  {WEBGL_SUPPORTED ? (
-                    <Gem3DErrorBoundary fallback={GEM_FALLBACK}>
-                      <Suspense fallback={GEM_FALLBACK}>
-                        <PremiumGem3D centered />
-                      </Suspense>
-                    </Gem3DErrorBoundary>
-                  ) : (
-                    GEM_FALLBACK
-                  )}
-                </div>
+                <div className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/4 w-[460px] h-[460px] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.32)_0%,rgba(251,191,36,0)_62%)] pointer-events-none" />
+                {/* Đáy hình Mimi phẳng (thiết kế để "ngồi" trên mép thẻ) → đặt sát mép dưới ô, ló lên như ở Dashboard. */}
+                <MimiMascot crown width={360} className="relative block max-w-[85%] h-auto -mb-px" />
               </div>
             </div>
 
