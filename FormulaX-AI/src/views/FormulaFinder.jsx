@@ -14,6 +14,7 @@ import ProblemTabs from "../components/ProblemTabs";
 import { compressImageFile } from "../utils/imageCompress";
 import { problemToFinderMessage, nextGuidanceRequest, busyWaitSeconds } from "../utils/ocrProblems";
 import { retryFinderBusyOnce } from "../utils/finderBusyRetry";
+import { isFollowUpQuestion } from "../utils/askedProblems";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -1068,8 +1069,11 @@ export default function FormulaFinder({
                     {/* Ngay dưới câu hướng dẫn: mời làm đề luyện cùng dạng (Kiểm tra › Luyện lại bài đã hỏi), chọn sẵn đúng
                         bài này. Chỉ cho câu trả lời có hướng dẫn thật (solution) và tài khoản Google. */}
                     {msg.answer?.type === "solution" && !isGuest && onPracticeAsked && (() => {
-                      const asked = messages.slice(0, msgIdx).reverse().find((m) => m.sender === "user");
+                      const askedIdx = messages.slice(0, msgIdx).map((m) => m.sender).lastIndexOf("user");
+                      const asked = messages[askedIdx];
                       if (!asked?.text?.trim()) return null;
+                      // Câu hỏi lại ("tui chưa hiểu bước 2") không phải đề mới → không mời làm bài (nút đã có dưới đề gốc).
+                      if (isFollowUpQuestion(asked.text, messages.slice(0, askedIdx).some((m) => m.sender === "user"))) return null;
                       return (
                         <button
                           type="button"
