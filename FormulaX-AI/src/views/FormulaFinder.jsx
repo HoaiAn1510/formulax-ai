@@ -3,7 +3,7 @@ import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
-import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, getAccessToken } from "../lib/supabase";
+import { loadChatSessions, upsertChatSession, deleteChatSession as deleteChatSessionDB, fetchWithAuth } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import StepAnswer from "../components/StepAnswer";
 import PageShell from "../components/PageShell";
@@ -115,10 +115,7 @@ export default function FormulaFinder({
     let alive = true;
     (async () => {
       try {
-        const token = await getAccessToken();
-        const res = await fetch(`${BACKEND_URL}/api/chat/usage`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
+        const res = await fetchWithAuth(`${BACKEND_URL}/api/chat/usage`);
         if (!res.ok) return;
         const data = await res.json();
         if (alive && typeof data.remaining === "number") setAiQueriesLeft(data.remaining);
@@ -307,15 +304,12 @@ export default function FormulaFinder({
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 45000);
     // Backend bắt buộc token để biết ai đang hỏi (đếm hạn mức, kiểm tra Premium, chặn khách).
-    const token = await getAccessToken();
     let response;
     try {
-      response = await fetch(`${BACKEND_URL}/api/chat`, {
+      // fetchWithAuth: phiên bị huỷ phía server (401) → làm mới phiên rồi gửi lại một lần.
+      response = await fetchWithAuth(`${BACKEND_URL}/api/chat`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessage, history: messageHistory, source, grade }),
         signal: controller.signal,
       });
@@ -533,12 +527,11 @@ export default function FormulaFinder({
   const callOcr = async (base64) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 45000);
-    const token = await getAccessToken();
     let response;
     try {
-      response = await fetch(`${BACKEND_URL}/api/ocr`, {
+      response = await fetchWithAuth(`${BACKEND_URL}/api/ocr`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image: base64 }),
         signal: controller.signal,
       });

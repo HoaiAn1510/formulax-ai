@@ -113,8 +113,10 @@ export function AuthProvider({ children }) {
     if (error) throw error;
   };
 
+  // scope "local": chỉ đăng xuất trình duyệt này. Mặc định của supabase-js là "global" — đăng xuất ở một tab/máy
+  // huỷ luôn phiên của mọi tab/máy khác, các nơi đó vẫn tưởng đang đăng nhập rồi bị backend báo token hết hạn.
   const logout = async () => {
-    await supabase.auth.signOut();
+    await supabase.auth.signOut({ scope: "local" });
     setUser(null);
   };
 
