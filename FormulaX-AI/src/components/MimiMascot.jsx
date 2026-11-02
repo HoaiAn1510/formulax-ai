@@ -1,13 +1,12 @@
-import { useContext, useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { MimiContext } from "./mimiContext";
 
 // Linh vật Mimi — mèo vàng đeo kính tròn, chữ π trên trán, ngậm bút chì (mockup Dashboard đã duyệt 2026-11-01).
 // Hiệu ứng ở index.css (.mimi-*), tự tắt khi bật "giảm chuyển động".
 //   crown: đội vương miện vàng giữa hai tai (trang Premium).
 //   interactive (mặc định bật, 2026-11-02): bấm → nảy nhẹ, đổi ngẫu nhiên một biểu cảm (nhả bút ra để thấy miệng),
-//     tỏa ký hiệu toán học, và hiện bong bóng MẸO NHỚ một công thức (nguyên văn `mnemonic` của formulas.js — lấy qua
-//     MimiContext do App cung cấp). Bấm 5 lần liên tiếp → tạm đội vương miện + pháo ký hiệu (bất ngờ nhỏ).
+//     tỏa ký hiệu toán học. Bấm 5 lần liên tiếp → tạm đội vương miện + pháo ký hiệu (bất ngờ nhỏ). Bong bóng mẹo nhớ
+//     khi bấm đã bỏ (chủ dự án chốt 2026-11-02) — bong bóng chỉ còn cho câu Mimi nói khi phản ứng.
 //   expression: biểu cảm cố định do nơi dùng điều khiển (vd "thinking" khi AI Finder đang trả lời).
 //   reaction: { expr, at, say? } — phản ứng theo việc học sinh vừa làm (nộp bài, lật thẻ…). Mỗi lần `at` đổi, Mimi
 //     nảy + đổi biểu cảm `expr` trong RESET_MS; `say` (nếu có) hiện trong bong bóng.
@@ -108,11 +107,10 @@ export default function MimiMascot({
   reaction = null,
 }) {
   const gid = useId().replace(/:/g, "");
-  const tips = useContext(MimiContext);
   const [expr, setExpr] = useState(null); // biểu cảm tạm thời (bấm / phản ứng); null = vẻ mặt thường (ngậm bút)
   const [pop, setPop] = useState(0); // đổi key để chạy lại hiệu ứng nảy
   const [bursts, setBursts] = useState([]);
-  const [say, setSay] = useState(null); // { formula } (mẹo nhớ) hoặc { text }
+  const [say, setSay] = useState(null); // { text } — câu Mimi nói khi phản ứng / bất ngờ
   const [secretCrown, setSecretCrown] = useState(false);
   const timers = useRef([]);
   const clicks = useRef([]);
@@ -167,8 +165,6 @@ export default function MimiMascot({
     const choices = EXPRESSIONS.filter((x) => x !== expr);
     setExpr(choices[Math.floor(Math.random() * choices.length)]);
     burst(6 + Math.floor(Math.random() * 3));
-    const formula = tips?.pickTip?.(say?.formula?.id);
-    if (formula) setSay({ formula });
   };
 
   const shown = expression || expr;
@@ -177,7 +173,7 @@ export default function MimiMascot({
     ? {
         role: "button",
         tabIndex: 0,
-        "aria-label": "Mimi — bấm để Mimi đổi biểu cảm và nhắc một mẹo nhớ công thức",
+        "aria-label": "Mimi — bấm để Mimi đổi biểu cảm",
         onClick: react,
         onKeyDown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); react(e); } },
       }
@@ -298,7 +294,7 @@ export default function MimiMascot({
         ))}
       </svg>
 
-      {/* Bong bóng: mẹo nhớ (nguyên văn formulas.js) hoặc câu Mimi nói khi phản ứng. */}
+      {/* Bong bóng: câu Mimi nói khi phản ứng (chuỗi ngày học, bất ngờ bấm 5 lần). */}
       {say && (
         <span
           role="status"
@@ -313,23 +309,7 @@ export default function MimiMascot({
           >
             <X size={14} />
           </button>
-          {say.formula ? (
-            <>
-              <span className="block text-[0.62rem] font-semibold tracking-[0.08em] uppercase text-[#B45309] dark:text-[#FCD34D]">Mẹo nhớ · {say.formula.name}</span>
-              <span className="block mt-1 text-[0.8rem] leading-[1.5] text-primary dark:text-[#E2E8F0]">{say.formula.mnemonic}</span>
-              {tips?.openFormula && (
-                <button
-                  type="button"
-                  onClick={() => { const f = say.formula; setSay(null); tips.openFormula(f); }}
-                  className="mt-2 bg-transparent border-none p-0 text-[0.75rem] font-semibold text-navy-btn dark:text-[#FCD34D] cursor-pointer"
-                >
-                  Xem công thức →
-                </button>
-              )}
-            </>
-          ) : (
-            <span className="block text-[0.8rem] leading-[1.5] text-primary dark:text-[#E2E8F0]">{say.text}</span>
-          )}
+          <span className="block text-[0.8rem] leading-[1.5] text-primary dark:text-[#E2E8F0]">{say.text}</span>
         </span>
       )}
     </span>
