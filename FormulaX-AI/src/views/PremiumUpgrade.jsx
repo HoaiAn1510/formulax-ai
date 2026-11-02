@@ -307,12 +307,14 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             )}
 
             {/* Section 1: Hero — MỘT khung (chủ dự án chốt 2026-11-02, trước đó chia đôi với ô navy): nền amber nhạt như
-                khung lời chào Dashboard, chữ + chọn gói bên trái, Mimi đội vương miện ló lên ở góc dưới bên phải.
-                Điện thoại: Mimi nhỏ ngồi trên mép trên của khung (giống Dashboard). */}
+                khung lời chào Dashboard; Mimi đội vương miện NGỒI TRÊN MÉP TRÊN của khung (chủ dự án chọn 2026-11-02):
+                máy tính ở góc phải, nhô lên vùng trống bên phải tiêu đề trang; điện thoại nhỏ hơn, giống Dashboard. */}
             <div className="relative mt-[56px] lg:mt-0 fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 dark:shadow-none flex">
               <MimiMascot crown width={140} className="lg:hidden absolute right-2 -top-[70px] pointer-events-none" />
-              {/* Màn rộng (xl): phần chữ chia 2 cột — lời chào + hạn dùng | chọn gói + nút — cho đỡ trống giữa khung. */}
-              <div className="flex-1 min-w-0 p-6 md:p-10 grid grid-cols-1 xl:grid-cols-2 xl:gap-10 xl:items-center">
+              {/* 190px → cao ≈ 124px, đáy thân ở 148/150 khung hình → đặt -top-[122px] để thân vừa chạm mép khung. */}
+              <MimiMascot crown width={190} className="hidden lg:block absolute right-14 -top-[122px] pointer-events-none" />
+              {/* Từ lg: phần chữ chia 2 cột — lời chào + hạn dùng | chọn gói + nút. */}
+              <div className="flex-1 min-w-0 p-6 md:p-10 grid grid-cols-1 lg:grid-cols-2 lg:gap-10 lg:items-center">
                 <div className="flex flex-col min-w-0">
                 <span className="self-start text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#B45309] dark:text-[#FCD34D] bg-white/70 dark:bg-accent/15 border border-[#F1E3BF] dark:border-accent/30 rounded-full py-1 px-3">
                   {isPremium ? "Thành viên Premium" : "Chương trình khuyên dùng"}
@@ -355,7 +357,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
                 <div className="flex flex-col min-w-0">
                 {/* Plan selector — user Premium cũng dùng để gia hạn thêm (thời gian cộng dồn vào hạn hiện có) */}
-                <div className="grid grid-cols-2 gap-2.5 md:gap-3 mt-6 xl:mt-0 max-w-[560px]">
+                <div className="grid grid-cols-2 gap-2.5 md:gap-3 mt-6 lg:mt-0 max-w-[560px]">
                   {["monthly", "6months"].map((planId) => {
                     const isSelected = selectedPlan === planId;
                     return (
@@ -420,11 +422,6 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 </div>
               </div>
 
-              {/* Máy tính: Mimi lớn sát mép dưới, quầng vàng phía sau. Đáy hình Mimi phẳng nên đặt sát mép để trông như ló lên. */}
-              <div className="hidden lg:flex relative w-[34%] xl:w-[28%] shrink-0 items-end justify-center overflow-hidden rounded-r-[18px] pt-10">
-                <div className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/3 w-[440px] h-[440px] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.38)_0%,rgba(251,191,36,0)_62%)] pointer-events-none" />
-                <MimiMascot crown width={340} className="relative block max-w-[92%] h-auto -mb-px" />
-              </div>
             </div>
 
             {/* Section 3: Goals Grid */}
