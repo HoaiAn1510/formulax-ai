@@ -306,10 +306,12 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               </div>
             )}
 
-            {/* Section 1: Hero — giao diện mới (2026-11-02): bên trái chữ + chọn gói trên nền amber nhạt (cùng kiểu
-                khung lời chào Dashboard), bên phải ô navy riêng cho viên đá 3D + sao. */}
-            <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none overflow-hidden grid grid-cols-1 lg:grid-cols-2">
-              <div className="bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-10 flex flex-col">
+            {/* Section 1: Hero — MỘT khung (chủ dự án chốt 2026-11-02, trước đó chia đôi với ô navy): nền amber nhạt như
+                khung lời chào Dashboard, chữ + chọn gói bên trái, Mimi đội vương miện ló lên ở góc dưới bên phải.
+                Điện thoại: Mimi nhỏ ngồi trên mép trên của khung (giống Dashboard). */}
+            <div className="relative mt-[56px] lg:mt-0 fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 dark:shadow-none flex">
+              <MimiMascot crown width={140} className="lg:hidden absolute right-2 -top-[70px] pointer-events-none" />
+              <div className="flex-1 min-w-0 p-6 md:p-10 flex flex-col">
                 <span className="self-start text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#B45309] dark:text-[#FCD34D] bg-white/70 dark:bg-accent/15 border border-[#F1E3BF] dark:border-accent/30 rounded-full py-1 px-3">
                   {isPremium ? "Thành viên Premium" : "Chương trình khuyên dùng"}
                 </span>
@@ -412,16 +414,10 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 )}
               </div>
 
-              {/* Ô linh vật — Mimi đội vương miện trên nền navy + lưới chấm mờ + quầng vàng (thay viên đá 3D,
-                  chủ dự án chốt 2026-11-02; trang Premium không còn tải three.js). */}
-              <div className="relative min-h-[260px] md:min-h-[340px] bg-[linear-gradient(135deg,#0f172a_0%,#1e3a5f_100%)] overflow-hidden flex items-end justify-center pt-14">
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-[0.15]"
-                  style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.6) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
-                />
-                <div className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/4 w-[460px] h-[460px] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.32)_0%,rgba(251,191,36,0)_62%)] pointer-events-none" />
-                {/* Đáy hình Mimi phẳng (thiết kế để "ngồi" trên mép thẻ) → đặt sát mép dưới ô, ló lên như ở Dashboard. */}
-                <MimiMascot crown width={360} className="relative block max-w-[85%] h-auto -mb-px" />
+              {/* Máy tính: Mimi lớn sát mép dưới, quầng vàng phía sau. Đáy hình Mimi phẳng nên đặt sát mép để trông như ló lên. */}
+              <div className="hidden lg:flex relative w-[40%] shrink-0 items-end justify-center overflow-hidden rounded-r-[18px] pt-10">
+                <div className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/3 w-[440px] h-[440px] rounded-full bg-[radial-gradient(circle,rgba(251,191,36,0.38)_0%,rgba(251,191,36,0)_62%)] pointer-events-none" />
+                <MimiMascot crown width={340} className="relative block max-w-[92%] h-auto -mb-px" />
               </div>
             </div>
 
