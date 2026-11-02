@@ -66,8 +66,18 @@
 .mimi-blink { transform-box: fill-box; transform-origin: center; animation: mimi-blink 4.5s infinite; }
 .mimi-ear { transform-box: fill-box; transform-origin: 50% 100%; animation: mimi-ear 6s ease-in-out infinite; }
 .mimi-sym { animation: mimi-sym 3.2s ease-in-out infinite; }
+/* Bấm vào Mimi: nảy nhẹ + ký hiệu toán tỏa ra (--dx/--dy/--rot đặt ở từng ký hiệu trong MimiMascot.jsx). */
+@keyframes mimi-pop { 0% { transform: scale(1); } 35% { transform: scale(1.08, 0.94); } 65% { transform: scale(0.97, 1.04); } 100% { transform: scale(1); } }
+@keyframes mimi-burst {
+  0% { transform: translate(0, 0) scale(0.4); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(1.15); opacity: 0; }
+}
+.mimi-pop { transform-box: fill-box; transform-origin: 50% 100%; animation: mimi-pop 0.45s ease-out; }
+.mimi-burst { transform-box: fill-box; transform-origin: center; opacity: 0; animation: mimi-burst 1.1s ease-out forwards; }
 @media (prefers-reduced-motion: reduce) {
-  .mimi-blink, .mimi-ear, .mimi-sym { animation: none; }
+  .mimi-blink, .mimi-ear, .mimi-sym, .mimi-pop { animation: none; }
+  .mimi-burst { display: none; }
 }
 
 /* Design tokens Navy+Amber dùng chung. Đây là nguồn sự thật duy nhất về màu/shadow/radius,

@@ -310,9 +310,9 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 khung lời chào Dashboard; Mimi đội vương miện NGỒI TRÊN MÉP TRÊN của khung (chủ dự án chọn 2026-11-02):
                 máy tính ở góc phải, nhô lên vùng trống bên phải tiêu đề trang; điện thoại nhỏ hơn, giống Dashboard. */}
             <div className="relative mt-[56px] lg:mt-0 fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 dark:shadow-none flex">
-              <MimiMascot crown width={140} className="lg:hidden absolute right-2 -top-[70px] pointer-events-none" />
+              <MimiMascot crown width={140} className="lg:hidden absolute right-2 -top-[70px]" />
               {/* 190px → cao ≈ 124px, đáy thân ở 148/150 khung hình → đặt -top-[122px] để thân vừa chạm mép khung. */}
-              <MimiMascot crown width={190} className="hidden lg:block absolute right-14 -top-[122px] pointer-events-none" />
+              <MimiMascot crown width={190} className="hidden lg:block absolute right-14 -top-[122px]" />
               {/* Từ lg: phần chữ chia 2 cột — lời chào + hạn dùng | chọn gói + nút. */}
               <div className="flex-1 min-w-0 p-6 md:p-10 grid grid-cols-1 lg:grid-cols-2 lg:gap-10 lg:items-center">
                 <div className="flex flex-col min-w-0">
@@ -559,7 +559,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             {!isPremium && (
               <div className="relative mt-16 fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-6 pt-12 md:p-8 md:pt-14 text-center flex flex-col items-center gap-3">
                 {/* Mimi chuyển từ thẻ giá Premium (đã bỏ vì trùng khung đầu trang) xuống banner cuối. */}
-                <MimiMascot width={150} className="absolute left-1/2 -translate-x-1/2 -top-[66px] pointer-events-none" />
+                <MimiMascot width={150} className="absolute left-1/2 -translate-x-1/2 -top-[66px]" />
                 <h3 className="text-[1.15rem] md:text-[1.35rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0] m-0">Điểm cao không chờ đợi</h3>
                 <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] m-0 max-w-[380px] leading-[1.5]">
                   Đăng ký ngay tài khoản Premium để đạt kết quả tốt nhất trong kỳ thi sắp tới.
