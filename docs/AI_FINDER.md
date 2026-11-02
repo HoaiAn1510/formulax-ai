@@ -243,8 +243,8 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
 Ngoại lệ có chủ đích với nguyên tắc "AI không tính ra kết quả": đây là ĐỀ LUYỆN TẬP nên AI được viết đáp số,
 nhưng backend không tin AI — mọi câu phải qua kiểm.
 - **"Bài đã hỏi"** lấy từ `chat_sessions` (khách: localStorage), không có bảng riêng: tin user + tin bot ngay sau
-  có `answer.type === "solution"` (`utils/askedProblems.js`). Câu hỏi lại về bài vừa hỏi ("tui chưa hiểu bước 2" —
-  `isFollowUpQuestion`, từ 2026-11-02) không tính là bài mới và không có nút "Làm bài kiểm tra cùng dạng này". Chọn tối đa 3 bài (`MAX_VARIANT_PICK`, hạ từ 5
+  có `answer.type === "solution"` (`utils/askedProblems.js`). Câu hỏi lại về bài vừa hỏi ("tui chưa hiểu bước 2", "là sao" —
+  `isFollowUpQuestion`, từ 2026-11-02: tin sau tin đầu tiên mà không có dữ kiện của một đề) không tính là bài mới và không có nút "Làm bài kiểm tra cùng dạng này". Chọn tối đa 3 bài (`MAX_VARIANT_PICK`, hạ từ 5
   vì mỗi câu dùng 2 lần gọi Gemini, hạn mức free 15/phút chung với Finder); frontend gọi LẦN LƯỢT, không song song.
 - **`POST /api/quiz/variant`** (`backend/lib/quizVariant.js`): theo đúng mẫu `/api/chat` (xác thực, khách 403, limiter
   chat). **Mỗi câu = 1 lượt AI Finder** (`ai_usage_daily`), hoàn lượt khi lỗi / không qua kiểm; nộp bài KHÔNG trừ
