@@ -4,6 +4,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { extractAskedProblems, isFollowUpQuestion, togglePick, formatAskedAt, MAX_VARIANT_PICK } from "../src/utils/askedProblems.js";
 import { toVariantQuestion, variantQuizTopic, runSequential } from "../src/utils/variantQuiz.js";
+import { daysInScope, summarize, studiedDaysLast7, badgeProgress } from "../src/utils/progressStats.js";
 import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../src/utils/todayPlan.js";
 
 const T = Date.UTC(2026, 10, 1, 3, 0); // 10:00 giờ VN, 01/11/2026
@@ -175,3 +176,34 @@ test("lastSevenDays: 7 ngày kết thúc hôm nay, đánh dấu ngày có học"
   assert.equal(days[0].date, "2026-10-26");
 });
 
+
+test("progressStats: phạm vi 7/30 ngày/Tất cả/một ngày, độ chính xác, chủ đề yếu bỏ nhãn Tổng hợp", () => {
+  const q = (topic, c, t) => ({ topic, questionsCorrect: c, questionsTotal: t, scorePercent: Math.round((c / t) * 100) });
+  const hist = [
+    { date: "2026-11-02", quizzes: [q("Đại số", 3, 10)], flashcardIds: ["a", "b"] },
+    { date: "2026-10-28", quizzes: [q("Hình học", 9, 10), q("Tổng hợp", 1, 10)], flashcardIds: [] },
+    { date: "2026-09-01", quizzes: [q("Giải tích", 5, 10)], flashcardIds: ["c"] },
+  ];
+  const today = "2026-11-02";
+  assert.equal(daysInScope(hist, { rangeId: "7", today }).length, 2);
+  assert.equal(daysInScope(hist, { rangeId: "30", today }).length, 2);
+  assert.equal(daysInScope(hist, { rangeId: "all", today }).length, 3);
+  assert.deepEqual(daysInScope(hist, { rangeId: "all", day: "2026-09-01", today }).map((d) => d.date), ["2026-09-01"]);
+  const sum = summarize(daysInScope(hist, { rangeId: "30", today }));
+  assert.equal(sum.quizCount, 3);
+  assert.equal(sum.accuracy, Math.round((13 / 30) * 100));
+  assert.equal(sum.cardsReviewed, 2);
+  assert.deepEqual(sum.topics.map((t) => [t.topic, t.rate]), [["Đại số", 30], ["Hình học", 90]]); // yếu trước, không có "Tổng hợp"
+  assert.equal(summarize([]).accuracy, null);
+  assert.equal(studiedDaysLast7(["2026-11-02", "2026-11-01", "2026-10-26", "2026-11-02"], today), 2);
+});
+
+test("badgeProgress: đã mở + mốc kế tiếp thấp nhất của từng loại", () => {
+  const B = [
+    { id: "q1", metric: "quizzes", threshold: 1 }, { id: "q10", metric: "quizzes", threshold: 10 }, { id: "q50", metric: "quizzes", threshold: 50 },
+    { id: "s3", metric: "streak", threshold: 3 },
+  ];
+  const r = badgeProgress(B, { quizzes: 7, streak: 4 });
+  assert.deepEqual(r.unlocked.map((b) => b.id), ["q1", "s3"]);
+  assert.deepEqual(r.next.map((b) => [b.id, b.value]), [["q10", 7]]);
+});

@@ -68,6 +68,11 @@ export default function App() {
   // rồi gọi onConsumeInitialMode để xoá — lần sau mở Kiểm tra bằng lối khác thì vào màn mặc định.
   const [quizEntryMode, setQuizEntryMode] = useState(null);
   // preselect { text, formulaIds }: mở từ nút dưới một câu hướng dẫn của Tìm kiếm AI → chọn sẵn đúng bài đó.
+  // Từ Coach ở trang Tiến độ: mở Kiểm tra với đúng chủ đề đang yếu (đề có sẵn).
+  const openQuizTopic = useCallback((topic) => {
+    setQuizEntryMode({ mode: "pool", topics: [topic] });
+    setActiveTab("quiz");
+  }, []);
   const openAskedPractice = useCallback((preselect) => {
     setQuizEntryMode(preselect?.text ? { mode: "asked", preselect } : "asked");
     setActiveTab("quiz");
@@ -546,6 +551,25 @@ export default function App() {
 
   // Bộ thẻ + lịch ôn là dữ liệu theo người dùng. FlashcardView đã khóa nút tạo cho khách; các
   // chốt dưới đây là lớp dự phòng nếu sau này có nơi khác gọi tới.
+  // Từ Coach ở trang Tiến độ: tạo nhanh bộ thẻ theo chủ đề (đúng lớp học sinh nếu đã chọn lớp), cùng dạng bộ "theo
+  // chủ đề" của trang Flashcard. Đã có bộ cùng nội dung thì không tạo trùng, chỉ mở trang Flashcard.
+  const handleCreateTopicDeck = (topic) => {
+    const ids = formulas.filter((f) => f.topic === topic && (!userGrade || f.grade === userGrade)).map((f) => f.id);
+    if (!ids.length) { showToast("Chưa có công thức cho chủ đề này.", "info"); return; }
+    const same = flashcardDecks.find((d) => d.formulaIds.length === ids.length && ids.every((id) => d.formulaIds.includes(id)));
+    if (same) {
+      showToast(`Bạn đã có bộ thẻ "${same.name}"`, "info");
+    } else {
+      const created = new Date();
+      const now = created.toISOString();
+      handleAddFlashcardDeck({
+        id: String(created.getTime()), type: "filtered", name: userGrade ? `${topic} · Lớp ${userGrade}` : topic,
+        topic, grade: userGrade || null, formulaIds: ids, createdAt: now, updatedAt: now,
+      });
+    }
+    setActiveTab("flashcard");
+  };
+
   const handleAddFlashcardDeck = (deck) => {
     if (!requireGoogle()) return;
     setFlashcardDecks(prev => [...prev, deck]);
@@ -753,6 +777,8 @@ export default function App() {
             onViewDetail={handleViewDetail}
             isPremium={isPremium}
             stats={stats}
+            onPracticeTopic={openQuizTopic}
+            onCreateTopicDeck={handleCreateTopicDeck}
           />
         );
       case "premium":
