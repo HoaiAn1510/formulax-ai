@@ -931,7 +931,8 @@ export default function QuizView({
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:items-start">
               <Confetti active={showConfetti} />
               <section className={`${CARD} relative lg:col-span-5 mt-[70px] lg:mt-[90px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-5 md:p-8 flex flex-col items-center text-center gap-3 lg:sticky lg:top-6`}>
-                <MimiMascot width={170} className="absolute left-1/2 -translate-x-1/2 -top-[96px]" />
+                {/* Mimi phản ứng theo điểm khi vào màn kết quả: cao → mắt ngôi sao, khá → cười, thấp → ngạc nhiên (lời nhắn ở dưới). */}
+                <MimiMascot width={170} className="absolute left-1/2 -translate-x-1/2 -top-[96px]" reaction={{ expr: pct >= 80 ? "star" : pct >= 50 ? "happy" : "surprised", at: "quiz-result" }} />
                 <div className={`${LABEL} mt-6`}>Kết quả</div>
                 <svg width="168" height="168" viewBox="0 0 100 100" role="img" aria-label={`Đúng ${score} trên ${total} câu, ${pct}%`}>
                   <circle cx="50" cy="50" r="42" fill="none" className="stroke-[#EEF1F6] dark:stroke-[#334155]" strokeWidth="8" />

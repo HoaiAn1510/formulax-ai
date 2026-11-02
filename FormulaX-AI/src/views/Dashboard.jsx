@@ -97,6 +97,18 @@ export default function Dashboard({
   const streak = activity?.streak ?? 0;
   const week = useMemo(() => lastSevenDays(activity?.activityDates || [], vietnamToday()), [activity]);
 
+  // Mimi chúc mừng khi hôm nay đã học và đang giữ chuỗi — mắt trái tim + một câu, mỗi ngày một lần trên máy này.
+  const studiedToday = (todayStats?.flashcardsStudied ?? 0) > 0 || (todayStats?.quizzesCompleted ?? 0) > 0;
+  const cheerKey = `formulax_mimi_streak_${user?.googleId || "guest"}`;
+  const [cheeredToday] = useState(() => { try { return localStorage.getItem(cheerKey) === vietnamToday(); } catch { return true; } });
+  const streakReaction = !isGuest && !cheeredToday && streak > 0 && studiedToday
+    ? { expr: "love", at: `streak-${streak}`, say: `Chuỗi ${streak} ngày liên tiếp rồi! Giữ vững nhé.` }
+    : null;
+  useEffect(() => {
+    if (!streakReaction) return;
+    try { localStorage.setItem(cheerKey, vietnamToday()); } catch { /* bỏ qua */ }
+  }, [streakReaction?.at, cheerKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Lựa chọn hôm nay trong hộp "Hôm nay bạn gặp khó khăn gì?" → cá nhân hóa nút Học tiếp + nhiệm vụ.
   const intent = readIntentToday(user?.googleId);
   // Mốc "bây giờ" chốt lúc mở Dashboard (render phải thuần — không gọi Date.now() mỗi lần vẽ).
@@ -120,8 +132,8 @@ export default function Dashboard({
             aria-label="Chào hỏi"
             className={`${CARD} relative md:col-span-8 mt-[60px] md:mt-[64px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 px-[18px] pt-5 pb-[18px] md:px-10 md:py-9`}
           >
-            <MimiMascot width={150} className="md:hidden absolute right-1.5 -top-[66px]" />
-            <MimiMascot width={210} className="hidden md:block absolute right-8 -top-[70px]" />
+            <MimiMascot width={150} className="md:hidden absolute right-1.5 -top-[66px]" reaction={streakReaction} />
+            <MimiMascot width={210} className="hidden md:block absolute right-8 -top-[70px]" reaction={streakReaction} />
             <div className="relative max-w-[560px]">
               <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>Xin chào {firstName}</div>
               <h1 className="mt-1.5 md:mt-2.5 mb-0 text-[1.45rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">

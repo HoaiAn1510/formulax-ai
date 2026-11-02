@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, lazy, Suspense } from "react";
 import "./App.css";
 
 import { useAuth } from "./context/AuthContext";
@@ -28,6 +28,7 @@ import OnboardingModal from "./components/OnboardingModal";
 import DailyIntentModal from "./components/DailyIntentModal";
 import { ToastContainer, showToast } from "./components/Toast";
 import { ConfirmDialogHost } from "./components/ConfirmDialog";
+import { MimiContext, pickMnemonicFormula } from "./components/mimiContext";
 
 // Dashboard và LoginView là màn hình đầu tiên người dùng thấy (đã đăng nhập / chưa đăng nhập)
 // nên giữ nạp thẳng — lazy hai màn này chỉ thêm một vòng request trước khi vẽ được gì.
@@ -489,6 +490,15 @@ export default function App() {
     setViewedFormulaIds((prev) => (prev.includes(formula.id) ? prev : [formula.id, ...prev]));
   };
 
+  // Bong bóng "mẹo nhớ" khi bấm Mimi (components/MimiMascot.jsx): chọn công thức có mnemonic, ưu tiên đúng lớp và chủ đề
+  // đang yếu; bấm "Xem công thức" thì mở khung chi tiết như ở Thư viện.
+  const viewDetailRef = useRef(handleViewDetail);
+  useEffect(() => { viewDetailRef.current = handleViewDetail; });
+  const mimiTips = useMemo(() => ({
+    pickTip: (excludeId) => pickMnemonicFormula(formulas, { grade: userGrade, weakTopics: recommendationContext.weakTopics, excludeId }),
+    openFormula: (formula) => viewDetailRef.current(formula),
+  }), [formulas, userGrade, recommendationContext.weakTopics]);
+
   // Thử thách hôm nay — DailyChallengeCard tự lưu ở máy; tài khoản Google thì lưu kèm lên server
   // để máy khác thấy đã làm (và đáp án đã chọn), không làm lại được câu khác đáp án.
   const handleSaveDailyChallenge = (record) => {
@@ -809,6 +819,7 @@ export default function App() {
   const visibleNotifications = notifications.filter(n => notifPrefs?.[n.category] !== false);
 
   return (
+    <MimiContext.Provider value={mimiTips}>
     <div className="app-container">
       <Header
         user={user}
@@ -891,5 +902,6 @@ export default function App() {
       <ToastContainer />
       <ConfirmDialogHost />
     </div>
+    </MimiContext.Provider>
   );
 }

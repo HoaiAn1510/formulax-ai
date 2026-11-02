@@ -1172,11 +1172,10 @@ export default function FormulaFinder({
             )}
 
             {isAnalyzing && !ocr && (
-              <div className="self-start max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white dark:bg-[#1E293B]">
-                <div className="flex items-center gap-2 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8]">
-                  <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
-                  <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
-                  <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
+              <div className="self-start max-w-[92%] py-2.5 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white dark:bg-[#1E293B]">
+                <div className="flex items-center gap-3 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8]">
+                  {/* Chờ AI: Mimi nhìn lên "đang nghĩ" (ba chấm bay) thay cho ba chấm nhấp nháy — đỡ chán khi chờ 5–20 giây. */}
+                  <MimiMascot width={72} expression="thinking" interactive={false} withSymbols={false} className="shrink-0 -my-1" />
                   <span>{typedBusyUntil
                     ? `AI đang bận. Tự thử lại sau ${Math.max(1, Math.ceil((typedBusyUntil - typedBusyNow) / 1000))} giây...`
                     : "AI đang phân tích..."}</span>
