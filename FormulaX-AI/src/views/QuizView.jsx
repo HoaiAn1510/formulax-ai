@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Timer, CheckCircle, XCircle, Crown, Lock, ArrowLeft, ArrowRight, Play, Check, List, Pencil, Shuffle, Sparkles, Flag, History } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { questionsPool as pool } from "../data/questions";
-import { saveQuizResult, loadChatSessions, getAccessToken } from "../lib/supabase";
+import { saveQuizResult, loadChatSessions, fetchWithAuth } from "../lib/supabase";
 import Confetti from "../components/Confetti";
 import AskedProblemsPicker from "../components/AskedProblemsPicker";
 import MimiMascot from "../components/MimiMascot";
@@ -25,13 +25,12 @@ const VARIANT_TIMEOUT_MS = 45_000;
 // Một câu "Luyện lại dạng bài" = 1 lượt AI (backend đếm, hoàn lượt khi lỗi). Lỗi ném ra có code/status/remaining
 // để QuizView quyết định dừng hay gọi bài tiếp theo.
 async function callVariant(item, grade) {
-  const token = await getAccessToken();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), VARIANT_TIMEOUT_MS);
   try {
-    const res = await fetch(`${BACKEND_URL}/api/quiz/variant`, {
+    const res = await fetchWithAuth(`${BACKEND_URL}/api/quiz/variant`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ problem: item.text, formulaIds: item.formulaIds, grade }),
       signal: controller.signal,
     });
@@ -271,10 +270,9 @@ export default function QuizView({
     if (reportedIds.has(q.id)) return;
     setReportedIds((prev) => new Set(prev).add(q.id));
     try {
-      const token = await getAccessToken();
-      const res = await fetch(`${BACKEND_URL}/api/quiz/variant/report`, {
+      const res = await fetchWithAuth(`${BACKEND_URL}/api/quiz/variant/report`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           question: q.text,
           answer: q.options.find((o) => o.isCorrect)?.text || "",

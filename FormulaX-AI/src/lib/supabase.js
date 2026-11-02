@@ -36,6 +36,26 @@ export async function getAccessToken() {
   return session?.access_token || null;
 }
 
+// Gọi backend kèm token phiên Supabase. Backend trả 401 khi phiên đã bị huỷ phía server trong lúc trình duyệt vẫn
+// giữ access token cũ chưa hết hạn (vd đăng xuất ở tab/máy khác — học sinh thấy "Lỗi AI: Token không hợp lệ hoặc đã
+// hết hạn", 2026-11-02) → làm mới phiên rồi gửi lại MỘT lần. Làm mới không được thì đăng xuất trên máy này để app
+// quay về màn đăng nhập, thay vì báo lỗi token mãi. `init.body` phải là chuỗi (gửi lại được).
+export async function fetchWithAuth(url, init = {}) {
+  const withToken = (token) => ({
+    ...init,
+    headers: { ...(init.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  const res = await fetch(url, withToken(await getAccessToken()));
+  if (res.status !== 401) return res;
+  const { data, error } = await supabase.auth.refreshSession();
+  const fresh = data?.session?.access_token;
+  if (error || !fresh) {
+    await supabase.auth.signOut({ scope: "local" });
+    return res;
+  }
+  return fetch(url, withToken(fresh));
+}
+
 /** Tải toàn bộ dữ liệu của một user */
 export async function loadUserData(googleId) {
   // Ngày giờ Việt Nam: quiz_daily.reset_date lưu theo ngày này; đếm hoạt động "hôm nay" từ 0h VN.
