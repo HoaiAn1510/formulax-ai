@@ -43,15 +43,9 @@ export const INTENT_OPTIONS = [
 
 export const LAST_KEY = (gid) => `formulax_last_intent_${gid || "guest"}`;
 const LAST_DAY_KEY = (gid) => `formulax_last_intent_day_${gid || "guest"}`;
-const SEEN_KEY = (gid) => `formulax_intent_seen_${gid || "guest"}`;
+// Hộp hỏi mỗi lần mở app — App.jsx tự nhớ trong lượt tải trang, không còn dấu "đã hỏi" trong sessionStorage.
 
-// localStorage / sessionStorage có thể ném lỗi (chế độ riêng tư, bị chặn) — luôn bọc try/catch.
-export function hasSeenIntentThisSession(gid) {
-  try { return sessionStorage.getItem(SEEN_KEY(gid)) === "1"; } catch { return false; }
-}
-export function markIntentSeen(gid) {
-  try { sessionStorage.setItem(SEEN_KEY(gid), "1"); } catch { /* bỏ qua */ }
-}
+// localStorage có thể ném lỗi (chế độ riêng tư, bị chặn) — luôn bọc try/catch.
 export function readLast(gid) {
   try { return localStorage.getItem(LAST_KEY(gid)); } catch { return null; }
 }

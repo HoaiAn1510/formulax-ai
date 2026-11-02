@@ -26,7 +26,6 @@ import BottomNav from "./components/BottomNav";
 import FormulaDetailModal from "./components/FormulaDetailModal";
 import OnboardingModal from "./components/OnboardingModal";
 import DailyIntentModal from "./components/DailyIntentModal";
-import { hasSeenIntentThisSession, markIntentSeen } from "./utils/dailyIntent";
 import { ToastContainer, showToast } from "./components/Toast";
 import { ConfirmDialogHost } from "./components/ConfirmDialog";
 
@@ -403,15 +402,20 @@ export default function App() {
   }, [viewedFormulaIds, user?.googleId]);
 
   // ─── Hộp "Hôm nay bạn gặp khó khăn gì?" ─────────────────────────────────
-  // Hiện một lần mỗi lượt mở app (sessionStorage → F5 không hỏi lại). Chờ tải xong dữ liệu để
-  // biết có phải người mới không: người mới đã có onboarding riêng nên không chồng hai hộp.
+  // Hỏi MỖI LẦN MỞ APP (chủ dự án chốt 2026-11-02): mỗi lần tải trang (kể cả F5) và mỗi lần đăng nhập lại — trước
+  // đây chỉ một lần mỗi tab (sessionStorage), đăng xuất/đăng nhập lại hay F5 trong cùng tab không hỏi. Chỉ nhớ trong
+  // bộ nhớ của lượt tải này (ref), theo tài khoản; đăng xuất thì quên để lần đăng nhập sau hỏi lại.
+  // Chờ tải xong dữ liệu để biết có phải người mới không: người mới đã có onboarding riêng nên không chồng hai hộp.
   // Không chen vào khi vừa quay về từ trang thanh toán.
+  const intentAskedForRef = useRef(null);
   useEffect(() => {
-    if (!isLoggedIn || isLoadingData || showIntent) return;
+    if (!isLoggedIn) { intentAskedForRef.current = null; return; }
+    if (isLoadingData || showIntent) return;
     const gid = user?.googleId;
     if (gid && !dataReady) return;
-    if (hasSeenIntentThisSession(gid)) return;
-    markIntentSeen(gid);
+    const who = gid || "guest";
+    if (intentAskedForRef.current === who) return;
+    intentAskedForRef.current = who;
     if (showOnboarding || paymentReturnRef.current) return;
     setShowIntent(true);
   }, [isLoggedIn, isLoadingData, dataReady, showOnboarding, showIntent, user?.googleId]);
