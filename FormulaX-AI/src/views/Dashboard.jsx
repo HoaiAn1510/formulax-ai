@@ -7,7 +7,7 @@ import MimiMascot from "../components/MimiMascot";
 import { getActivityData } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import { vietnamToday } from "../utils/vietnamDate";
-import { readIntentToday } from "../utils/dailyIntent";
+import { readIntentToday, writeLast, INTENT_OPTIONS } from "../utils/dailyIntent";
 import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../utils/todayPlan";
 import PageShell from "../components/PageShell";
 
@@ -47,13 +47,15 @@ function getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, 
   return scored.slice(0, count).map(s => s.formula);
 }
 
-// 4 phím tắt — mỗi nút kèm một dòng nói rõ chức năng (góp ý của cô hướng dẫn).
+// 4 phím tắt — mỗi nút kèm lời giải thích rõ chức năng (góp ý của cô hướng dẫn). Từ 2026-11-02 hiện dưới dạng câu hỏi
+// "Hôm nay bạn gặp khó khăn gì?" ngay trên Dashboard: tiêu đề + giải thích lấy từ INTENT_OPTIONS (utils/dailyIntent.js,
+// dùng chung với hộp hỏi lúc mở app), ở đây chỉ còn tên chức năng + màu.
 // bg: nền nhạt dần từ màu của mục sang trắng, cùng kiểu nền khung lời chào (bg-hero-amber). Bản tối giữ nền phẳng.
 const SHORTCUTS = [
-  { tab: "library", icon: BookOpen, label: "Thư viện", hint: "Tra công thức Toán 10–12 kèm ví dụ, mẹo nhớ", tone: "bg-white text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]", bg: "bg-[linear-gradient(135deg,#DCEBFF_0%,#F3F8FF_55%,#FFFFFF_100%)]" },
-  { tab: "finder", icon: Search, label: "Tìm kiếm AI", hint: "Gõ hoặc chụp đề, AI chỉ công thức cần dùng", tone: "bg-white text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]", bg: "bg-[linear-gradient(135deg,#EDE6FF_0%,#F8F5FF_55%,#FFFFFF_100%)]" },
-  { tab: "flashcard", icon: Zap, label: "Flashcard", hint: "Lật thẻ để thuộc công thức, app nhắc lại đúng lúc", tone: "bg-white text-accent dark:bg-accent/20 dark:text-[#FCD34D]", bg: "bg-hero-amber" },
-  { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", hint: "Làm đề có lời giải, luyện lại dạng bài đã hỏi AI", tone: "bg-white text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]", bg: "bg-[linear-gradient(135deg,#FFE1E7_0%,#FFF5F7_55%,#FFFFFF_100%)]" },
+  { tab: "library", icon: BookOpen, label: "Thư viện", tone: "bg-white text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]", bg: "bg-[linear-gradient(135deg,#DCEBFF_0%,#F3F8FF_55%,#FFFFFF_100%)]" },
+  { tab: "finder", icon: Search, label: "Tìm kiếm AI", tone: "bg-white text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]", bg: "bg-[linear-gradient(135deg,#EDE6FF_0%,#F8F5FF_55%,#FFFFFF_100%)]" },
+  { tab: "flashcard", icon: Zap, label: "Flashcard", tone: "bg-white text-accent dark:bg-accent/20 dark:text-[#FCD34D]", bg: "bg-hero-amber" },
+  { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", tone: "bg-white text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]", bg: "bg-[linear-gradient(135deg,#FFE1E7_0%,#FFF5F7_55%,#FFFFFF_100%)]" },
 ];
 
 const CARD = "fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none";
@@ -219,22 +221,40 @@ export default function Dashboard({
             )}
           </section>
 
-          {/* ─── 4 phím tắt có chú thích (góp ý của cô hướng dẫn) — một hàng gọn ───── */}
-          <section aria-label="Lối tắt" className="md:col-span-12 grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-            {SHORTCUTS.map(({ tab, icon: Icon, label, hint, tone, bg }) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`${CARD} ${bg} dark:bg-none flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3.5 p-3.5 md:p-4 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98]`}
-              >
-                <span className={`w-9 h-9 md:w-10 md:h-10 rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${tone}`}><Icon size={18} /></span>
-                <span className="min-w-0 flex flex-col gap-0.5">
-                  <span className="text-[0.88rem] md:text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0]">{label}</span>
-                  <span className="text-[0.72rem] leading-[1.4] text-text-muted dark:text-[#94A3B8]">{hint}</span>
-                </span>
-              </button>
-            ))}
+          {/* ─── "Hôm nay bạn gặp khó khăn gì?" — 4 lối tắt có giải thích rõ chức năng ───── */}
+          <section aria-labelledby="dash-intent-title" className="md:col-span-12">
+            <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-0.5 md:gap-3 mb-3">
+              <h2 id="dash-intent-title" className="m-0 text-base md:text-lg font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">Hôm nay bạn gặp khó khăn gì?</h2>
+              <span className="text-xs text-text-muted dark:text-[#94A3B8] font-medium">Chọn một việc, mình đưa bạn tới thẳng đúng chỗ</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+              {SHORTCUTS.map(({ tab, icon: Icon, label, tone, bg }) => {
+                const o = INTENT_OPTIONS.find((x) => x.tab === tab);
+                const picked = intent === o.id;
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    aria-pressed={picked}
+                    // Chọn ở đây cũng tính là lựa chọn hôm nay (cá nhân hóa "Học tiếp" + nhiệm vụ), như chọn trong hộp lúc mở app.
+                    onClick={() => { writeLast(user?.googleId, o.id); setActiveTab(tab); }}
+                    className={`${CARD} ${bg} dark:bg-none group flex flex-col items-start gap-2.5 p-4 md:p-5 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${picked ? "!border-accent" : ""}`}
+                  >
+                    <span className="w-full flex items-center gap-2.5">
+                      <span className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${tone}`}><Icon size={18} /></span>
+                      <span className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">{label}</span>
+                      {picked && <span className="ml-auto text-[0.62rem] font-bold uppercase tracking-wide text-[#92400E] dark:text-[#FCD34D] bg-accent-light dark:bg-accent/15 rounded-full px-2 py-0.5">Hôm nay</span>}
+                    </span>
+                    <span className="text-[0.95rem] font-bold leading-[1.35] text-primary dark:text-[#E2E8F0]">{o.title}</span>
+                    {/* Bỏ tiền tố "Thư viện: " của câu giải thích — tên chức năng đã ghi ngay trên thẻ. */}
+                    <span className="block text-[0.76rem] leading-[1.5] text-text-muted dark:text-[#94A3B8] first-letter:uppercase">{o.what.replace(/^[^:]+:\s*/, "")}</span>
+                    <span className="mt-auto pt-1 inline-flex items-center gap-1 text-[0.8rem] font-semibold text-navy-btn dark:text-[#FCD34D]">
+                      {o.cta} <ChevronRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </section>
 
           {/* ─── Nhiệm vụ hôm nay (danh sách dọc, cạnh Thử thách) ─────────────────── */}
