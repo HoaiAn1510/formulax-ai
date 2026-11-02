@@ -30,16 +30,24 @@ function formulaIdsOf(bot) {
 
 const normalize = (s) => String(s || "").replace(/\s+/g, " ").trim().toLowerCase();
 
-// Câu hỏi lại về bài vừa hỏi ("tui chưa hiểu bước 2", "giải thích lại giúp mình", "sao lại ra như vậy") — KHÔNG phải
-// một đề mới, nên không tính là "Bài đã hỏi" và không hiện nút làm bài cùng dạng (lỗi chủ dự án báo 2026-11-02).
-// Chỉ xét khi trong cùng cuộc trò chuyện đã có tin hỏi trước đó (tin đầu tiên luôn là đề). Có dấu = < > → có dữ kiện,
-// coi là đề mới dù có chữ "bước"/"tại sao".
-const FOLLOW_UP_RE = /(chưa hiểu|không hiểu|ko hiểu|k hiểu|hong hiểu|giải thích|tại sao|vì sao|sao lại|sao ra|bước\s*\d|bước (này|đó|trên|kia|cuối)|là gì|nghĩa là|ý là|hướng dẫn lại|làm lại|nói rõ|rõ hơn|chi tiết hơn|ở đâu ra|lấy đâu ra|từ đâu ra)/;
+// Câu hỏi lại về bài vừa hỏi ("tui chưa hiểu bước 2", "là sao", "giải thích lại giúp mình") — KHÔNG phải một đề mới,
+// nên không tính là "Bài đã hỏi" và không hiện nút làm bài cùng dạng (lỗi chủ dự án báo 2026-11-02). Chỉ xét khi trong
+// cùng cuộc trò chuyện đã có tin hỏi trước đó (tin đầu tiên luôn là đề). Thứ tự:
+//   1. có dấu = < > ≤ ≥ → có dữ kiện → ĐỀ MỚI;
+//   2. có cụm hỏi lại (chưa hiểu, giải thích, tại sao, bước 2…) → HỎI LẠI;
+//   3. có từ 2 con số trở lên, hoặc từ kiểu đề bài (tính, tìm, giải, cho, hình, hàm số…) và đủ dài → ĐỀ MỚI;
+//   4. còn lại (ngắn, không dữ kiện: "là sao", "vậy hả", "ok") → HỎI LẠI.
+// Bản đầu chỉ có bước 1–2 nên "là sao" vẫn bị tính là bài (chạy thật 2026-11-02).
+const FOLLOW_UP_RE = /(chưa hiểu|không hiểu|ko hiểu|k hiểu|hong hiểu|giải thích|tại sao|vì sao|sao lại|sao ra|là sao|bước\s*\d|bước (này|đó|trên|kia|cuối)|là gì|nghĩa là|ý là|hướng dẫn lại|làm lại|nói rõ|rõ hơn|chi tiết hơn|ở đâu ra|lấy đâu ra|từ đâu ra)/;
+const PROBLEM_WORD_RE = /(^|[^\p{L}])(tính|tìm|giải|cho|biết|chứng minh|khảo sát|xét|hình|tam giác|hàm số|phương trình|bất phương trình|khối|đường|mặt|cấp số|xác suất|đạo hàm|tích phân|giới hạn|log|sin|cos|tan)(?=$|[^\p{L}])/u;
 export function isFollowUpQuestion(text, hasEarlierQuestion) {
   if (!hasEarlierQuestion) return false;
   const t = normalize(text);
   if (/[=<>≤≥]/.test(t)) return false;
-  return FOLLOW_UP_RE.test(t);
+  if (FOLLOW_UP_RE.test(t)) return true;
+  if ((t.match(/\d+(?:[.,]\d+)?/g) || []).length >= 2) return false;
+  if (PROBLEM_WORD_RE.test(t) && t.length >= 15) return false;
+  return true;
 }
 
 /**

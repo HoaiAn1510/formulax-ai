@@ -26,12 +26,12 @@ test("extractAskedProblems: chỉ lấy đề có câu trả lời hướng dẫ
       { id: T - 999, sender: "bot", text: "...", answer: answer("solution", ["ds10-phuongtrinh-bac2"]) },
       { id: T - 500, sender: "user", text: "Tam giác vuông AB = 6, AC = 8, tính BC" },
       { id: T - 499, sender: "bot", text: "...", answer: answer("solution", []) }, // kiến thức nền, không có id
-      { id: 7, sender: "user", text: "Đề cũ" },
+      { id: 7, sender: "user", text: "Tam giác có ba cạnh 5, 7, 8. Tính góc lớn nhất" },
       { id: 8, sender: "bot", text: "...", aiResult: { id: "hh10-cosin", name: "Định lý côsin" } }, // định dạng cũ
     ] },
   ];
   const items = extractAskedProblems(sessions);
-  assert.deepEqual(items.map((i) => i.text), ["Tam giác vuông AB = 6, AC = 8, tính BC", "giải  X^2 - 5x + 6 = 0", "Đề cũ"]);
+  assert.deepEqual(items.map((i) => i.text), ["Tam giác vuông AB = 6, AC = 8, tính BC", "giải  X^2 - 5x + 6 = 0", "Tam giác có ba cạnh 5, 7, 8. Tính góc lớn nhất"]);
   assert.equal(items[1].sessionId, "s2");
   assert.deepEqual(items[0].formulaIds, []);
   assert.deepEqual(items[2].formulaIds, ["hh10-cosin"]);
@@ -47,6 +47,8 @@ test("extractAskedProblems: câu hỏi lại về bài vừa hỏi không tính 
     { id: T - 199, sender: "bot", text: "...", answer: answer("solution", ["hh12-the-tich-cau"]) },
     { id: T - 100, sender: "user", text: "tui chưa hiểu bước 2" },
     { id: T - 99, sender: "bot", text: "...", answer: answer("solution", ["hh12-the-tich-cau"]) },
+    { id: T - 50, sender: "user", text: "là sao" },
+    { id: T - 49, sender: "bot", text: "...", answer: answer("solution", ["hh11-the-tich-chop"]) },
   ] }];
   assert.deepEqual(extractAskedProblems(sessions).map((i) => i.text), [
     "Tính thể tích khối cầu bán kính R = 3.",
@@ -55,10 +57,13 @@ test("extractAskedProblems: câu hỏi lại về bài vừa hỏi không tính 
 });
 
 test("isFollowUpQuestion: hỏi lại thì true, đề mới thì false", () => {
-  for (const t of ["tui chưa hiểu bước 2", "Giải thích lại giúp mình", "sao lại ra 36 vậy", "bước này là gì", "không hiểu chỗ đó"]) {
+  for (const t of ["tui chưa hiểu bước 2", "Giải thích lại giúp mình", "sao lại ra 36 vậy", "bước này là gì", "không hiểu chỗ đó",
+    "là sao", "vậy hả", "ok", "hiểu rồi cảm ơn", "còn cách nào khác không"]) {
     assert.equal(isFollowUpQuestion(t, true), true, t);
   }
-  for (const t of ["Tính thể tích khối cầu bán kính R = 3.", "Giải phương trình x^2 - 5x + 6 = 0", "Tam giác ABC có AB = 5, AC = 8, góc A = 60°. Tính BC"]) {
+  for (const t of ["Tính thể tích khối cầu bán kính R = 3.", "Giải phương trình x^2 - 5x + 6 = 0", "Tam giác ABC có AB = 5, AC = 8, góc A = 60°. Tính BC",
+    "Hình chóp S.ABCD có đáy là hình vuông cạnh 3 và chiều cao 4. Tính thể tích.", "Khảo sát sự biến thiên của hàm số bậc ba",
+    "Cho hình lập phương cạnh a, tính thể tích", "hình nón bán kính đáy 2 chiều cao 5 tính thể tích"]) {
     assert.equal(isFollowUpQuestion(t, true), false, t);
   }
   assert.equal(isFollowUpQuestion("tui chưa hiểu bước 2", false), false); // tin đầu tiên của cuộc trò chuyện luôn là đề
