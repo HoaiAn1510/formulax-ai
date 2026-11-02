@@ -2,7 +2,7 @@
 // utils/askedProblems.js, utils/variantQuiz.js, utils/todayPlan.js. Chạy: npm run test:asked
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { extractAskedProblems, togglePick, formatAskedAt, MAX_VARIANT_PICK } from "../src/utils/askedProblems.js";
+import { extractAskedProblems, isFollowUpQuestion, togglePick, formatAskedAt, MAX_VARIANT_PICK } from "../src/utils/askedProblems.js";
 import { toVariantQuestion, variantQuizTopic, runSequential } from "../src/utils/variantQuiz.js";
 import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../src/utils/todayPlan.js";
 
@@ -37,6 +37,31 @@ test("extractAskedProblems: chỉ lấy đề có câu trả lời hướng dẫ
   assert.deepEqual(items[2].formulaIds, ["hh10-cosin"]);
   assert.equal(items[2].askedAt, 0); // id không phải thời điểm, phiên không có ngày
   assert.deepEqual(extractAskedProblems(null), []);
+});
+
+test("extractAskedProblems: câu hỏi lại về bài vừa hỏi không tính là bài mới (chạy thật 2026-11-02)", () => {
+  const sessions = [{ id: "s3", messages: [
+    { id: T - 300, sender: "user", text: "Hình chóp S.ABCD có đáy là hình vuông cạnh 3 và chiều cao 4. Tính thể tích." },
+    { id: T - 299, sender: "bot", text: "...", answer: answer("solution", ["hh11-the-tich-chop"]) },
+    { id: T - 200, sender: "user", text: "Tính thể tích khối cầu bán kính R = 3." },
+    { id: T - 199, sender: "bot", text: "...", answer: answer("solution", ["hh12-the-tich-cau"]) },
+    { id: T - 100, sender: "user", text: "tui chưa hiểu bước 2" },
+    { id: T - 99, sender: "bot", text: "...", answer: answer("solution", ["hh12-the-tich-cau"]) },
+  ] }];
+  assert.deepEqual(extractAskedProblems(sessions).map((i) => i.text), [
+    "Tính thể tích khối cầu bán kính R = 3.",
+    "Hình chóp S.ABCD có đáy là hình vuông cạnh 3 và chiều cao 4. Tính thể tích.",
+  ]);
+});
+
+test("isFollowUpQuestion: hỏi lại thì true, đề mới thì false", () => {
+  for (const t of ["tui chưa hiểu bước 2", "Giải thích lại giúp mình", "sao lại ra 36 vậy", "bước này là gì", "không hiểu chỗ đó"]) {
+    assert.equal(isFollowUpQuestion(t, true), true, t);
+  }
+  for (const t of ["Tính thể tích khối cầu bán kính R = 3.", "Giải phương trình x^2 - 5x + 6 = 0", "Tam giác ABC có AB = 5, AC = 8, góc A = 60°. Tính BC"]) {
+    assert.equal(isFollowUpQuestion(t, true), false, t);
+  }
+  assert.equal(isFollowUpQuestion("tui chưa hiểu bước 2", false), false); // tin đầu tiên của cuộc trò chuyện luôn là đề
 });
 
 test("togglePick: bật/tắt, không vượt quá 3 bài", () => {

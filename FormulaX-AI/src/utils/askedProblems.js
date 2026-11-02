@@ -30,6 +30,18 @@ function formulaIdsOf(bot) {
 
 const normalize = (s) => String(s || "").replace(/\s+/g, " ").trim().toLowerCase();
 
+// Câu hỏi lại về bài vừa hỏi ("tui chưa hiểu bước 2", "giải thích lại giúp mình", "sao lại ra như vậy") — KHÔNG phải
+// một đề mới, nên không tính là "Bài đã hỏi" và không hiện nút làm bài cùng dạng (lỗi chủ dự án báo 2026-11-02).
+// Chỉ xét khi trong cùng cuộc trò chuyện đã có tin hỏi trước đó (tin đầu tiên luôn là đề). Có dấu = < > → có dữ kiện,
+// coi là đề mới dù có chữ "bước"/"tại sao".
+const FOLLOW_UP_RE = /(chưa hiểu|không hiểu|ko hiểu|k hiểu|hong hiểu|giải thích|tại sao|vì sao|sao lại|sao ra|bước\s*\d|bước (này|đó|trên|kia|cuối)|là gì|nghĩa là|ý là|hướng dẫn lại|làm lại|nói rõ|rõ hơn|chi tiết hơn|ở đâu ra|lấy đâu ra|từ đâu ra)/;
+export function isFollowUpQuestion(text, hasEarlierQuestion) {
+  if (!hasEarlierQuestion) return false;
+  const t = normalize(text);
+  if (/[=<>≤≥]/.test(t)) return false;
+  return FOLLOW_UP_RE.test(t);
+}
+
 /**
  * @param {{id: string, messages?: object[], updatedAt?: string, createdAt?: string}[]} sessions
  * @returns {{key: string, sessionId: string, text: string, askedAt: number, formulaIds: string[]}[]}
@@ -39,8 +51,12 @@ export function extractAskedProblems(sessions, { limit = 50 } = {}) {
   const byText = new Map();
   for (const session of Array.isArray(sessions) ? sessions : []) {
     const msgs = Array.isArray(session?.messages) ? session.messages : [];
+    let hasEarlier = false;
     msgs.forEach((msg, i) => {
       if (msg?.sender !== "user" || typeof msg.text !== "string" || !msg.text.trim()) return;
+      const followUp = isFollowUpQuestion(msg.text, hasEarlier);
+      hasEarlier = true;
+      if (followUp) return;
       const next = msgs.slice(i + 1).find((m) => m?.sender === "bot" || m?.sender === "user");
       const formulaIds = formulaIdsOf(next);
       if (!formulaIds) return;
