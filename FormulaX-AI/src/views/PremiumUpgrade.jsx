@@ -297,7 +297,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
   return (
     <PageShell
-      width="full"
+      width="wide"
       title="Premium"
       description="Hỏi AI không giới hạn, luyện đề đủ dạng và xem phân tích tiến độ chi tiết."
       top={(<>
@@ -388,7 +388,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 )}
 
                 {/* Plan selector — user Premium cũng dùng để gia hạn thêm (thời gian cộng dồn vào hạn hiện có) */}
-                <div className="grid grid-cols-2 gap-2.5 md:gap-3 mt-6 max-w-[460px]">
+                <div className="grid grid-cols-2 gap-2.5 md:gap-3 mt-6 max-w-[560px]">
                   {["monthly", "6months"].map((planId) => {
                     const isSelected = selectedPlan === planId;
                     return (
@@ -419,7 +419,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 </div>
 
                 <button
-                  className="btn btn-premium vibrate mt-5 w-full max-w-[460px] h-[48px] text-[0.95rem] rounded-[13px] disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="btn btn-premium vibrate mt-5 w-full max-w-[560px] h-[48px] text-[0.95rem] rounded-[13px] disabled:opacity-60 disabled:cursor-not-allowed"
                   onClick={() => handleUpgrade(selectedPlan)}
                   disabled={isProcessing}
                 >
@@ -433,6 +433,12 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     </>
                   )}
                 </button>
+
+                {/* Dòng tin cậy thanh toán đặt ngay dưới nút (trước đây là một phần riêng giữa trang). */}
+                <div className="mt-3 flex items-center gap-1.5 text-[0.75rem] text-text-muted dark:text-[#94A3B8]">
+                  <ShieldCheck size={14} className="shrink-0 text-success" />
+                  <span>Thanh toán an toàn qua PayOS · Chuyển khoản & VietQR</span>
+                </div>
 
                 {/* Giả lập hạ cấp — công cụ test nội bộ, chỉ có ở `npm run dev`; bản build production
                     loại hẳn nút này (import.meta.env.DEV = false), người dùng thật không thấy. */}
@@ -468,7 +474,10 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Section 3: Goals Grid */}
             <div>
-              <SectionTitle title="Mọi thứ bạn cần để đạt điểm cao" sub="Đầy đủ tính năng hỗ trợ thi THPT Quốc gia tốt nhất" />
+              <SectionTitle
+                title={isPremium ? "Quyền lợi Premium của bạn" : "Mọi thứ bạn cần để đạt điểm cao"}
+                sub={isPremium ? "Bạn đang dùng đầy đủ các tính năng dưới đây" : "Đầy đủ tính năng hỗ trợ thi THPT Quốc gia tốt nhất"}
+              />
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3 md:gap-4">
                 {goals.map((goal, idx) => {
                   const GoalIcon = goal.icon;
@@ -487,8 +496,8 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               </div>
             </div>
 
-            {/* Section 4: Detailed Compare Table */}
-            <div>
+            {/* Section 4: Detailed Compare Table — chỉ cho tài khoản chưa Premium (Premium đã có đủ quyền lợi ở phần trên) */}
+            {!isPremium && (<div>
               <SectionTitle title="So sánh các gói học tập" sub="Lựa chọn thông minh để bứt phá điểm số tối đa" />
 
               {/* Desktop: bảng đầy đủ. Mobile: bảng cuộn ngang khó đọc — thay bằng thẻ xếp dọc bên dưới. */}
@@ -563,77 +572,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                   </div>
                 ))}
               </div>
-            </div>
-
-            {/* Section 5: Gold Card - Nâng cấp trải nghiệm học */}
-            {!isPremium && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-7 max-w-[1000px] w-full mx-auto mt-16 md:mt-10">
-                {/* Gói miễn phí — các hạn mức đang áp dụng (CLAUDE.md: Giới hạn tài khoản Free) */}
-                <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-6 md:p-9 flex flex-col gap-5">
-                  <div>
-                    <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">Miễn phí</div>
-                    <div className="text-[2.2rem] md:text-[2.6rem] font-bold tracking-[-0.03em] mt-1 text-primary dark:text-[#E2E8F0]">0 đ</div>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    {["10 quiz trắc nghiệm mỗi ngày", "10 lượt Tìm kiếm AI mỗi ngày", "5 lần quét ảnh đề mỗi ngày", "Toàn bộ thư viện công thức", "Flashcard và theo dõi chuỗi học"].map((t) => (
-                      <div key={t} className="flex items-center gap-3 text-[0.9rem] text-primary dark:text-[#E2E8F0]">
-                        <span className="w-[22px] h-[22px] rounded-full bg-success text-white flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
-                        <span>{t}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-auto inline-flex items-center justify-center rounded-[13px] py-3 px-5 border border-[#D5DAE5] dark:border-[#475569] text-[0.9rem] font-semibold text-text-muted dark:text-[#94A3B8]">
-                    {isGuest ? "Chế độ khách" : "Gói hiện tại"}
-                  </div>
-                </div>
-
-                {/* Gói Premium — thẻ navy có Mimi (mockup) */}
-                <div className="relative mt-16 md:mt-0 rounded-[20px] p-6 md:p-9 bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white flex flex-col gap-5 shadow-[0_24px_50px_-24px_rgba(15,23,42,0.6)]">
-                  <MimiMascot width={170} className="absolute right-5 -top-[78px] pointer-events-none" />
-                  <div>
-                    <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#FBBF24]">Premium {PLAN_DISPLAY[selectedPlan].label}</div>
-                    <div className="text-[2.2rem] md:text-[2.6rem] font-bold tracking-[-0.03em] mt-1">
-                      {PLAN_DISPLAY[selectedPlan].price}<span className="text-[0.95rem] font-medium text-[#94A3B8]"> {PLAN_DISPLAY[selectedPlan].unit}</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    {[
-                      "Hỏi AI Finder không giới hạn lượt",
-                      "Quiz không giới hạn lượt, thêm dạng Điền đáp án và Kết hợp",
-                      "Xem Hiệu suất theo chủ đề và Coach gợi ý ôn tập",
-                      "Xuất bộ thẻ Flashcard ra PDF để in hoặc ôn ngoài ứng dụng",
-                    ].map((t) => (
-                      <div key={t} className="flex items-center gap-3 text-[0.9rem]">
-                        <span className="w-[22px] h-[22px] rounded-full bg-[#FBBF24] text-primary flex items-center justify-center shrink-0"><Check size={12} strokeWidth={3.5} /></span>
-                        <span>{t}</span>
-                      </div>
-                    ))}
-                  </div>
-                  <button
-                    className="btn btn-premium w-full h-12 mt-auto text-[0.95rem] rounded-[13px] border-none disabled:opacity-60 disabled:cursor-not-allowed"
-                    onClick={() => handleUpgrade(selectedPlan)}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <>{isGuest && <Lock size={14} />}<span>Thanh toán qua PayOS</span></>}
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Section 6: Thanh toán qua PayOS — chỉ còn thông tin/tin cậy, bỏ nút bấm vì trùng
-                chức năng với các nút CTA chính đã có ở hero/Gold card/banner cuối trang. */}
-            <div className="flex flex-col items-center gap-2">
-              <div className="flex items-center gap-2.5 text-text-muted dark:text-[#94A3B8]">
-                <div className="w-9 h-9 rounded-full bg-[#0F172A] flex items-center justify-center text-white shrink-0">
-                  <Landmark size={16} />
-                </div>
-                <span className="text-[0.78rem] font-semibold">Thanh toán an toàn qua PayOS · Chuyển khoản & VietQR</span>
-              </div>
-              <div className="flex items-center justify-center gap-1.5 text-[0.7rem] text-text-muted dark:text-[#94A3B8]">
-                <ShieldCheck size={13} className="shrink-0 text-success" />
-                <span>Thông tin thanh toán được mã hóa và bảo mật</span>
-              </div>
-            </div>
+            </div>)}
 
             {/* Section 7: FAQs Accordion */}
             <div>
@@ -666,7 +605,9 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Section 9: Bottom CTA Banner */}
             {!isPremium && (
-              <div className="fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-6 md:p-8 text-center flex flex-col items-center gap-3">
+              <div className="relative mt-16 fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-6 pt-12 md:p-8 md:pt-14 text-center flex flex-col items-center gap-3">
+                {/* Mimi chuyển từ thẻ giá Premium (đã bỏ vì trùng khung đầu trang) xuống banner cuối. */}
+                <MimiMascot width={150} className="absolute left-1/2 -translate-x-1/2 -top-[66px] pointer-events-none" />
                 <h3 className="text-[1.15rem] md:text-[1.35rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0] m-0">Điểm cao không chờ đợi</h3>
                 <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] m-0 max-w-[380px] leading-[1.5]">
                   Đăng ký ngay tài khoản Premium để đạt kết quả tốt nhất trong kỳ thi sắp tới.
@@ -678,12 +619,6 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     disabled={isProcessing}
                   >
                     {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <>{isGuest && <Lock size={14} />}<span>Nâng cấp Premium</span></>}
-                  </button>
-                  <button
-                    className="btn btn-secondary h-[42px] text-[0.85rem] px-5 rounded-lg"
-                    onClick={() => showToast("Bạn đã ở trang so sánh các gói!", "info")}
-                  >
-                    <span>Xem so sánh</span>
                   </button>
                 </div>
               </div>
