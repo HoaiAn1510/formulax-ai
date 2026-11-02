@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award, LogIn, ChevronRight } from "lucide-react";
+import { Flame, ClipboardList, Layers, AlertTriangle, CheckCircle, BookOpen, Target, BarChart2, Crown, Lock, Award, LogIn, ChevronRight, X } from "lucide-react";
 import { getAnalyticsSummary, getDailyHistory } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
 import CountUp from "../components/CountUp";
@@ -7,7 +7,9 @@ import { showToast } from "../components/Toast";
 import { BADGES } from "../data/badges";
 import { vietnamToday, shiftDay } from "../utils/vietnamDate";
 import PageShell from "../components/PageShell";
-import { CARD, LABEL, BTN_PRIMARY } from "../utils/shellStyle";
+import { CARD, LABEL, BTN_PRIMARY, BTN_SECONDARY } from "../utils/shellStyle";
+import MimiMascot from "../components/MimiMascot";
+import { RANGES, daysInScope, summarize, studiedDaysLast7, badgeProgress } from "../utils/progressStats";
 
 const BADGE_ICONS = { Flame, ClipboardList, Layers, BookOpen };
 
@@ -34,42 +36,82 @@ const DayTag = ({ children }) => (
   <span className="text-[0.7rem] font-semibold text-text-muted dark:text-[#94A3B8] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] rounded-full py-0.5 px-2 shrink-0">{children}</span>
 );
 
-function evaluateBadges(streak, stats) {
-  const values = {
-    streak,
-    quizzes: stats?.quizzesCompleted ?? 0,
-    flashcards: stats?.flashcardsStudied ?? 0,
-    formulas: stats?.formulasViewed ?? 0,
-  };
-  return BADGES.map(b => ({ ...b, unlocked: values[b.metric] >= b.threshold }));
+function BadgeTile({ b }) {
+  const Icon = BADGE_ICONS[b.icon] || Flame;
+  return (
+    <div
+      title={b.description}
+      className={`flex flex-col items-center gap-1.5 rounded-[12px] p-3 border ${
+        b.unlocked ? "border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10" : "border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] opacity-60"
+      }`}
+    >
+      <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
+        b.unlocked ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
+      }`}>
+        <Icon size={16} />
+      </div>
+      <span className="text-[0.68rem] font-semibold text-center text-primary dark:text-[#E2E8F0] leading-tight">{b.label}</span>
+    </div>
+  );
 }
 
-function BadgesSection({ badges }) {
-  const unlockedCount = badges.filter(b => b.unlocked).length;
+// Huy hiệu gọn (2026-11-02): các huy hiệu đã mở + MỐC KẾ TIẾP của từng loại kèm thanh tiến độ ("còn 3 bài nữa");
+// nút "Xem tất cả" mở lưới đủ 15 huy hiệu như trước.
+function BadgesSection({ state, showAll, onToggle }) {
+  const { all, unlocked, next } = state;
+  const UNIT = { streak: "ngày", quizzes: "bài", flashcards: "lượt", formulas: "công thức" };
   return (
     <div className={`${CARD} p-4 md:p-6 mb-4 md:mb-5`}>
-      <SectionHeader icon={Award} tone={TONE.amber} title="Huy hiệu" aside={<DayTag>{unlockedCount}/{badges.length} đã mở</DayTag>} />
-      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5 md:gap-3">
-        {badges.map(b => {
-          const Icon = BADGE_ICONS[b.icon] || Flame;
-          return (
-            <div
-              key={b.id}
-              title={b.description}
-              className={`flex flex-col items-center gap-1.5 rounded-[12px] p-3 border ${
-                b.unlocked ? "border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10" : "border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] opacity-60"
-              }`}
-            >
-              <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
-                b.unlocked ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
-              }`}>
-                <Icon size={16} />
-              </div>
-              <span className="text-[0.68rem] font-semibold text-center text-primary dark:text-[#E2E8F0] leading-tight">{b.label}</span>
+      <SectionHeader icon={Award} tone={TONE.amber} title="Huy hiệu" aside={<DayTag>{unlocked.length}/{all.length} đã mở</DayTag>} />
+      {showAll ? (
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2.5 md:gap-3">
+          {all.map((b) => <BadgeTile key={b.id} b={b} />)}
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {unlocked.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {unlocked.map((b) => {
+                const Icon = BADGE_ICONS[b.icon] || Flame;
+                return (
+                  <span key={b.id} title={b.description} className="inline-flex items-center gap-1.5 rounded-full border border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10 py-1 pl-1 pr-3 text-[0.75rem] font-semibold text-primary dark:text-[#E2E8F0]">
+                    <span className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center"><Icon size={13} /></span>
+                    {b.label}
+                  </span>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+          )}
+          {next.length > 0 && (
+            <div>
+              <div className="text-[0.72rem] font-semibold text-text-muted dark:text-[#94A3B8] mb-2">Mốc kế tiếp</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-3">
+                {next.map((b) => {
+                  const Icon = BADGE_ICONS[b.icon] || Flame;
+                  const pct = Math.min(100, Math.round((b.value / b.threshold) * 100));
+                  return (
+                    <div key={b.id} className="rounded-[12px] border border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] p-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-7 h-7 rounded-full bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8] flex items-center justify-center shrink-0"><Icon size={14} /></span>
+                        <span className="text-[0.8rem] font-semibold text-primary dark:text-[#E2E8F0] truncate">{b.label}</span>
+                      </div>
+                      <div className="mt-2 h-1.5 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+                        <div className="h-full rounded-full bg-[linear-gradient(90deg,#F59E0B,#FBBF24)]" style={{ width: `${pct}%` }} />
+                      </div>
+                      <div className="mt-1.5 text-[0.7rem] text-text-muted dark:text-[#94A3B8]">
+                        {b.value}/{b.threshold} · còn {b.threshold - b.value} {UNIT[b.metric] || ""} nữa
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      <button type="button" onClick={onToggle} className="mt-3.5 bg-transparent border-none p-0 text-[0.78rem] font-semibold text-navy-btn dark:text-[#FCD34D] cursor-pointer">
+        {showAll ? "Thu gọn" : `Xem tất cả ${all.length} huy hiệu`}
+      </button>
     </div>
   );
 }
@@ -137,21 +179,6 @@ function formatDateLabel(date) {
   if (date === yesterday) return "Hôm qua";
   const [y, mo, d] = date.split("-");
   return `${d}/${mo}/${y}`;
-}
-
-function computeTopicPerf(quizzes) {
-  const byTopic = {};
-  quizzes.forEach(q => {
-    if (!byTopic[q.topic]) byTopic[q.topic] = { correct: 0, total: 0 };
-    byTopic[q.topic].correct += q.questionsCorrect;
-    byTopic[q.topic].total += q.questionsTotal;
-  });
-  return Object.entries(byTopic).map(([topic, { correct, total }]) => ({
-    topic,
-    correct,
-    total,
-    rate: total > 0 ? Math.round((correct / total) * 100) : 0,
-  }));
 }
 
 function getLongestStreak(activityDates) {
@@ -233,7 +260,7 @@ function DayDetail({ date, quizzes, flashcardIds, formulaMap }) {
   );
 }
 
-function StreakChart({ activityDates, selectedDate, onSelectDate, selectedDayData, formulaMap }) {
+function StreakChart({ activityDates, selectedDate, detailDate, onSelectDate, selectedDayData, formulaMap }) {
   const todayStr = vietnamToday();
   const dateSet = new Set(activityDates);
 
@@ -314,7 +341,7 @@ function StreakChart({ activityDates, selectedDate, onSelectDate, selectedDayDat
       </div>
 
       <DayDetail
-        date={selectedDate}
+        date={detailDate}
         quizzes={selectedDayData.quizzes}
         flashcardIds={selectedDayData.flashcardIds}
         formulaMap={formulaMap}
@@ -323,13 +350,14 @@ function StreakChart({ activityDates, selectedDate, onSelectDate, selectedDayDat
   );
 }
 
-function EmptyState({ message, ctaLabel, onCta }) {
+// Trạng thái trống: Mimi nhỏ (mặc định ngạc nhiên) + câu ngắn + nút — thay cho biểu tượng cột xám (2026-11-02).
+function EmptyState({ message, ctaLabel, onCta, mood = "surprised" }) {
   return (
-    <div className="text-center py-7 px-4">
-      <BarChart2 size={36} color="#CBD5E1" className="mx-auto mb-2.5" />
-      <p className="text-[0.85rem] text-[#94A3B8] font-medium m-0 mb-3">{message}</p>
+    <div className="flex flex-col items-center text-center gap-2 py-4 px-2">
+      <MimiMascot width={96} expression={mood} withSymbols={false} />
+      <p className="text-[0.84rem] text-text-muted dark:text-[#94A3B8] font-medium m-0">{message}</p>
       {onCta && (
-        <button type="button" onClick={onCta} className={`${BTN_PRIMARY} !py-2.5 !text-[0.85rem]`}>
+        <button type="button" onClick={onCta} className={`${BTN_PRIMARY} !py-2.5 !text-[0.85rem] mt-1`}>
           {ctaLabel}
         </button>
       )}
@@ -353,11 +381,16 @@ function getFormulasForQuizTopic(quizTopic, formulas) {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
-export default function ProgressDashboard({ user, formulas, setActiveTab, onViewDetail, isPremium, stats }) {
+export default function ProgressDashboard({ user, formulas, setActiveTab, onViewDetail, isPremium, stats, onPracticeTopic, onCreateTopicDeck }) {
   // Toàn bộ trang là tiến độ cá nhân → khóa với khách: vẫn hiện bố cục (làm mờ, không bấm
   // được) để khách thấy tính năng tồn tại, kèm nút đăng nhập ở đầu trang.
   const { isGuest, loginNow } = useGuestGate();
-  const [selectedDate, setSelectedDate]   = useState(vietnamToday());
+  const today = vietnamToday();
+  // Phạm vi xem (2026-11-02): mặc định 30 ngày; bấm một ngày trên lịch thì chỉ xem ngày đó (bỏ chọn để quay lại).
+  // Trước đây mặc định chỉ "Hôm nay" nên Hiệu suất / Coach thường trống.
+  const [rangeId, setRangeId] = useState("30");
+  const [selectedDay, setSelectedDay] = useState(null);
+  const [showAllBadges, setShowAllBadges] = useState(false);
   const [streak, setStreak]               = useState(0);
   const [activityDates, setActivityDates] = useState([]);
   const [dailyHistory, setDailyHistory]   = useState([]);
@@ -384,7 +417,13 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
       .finally(() => setLoading(false));
   }, [user?.googleId]);
 
-  const badges = useMemo(() => evaluateBadges(streak, stats), [streak, stats]);
+  const badgeState = useMemo(() => badgeProgress(BADGES, {
+    streak,
+    quizzes: stats?.quizzesCompleted ?? 0,
+    flashcards: stats?.flashcardsStudied ?? 0,
+    formulas: stats?.formulasViewed ?? 0,
+  }), [streak, stats]);
+  const badges = badgeState.all;
 
   // Toast "vừa mở khóa huy hiệu" — chỉ báo khi phát hiện huy hiệu MỚI so với lần trước
   // (localStorage). Lần đầu chạy tính năng này (chưa có key), âm thầm chốt trạng thái hiện
@@ -410,23 +449,34 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
     }
   }, [user?.googleId, loading, badges]);
 
-  const dailyHistoryMap = useMemo(() => {
-    const m = {};
-    dailyHistory.forEach(day => { m[day.date] = { quizzes: day.quizzes, flashcardIds: day.flashcardIds }; });
-    return m;
-  }, [dailyHistory]);
+  const scopeDays = useMemo(() => daysInScope(dailyHistory, { rangeId, day: selectedDay, today }), [dailyHistory, rangeId, selectedDay, today]);
+  const summary = useMemo(() => summarize(scopeDays), [scopeDays]);
+  const detailDate = selectedDay || today;
+  const detailDayData = dailyHistory.find((d) => d.date === detailDate) || { quizzes: [], flashcardIds: [] };
+  const rangeLabel = RANGES.find((r) => r.id === rangeId)?.label || "30 ngày";
+  const scopeLabel = selectedDay ? formatDateLabel(selectedDay) : rangeId === "all" ? "Toàn bộ" : `${rangeLabel} qua`;
+  const hasQuizData = summary.topics.length > 0;
+  const weakTopics = summary.topics.filter(t => t.rate < 60);
+  const strongTopics = summary.topics.filter(t => t.rate >= 80);
+  const days7 = studiedDaysLast7(activityDates, today);
 
-  const selectedDayData = dailyHistoryMap[selectedDate] || { quizzes: [], flashcardIds: [] };
-  const dayTopicPerf = useMemo(() => computeTopicPerf(selectedDayData.quizzes), [selectedDayData]);
-
-  const filteredTopicPerf = dayTopicPerf.filter(t => t.topic !== "Đề thi THPT");
-  const hasQuizData = filteredTopicPerf.length > 0;
-  const weakTopics   = filteredTopicPerf.filter(t => t.rate < 60);
-  const strongTopics = filteredTopicPerf.filter(t => t.rate >= 80);
-  const selectedDateLabel = formatDateLabel(selectedDate);
+  // Câu tóm tắt + biểu cảm của Mimi theo độ chính xác trong phạm vi đang xem.
+  const headlineText = summary.quizCount === 0
+    ? (selectedDay ? `Chưa có bài kiểm tra nào trong ngày ${formatDateLabel(selectedDay).toLowerCase()}.` : "Chưa có bài kiểm tra nào trong khoảng này. Làm thử một bài nhé!")
+    : `Bạn đã làm ${summary.quizCount} bài, đúng ${summary.accuracy}% câu hỏi.`;
+  const mimiExpr = summary.accuracy == null ? "wink" : summary.accuracy >= 80 ? "star" : summary.accuracy >= 50 ? "happy" : "surprised";
+  const mimiReaction = loading || isGuest ? null : { expr: mimiExpr, at: `${rangeId}|${selectedDay}|${summary.accuracy}` };
+  const scopeTag = (
+    <span className="inline-flex items-center gap-1 text-[0.7rem] font-semibold text-text-muted dark:text-[#94A3B8] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] rounded-full py-0.5 pl-2 pr-2 shrink-0">
+      {scopeLabel}
+      {selectedDay && (
+        <button type="button" aria-label="Bỏ chọn ngày" onClick={() => setSelectedDay(null)} className="bg-transparent border-none p-0 cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0] flex"><X size={12} /></button>
+      )}
+    </span>
+  );
 
   return (
-    <PageShell width="wide" title="Tiến độ học tập" description="Phân tích từ lịch sử quiz và flashcard. Chọn một ngày trên lịch để xem chi tiết." onBack={() => setActiveTab("dashboard")}>
+    <PageShell width="wide" title="Tiến độ học tập" description="Phân tích từ lịch sử kiểm tra và flashcard. Bấm một ngày trên lịch để xem riêng ngày đó." onBack={() => setActiveTab("dashboard")}>
 
           {/* Guest gate — khách chưa có tài khoản nên mời đăng nhập, không mời mua Premium */}
           {isGuest && (
@@ -465,28 +515,57 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
           )}
 
           <div className={isGuest ? "blur-[3px] pointer-events-none select-none opacity-70" : undefined} inert={isGuest}>
-          {/* Ô số liệu: hai ô đầu theo ngày đang chọn trên lịch, hai ô sau là tổng (chuỗi, huy hiệu). */}
+          {/* Khung tóm tắt (giống khung lời chào Dashboard): câu tóm tắt + chọn phạm vi, Mimi phản ứng theo độ chính xác. */}
+          <section className={`${CARD} relative mt-[56px] md:mt-[64px] mb-4 md:mb-5 bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 p-5 md:px-8 md:py-7`}>
+            <MimiMascot width={130} className="md:hidden absolute right-2 -top-[62px]" reaction={mimiReaction} />
+            <MimiMascot width={190} className="hidden md:block absolute right-8 -top-[72px]" reaction={mimiReaction} />
+            <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>{scopeLabel}</div>
+            <h2 className="m-0 mt-1.5 max-w-[640px] text-[1.25rem] md:text-[1.6rem] leading-[1.25] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">
+              {loading ? "Đang tải tiến độ của bạn…" : headlineText}
+            </h2>
+            <p className="m-0 mt-1.5 text-[0.85rem] text-text-muted dark:text-[#94A3B8]">Tuần này bạn học {days7}/7 ngày{streak > 0 ? ` · chuỗi ${streak} ngày liên tiếp` : ""}.</p>
+            <div role="tablist" aria-label="Khoảng thời gian" className="mt-4 inline-flex gap-1 p-1 rounded-[12px] border border-[#F1E3BF] dark:border-[#334155] bg-white/70 dark:bg-[#0F172A]">
+              {RANGES.map((r) => {
+                const on = !selectedDay && rangeId === r.id;
+                return (
+                  <button
+                    key={r.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={on}
+                    onClick={() => { setRangeId(r.id); setSelectedDay(null); }}
+                    className={`border-none rounded-[9px] px-3.5 py-1.5 text-[0.8rem] font-semibold cursor-pointer transition-colors ${on ? "bg-navy-btn dark:bg-accent text-white" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"}`}
+                  >
+                    {r.label}
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Ô số liệu theo phạm vi đang xem. */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-5">
-            <StatCard icon={ClipboardList} tone={TONE.blue}   value={selectedDayData.quizzes.length}      label="Quiz đã làm" sublabel={selectedDateLabel} />
-            <StatCard icon={Layers}        tone={TONE.green}  value={selectedDayData.flashcardIds.length} label="Thẻ đã ôn"   sublabel={selectedDateLabel} />
-            <StatCard icon={Flame}         tone={TONE.orange} value={streak}                              label="Ngày học liên tiếp" />
-            <StatCard icon={Award}         tone={TONE.amber}  value={badges.filter(b => b.unlocked).length} label={`Huy hiệu / ${badges.length}`} />
+            <StatCard icon={ClipboardList} tone={TONE.blue}   value={summary.quizCount}     label="Bài kiểm tra" sublabel={scopeLabel} />
+            <StatCard icon={Target}        tone={TONE.green}  value={summary.accuracy ?? 0} label={summary.accuracy == null ? "Độ chính xác (chưa có bài)" : "% câu đúng"} sublabel={scopeLabel} />
+            <StatCard icon={Layers}        tone={TONE.purple} value={summary.cardsReviewed} label="Lượt ôn flashcard" sublabel={scopeLabel} />
+            <StatCard icon={Flame}         tone={TONE.orange} value={streak}                label="Ngày học liên tiếp" />
           </div>
 
           {/* Chuỗi học + Hiệu suất theo chủ đề + Coach gợi ý ôn tập — 1 hàng ngang trên desktop */}
-          <div className="flex flex-col gap-4 md:gap-5 lg:grid lg:grid-cols-3 lg:items-stretch mb-4 md:mb-5">
-            {/* Streak activity chart — click a day to see what was studied that day */}
+          <div className="flex flex-col gap-4 md:gap-5 lg:grid lg:grid-cols-3 lg:items-start mb-4 md:mb-5">
+            {/* Lịch: bấm một ngày để xem riêng ngày đó (bấm lại ngày đang chọn thì bỏ chọn) */}
             <StreakChart
               activityDates={activityDates}
-              selectedDate={selectedDate}
-              onSelectDate={setSelectedDate}
-              selectedDayData={selectedDayData}
+              selectedDate={selectedDay}
+              detailDate={detailDate}
+              onSelectDate={(d) => setSelectedDay((cur) => (cur === d ? null : d))}
+              selectedDayData={detailDayData}
               formulaMap={formulaMap}
             />
 
-            {/* Topic performance — scoped to the day selected on the calendar above */}
+            {/* Hiệu suất theo chủ đề — theo phạm vi đang xem */}
             <div className={`${CARD} p-4 md:p-6 relative overflow-hidden`}>
-              <SectionHeader icon={BarChart2} tone={TONE.blue} title="Hiệu suất theo chủ đề" aside={<DayTag>{selectedDateLabel}</DayTag>} />
+              <SectionHeader icon={BarChart2} tone={TONE.blue} title="Hiệu suất theo chủ đề" aside={scopeTag} />
 
               {loading ? (
                 <div className="animate-pulse">
@@ -522,29 +601,26 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                   </div>
                 </>
               ) : hasQuizData ? (
-                filteredTopicPerf.map(t => <TopicBar key={t.topic} {...t} />)
+                summary.topics.map(t => <TopicBar key={t.topic} {...t} />)
               ) : (
                 <EmptyState
-                  message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
-                  ctaLabel="Làm quiz ngay"
+                  message={selectedDay ? "Ngày này chưa có bài kiểm tra." : "Chưa có bài kiểm tra nào trong khoảng này."}
+                  ctaLabel="Làm bài kiểm tra"
                   onCta={() => setActiveTab("quiz")}
                 />
               )}
             </div>
 
-            {/* AI Coach suggestions — scoped to the same selected day, giờ nằm chung hàng với Chuỗi học/Hiệu suất */}
+            {/* Coach gợi ý ôn tập — chủ đề dưới 60%: công thức nên xem lại + nút luyện ngay / tạo bộ thẻ */}
             <div className={`${CARD} p-4 md:p-6`}>
-              <SectionHeader icon={Target} tone={TONE.green} title="Coach gợi ý ôn tập" aside={<DayTag>{selectedDateLabel}</DayTag>} />
+              <SectionHeader icon={Target} tone={TONE.green} title="Coach gợi ý ôn tập" aside={scopeTag} />
 
               {loading ? (
                 <div className="animate-pulse flex flex-col gap-3.5">
                   {[0, 1].map(i => (
                     <div key={i}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="h-3 w-20 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
-                        <div className="h-4 w-14 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
-                      </div>
-                      <div className="flex gap-2 pl-[19px]">
+                      <div className="h-3 w-24 bg-[#F1F5F9] dark:bg-[#334155] rounded mb-2" />
+                      <div className="flex gap-2">
                         <div className="h-7 w-36 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
                         <div className="h-7 w-32 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
                       </div>
@@ -553,54 +629,58 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                 </div>
               ) : !isPremium ? (
                 <EmptyState
-                  message="Nâng cấp Premium để nhận gợi ý ôn tập cá nhân hóa theo điểm yếu của bạn."
+                  message="Nâng cấp Premium để nhận gợi ý ôn tập theo điểm yếu của bạn."
                   ctaLabel="Nâng cấp Premium"
                   onCta={() => setActiveTab("premium")}
                 />
               ) : weakTopics.length === 0 && hasQuizData ? (
-                <div className="text-center py-3">
-                  <CheckCircle size={28} color="#10B981" className="mx-auto mb-2 block" />
-                  <p className="m-0 text-[0.82rem] text-success font-semibold">
-                    Tốt lắm! Bạn học đều tất cả chủ đề trong ngày {selectedDateLabel}.
-                  </p>
-                </div>
+                <EmptyState mood="star" message="Tốt lắm! Không có chủ đề nào dưới 60% trong khoảng này." />
               ) : weakTopics.length === 0 ? (
                 <EmptyState
-                  message={`Chưa có quiz nào trong ngày ${selectedDateLabel}. Chọn ngày khác trên lịch hoặc làm quiz ngay!`}
-                  ctaLabel="Bắt đầu quiz"
+                  message="Làm vài bài kiểm tra để Coach biết bạn cần ôn chủ đề nào."
+                  ctaLabel="Làm bài kiểm tra"
                   onCta={() => setActiveTab("quiz")}
                 />
               ) : (
-                weakTopics.map(t => {
-                  const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
-                  return (
-                    <div key={t.topic} className="mb-3.5">
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <AlertTriangle size={13} color="#F97316" />
-                        <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">
-                          {t.topic}
-                        </span>
-                        <span className="text-[0.68rem] font-bold text-white bg-error rounded py-px px-1.5">
-                          {t.rate}% đúng
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-1.5 pl-[19px]">
-                        {suggested.map(f => (
-                          <FormulaChip key={f.id} formula={f} onViewDetail={onViewDetail} />
-                        ))}
-                        {suggested.length === 0 && (
-                          <span className="text-xs text-[#94A3B8]">Chưa có công thức cho chủ đề này.</span>
+                <div className="flex flex-col gap-4">
+                  {weakTopics.map(t => {
+                    const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
+                    return (
+                      <div key={t.topic} className="rounded-[12px] border border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] p-3">
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <AlertTriangle size={13} color="#F97316" />
+                          <span className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0]">{t.topic}</span>
+                          <span className="ml-auto text-[0.68rem] font-bold text-white bg-error rounded py-px px-1.5">{t.rate}% đúng</span>
+                        </div>
+                        {suggested.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5 mb-2.5">
+                            {suggested.map(f => (
+                              <FormulaChip key={f.id} formula={f} onViewDetail={onViewDetail} />
+                            ))}
+                          </div>
                         )}
+                        <div className="flex flex-wrap gap-2">
+                          {onPracticeTopic && (
+                            <button type="button" onClick={() => onPracticeTopic(t.topic)} className={`${BTN_PRIMARY} !py-2 !px-3.5 !text-[0.78rem]`}>
+                              <ClipboardList size={14} /> Luyện chủ đề này
+                            </button>
+                          )}
+                          {onCreateTopicDeck && (
+                            <button type="button" onClick={() => onCreateTopicDeck(t.topic)} className={`${BTN_SECONDARY} !py-2 !px-3.5 !text-[0.78rem]`}>
+                              <Layers size={14} /> Tạo bộ flashcard
+                            </button>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
 
-          {/* Badges — luôn hiển thị đầy đủ danh sách, huy hiệu chưa mở khóa đóng vai trò mục tiêu */}
-          <BadgesSection badges={badges} />
+          {/* Huy hiệu — gọn: đã mở + mốc kế tiếp của từng loại (có thanh tiến độ); bấm để xem đủ 15 */}
+          <BadgesSection state={badgeState} showAll={showAllBadges} onToggle={() => setShowAllBadges((v) => !v)} />
 
           {/* Strong topics callout */}
           {strongTopics.length > 0 && (

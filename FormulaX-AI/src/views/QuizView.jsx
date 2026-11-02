@@ -91,8 +91,9 @@ export default function QuizView({
   useEffect(() => { if (initialMode) onConsumeInitialMode?.(); }, [initialMode, onConsumeInitialMode]);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
   // Topic: allMode=true → tất cả chủ đề (other buttons disabled); allMode=false → chọn nhiều chủ đề
-  const [allMode, setAllMode] = useState(true);
-  const [selectedTopics, setSelectedTopics] = useState([]);
+  // initialMode { mode: "pool", topics }: mở từ Coach ở trang Tiến độ → chọn sẵn chủ đề đang yếu.
+  const [allMode, setAllMode] = useState(() => !initialMode?.topics?.length);
+  const [selectedTopics, setSelectedTopics] = useState(() => initialMode?.topics || []);
   // Grade: allGradeMode=true → tất cả các lớp; allGradeMode=false → chọn nhiều lớp
   const [allGradeMode, setAllGradeMode] = useState(true);
   const [selectedGrades, setSelectedGrades] = useState([]);
