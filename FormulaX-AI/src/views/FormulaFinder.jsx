@@ -15,6 +15,7 @@ import { compressImageFile } from "../utils/imageCompress";
 import { problemToFinderMessage, nextGuidanceRequest, busyWaitSeconds } from "../utils/ocrProblems";
 import { retryFinderBusyOnce } from "../utils/finderBusyRetry";
 import { isFollowUpQuestion } from "../utils/askedProblems";
+import { latexToPlainText } from "../utils/mathLines";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -275,9 +276,9 @@ export default function FormulaFinder({
       const newId = Date.now().toString();
       sessionIdRef.current = newId;
       setCurrentSessionId(newId);
-      const autoName = firstUserMsg.text.length > 45
-        ? firstUserMsg.text.slice(0, 45) + "..."
-        : firstUserMsg.text;
+      // Tên tự đặt = đề đầu tiên, đổi LaTeX thành chữ thường trước khi cắt 45 ký tự (cắt chuỗi LaTeX thì ra "$y ...").
+      const plainFirst = latexToPlainText(firstUserMsg.text);
+      const autoName = plainFirst.length > 45 ? plainFirst.slice(0, 45) + "..." : plainFirst;
       const newSession = {
         id: newId,
         name: autoName,
@@ -930,7 +931,8 @@ export default function FormulaFinder({
                       className="flex-1 text-left py-2.5 px-2.5 bg-transparent border-none cursor-pointer min-w-0"
                     >
                       <div className="text-[0.82rem] font-medium text-primary dark:text-[#E2E8F0] whitespace-nowrap overflow-hidden text-ellipsis">
-                        {session.name}
+                        {/* Tên cũ (trước 2026-11-02) còn LaTeX thô → đổi lúc hiển thị. */}
+                        {latexToPlainText(session.name)}
                       </div>
                       <div className="text-[0.68rem] text-[#94A3B8] mt-0.5">
                         {formatDate(session.updatedAt)}

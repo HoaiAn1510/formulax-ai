@@ -1,7 +1,7 @@
 // Test tách biểu thức dài của AI Finder thành nhiều dòng (src/utils/mathLines.js). Chạy: npm run test:math
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { splitMathLines } from "../src/utils/mathLines.js";
+import { splitMathLines, latexToPlainText } from "../src/utils/mathLines.js";
 
 const R = String.raw;
 
@@ -77,4 +77,14 @@ test("ô ? luôn nằm trọn trong một khúc (không bị tách khỏi vế t
     assert.match(withBlank[0], /=\s*\?$/);
     assert.equal(chunks.join(" ").replace(/[\s,]/g, "").length > 0, true);
   }
+});
+
+test("latexToPlainText: tên cuộc trò chuyện trong lịch sử không còn $ và lệnh LaTeX", () => {
+  assert.equal(latexToPlainText("Tìm cực trị của hàm số $y = x^3 - 3x + 1$"), "Tìm cực trị của hàm số y = x³ - 3x + 1");
+  assert.equal(latexToPlainText(R`Giải phương trình $4^x - 3 \cdot 2^x - 4 = 0$`), "Giải phương trình 4^x - 3 · 2^x - 4 = 0");
+  assert.equal(latexToPlainText(R`Tính tích phân từ $0$ đến $1$ của $x \cdot e^x \, dx$`), "Tính tích phân từ 0 đến 1 của x · e^x dx");
+  assert.equal(latexToPlainText(R`Góc $A = 60^\circ$, $\frac{1}{2}$, $\sqrt{3}$, $\pi$`), "Góc A = 60°, 1/2, √(3), π");
+  assert.equal(latexToPlainText("Tìm cực trị của hàm số $y ..."), "Tìm cực trị của hàm số y ..."); // bị cắt giữa chừng
+  assert.equal(latexToPlainText("Hình chóp S.ABCD có đáy là hình vuông cạnh 3"), "Hình chóp S.ABCD có đáy là hình vuông cạnh 3");
+  assert.equal(latexToPlainText(null), "");
 });
