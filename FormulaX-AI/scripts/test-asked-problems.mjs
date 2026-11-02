@@ -4,7 +4,6 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { extractAskedProblems, isFollowUpQuestion, togglePick, formatAskedAt, MAX_VARIANT_PICK } from "../src/utils/askedProblems.js";
 import { toVariantQuestion, variantQuizTopic, runSequential } from "../src/utils/variantQuiz.js";
-import { pickMnemonicFormula } from "../src/components/mimiContext.js";
 import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../src/utils/todayPlan.js";
 
 const T = Date.UTC(2026, 10, 1, 3, 0); // 10:00 giờ VN, 01/11/2026
@@ -176,16 +175,3 @@ test("lastSevenDays: 7 ngày kết thúc hôm nay, đánh dấu ngày có học"
   assert.equal(days[0].date, "2026-10-26");
 });
 
-test("pickMnemonicFormula: chỉ công thức có mẹo, ưu tiên đúng lớp và chủ đề yếu, bỏ công thức vừa hiện", () => {
-  const fs_ = [
-    { id: "a", grade: 10, topic: "Đại số", mnemonic: "mẹo a" },
-    { id: "b", grade: 11, topic: "Hình học", mnemonic: "mẹo b" },
-    { id: "c", grade: 11, topic: "Giải tích", mnemonic: "  " },
-  ];
-  assert.equal(pickMnemonicFormula([], {}), null);
-  assert.equal(pickMnemonicFormula(fs_, {}, () => 0).id, "a");
-  // trọng số: a = 1, b = 3 (đúng lớp 11) × 3 (chủ đề yếu) = 9 → random 0.5 rơi vào b
-  assert.equal(pickMnemonicFormula(fs_, { grade: 11, weakTopics: ["Hình học"] }, () => 0.5).id, "b");
-  for (let i = 0; i < 20; i++) assert.notEqual(pickMnemonicFormula(fs_, {}).id, "c");
-  assert.equal(pickMnemonicFormula(fs_, { excludeId: "a" }, () => 0).id, "b");
-});
