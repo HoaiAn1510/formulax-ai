@@ -18,6 +18,11 @@ export default function MimiMascot({ width = 230, className = "", withSymbols = 
           <stop offset="0" stopColor="#FBBF24" />
           <stop offset="1" stopColor="#F59E0B" />
         </linearGradient>
+        <linearGradient id={`mimi-crown-${gid}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#FEF3C7" />
+          <stop offset=".45" stopColor="#FCD34D" />
+          <stop offset="1" stopColor="#F59E0B" />
+        </linearGradient>
       </defs>
       <g transform="translate(29 30)">
         <g className="mimi-ear">
@@ -28,16 +33,15 @@ export default function MimiMascot({ width = 230, className = "", withSymbols = 
         <path d="M130 50 L127 20 L104 35Z" fill="#B45309" opacity=".45" />
         <path d="M14 84 C14 44 44 28 86 28 C128 28 158 44 158 84 L158 118 L14 118Z" fill={`url(#mimi-${gid})`} />
         {crown && (
-          <g>
-            {/* Vương miện: 3 chóp có ngọc tròn, dải viền dưới, ngồi trên đỉnh đầu (y ≈ 32). */}
-            <path d="M56 33 L52 4 L70 18 L86 -6 L102 18 L120 4 L116 33Z" fill="#FCD34D" stroke="#B45309" strokeWidth="2.5" strokeLinejoin="round" />
-            <rect x="55" y="26" width="62" height="9" rx="3" fill="#F59E0B" stroke="#B45309" strokeWidth="2.5" />
-            <circle cx="52" cy="4" r="4.5" fill="#FDE68A" stroke="#B45309" strokeWidth="2" />
-            <circle cx="86" cy="-6" r="5" fill="#FDE68A" stroke="#B45309" strokeWidth="2" />
-            <circle cx="120" cy="4" r="4.5" fill="#FDE68A" stroke="#B45309" strokeWidth="2" />
-            <circle cx="86" cy="30.5" r="3.2" fill="#E11D48" />
-            <circle cx="70" cy="30.5" r="2.4" fill="#2563EB" />
-            <circle cx="102" cy="30.5" r="2.4" fill="#2563EB" />
+          // Vương miện nhỏ, nét mảnh, vàng ánh kim, hơi nghiêng — đội lệch trên đỉnh đầu (bản trước to, viền dày, trông thô).
+          <g transform="rotate(-8 86 30)">
+            <path d="M68 30 L65.5 15 L76 22 L86 10 L96 22 L106.5 15 L104 30Z" fill={`url(#mimi-crown-${gid})`} stroke="#B45309" strokeWidth="1.4" strokeLinejoin="round" />
+            <path d="M68 30 L104 30 L103.4 34 L68.6 34Z" fill="#F59E0B" stroke="#B45309" strokeWidth="1.4" strokeLinejoin="round" />
+            <path d="M74 25 L77 23.5" stroke="#FFFBEB" strokeWidth="1.2" strokeLinecap="round" opacity=".9" />
+            <circle cx="65.5" cy="15" r="2" fill="#FFFBEB" stroke="#B45309" strokeWidth="1" />
+            <circle cx="86" cy="10" r="2.3" fill="#FFFBEB" stroke="#B45309" strokeWidth="1" />
+            <circle cx="106.5" cy="15" r="2" fill="#FFFBEB" stroke="#B45309" strokeWidth="1" />
+            <circle cx="86" cy="32" r="1.6" fill="#E11D48" />
           </g>
         )}
         <text x="86" y="56" textAnchor="middle" fontFamily="Georgia,serif" fontWeight="700" fontSize="24" fill="#B45309">π</text>
