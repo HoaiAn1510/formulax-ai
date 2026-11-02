@@ -205,6 +205,7 @@ export default function FlashcardView({
   const [isFlipped, setIsFlipped] = useState(false);
   const [rememberedCount, setRememberedCount] = useState(0);
   const [reviewCount, setReviewCount] = useState(0);
+  const [mimiReaction, setMimiReaction] = useState(null);
 
   // UI state
   const [showCreateFiltered, setShowCreateFiltered] = useState(false);
@@ -314,6 +315,8 @@ export default function FlashcardView({
   // ─── Handlers: study session ──────────────────────────────────────────────
 
   const handleGrade = (remembered) => {
+    // Mimi trên thẻ phản ứng: nhớ → cười híp mắt, chưa nhớ → ngạc nhiên.
+    setMimiReaction({ expr: remembered ? "happy" : "surprised", at: Date.now() });
     if (remembered) setRememberedCount(prev => prev + 1);
     else setReviewCount(prev => prev + 1);
 
@@ -768,8 +771,8 @@ export default function FlashcardView({
 
           {/* Thẻ lật 3D */}
           <div className="relative w-full mt-[58px] md:mt-[64px]">
-            <MimiMascot width={104} className="md:hidden absolute right-2 -top-[60px] z-[2]" />
-            <MimiMascot width={190} className="hidden md:block absolute right-10 -top-[86px] z-[2]" />
+            <MimiMascot width={104} className="md:hidden absolute right-2 -top-[60px] z-[2]" reaction={mimiReaction} />
+            <MimiMascot width={190} className="hidden md:block absolute right-10 -top-[86px] z-[2]" reaction={mimiReaction} />
             <div
               role="button"
               tabIndex={0}
