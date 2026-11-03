@@ -4,7 +4,8 @@
 
 // Tối đa số bài cho một lần "Luyện lại dạng bài" (chủ dự án chốt): 5 → 3 (2026-11-01) vì mỗi câu giờ dùng 2 lần gọi
 // Gemini (sinh đề + giải kiểm chéo), hạn mức free 15 lần/phút dùng chung với Trợ lý hướng dẫn.
-export const MAX_VARIANT_PICK = 3;
+// → 5 (2026-11-03): Gemini đã trả phí, hạn mức theo phút không còn là giới hạn chính.
+export const MAX_VARIANT_PICK = 5;
 const MAX_TEXT = 2000; // = MAX_MESSAGE_CHARS của backend
 
 // id tin nhắn là Date.now() lúc gửi (FormulaFinder.jsx) → dùng làm thời điểm hỏi. Không hợp lệ thì lấy giờ

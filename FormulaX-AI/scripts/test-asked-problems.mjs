@@ -70,13 +70,13 @@ test("isFollowUpQuestion: hỏi lại thì true, đề mới thì false", () => 
   assert.equal(isFollowUpQuestion("tui chưa hiểu bước 2", false), false); // tin đầu tiên của cuộc trò chuyện luôn là đề
 });
 
-test("togglePick: bật/tắt, không vượt quá 3 bài", () => {
-  assert.equal(MAX_VARIANT_PICK, 3);
+test("togglePick: bật/tắt, không vượt quá 5 bài", () => {
+  assert.equal(MAX_VARIANT_PICK, 5);
   let s = [];
-  for (const k of ["a", "b", "c", "d", "e"]) s = togglePick(s, k);
-  assert.deepEqual(s, ["a", "b", "c"]);
-  assert.deepEqual(togglePick(s, "b"), ["a", "c"]);
-  assert.deepEqual(togglePick(togglePick(s, "b"), "d"), ["a", "c", "d"]);
+  for (const k of ["a", "b", "c", "d", "e", "f", "g"]) s = togglePick(s, k);
+  assert.deepEqual(s, ["a", "b", "c", "d", "e"]);
+  assert.deepEqual(togglePick(s, "b"), ["a", "c", "d", "e"]);
+  assert.deepEqual(togglePick(togglePick(s, "b"), "f"), ["a", "c", "d", "e", "f"]);
 });
 
 test("formatAskedAt theo giờ Việt Nam", () => {
