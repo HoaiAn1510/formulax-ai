@@ -4,6 +4,7 @@ import LegalModal from "../components/LegalModal";
 import PageShell from "../components/PageShell";
 import GuestLockNotice from "../components/GuestLockNotice";
 import { useGuestGate } from "../utils/useGuestGate";
+import SocialLinks from "../components/SocialLinks";
 
 // Nút "đã khóa" đặt vào chỗ control của một dòng cài đặt — khách vẫn thấy tùy chọn tồn tại.
 function LockedControl({ label, onClick }) {
@@ -260,6 +261,12 @@ export default function SettingsView({
                 />
               </>
             )}
+          </div>
+
+          {/* Trang mạng xã hội của FormulaX (config/social.js). */}
+          <div className="glass-card p-4 dark:bg-[#1E293B] dark:border-[#334155] mt-4">
+            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Theo dõi FormulaX</h2>
+            <SocialLinks variant="list" />
           </div>
 
           {/* Pháp lý — bắt buộc phải tiếp cận được sau khi đăng nhập, không chỉ ở màn đăng nhập:
