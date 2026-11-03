@@ -3,6 +3,7 @@ import { AlertCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import LegalModal from "../components/LegalModal";
 import LoginBackground from "../components/LoginBackground";
+import SocialLinks from "../components/SocialLinks";
 
 // Google icon SVG
 function GoogleIcon() {
@@ -148,6 +149,9 @@ export default function LoginView() {
           Chính sách bảo mật
         </button>
       </p>
+
+      {/* Trang mạng xã hội của FormulaX (config/social.js). */}
+      <SocialLinks className="relative z-[1] mt-3" />
 
       {legalDoc && <LegalModal doc={legalDoc} onClose={() => setLegalDoc(null)} />}
     </div>
