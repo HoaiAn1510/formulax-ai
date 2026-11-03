@@ -163,18 +163,18 @@ function Privacy() {
         </ul>
         <p>
           <strong>Trợ lý AI:</strong> câu hỏi bạn gửi, kèm tối đa 10 tin nhắn gần nhất trong cuộc
-          trò chuyện, được chuyển tới dịch vụ AI của Google (Gemini) để tạo câu trả lời. Ở giai đoạn thử nghiệm, Google có thể dùng nội dung này để cải thiện dịch vụ. Nội dung gửi đi{" "}
+          trò chuyện, được chuyển tới dịch vụ AI của Google (Gemini) để tạo câu trả lời. FormulaX dùng gói Gemini trả phí: Google không dùng nội dung này để cải thiện dịch vụ của họ. Nội dung gửi đi{" "}
           <strong>không kèm tên, email hay mã tài khoản</strong> của bạn. Một số câu hỏi (tối đa
           150 ký tự đầu) được ghi vào nhật ký máy chủ để cải thiện chất lượng trả lời, không kèm
           thông tin định danh. Vì vậy, đừng nhập thông tin cá nhân vào khung chat.
         </p>
-        {/* Khớp với OCR_PRIVACY_NOTICE (src/config/features.js) — đổi một chỗ thì đổi cả hai, vd khi
-            bật thanh toán Gemini (gói trả phí không dùng dữ liệu để cải thiện dịch vụ). */}
+        {/* Khớp với OCR_PRIVACY_NOTICE (src/config/features.js) — đổi một chỗ thì đổi cả hai. Từ 2026-11-03 dùng gói Gemini
+            trả phí (không dùng dữ liệu để cải thiện dịch vụ); quay lại gói miễn phí thì phải ghi lại điều đó. */}
         <p>
           <strong>Ảnh đề bài:</strong> Khi bạn gửi ảnh đề bài, ảnh được chuyển tới dịch vụ AI của
-          Google (Gemini) để đọc nội dung đề. FormulaX không lưu ảnh trên máy chủ. Ở giai đoạn thử
-          nghiệm, Google có thể dùng ảnh để cải thiện dịch vụ, vì vậy bạn chỉ nên chụp phần đề bài,
-          tránh chụp tên, khuôn mặt hay bài làm.
+          Google (Gemini) để đọc nội dung đề. FormulaX không lưu ảnh trên máy chủ và dùng gói Gemini
+          trả phí, nên Google không dùng ảnh để cải thiện dịch vụ của họ. Bạn vẫn chỉ nên chụp phần đề
+          bài, tránh chụp tên, khuôn mặt hay bài làm.
         </p>
       </Section>
 

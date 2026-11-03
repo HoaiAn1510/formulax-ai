@@ -10,5 +10,7 @@ export const FINDER_IMAGE_INPUT_ENABLED = true;
 // điều khoản của Google, nội dung gửi qua gói miễn phí có thể được dùng để cải thiện dịch vụ — phải
 // nói thật điều đó. Khi đã bật thanh toán cho key Gemini (gói trả phí không dùng dữ liệu để cải
 // thiện sản phẩm), đổi câu này, ví dụ bỏ câu giữa.
+// → 2026-11-03: chủ dự án xác nhận GEMINI_API_KEY trên Render đã bật thanh toán (dùng chung cho Trợ lý AI và đọc ảnh
+//   đề) — đã bỏ câu "Google có thể dùng ảnh để cải thiện dịch vụ". Nếu quay lại gói miễn phí thì phải thêm lại.
 export const OCR_PRIVACY_NOTICE =
-  "Ảnh được gửi tới dịch vụ AI của Google để đọc đề. Ở giai đoạn thử nghiệm, Google có thể dùng ảnh để cải thiện dịch vụ, nên chỉ chụp phần đề bài, tránh chụp tên, khuôn mặt hay bài làm.";
+  "Ảnh được gửi tới dịch vụ AI của Google để đọc đề. Chỉ nên chụp phần đề bài, tránh chụp tên, khuôn mặt hay bài làm.";

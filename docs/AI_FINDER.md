@@ -234,9 +234,10 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
   no_formula, lỗi, AI bận. `no_formula` hiện gợi ý "viết rõ tên hình…" + nút **Sửa đề** ngay trong tab
   (lưu xong thì hỏi lại). Bài từ ảnh gửi `source: "image"` lên `/api/chat` (chỉ để ghi log). Tin gửi AI = đề đã xác nhận + "(Hình vẽ cho biết: …)", không kèm lịch
   sử; đề + câu trả lời được thêm vào cuộc trò chuyện hiện tại để lưu/đồng bộ như tin gõ tay.
-- **Thông báo quyền riêng tư** nằm ở hằng số `OCR_PRIVACY_NOTICE` (`src/config/features.js`). Đang dùng
-  gói Gemini MIỄN PHÍ — Google có thể dùng nội dung để cải thiện dịch vụ, câu thông báo phải nói thật
-  điều đó. Khi bật thanh toán cho key Gemini thì sửa câu này.
+- **Thông báo quyền riêng tư** nằm ở hằng số `OCR_PRIVACY_NOTICE` (`src/config/features.js`). Từ 2026-11-03
+  dùng gói Gemini TRẢ PHÍ (chủ dự án xác nhận `GEMINI_API_KEY` trên Render đã bật thanh toán, dùng chung cho Trợ lý AI
+  và đọc ảnh) — đã bỏ câu "Google có thể dùng nội dung để cải thiện dịch vụ" ở thông báo này và ở `LegalModal.jsx`.
+  Nếu quay lại gói miễn phí thì phải ghi lại điều đó ở cả hai chỗ.
 
 ### Kiểm tra › "Luyện lại bài đã hỏi" — Gemini ra đề cùng dạng (từ 2026-11-01)
 
@@ -244,7 +245,7 @@ Ngoại lệ có chủ đích với nguyên tắc "AI không tính ra kết qu�
 nhưng backend không tin AI — mọi câu phải qua kiểm.
 - **"Bài đã hỏi"** lấy từ `chat_sessions` (khách: localStorage), không có bảng riêng: tin user + tin bot ngay sau
   có `answer.type === "solution"` (`utils/askedProblems.js`). Câu hỏi lại về bài vừa hỏi ("tui chưa hiểu bước 2", "là sao" —
-  `isFollowUpQuestion`, từ 2026-11-02: tin sau tin đầu tiên mà không có dữ kiện của một đề) không tính là bài mới và không có nút "Làm bài kiểm tra cùng dạng này". Chọn tối đa 3 bài (`MAX_VARIANT_PICK`, hạ từ 5
+  `isFollowUpQuestion`, từ 2026-11-02: tin sau tin đầu tiên mà không có dữ kiện của một đề) không tính là bài mới và không có nút "Làm bài kiểm tra cùng dạng này". Chọn tối đa 5 bài (`MAX_VARIANT_PICK`; từng hạ còn 3 lúc dùng gói free, nâng lại 5 ngày 2026-11-03 khi Gemini trả phí — trước đó hạ từ 5
   vì mỗi câu dùng 2 lần gọi Gemini, hạn mức free 15/phút chung với Finder); frontend gọi LẦN LƯỢT, không song song.
 - **`POST /api/quiz/variant`** (`backend/lib/quizVariant.js`): theo đúng mẫu `/api/chat` (xác thực, khách 403, limiter
   chat). **Mỗi câu = 1 lượt AI Finder** (`ai_usage_daily`), hoàn lượt khi lỗi / không qua kiểm; nộp bài KHÔNG trừ
