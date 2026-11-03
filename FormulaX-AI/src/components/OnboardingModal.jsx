@@ -16,7 +16,7 @@ const STEPS = [
     icon: Sparkles,
     color: "#10B981",
     bg: "rgba(16,185,129,0.08)",
-    title: "Thử Finder AI ngay!",
+    title: "Thử Trợ lý hướng dẫn ngay!",
     subtitle: "Gõ bất kỳ câu hỏi toán nào — AI sẽ tìm đúng công thức cho bạn.",
   },
   {

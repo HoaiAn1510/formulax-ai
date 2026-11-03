@@ -51,7 +51,7 @@ function getRecommendedFormulas(formulas, { userGrade, weakTopics, recentTopic, 
 // bg: nền nhạt dần từ màu của mục sang trắng, cùng kiểu nền khung lời chào (bg-hero-amber). Bản tối giữ nền phẳng.
 const SHORTCUTS = [
   { tab: "library", icon: BookOpen, label: "Thư viện", tone: "bg-white text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]", bg: "bg-[linear-gradient(135deg,#DCEBFF_0%,#F3F8FF_55%,#FFFFFF_100%)]" },
-  { tab: "finder", icon: Search, label: "Tìm kiếm AI", tone: "bg-white text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]", bg: "bg-[linear-gradient(135deg,#EDE6FF_0%,#F8F5FF_55%,#FFFFFF_100%)]" },
+  { tab: "finder", icon: Search, label: "Trợ lý hướng dẫn", tone: "bg-white text-[#7C3AED] dark:bg-[#7C3AED]/20 dark:text-[#C4B5FD]", bg: "bg-[linear-gradient(135deg,#EDE6FF_0%,#F8F5FF_55%,#FFFFFF_100%)]" },
   { tab: "flashcard", icon: Zap, label: "Flashcard", tone: "bg-white text-accent dark:bg-accent/20 dark:text-[#FCD34D]", bg: "bg-hero-amber" },
   { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", tone: "bg-white text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]", bg: "bg-[linear-gradient(135deg,#FFE1E7_0%,#FFF5F7_55%,#FFFFFF_100%)]" },
 ];
@@ -221,8 +221,12 @@ export default function Dashboard({
               <h2 id="dash-intent-title" className="m-0 text-base md:text-lg font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">Hôm nay bạn gặp khó khăn gì?</h2>
               <span className="text-xs text-text-muted dark:text-[#94A3B8] font-medium">Chọn một việc, mình đưa bạn tới thẳng đúng chỗ</span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-              {SHORTCUTS.map(({ tab, icon: Icon, label, tone, bg }) => {
+            {/* Trợ lý hướng dẫn + Kiểm tra là hai chức năng chính (chủ dự án yêu cầu 2026-11-03): thẻ to, nổi bật, nằm trên
+                cùng, giữa hai thẻ có dải giải thích chúng nối với nhau (hỏi bài → AI gợi ý các bước → làm bài cùng dạng, đổi
+                số liệu). Thư viện + Flashcard thành hai thẻ gọn ở hàng dưới. */}
+            {(() => {
+              const card = (tab, featured) => {
+                const { icon: Icon, label, tone, bg } = SHORTCUTS.find((x) => x.tab === tab);
                 const o = INTENT_OPTIONS.find((x) => x.tab === tab);
                 const picked = intent === o.id;
                 return (
@@ -230,25 +234,53 @@ export default function Dashboard({
                     key={tab}
                     type="button"
                     aria-pressed={picked}
-                    // Chọn ở đây cũng tính là lựa chọn hôm nay (cá nhân hóa "Học tiếp" + nhiệm vụ), như chọn trong hộp lúc mở app.
+                    // Chọn ở đây cũng tính là lựa chọn hôm nay (cá nhân hóa "Học tiếp"), như chọn trong hộp lúc mở app.
                     onClick={() => { writeLast(user?.googleId, o.id); setActiveTab(tab); }}
-                    className={`${CARD} ${bg} dark:bg-none group flex flex-col items-start gap-2.5 p-4 md:p-5 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${picked ? "!border-accent" : ""}`}
+                    className={`${CARD} ${bg} dark:bg-none group h-full text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${
+                      featured ? "flex flex-col items-start gap-3 p-5 md:p-6 ring-2 ring-accent/20 dark:ring-accent/25 shadow-[0_18px_36px_-22px_rgba(217,119,6,0.55)]" : "flex items-center gap-3.5 p-4"
+                    } ${picked ? "!border-accent" : ""}`}
                   >
-                    <span className="w-full flex items-center gap-2.5">
-                      <span className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${tone}`}><Icon size={18} /></span>
-                      <span className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">{label}</span>
-                      {picked && <span className="ml-auto text-[0.62rem] font-bold uppercase tracking-wide text-[#92400E] dark:text-[#FCD34D] bg-accent-light dark:bg-accent/15 rounded-full px-2 py-0.5">Hôm nay</span>}
+                    <span className={`flex items-center gap-2.5 ${featured ? "w-full" : "shrink-0"}`}>
+                      <span className={`${featured ? "w-12 h-12" : "w-10 h-10"} rounded-[11px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${tone}`}><Icon size={featured ? 22 : 18} /></span>
+                      {featured && <span className="text-[0.72rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">{label}</span>}
+                      {picked && featured && <span className="ml-auto text-[0.62rem] font-bold uppercase tracking-wide text-[#92400E] dark:text-[#FCD34D] bg-accent-light dark:bg-accent/15 rounded-full px-2 py-0.5">Hôm nay</span>}
                     </span>
-                    <span className="text-[0.95rem] font-bold leading-[1.35] text-primary dark:text-[#E2E8F0]">{o.title}</span>
-                    {/* Bỏ tiền tố "Thư viện: " của câu giải thích — tên chức năng đã ghi ngay trên thẻ. */}
-                    <span className="block text-[0.76rem] leading-[1.5] text-text-muted dark:text-[#94A3B8] first-letter:uppercase">{o.what.replace(/^[^:]+:\s*/, "")}</span>
-                    <span className="mt-auto pt-1 inline-flex items-center gap-1 text-[0.8rem] font-semibold text-navy-btn dark:text-[#FCD34D]">
-                      {o.cta} <ChevronRight size={15} className="transition-transform group-hover:translate-x-0.5" />
+                    <span className={featured ? "contents" : "flex-1 min-w-0"}>
+                      {!featured && <span className="block text-[0.66rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">{label}</span>}
+                      <span className={`block font-bold leading-[1.35] text-primary dark:text-[#E2E8F0] ${featured ? "text-[1.1rem] md:text-[1.2rem]" : "text-[0.9rem]"}`}>{o.title}</span>
+                      {/* Bỏ tiền tố "Thư viện: " của câu giải thích — tên chức năng đã ghi ngay trên thẻ. */}
+                      <span className={`block leading-[1.5] text-text-muted dark:text-[#94A3B8] first-letter:uppercase ${featured ? "text-[0.82rem]" : "text-[0.74rem] line-clamp-2"}`}>{o.what.replace(/^[^:]+:s*/, "")}</span>
                     </span>
+                    {featured ? (
+                      <span className="mt-auto inline-flex items-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white text-[0.85rem] font-semibold px-4 py-2.5 transition-colors group-hover:bg-navy-btn-hover dark:group-hover:bg-accent-hover">
+                        {o.cta} <ChevronRight size={15} />
+                      </span>
+                    ) : (
+                      <ChevronRight size={16} className="text-[#CBD5E1] dark:text-[#475569] shrink-0 transition-transform group-hover:translate-x-0.5" />
+                    )}
                   </button>
                 );
-              })}
-            </div>
+              };
+              return (
+                <>
+                  <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_150px_minmax(0,1fr)] gap-3 md:gap-4 items-stretch">
+                    {card("finder", true)}
+                    {/* Dải nối: máy tính là cột giữa có mũi tên; điện thoại là dòng ngang giữa hai thẻ. */}
+                    <div className="flex lg:flex-col items-center justify-center gap-2 lg:gap-3 text-center rounded-[14px] border border-dashed border-accent/40 bg-accent-light/40 dark:bg-accent/10 px-3 py-2.5 lg:py-4">
+                      <ArrowRight size={20} className="text-accent dark:text-[#FCD34D] shrink-0 rotate-90 lg:rotate-0" />
+                      <span className="text-[0.72rem] leading-[1.45] font-semibold text-[#92400E] dark:text-[#FCD34D]">
+                        Hỏi bài → AI gợi ý các bước → bấm "Làm bài kiểm tra cùng dạng": đề mới, chỉ đổi số liệu
+                      </span>
+                    </div>
+                    {card("quiz", true)}
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4">
+                    {card("library", false)}
+                    {card("flashcard", false)}
+                  </div>
+                </>
+              );
+            })()}
           </section>
 
           {/* ─── Gợi ý hôm nay (thẻ Thử thách và Nhiệm vụ hôm nay đã bỏ — chủ dự án chốt 2026-11-02) ─── */}

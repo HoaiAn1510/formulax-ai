@@ -64,10 +64,10 @@ export default function App() {
   const { isGuest, requireGoogle } = useGuestGate();
 
   const [activeTab, setActiveTab]   = useState("dashboard");
-  // "asked" = mở Kiểm tra thẳng vào chế độ "Luyện lại bài đã hỏi" (từ Tìm kiếm AI). QuizView chỉ đọc lúc mount
+  // "asked" = mở Kiểm tra thẳng vào chế độ "Luyện lại bài đã hỏi" (từ Trợ lý hướng dẫn). QuizView chỉ đọc lúc mount
   // rồi gọi onConsumeInitialMode để xoá — lần sau mở Kiểm tra bằng lối khác thì vào màn mặc định.
   const [quizEntryMode, setQuizEntryMode] = useState(null);
-  // preselect { text, formulaIds }: mở từ nút dưới một câu hướng dẫn của Tìm kiếm AI → chọn sẵn đúng bài đó.
+  // preselect { text, formulaIds }: mở từ nút dưới một câu hướng dẫn của Trợ lý hướng dẫn → chọn sẵn đúng bài đó.
   // Từ Coach ở trang Tiến độ: mở Kiểm tra với đúng chủ đề đang yếu (đề có sẵn).
   const openQuizTopic = useCallback((topic) => {
     setQuizEntryMode({ mode: "pool", topics: [topic] });

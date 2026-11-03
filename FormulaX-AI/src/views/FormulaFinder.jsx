@@ -791,14 +791,14 @@ export default function FormulaFinder({
     // dung ra khỏi phép tính đó — view chỉ lấp đúng phần trống giữa header và thanh điều hướng.
     <PageShell fill width="full" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
 
-      {/* Tiêu đề + lượt còn lại (mockup Tìm kiếm AI) */}
+      {/* Tiêu đề + lượt còn lại (mockup Trợ lý hướng dẫn) */}
       <div className="flex justify-between items-end gap-3 mb-3 md:mb-4 md:pt-2">
         <div className="min-w-0">
           <button className="bg-transparent border-none p-0 text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors hover:text-primary dark:hover:text-[#E2E8F0]" onClick={() => setActiveTab("dashboard")}>
             <ArrowLeft size={14} />
             <span>Về trang chủ</span>
           </button>
-          <h1 className="m-0 mt-1 text-[1.35rem] md:text-[1.9rem] font-bold tracking-[-0.03em] leading-[1.15] text-primary dark:text-[#E2E8F0]">Tìm kiếm AI</h1>
+          <h1 className="m-0 mt-1 text-[1.35rem] md:text-[1.9rem] font-bold tracking-[-0.03em] leading-[1.15] text-primary dark:text-[#E2E8F0]">Trợ lý hướng dẫn</h1>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">

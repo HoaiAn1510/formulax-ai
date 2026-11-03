@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Crown, Check, X, ShieldCheck, Smartphone, Landmark, Award, Target, Zap, ChevronDown, ChevronUp, Gem, Loader2, CheckCircle2, XCircle, Clock, FileDown, Lock } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useGuestGate } from "../utils/useGuestGate";
-import { supabase, checkPremiumStatus } from "../lib/supabase";
+import { supabase, checkPremiumStatus, fetchWithAuth } from "../lib/supabase";
 import { showToast } from "../components/Toast";
 import PageShell from "../components/PageShell";
 import MimiMascot from "../components/MimiMascot";
@@ -29,7 +29,16 @@ const PAYMENT_RECHECK_MAX = 10;
 const PLAN_DISPLAY = {
   monthly: { price: "49.000 ₫", unit: "/tháng", label: "1 tháng" },
   "6months": { price: "249.000 ₫", unit: "/6 tháng", label: "6 tháng" },
+  "teacher-month": { price: "20.000 ₫", unit: "/1 tháng", label: "Ưu đãi tri ân · 1 tháng" },
 };
+
+// "Tháng tri ân ngành giáo dục" (chủ dự án chốt 2026-11-03): gói 1 tháng 20.000đ, mọi tài khoản Google, mỗi tài khoản
+// 1 lần, cả tháng 11/2026 giờ VN. Backend (lib/payos.js PROMO_WINDOW, /payos/promo, /payos/create) mới là nơi quyết
+// định; ở đây chỉ để hiện banner/gói. Giá gốc 49.000đ / 249.000đ giữ nguyên.
+const PROMO_PLAN = "teacher-month";
+const PROMO_START = Date.parse("2026-11-01T00:00:00+07:00");
+const PROMO_END = Date.parse("2026-12-01T00:00:00+07:00");
+const PROMO_END_LABEL = "30/11/2026";
 const MONTHLY_PRICE = 49000;
 const SIX_MONTH_PRICE = 249000;
 const SIX_MONTH_SAVINGS_PERCENT = Math.round((1 - SIX_MONTH_PRICE / (MONTHLY_PRICE * 6)) * 100);
@@ -74,6 +83,25 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentNotice, setPaymentNotice] = useState(null); // { type: "success" | "error" | "pending" | "checking", text }
   const [selectedPlan, setSelectedPlan] = useState("monthly");
+  // Ưu đãi tri ân: trong thời gian chương trình thì luôn hiện banner; gói 20.000đ chỉ hiện khi backend xác nhận tài
+  // khoản chưa dùng (promo.used === false). Mặc định chọn sẵn gói ưu đãi khi còn dùng được.
+  const [promoWindowOpen] = useState(() => { const t = Date.now(); return t >= PROMO_START && t < PROMO_END; });
+  const [promo, setPromo] = useState(null); // { active, used } từ backend
+  useEffect(() => {
+    if (!promoWindowOpen || isGuest || !user?.googleId) return;
+    let alive = true;
+    fetchWithAuth(`${BACKEND_URL}/api/payment/payos/promo`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!alive || !d) return;
+        setPromo(d);
+        if (d.active && !d.used) setSelectedPlan(PROMO_PLAN);
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [promoWindowOpen, isGuest, user?.googleId]);
+  const promoAvailable = Boolean(promo?.active && !promo.used);
+  const planIds = promoAvailable ? [PROMO_PLAN, "monthly", "6months"] : ["monthly", "6months"];
   const expiryInfo = formatExpiry(premiumExpiry);
 
   // Kết quả PayOS trả về qua /api/payment/payos/return → /?payment=success|failed (App.jsx mở thẳng
@@ -161,6 +189,10 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
       });
       const data = await res.json();
       if (!res.ok || !data.checkoutUrl) {
+        if (data.code === "promo_used" || data.code === "promo_ended") {
+          setPromo((p) => ({ ...(p || {}), active: data.code !== "promo_ended", used: data.code === "promo_used" }));
+          setSelectedPlan("monthly");
+        }
         throw new Error(data.error || "Không tạo được giao dịch PayOS");
       }
       // Chuyển hướng sang cổng thanh toán PayOS thật — is_premium chỉ được set khi webhook xác nhận.
@@ -187,13 +219,13 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   };
 
   // Rút còn 4 lý do mạnh nhất, mỗi lý do phủ 1 giá trị riêng biệt (AI chuyên sâu, thời gian,
-  // khối lượng luyện đề, offline) — tránh trùng lặp như "Trợ lý Finder AI" với "Hiểu sâu bản
-  // chất" (cùng nói về Finder AI) hay "Yêu thích & Lưu trữ" (giá trị chung chung, không đặc thù Premium).
+  // khối lượng luyện đề, offline) — tránh trùng lặp như "Trợ lý Trợ lý hướng dẫn" với "Hiểu sâu bản
+  // chất" (cùng nói về Trợ lý hướng dẫn) hay "Yêu thích & Lưu trữ" (giá trị chung chung, không đặc thù Premium).
   const goals = [
     {
       icon: Target,
       title: "Hiểu sâu bản chất",
-      desc: "Finder AI chỉ ra công thức phù hợp trong thư viện và hướng dẫn từng bước để bạn tự giải — Premium hỏi không giới hạn lượt.",
+      desc: "Trợ lý hướng dẫn chỉ ra công thức phù hợp trong thư viện và hướng dẫn từng bước để bạn tự giải — Premium hỏi không giới hạn lượt.",
       color: "secondary"
     },
     {
@@ -229,7 +261,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
   // free === "Khóa" hiện dấu ✗, premium === "Mở" hiện dấu ✓.
   const features = [
     { name: "Luyện đề trắc nghiệm", free: "Quiz: 10 lượt/ngày", premium: "Quiz: không giới hạn" },
-    { name: "Trợ lý AI Finder", free: "10 lượt hỏi mỗi ngày", premium: "Không giới hạn lượt hỏi" },
+    { name: "Trợ lý hướng dẫn", free: "10 lượt hỏi mỗi ngày", premium: "Không giới hạn lượt hỏi" },
     { name: "Quét ảnh đề bài", free: "5 lần/ngày", premium: "50 lần/ngày" },
     { name: "Quiz Điền đáp án, Kết hợp", free: "Khóa", premium: "Mở" },
     { name: "Trang Tiến độ: Hiệu suất theo chủ đề, Coach", free: "Khóa", premium: "Mở" },
@@ -267,7 +299,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
         <div className="sticky top-[65px] md:top-0 z-20 -mx-4 md:-mx-8 -mt-6 md:-mt-8 mb-6 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-sm border-b border-line dark:border-[#334155] py-2.5 px-4 md:px-8">
           <div className="flex items-center gap-2 min-w-0">
             <Crown size={16} fill="#F59E0B" color="#F59E0B" className="shrink-0" />
-            <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0] truncate">Premium chỉ từ {PLAN_DISPLAY.monthly.price}{PLAN_DISPLAY.monthly.unit}</span>
+            <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0] truncate">{promoAvailable ? `Tháng tri ân: 1 tháng chỉ ${PLAN_DISPLAY[PROMO_PLAN].price}` : `Premium chỉ từ ${PLAN_DISPLAY.monthly.price}${PLAN_DISPLAY.monthly.unit}`}</span>
           </div>
           <button
             onClick={() => handleUpgrade(selectedPlan)}
@@ -303,6 +335,31 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                   <XCircle size={18} className="shrink-0" />
                 )}
                 <span>{paymentNotice.text}</span>
+              </div>
+            )}
+
+            {/* Banner sự kiện "Tháng tri ân ngành giáo dục" — chỉ trong tháng 11/2026. */}
+            {promoWindowOpen && (
+              <div className="relative overflow-hidden rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-7 py-4 md:py-5 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 shadow-[0_14px_30px_-16px_rgba(15,23,42,0.7)]">
+                <div className="flex-1 min-w-0">
+                  <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-[#FBBF24]">Tháng tri ân ngành giáo dục · 01/11 – {PROMO_END_LABEL}</div>
+                  <div className="mt-1 text-[1.05rem] md:text-[1.2rem] font-bold leading-snug">
+                    Tri ân thầy cô, FormulaX giảm gói 1 tháng còn <span className="text-[#FBBF24]">20.000 ₫</span> <span className="text-[0.85rem] font-medium text-[#94A3B8] line-through">49.000 ₫</span>
+                  </div>
+                  <div className="mt-1 text-[0.78rem] text-[#CBD5E1]">
+                    {promo?.used ? "Bạn đã dùng ưu đãi này — mỗi tài khoản chỉ một lần. Cảm ơn bạn!" : "Dành cho mọi tài khoản Google, mỗi tài khoản dùng một lần."}
+                  </div>
+                </div>
+                {promoAvailable && !isPremium && (
+                  <button
+                    type="button"
+                    onClick={() => handleUpgrade(PROMO_PLAN)}
+                    disabled={isProcessing}
+                    className="btn btn-premium h-10 px-5 text-[0.85rem] rounded-[12px] shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Nhận ưu đãi 20.000 ₫</span>}
+                  </button>
+                )}
               </div>
             )}
 
@@ -358,19 +415,25 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 <div className="flex flex-col min-w-0">
                 {/* Plan selector — user Premium cũng dùng để gia hạn thêm (thời gian cộng dồn vào hạn hiện có) */}
                 <div className="grid grid-cols-2 gap-2.5 md:gap-3 mt-6 lg:mt-0 max-w-[560px]">
-                  {["monthly", "6months"].map((planId) => {
+                  {planIds.map((planId) => {
                     const isSelected = selectedPlan === planId;
+                    const isPromo = planId === PROMO_PLAN;
                     return (
                       <button
                         key={planId}
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => setSelectedPlan(planId)}
-                        className={`relative rounded-[14px] py-3 px-3.5 text-left border-[1.5px] transition-colors duration-200 cursor-pointer ${isSelected
+                        className={`relative rounded-[14px] py-3 px-3.5 text-left border-[1.5px] transition-colors duration-200 cursor-pointer ${isPromo ? "col-span-2" : ""} ${isSelected
                             ? "border-accent bg-white dark:bg-[#0F172A] shadow-[0_8px_20px_-12px_rgba(217,119,6,0.6)]"
                             : "border-line bg-white/70 dark:border-[#334155] dark:bg-[#0F172A]/60 hover:border-[#F1E3BF]"
                           }`}
                       >
+                        {isPromo && (
+                          <span className="absolute -top-2.5 right-2.5 bg-[#E11D48] text-white text-[0.62rem] font-bold py-0.5 px-2 rounded-full">
+                            Tri ân thầy cô · đến {PROMO_END_LABEL}
+                          </span>
+                        )}
                         {planId === "6months" && (
                           <span className="absolute -top-2.5 right-2.5 bg-success text-white text-[0.62rem] font-bold py-0.5 px-2 rounded-full">
                             Tiết kiệm {SIX_MONTH_SAVINGS_PERCENT}%
@@ -381,6 +444,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                           <span className="whitespace-nowrap">{PLAN_DISPLAY[planId].price}</span>
                           {/* Điện thoại: đơn vị xuống dòng riêng — trước đây "49.000 đ /tháng" bị ngắt giữa số và "đ". */}
                           <span className="block sm:inline text-[0.7rem] font-medium text-text-muted dark:text-[#94A3B8] sm:ml-1">{PLAN_DISPLAY[planId].unit}</span>
+                          {isPromo && <span className="ml-2 text-[0.75rem] font-medium text-[#94A3B8] line-through">49.000 ₫</span>}
                         </div>
                       </button>
                     );

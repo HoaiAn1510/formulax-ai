@@ -1,6 +1,6 @@
 import express from "express";
 import { supabaseAdmin } from "../lib/supabaseAdmin.js";
-import { PLAN_CONFIG, isValidPlan, computeStackedExpiry, generateOrderCode, getPayOS } from "../lib/payos.js";
+import { PLAN_CONFIG, PROMO_PLAN, PROMO_WINDOW, isPromoActive, isValidPlan, computeStackedExpiry, generateOrderCode, getPayOS } from "../lib/payos.js";
 import { sanitizeRef } from "../lib/channelTracking.js";
 
 const router = express.Router();
@@ -62,9 +62,38 @@ async function readSignupSource(googleId) {
   }
 }
 
+// Tài khoản đã mua gói khuyến mãi thành công chưa (mỗi tài khoản 1 lần). null = đọc lỗi → nơi gọi từ chối (fail closed).
+async function promoAlreadyUsed(googleId) {
+  const { data, error } = await supabaseAdmin
+    .from("payments").select("order_id").eq("google_id", googleId).eq("plan", PROMO_PLAN).eq("status", "success").limit(1);
+  if (error) {
+    console.error("[PayOS promo] Đọc payments lỗi:", error.message);
+    return null;
+  }
+  return (data || []).length > 0;
+}
+
 function payosConfigured() {
   return Boolean(process.env.PAYOS_CLIENT_ID && process.env.PAYOS_API_KEY && process.env.PAYOS_CHECKSUM_KEY);
 }
+
+// GET /api/payment/payos/promo — trạng thái ưu đãi "Tháng tri ân ngành giáo dục" cho tài khoản đang đăng nhập:
+// { active, used, amount, months, endsAt }. Chưa đăng nhập Google → 401 (trang Premium vẫn hiện banner, không hiện gói).
+router.get("/promo", async (req, res) => {
+  const active = isPromoActive();
+  const base = { active, amount: PLAN_CONFIG[PROMO_PLAN].amount, months: PLAN_CONFIG[PROMO_PLAN].months, endsAt: PROMO_WINDOW.end };
+  if (!active) return res.json({ ...base, used: false });
+  if (!supabaseAdmin) return res.status(500).json({ error: "Hệ thống thanh toán chưa sẵn sàng." });
+  let googleId;
+  try {
+    googleId = await extractVerifiedGoogleId(req);
+  } catch (authErr) {
+    return res.status(401).json({ error: authErr.message });
+  }
+  const used = await promoAlreadyUsed(googleId);
+  if (used === null) return res.status(500).json({ error: "Chưa kiểm tra được ưu đãi." });
+  res.json({ ...base, used });
+});
 
 // POST /api/payment/payos/create — tạo đơn hàng, trả checkoutUrl để frontend redirect sang PayOS
 router.post("/create", async (req, res) => {
@@ -90,7 +119,17 @@ router.post("/create", async (req, res) => {
     }
 
     if (!isValidPlan(plan)) {
-      return res.status(400).json({ error: "Plan không hợp lệ (monthly | 6months)" });
+      return res.status(400).json({ error: "Plan không hợp lệ (monthly | 6months | teacher-month)" });
+    }
+
+    // Gói khuyến mãi: chỉ trong thời gian chương trình và mỗi tài khoản một lần (kiểm ở server, không tin client).
+    if (PLAN_CONFIG[plan].promo) {
+      if (!isPromoActive()) {
+        return res.status(400).json({ error: "Chương trình ưu đãi tháng tri ân đã kết thúc.", code: "promo_ended" });
+      }
+      const used = await promoAlreadyUsed(userId);
+      if (used === null) return res.status(500).json({ error: "Chưa kiểm tra được ưu đãi, bạn thử lại nhé." });
+      if (used) return res.status(409).json({ error: "Mỗi tài khoản chỉ dùng ưu đãi tháng tri ân một lần.", code: "promo_used" });
     }
 
     const { amount, label } = PLAN_CONFIG[plan];

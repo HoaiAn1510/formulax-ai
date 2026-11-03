@@ -3,7 +3,7 @@
 // File thuần, không import gì — test bằng `npm run test:asked` (scripts/test-asked-problems.mjs).
 
 // Tối đa số bài cho một lần "Luyện lại dạng bài" (chủ dự án chốt): 5 → 3 (2026-11-01) vì mỗi câu giờ dùng 2 lần gọi
-// Gemini (sinh đề + giải kiểm chéo), hạn mức free 15 lần/phút dùng chung với Tìm kiếm AI.
+// Gemini (sinh đề + giải kiểm chéo), hạn mức free 15 lần/phút dùng chung với Trợ lý hướng dẫn.
 export const MAX_VARIANT_PICK = 3;
 const MAX_TEXT = 2000; // = MAX_MESSAGE_CHARS của backend
 
