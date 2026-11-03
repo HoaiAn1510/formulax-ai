@@ -38,7 +38,7 @@ Không bảng role, không chức năng sửa dữ liệu.
   `ai_premium_turn`, `ai_quota_exceeded`, `ai_busy`, `ocr_quota_exceeded`, `ocr_rate_limited`,
   `chat_ip_limited` — chỉ ngày + tên + số đếm. Gọi CHẠY NGẦM (không await), lỗi bỏ qua: không bao giờ
   làm chậm/hỏng request của học sinh. Thêm chỉ số mới = sửa check constraint (migration mới) + `USAGE_METRICS`.
-  Ba bộ giới hạn IP (chat 12/phút, 300/ngày; quét ảnh 30/phút) nằm ở `lib/ipLimiters.js`, chỉ thêm `handler` đếm
+  Ba bộ giới hạn IP (chat 60/phút, 3.000/ngày; quét ảnh 60/phút — nâng 2026-11-03 từ 12/300/30 vì cả lớp chung một IP) nằm ở `lib/ipLimiters.js`, chỉ thêm `handler` đếm
   số lần bị chặn — `test/ipLimiters.test.js` giữ mã 429, body JSON, header RateLimit/Retry-After như cũ.
 - **Frontend** (`RootGate.jsx` trong `main.jsx`): khách / chưa đăng nhập → `<App/>` ngay, không gọi `/me`.
   Tài khoản Google → `<App/>` ngay, `/me` chạy ngầm, true thì chuyển sang `AdminApp` (`React.lazy`,

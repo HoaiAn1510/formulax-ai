@@ -221,7 +221,7 @@ màn "Các bài trong ảnh" (`components/ImageProblemsPanel.jsx`) → tab từn
 - **Giới hạn quét** (không tính vào 10 lượt AI Finder): Free 5/ngày (hạ từ 20 ngày 2026-10-20), Premium 50/ngày (bảng
   `ocr_usage_daily`, RPC `increment_ocr_usage`/`refund_ocr_usage` — migration 009, tăng trước rồi
   hoàn khi lỗi qua `runWithQuota`), 5 lần/phút mỗi tài khoản (`lib/perKeyLimiter.js`, trong bộ nhớ),
-  30/phút mỗi IP. Khách 403. Ảnh không có đề (problems rỗng) vẫn tính lượt quét.
+  60/phút mỗi IP (trước 2026-11-03: 30). Khách 403. Ảnh không có đề (problems rỗng) vẫn tính lượt quét.
 - **Không lưu ảnh, không ghi ảnh hay chữ trong đề vào log** — `[ocr]` chỉ có số liệu (model, ms, KB,
   số bài, số chỗ [?], token).
 - **Màn chọn bài:** chỗ `[?]` (Gemini không đọc rõ) tô đỏ — khác ô `?` amber của AI Finder; bài còn
