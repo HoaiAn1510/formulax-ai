@@ -51,8 +51,7 @@ export default function BottomNav({
   const tabs = [
     { id: "dashboard", label: "Dashboard",  icon: LayoutDashboard },
     { id: "library",   label: "Thư viện",   icon: BookOpen },
-    // Tên chức năng chủ dự án đổi 2026-11-03 (trước là "Finder AI" / "Tìm kiếm AI"); điện thoại hiện tên ngắn dưới icon.
-    { id: "finder",    label: "Trợ lý hướng dẫn", shortLabel: "Trợ lý", icon: Sparkles },
+    { id: "finder",    label: "Finder AI",  icon: Sparkles },
     { id: "flashcard", label: "Flashcard",  icon: Layers },
     { id: "quiz",      label: "Luyện đề",   icon: GraduationCap },
     // Lối vào trang Premium luôn có trên thanh điều hướng (trước đây chỉ qua các nút "Nâng cấp" rải trong app).
@@ -116,14 +115,7 @@ export default function BottomNav({
           >
             <ActiveAccentBar show={active} />
             <div className={`${navIconClass(active)} ${tab.highlight && !active ? "!text-premium" : ""}`}><Icon size={20} /></div>
-            {tab.shortLabel ? (
-              <>
-                <span className="md:hidden">{tab.shortLabel}</span>
-                <span className={`${collapsibleLabel} max-md:hidden`}>{tab.label}</span>
-              </>
-            ) : (
-              <span className={collapsibleLabel}>{tab.label}</span>
-            )}
+            <span className={collapsibleLabel}>{tab.label}</span>
           </button>
         );
       })}
