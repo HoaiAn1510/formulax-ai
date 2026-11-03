@@ -18,7 +18,7 @@ export const INTENT_OPTIONS = [
     icon: Search,
     color: "text-success bg-success/10",
     title: "Mình có một bài không biết làm",
-    what: "Tìm kiếm AI: gõ hoặc chụp đề, AI chỉ ra công thức cần dùng và các bước thay dữ kiện. AI không tự tính ra đáp án thay bạn.",
+    what: "Trợ lý hướng dẫn: gõ hoặc chụp đề, AI chỉ ra công thức cần dùng và các bước thay dữ kiện. AI không tự tính ra đáp án thay bạn.",
     cta: "Hỏi AI một bài",
   },
   {

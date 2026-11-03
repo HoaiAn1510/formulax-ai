@@ -21,7 +21,7 @@ export default function AskedProblemsPicker({
       <div className="rounded-2xl border border-[#E6E9F0] dark:border-[#334155] bg-[#FAFBFD] dark:bg-[#0F172A]/40 p-5 text-center">
         <Lock size={20} className="mx-auto text-accent" />
         <p className="mt-2 mb-3 text-[0.85rem] text-text-muted dark:text-[#94A3B8] leading-[1.55]">
-          Luyện lại dạng bài cần đăng nhập Google: đề mới do AI tạo từ các bài bạn đã hỏi trong Tìm kiếm AI.
+          Luyện lại dạng bài cần đăng nhập Google: đề mới do AI tạo từ các bài bạn đã hỏi trong Trợ lý hướng dẫn.
         </p>
         <button type="button" onClick={onLogin} className="btn btn-primary mx-auto">Đăng nhập Google</button>
       </div>
@@ -46,10 +46,10 @@ export default function AskedProblemsPicker({
         </div>
         <h3 className="mt-3 mb-1 text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0]">Chưa có bài nào để luyện lại</h3>
         <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8] leading-[1.55]">
-          Hỏi AI một bài trong Tìm kiếm AI. Bài nào AI đã hướng dẫn sẽ hiện ở đây để bạn luyện dạng tương tự với số liệu mới.
+          Hỏi AI một bài trong Trợ lý hướng dẫn. Bài nào AI đã hướng dẫn sẽ hiện ở đây để bạn luyện dạng tương tự với số liệu mới.
         </p>
         <button type="button" onClick={onGoFinder} className="btn btn-secondary mt-4 mx-auto">
-          <Search size={15} /> <span>Mở Tìm kiếm AI</span>
+          <Search size={15} /> <span>Mở Trợ lý hướng dẫn</span>
         </button>
       </div>
     );

@@ -20,7 +20,20 @@ export function getPayOS() {
 export const PLAN_CONFIG = {
   monthly: { amount: 49000, label: "FormulaX Pro 1 thang", months: 1 },
   "6months": { amount: 249000, label: "FormulaX Pro 6 thang", months: 6 },
+  // Khuyến mãi "Tháng tri ân ngành giáo dục" (chủ dự án chốt 2026-11-03): 1 tháng 20.000đ, mọi tài khoản Google,
+  // MỖI TÀI KHOẢN 1 LẦN (route /create kiểm đơn "success" cũ của gói này), chỉ trong PROMO_WINDOW. Không cần migration:
+  // payments.plan là text tự do, webhook cấp hạn theo `months` như gói thường.
+  "teacher-month": { amount: 20000, label: "FormulaX Tri an 1 thang", months: 1, promo: true },
 };
+
+export const PROMO_PLAN = "teacher-month";
+// Cả tháng 11/2026 theo giờ Việt Nam: [01/11 00:00, 01/12 00:00).
+export const PROMO_WINDOW = { start: "2026-11-01T00:00:00+07:00", end: "2026-12-01T00:00:00+07:00" };
+
+export function isPromoActive(now = new Date()) {
+  const t = new Date(now).getTime();
+  return t >= Date.parse(PROMO_WINDOW.start) && t < Date.parse(PROMO_WINDOW.end);
+}
 
 export function isValidPlan(plan) {
   return Object.prototype.hasOwnProperty.call(PLAN_CONFIG, plan);

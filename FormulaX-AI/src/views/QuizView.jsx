@@ -55,7 +55,7 @@ export default function QuizView({
   user,
   formulas = [],
   userGrade = null,
-  // "asked" khi mở từ nơi khác (Dashboard / Tìm kiếm AI) để vào thẳng chế độ "Luyện lại dạng bài đã hỏi".
+  // "asked" khi mở từ nơi khác (Dashboard / Trợ lý hướng dẫn) để vào thẳng chế độ "Luyện lại dạng bài đã hỏi".
   initialMode = null,
   onConsumeInitialMode,
 }) {
@@ -68,7 +68,7 @@ export default function QuizView({
   const [quizState, setQuizState] = useState("setup"); // setup, generating, active, result
   // Màn chọn đề: "pool" = đề có sẵn (questions.js), "asked" = luyện lại dạng bài đã hỏi AI.
   // initialMode: "asked" (nút trong lịch sử chat) hoặc { mode: "asked", preselect: { text, formulaIds } } (nút "Làm bài
-  // kiểm tra cùng dạng này" dưới một câu hướng dẫn của Tìm kiếm AI — chọn sẵn đúng bài đó).
+  // kiểm tra cùng dạng này" dưới một câu hướng dẫn của Trợ lý hướng dẫn — chọn sẵn đúng bài đó).
   const [setupMode, setSetupMode] = useState(initialMode === "asked" || initialMode?.mode === "asked" ? "asked" : "pool");
   const [preselect] = useState(() => initialMode?.preselect || null);
   // Nguồn của bộ đề đang làm — "variant" không trừ lượt quiz (mỗi câu đã tính 1 lượt AI ở backend).
@@ -549,7 +549,7 @@ export default function QuizView({
                     </p>
                     <p className="m-0 flex items-start gap-1.5 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
                       <Sparkles size={13} className="text-accent shrink-0 mt-0.5" />
-                      <span>{isPremium ? "Premium: tạo đề không giới hạn." : "Mỗi câu dùng 1 lượt AI (chung 10 lượt/ngày với Tìm kiếm AI), lỗi thì được hoàn lượt."}</span>
+                      <span>{isPremium ? "Premium: tạo đề không giới hạn." : "Mỗi câu dùng 1 lượt AI (chung 10 lượt/ngày với Trợ lý hướng dẫn), lỗi thì được hoàn lượt."}</span>
                     </p>
                     {!isGuest && askedItems.length > 0 && (
                       <button

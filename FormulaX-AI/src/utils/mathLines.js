@@ -122,7 +122,7 @@ export function splitMathLines(latex) {
 }
 
 // Đổi chuỗi có LaTeX thành chữ thường dễ đọc, cho chỗ chỉ hiện MỘT dòng bị cắt (tên cuộc trò chuyện trong lịch sử
-// Tìm kiếm AI) — ở đó không vẽ KaTeX được vì chuỗi có thể bị cắt giữa chừng "$y …". Ví dụ
+// Trợ lý hướng dẫn) — ở đó không vẽ KaTeX được vì chuỗi có thể bị cắt giữa chừng "$y …". Ví dụ
 // "Tìm cực trị của hàm số $y = x^3 - 3x + 1$" → "Tìm cực trị của hàm số y = x³ - 3x + 1". Không cố chính xác tuyệt
 // đối: lệnh lạ thì bỏ dấu "\" giữ tên lệnh.
 const LATEX_SYMBOLS = {

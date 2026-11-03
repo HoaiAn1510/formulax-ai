@@ -28,7 +28,7 @@ export default function PageShell({
   innerClassName = "",
   // decor={false}: tắt nét vẽ toán học hai bên lề dù bề rộng có hỗ trợ (trang Cài đặt).
   decor = true,
-  // fill: trang tự lo chiều cao (khung chat của Tìm kiếm AI) — không đệm/nền tràn, chỉ căn giữa + giới hạn bề rộng.
+  // fill: trang tự lo chiều cao (khung chat của Trợ lý hướng dẫn) — không đệm/nền tràn, chỉ căn giữa + giới hạn bề rộng.
   fill = false,
   children,
 }) {
