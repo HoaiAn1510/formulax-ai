@@ -237,7 +237,7 @@ export default function Dashboard({
                     // Chọn ở đây cũng tính là lựa chọn hôm nay (cá nhân hóa "Học tiếp"), như chọn trong hộp lúc mở app.
                     onClick={() => { writeLast(user?.googleId, o.id); setActiveTab(tab); }}
                     className={`${CARD} ${bg} dark:bg-none group h-full text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5 active:scale-[0.98] ${
-                      featured ? "flex flex-col items-start gap-3 p-5 md:p-6 ring-2 ring-accent/20 dark:ring-accent/25 shadow-[0_18px_36px_-22px_rgba(217,119,6,0.55)]" : "flex items-center gap-3.5 p-4"
+                      featured ? "flex flex-col items-start gap-3 p-5 md:p-6" : "flex items-center gap-3.5 p-4"
                     } ${picked ? "!border-accent" : ""}`}
                   >
                     <span className={`flex items-center gap-2.5 ${featured ? "w-full" : "shrink-0"}`}>
@@ -263,16 +263,26 @@ export default function Dashboard({
               };
               return (
                 <>
-                  <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_190px_minmax(0,1fr)] gap-3 md:gap-4 items-stretch">
-                    {card("finder", true)}
-                    {/* Dải nối: máy tính là cột giữa có mũi tên; điện thoại là dòng ngang giữa hai thẻ. */}
-                    <div className="flex lg:flex-col items-center justify-center gap-2 lg:gap-3 text-center rounded-[14px] border border-dashed border-accent/40 bg-accent-light/40 dark:bg-accent/10 px-3 py-2.5 lg:py-4">
-                      <ArrowRight size={20} className="text-accent dark:text-[#FCD34D] shrink-0 rotate-90 lg:rotate-0" />
-                      <span className="text-[0.76rem] leading-[1.45] font-semibold text-[#92400E] dark:text-[#FCD34D]">
-                        Hỏi bài → AI gợi ý các bước → bấm "Làm bài kiểm tra cùng dạng": đề mới, chỉ đổi số liệu
+                  {/* Một khung chung cho hai chức năng chính (sửa 2026-11-03: trước là 2 thẻ + một ô nối rỗng ở giữa, trông rời
+                      rạc): dòng 3 bước đánh số ở trên, hai thẻ cạnh nhau bên dưới, nút tròn mũi tên nối giữa hai thẻ. */}
+                  <div className="rounded-[20px] border border-line dark:border-[#334155] bg-white/60 dark:bg-[#0F172A]/40 p-3 md:p-4">
+                    <ol className="list-none m-0 p-0 mb-3 md:mb-4 flex flex-col md:flex-row md:flex-wrap md:items-center gap-x-2 gap-y-1.5 text-[0.78rem] font-semibold text-primary dark:text-[#E2E8F0]">
+                      {["Gửi bài cho Trợ lý hướng dẫn", "AI gợi ý các bước, bạn tự tính", "Làm bài kiểm tra cùng dạng, chỉ đổi số liệu"].map((t, i) => (
+                        <li key={t} className="flex items-center gap-2">
+                          {i > 0 && <ChevronRight size={14} className="hidden md:block text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
+                          <span className="w-5 h-5 rounded-full bg-navy-btn dark:bg-accent text-white text-[0.68rem] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
+                          <span>{t}</span>
+                        </li>
+                      ))}
+                    </ol>
+                    <div className="relative grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                      {card("finder", true)}
+                      {/* Nút tròn nối hai thẻ: giữa hai cột trên máy tính, giữa hai thẻ xếp dọc trên điện thoại. */}
+                      <span aria-hidden="true" className="pointer-events-none absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] shadow-[0_6px_16px_-6px_rgba(15,23,42,0.35)] flex items-center justify-center text-accent dark:text-[#FCD34D]">
+                        <ArrowRight size={18} className="rotate-90 md:rotate-0" />
                       </span>
+                      {card("quiz", true)}
                     </div>
-                    {card("quiz", true)}
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mt-3 md:mt-4">
                     {card("library", false)}
