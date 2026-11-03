@@ -263,12 +263,12 @@ export default function Dashboard({
               };
               return (
                 <>
-                  <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_150px_minmax(0,1fr)] gap-3 md:gap-4 items-stretch">
+                  <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_190px_minmax(0,1fr)] gap-3 md:gap-4 items-stretch">
                     {card("finder", true)}
                     {/* Dải nối: máy tính là cột giữa có mũi tên; điện thoại là dòng ngang giữa hai thẻ. */}
                     <div className="flex lg:flex-col items-center justify-center gap-2 lg:gap-3 text-center rounded-[14px] border border-dashed border-accent/40 bg-accent-light/40 dark:bg-accent/10 px-3 py-2.5 lg:py-4">
                       <ArrowRight size={20} className="text-accent dark:text-[#FCD34D] shrink-0 rotate-90 lg:rotate-0" />
-                      <span className="text-[0.72rem] leading-[1.45] font-semibold text-[#92400E] dark:text-[#FCD34D]">
+                      <span className="text-[0.76rem] leading-[1.45] font-semibold text-[#92400E] dark:text-[#FCD34D]">
                         Hỏi bài → AI gợi ý các bước → bấm "Làm bài kiểm tra cùng dạng": đề mới, chỉ đổi số liệu
                       </span>
                     </div>

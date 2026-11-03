@@ -350,14 +350,15 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     {promo?.used ? "Bạn đã dùng ưu đãi này — mỗi tài khoản chỉ một lần. Cảm ơn bạn!" : "Dành cho mọi tài khoản Google, mỗi tài khoản dùng một lần."}
                   </div>
                 </div>
-                {promoAvailable && !isPremium && (
+                {/* Mọi tài khoản Google đều được mua (kể cả đang Premium — gia hạn thêm 1 tháng). */}
+                {promoAvailable && (
                   <button
                     type="button"
                     onClick={() => handleUpgrade(PROMO_PLAN)}
                     disabled={isProcessing}
                     className="btn btn-premium h-10 px-5 text-[0.85rem] rounded-[12px] shrink-0 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>Nhận ưu đãi 20.000 ₫</span>}
+                    {isProcessing ? <Loader2 size={14} className="animate-spin" /> : <span>{isPremium ? "Gia hạn 1 tháng 20.000 ₫" : "Nhận ưu đãi 20.000 ₫"}</span>}
                   </button>
                 )}
               </div>
@@ -366,7 +367,8 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             {/* Section 1: Hero — MỘT khung (chủ dự án chốt 2026-11-02, trước đó chia đôi với ô navy): nền amber nhạt như
                 khung lời chào Dashboard; Mimi đội vương miện NGỒI TRÊN MÉP TRÊN của khung (chủ dự án chọn 2026-11-02):
                 máy tính ở góc phải, nhô lên vùng trống bên phải tiêu đề trang; điện thoại nhỏ hơn, giống Dashboard. */}
-            <div className="relative mt-[56px] lg:mt-0 fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 dark:shadow-none flex">
+            {/* Có banner tri ân ở trên: chừa chỗ cho Mimi (ngồi trên mép khung, cao ~124px) để không đè lên banner. */}
+            <div className={`relative mt-[56px] ${promoWindowOpen ? "lg:mt-[88px]" : "lg:mt-0"} fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 dark:shadow-none flex`}>
               <MimiMascot crown width={140} className="lg:hidden absolute right-2 -top-[70px]" />
               {/* 190px → cao ≈ 124px, đáy thân ở 148/150 khung hình → đặt -top-[122px] để thân vừa chạm mép khung. */}
               <MimiMascot crown width={190} className="hidden lg:block absolute right-14 -top-[122px]" />
