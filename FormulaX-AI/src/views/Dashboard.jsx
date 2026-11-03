@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, Search, Zap, ClipboardList, ChevronRight, ArrowRight, Flame, Lock, BarChart2, Gem, GraduationCap, Sparkles } from "lucide-react";
-import CountUp from "../components/CountUp";
+import { BookOpen, Search, Zap, ClipboardList, ChevronRight, ArrowRight, Flame, Lock, Gem, GraduationCap, Sparkles } from "lucide-react";
 import MimiMascot from "../components/MimiMascot";
 import { getActivityData } from "../lib/supabase";
 import { useGuestGate } from "../utils/useGuestGate";
@@ -165,9 +164,9 @@ export default function Dashboard({
             </div>
           </section>
 
-          {/* ─── Hôm nay: chuỗi học 7 ngày + số liệu (gộp hai thẻ cũ cho đỡ rối) ────── */}
+          {/* ─── Chuỗi học 7 ngày + lối vào trang Tiến độ ────── */}
           <section
-            aria-label="Chuỗi học và số liệu hôm nay"
+            aria-label="Chuỗi học"
             onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
             className={`${CARD} md:col-span-4 md:mt-[64px] p-4 md:p-6 flex flex-col justify-between gap-3 md:gap-4 cursor-pointer`}
           >
@@ -197,20 +196,11 @@ export default function Dashboard({
                     </div>
                   ))}
                 </div>
-                {!isNew && (
-                  <div className="grid grid-cols-3 border-t border-line dark:border-[#334155] pt-3 md:pt-4">
-                    {[
-                      { label: "Công thức xem", value: todayStats?.formulasViewed ?? 0 },
-                      { label: "Flashcard ôn", value: todayStats?.flashcardsStudied ?? 0 },
-                      { label: "Quiz hôm nay", value: todayStats?.quizzesCompleted ?? 0 },
-                    ].map((s, i) => (
-                      <div key={s.label} className={`text-center ${i === 1 ? "border-x border-line dark:border-[#334155]" : ""}`}>
-                        <div className="text-[1.25rem] md:text-[1.4rem] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]"><CountUp value={s.value} /></div>
-                        <div className="text-[0.66rem] font-semibold text-text-muted dark:text-[#94A3B8] mt-0.5">{s.label}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* Ba số "hôm nay" (công thức xem / flashcard ôn / quiz) đã bỏ — thường bằng 0 và trùng trang Tiến độ (chủ dự án
+                    chốt 2026-11-03). Cả thẻ bấm được để mở trang Tiến độ (thay cho thẻ "Xem tiến độ" đứng riêng trước đây). */}
+                <span className="inline-flex items-center gap-1 text-[0.8rem] font-semibold text-navy-btn dark:text-[#FCD34D]">
+                  Xem tiến độ học tập <ChevronRight size={15} />
+                </span>
               </>
             )}
           </section>
@@ -293,89 +283,29 @@ export default function Dashboard({
             })()}
           </section>
 
-          {/* ─── Gợi ý hôm nay (thẻ Thử thách và Nhiệm vụ hôm nay đã bỏ — chủ dự án chốt 2026-11-02) ─── */}
-          <div className="md:col-span-8 flex flex-col">
-            <section aria-label="Gợi ý hôm nay" className={`${CARD} flex-1 p-4 md:p-6`}>
-              <div className="flex justify-between items-baseline gap-3 mb-2 md:mb-3">
-                <div className={LABEL}>Gợi ý hôm nay</div>
-                <span className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] font-medium truncate">
-                  {isGuest ? "Đổi mới mỗi ngày" : userGrade ? `Theo lớp ${userGrade} và lịch sử học` : "Dựa trên lịch sử học"}
-                </span>
-              </div>
-              <ul className="list-none m-0 p-0 flex flex-col">
-                {/* Dữ liệu công thức được App tải động (chunk riêng, xem App.jsx) nên trong vài
-                    trăm ms đầu mảng còn rỗng — vẽ skeleton thay vì để trống, tránh nội dung
-                    nhảy chỗ khi danh sách gợi ý xuất hiện. */}
-                {formulas.length === 0 && [0, 1, 2].map((i) => (
-                  <li key={`skeleton-${i}`} className="py-2.5" aria-hidden="true">
-                    <div className="h-2.5 w-1/4 rounded bg-[#EEF1F6] dark:bg-[#334155] animate-pulse" />
-                    <div className="h-3.5 w-3/4 rounded bg-[#E5E7EB] dark:bg-[#334155] animate-pulse mt-2" />
-                  </li>
-                ))}
-                {recommendedFormulas.map((formula, i) => {
-                  const why = weakTopics?.includes(formula.topic) ? "Chủ đề bạn còn yếu"
-                    : recentTopic === formula.topic ? "Bạn vừa học chủ đề này"
-                      : userGrade && formula.grade === userGrade ? `Đúng chương trình lớp ${userGrade}` : "Công thức mới cho bạn";
-                  return (
-                    <li key={formula.id} className={i > 0 ? "border-t border-line dark:border-[#334155]" : ""}>
-                      <button
-                        type="button"
-                        onClick={() => onViewDetail(formula)}
-                        className="group w-full flex items-center gap-3 py-2.5 md:py-3 bg-transparent border-none text-left cursor-pointer"
-                      >
-                        <span className="flex-1 min-w-0">
-                          <span className="block text-[0.9rem] md:text-[0.95rem] font-semibold leading-[1.4] text-primary dark:text-[#E2E8F0] group-hover:text-navy-btn dark:group-hover:text-[#FCD34D] transition-colors">{formula.name}</span>
-                          <span className="block text-[0.72rem] text-text-muted dark:text-[#94A3B8] mt-0.5">{formula.topic} · Lớp {formula.grade} · {why}</span>
-                        </span>
-                        <ChevronRight size={16} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          </div>
-
-
-          {/* ─── Cột phải cạnh Gợi ý: lối vào Tiến độ (+ thẻ Premium cho tài khoản chưa Premium) ─── */}
-          <div className="md:col-span-4 flex flex-col gap-3 md:gap-5">
-          <button
-            type="button"
-            onClick={() => { if (requireGoogle()) setActiveTab("progress"); }}
-            className={`${CARD} flex-1 flex items-center gap-4 px-4 md:px-6 py-4 md:py-5 text-left cursor-pointer transition-transform duration-200 hover:-translate-y-0.5`}
-          >
-            <span className="w-11 h-11 rounded-xl bg-primary dark:bg-[#0F172A] text-[#FBBF24] flex items-center justify-center shrink-0">
-              {isGuest ? <Lock size={18} /> : <BarChart2 size={18} />}
-            </span>
-            <span className="flex-1 min-w-0">
-              <span className="block text-[0.92rem] font-bold text-primary dark:text-[#E2E8F0]">Xem tiến độ học tập</span>
-              <span className="block text-[0.75rem] text-text-muted dark:text-[#94A3B8]">Điểm mạnh, điểm yếu theo chủ đề và gợi ý ôn tập</span>
-            </span>
-            <ChevronRight size={18} className="text-[#CBD5E1] shrink-0" />
-          </button>
-
+          {/* "Gợi ý hôm nay" và thẻ "Xem tiến độ học tập" đứng riêng đã bỏ (chủ dự án chốt 2026-11-03); lối vào Tiến độ nằm
+              ở thẻ Chuỗi học. Tài khoản chưa Premium: dải mỏng mời nâng cấp trải hết bề ngang. */}
           {!isPremium && (
-            <section aria-label="Premium" className={`rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-6 py-4 md:py-5 flex flex-col gap-2 justify-center`}>
-              <div className="flex justify-between text-[0.8rem] font-semibold gap-2">
+            <section aria-label="Premium" className="md:col-span-12 rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-6 py-3.5 md:py-4 flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+              <div className="flex justify-between md:justify-start md:flex-col text-[0.8rem] font-semibold gap-2 md:gap-0.5 md:w-[260px] md:shrink-0">
                 <span>{isGuest ? "Chế độ khách" : `Còn ${remainingQuizzes}/10 quiz miễn phí hôm nay`}</span>
                 <span className="text-[#FBBF24] shrink-0">49.000 đ/tháng</span>
               </div>
               {!isGuest && (
-                <div className="h-1.5 rounded-full bg-white/15">
+                <div className="h-1.5 rounded-full bg-white/15 md:flex-1">
                   <div className="h-full rounded-full bg-[#FBBF24]" style={{ width: `${Math.max(0, Math.min(100, (remainingQuizzes / 10) * 100))}%` }} />
                 </div>
               )}
               <button
                 type="button"
                 onClick={() => setActiveTab("premium")}
-                className="bg-transparent border-none p-0 text-white text-[0.92rem] font-bold flex items-center justify-between cursor-pointer"
+                className="bg-transparent border-none p-0 text-white text-[0.92rem] font-bold flex items-center justify-between md:justify-end gap-2 cursor-pointer md:shrink-0"
               >
                 <span className="flex items-center gap-2"><Gem size={15} className="text-[#FBBF24]" /> Mở khóa không giới hạn với Premium</span>
                 <ChevronRight size={16} />
               </button>
             </section>
           )}
-          </div>
         </PageShell>
   );
 }
