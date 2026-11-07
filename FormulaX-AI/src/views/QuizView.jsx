@@ -13,7 +13,7 @@ import { useGuestGate } from "../utils/useGuestGate";
 import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from "../utils/guestQuiz";
 import { checkFillAnswer, isFillEligible } from "../utils/fillAnswer";
 import { extractAskedProblems, togglePick, MAX_VARIANT_PICK } from "../utils/askedProblems";
-import { toVariantQuestion, variantQuizTopic, runSequential, retryBusyOnce } from "../utils/variantQuiz";
+import { toVariantQuestion, variantQuizTopic, variantFailureMessage, runSequential, retryBusyOnce } from "../utils/variantQuiz";
 import PageShell from "../components/PageShell";
 import FilterPicker from "../components/FilterPicker";
 
@@ -256,10 +256,7 @@ export default function QuizView({
     );
     if (!genAliveRef.current) return;
     if (failures.length) {
-      const reason = stoppedBy?.code === "quota_exceeded" ? stoppedBy.message : stoppedBy?.message || "AI đang bận, bạn thử lại sau ít phút nhé";
-      showToast(results.length
-        ? `Tạo được ${results.length}/${items.length} câu. ${reason}`
-        : reason, results.length ? "info" : "error");
+      showToast(variantFailureMessage(results.length, items.length, failures, stoppedBy), results.length ? "info" : "error");
     }
     if (!results.length) { setQuizState("setup"); return; }
     setQuestions(results);

@@ -49,6 +49,20 @@ test("parseVariantJson: \\n trước chữ là xuống dòng, \\neq vẫn là l�
   assert.ok(!parsed.explanation.includes("\\nThay"));
 });
 
+test("parseVariantJson: sửa đúng một dấu } thừa sau options do Gemini trả (lỗi thật 2026-11-07)", () => {
+  const raw = rawAnswer();
+  const malformed = raw.replace(/(\]\s*)(,\s*"answer")/, "$1}$2");
+  assert.notEqual(malformed, raw);
+  assert.equal(parseModelJson(malformed), null);
+  const parsed = parseVariantJson(malformed);
+  assert.equal(parsed.answer, "A");
+  assert.equal(parsed.options.length, 4);
+  assert.deepEqual(validateVariant(parsed, { original: ORIGINAL, allowedIds: IDS }).errors, []);
+  assert.equal(parseVariantJson(raw).answer, "A", "JSON hợp lệ giữ nguyên");
+  assert.equal(parseVariantJson(raw.replace('"answer":"A"', '"answer":"A"}')), null,
+    "không sửa dấu } ở vị trí khác");
+});
+
 test("latexNumber hiểu số, phân số, căn, nhân ngầm; có chữ cái thì null", () => {
   assert.equal(latexNumber("5"), 5);
   assert.equal(latexNumber("-1,5"), -1.5);

@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { extractAskedProblems, isFollowUpQuestion, togglePick, formatAskedAt, MAX_VARIANT_PICK } from "../src/utils/askedProblems.js";
-import { toVariantQuestion, variantQuizTopic, runSequential, retryBusyOnce } from "../src/utils/variantQuiz.js";
+import { toVariantQuestion, variantQuizTopic, variantFailureMessage, runSequential, retryBusyOnce } from "../src/utils/variantQuiz.js";
 import { daysInScope, summarize, studiedDaysLast7, badgeProgress } from "../src/utils/progressStats.js";
 import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../src/utils/todayPlan.js";
 
@@ -140,6 +140,14 @@ test("429 có Retry-After ngắn: chờ rồi thử lại cùng bài đúng mộ
   assert.equal(result, "đề đã kiểm");
   assert.equal(calls, 2);
   assert.deepEqual(delays, ["state:34", 34000, "state:0"]);
+});
+
+test("lỗi đề không đạt kiểm tra hiển thị đúng, không gọi nhầm AI đang bận", () => {
+  const invalid = new Error("Chưa tạo được đề cùng dạng đạt kiểm tra. Bạn thử lại hoặc chọn bài khác nhé");
+  assert.equal(variantFailureMessage(0, 1, [{ error: invalid }], null), invalid.message);
+  assert.equal(variantFailureMessage(2, 4, [{ error: invalid }], null), `Tạo được 2/4 câu. ${invalid.message}`);
+  const busy = new Error("AI đang bận, bạn thử lại sau ít phút nhé");
+  assert.equal(variantFailureMessage(1, 4, [{ error: invalid }, { error: busy }], busy), `Tạo được 1/4 câu. ${busy.message}`);
 });
 
 test("không thử lại khi đề sai kiểm, chờ quá lâu hoặc 429 lần hai", async () => {

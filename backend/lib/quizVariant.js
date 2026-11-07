@@ -27,7 +27,13 @@ import { keepOcrNewlines } from "./ocrReader.js";
  * vẫn giữ là lệnh). Lỗi thật khi chạy thử 2026-11-01.
  */
 export function parseVariantJson(raw) {
-  return parseModelJson(keepOcrNewlines(raw));
+  const text = keepOcrNewlines(raw);
+  const parsed = parseModelJson(text);
+  if (parsed) return parsed;
+  // Gemini đôi khi đóng thừa object ngay sau mảng options: ..."options":[...}]},"answer":...
+  // Chỉ bỏ đúng dấu } này khi câu trả lời vốn không parse được; validateVariant vẫn kiểm toàn bộ đề.
+  const repaired = text.replace(/(\]\s*)\}(\s*,\s*"answer"\s*:)/, "$1$2");
+  return repaired === text ? null : parseModelJson(repaired);
 }
 
 // Ngân sách giống /api/chat: PHẢI nhỏ hơn timeout 45 giây của frontend (callVariant trong QuizView.jsx),

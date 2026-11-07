@@ -272,7 +272,7 @@ nhưng backend không tin AI — mọi câu phải qua kiểm.
   Không qua → hỏi lại AI một lần kèm lỗi → vẫn không qua thì 502 `variant_invalid`, báo "Chưa tạo được đề cùng dạng đạt kiểm tra" + hoàn lượt (khác 429 do AI quá tải). Bộ đọc đáp án số chỉ nhận phép gán ngắn (`x = 2`, `BC = 5`), không coi phương trình đường tròn/đường thẳng có cùng vế phải là các phương án trùng.
   Frontend gặp 429 `ai_busy` có `retryAfter` ≤ 60 giây thì hiển thị trạng thái chờ và thử lại đúng một lần cho cùng bài; hết lượt, đề không qua kiểm và 429 lần hai không gọi lặp.
   `[quiz:variant_rejected]` chỉ có số liệu + danh sách lỗi.
-- JSON parse bằng `parseVariantJson` = `keepOcrNewlines` + `parseModelJson` ("\nThay số" là xuống dòng, không phải lệnh LaTeX).
+- JSON parse bằng `parseVariantJson` = `keepOcrNewlines` + `parseModelJson` ("\nThay số" là xuống dòng, không phải lệnh LaTeX). Nếu JSON hỏng do đúng một dấu `}` thừa giữa mảng `options` và trường `answer`, bộ đọc bỏ dấu thừa rồi vẫn chạy toàn bộ `validateVariant` và kiểm đáp án; các lỗi JSON khác vẫn bị từ chối.
 - Giao diện: thẻ nhỏ trung tính "Đề do AI tạo" trên câu hỏi và phần xem lại — KHÔNG kèm câu kiểu "có thể sai, hãy đối
   chiếu" (chủ dự án chốt 2026-11-01); thẻ công thức ở phần xem lại lấy từ `formulas.js` theo id.
   **"Báo đề sai"** → `POST /api/quiz/variant/report`, CHỈ ghi log `[quiz:variant_report]` (đề + đáp án cắt ngắn, id;

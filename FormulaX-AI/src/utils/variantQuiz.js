@@ -37,6 +37,13 @@ export function variantQuizTopic(questions) {
   return topics.length === 1 ? topics[0] : "Tổng hợp";
 }
 
+/** Hiển thị lỗi thật của bài bị từ chối, kể cả khi runSequential đã thử hết mà không dừng sớm. */
+export function variantFailureMessage(resultsCount, total, failures, stoppedBy) {
+  const error = stoppedBy || failures?.at(-1)?.error;
+  const reason = error?.message || "Chưa tạo được đề cùng dạng. Bạn thử lại hoặc chọn bài khác nhé";
+  return resultsCount ? `Tạo được ${resultsCount}/${total} câu. ${reason}` : reason;
+}
+
 /** 429 theo phút: tôn trọng Retry-After ngắn, thử lại đúng một lần cho cùng bài. */
 export async function retryBusyOnce(fn, { wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)), maxWaitSeconds = 60, onWait = () => {}, shouldRetry = () => true } = {}) {
   try {
