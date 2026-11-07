@@ -9,6 +9,51 @@ test("mọi id trong METHOD_GROUPS đều có trong formulas.js", () => {
   assert.deepEqual(missing, []);
 });
 
+test("giới hạn hàm viết LaTeX và đạo hàm hàm hợp kéo đúng thẻ vào 8 ứng viên", () => {
+  const limit = "Tính $\\lim_{x\\to 2} \\dfrac{x^2 - 4}{x - 2}$.";
+  const derivative = "Tính đạo hàm của y = (2x² − 3)^5.";
+  assert.ok(shortlistFormulas([limit], 8, { grade: 11 }).some((f) => f.id === "gt11-gioihan-ham"));
+  assert.ok(shortlistFormulas([derivative], 8, { grade: 11 }).some((f) => f.id === "gt12-daoham-hopham"));
+  assert.ok(methodGroupIds(limit, 11).includes("gt11-gioihan-ham"));
+  assert.ok(methodGroupIds(derivative, 11).includes("gt12-daoham-hopham"));
+  assert.ok(methodGroupIds("Tính đạo hàm y = (x² + 1)^10.", 11).includes("gt12-daoham-hopham"));
+});
+
+test("không ghim thẻ giới hạn hàm cho dãy hay lượng giác, không ghim hàm hợp cho x mũ đơn", () => {
+  assert.ok(!methodGroupIds("Tính $\\lim_{n\\to\\infty} 1/n$.").includes("gt11-gioihan-ham"));
+  assert.ok(!methodGroupIds("Tính giới hạn sin x / x khi x tiến tới 0.").includes("gt11-gioihan-ham"));
+  assert.ok(!methodGroupIds("Tính đạo hàm của y = x³ + 2x.").includes("gt12-daoham-hopham"));
+  assert.ok(!methodGroupIds("Tính (2x + 1)^5.").includes("gt12-daoham-hopham"));
+});
+
+test("ký hiệu LaTeX thuần chọn thẻ đã có: giới hạn, tích phân, lượng giác, căn và lũy thừa", () => {
+  const cases = [
+    ["Tính $\\lim_{n\\to\\infty} \\dfrac{3n^2 + 2n - 1}{n^2 + 5}$.", "gt11-gioihan-day"],
+    ["Tính $\\lim_{n\\to+\\infty}(n^2-2n)$.", "gt11-gioihan-vocuc-day"],
+    ["Tính $\\lim_{x\\to 1^-} f(x)$ và $\\lim_{x\\to 1^+} f(x)$.", "gt11-gioihan-motphia-ham"],
+    ["Tính $\\int \\cos(3x-2)\\,dx$.", "gt12-nguyenham-morong"],
+    ["Tính $\\int_0^{\\pi} \\sin^2 x\\,dx$.", "ds11-luonggiac-habac"],
+    ["Tính $\\int(4x^3-3x^2)\\,dx$.", "gt12-nguyenham-tinhchat"],
+    ["Tính $\\int_0^3[2f(x)-3g(x)]\\,dx$ khi đã biết tích phân của f(x), g(x).", "gt12-tichphan-tinhchat"],
+    ["Tính $\\sin 135° + \\cos 120° - \\tan 60°$.", "lg11-goc-dacbiet"],
+    ["Biết $\\sin x = 3/5$. Tính $\\cos x$ và $\\tan x$.", "lg11-congthuc-coban"],
+    ["Tính đạo hàm của $y = \\sqrt{x^2+1}$.", "gt11-daoham-can"],
+    ["Tính $\\sqrt[3]{-8} \\cdot \\sqrt[3]{27}$.", "gt11-canbacn"],
+    ["Tính $16^{3/2}$ và $8^{-2/3}$.", "gt11-luythua-somuhuutythuc"],
+  ];
+  for (const [question, needed] of cases) {
+    assert.ok(shortlistFormulas([question], 8, { grade: 12 }).some((f) => f.id === needed), `${needed}: ${question}`);
+  }
+});
+
+test("ký hiệu gần giống không ghim sai phương pháp", () => {
+  assert.ok(!methodGroupIds("Tính $\\lim_{x\\to 2} (x+1)$.").includes("gt11-gioihan-day"));
+  assert.ok(!methodGroupIds("Biết $\\sin x = 1/2$.").includes("lg11-goc-dacbiet"));
+  assert.ok(!methodGroupIds("Tính $\\int x^2\\,dx$.").includes("ds11-luonggiac-habac"));
+  assert.ok(!methodGroupIds("Tính $\\sqrt{x^2+1}$.").includes("gt11-daoham-can"));
+  assert.ok(!methodGroupIds("Tính $2^{x+1}$.").includes("gt11-luythua-somuhuutythuc"));
+});
+
 // Bộ câu thử khi điều tra lỗi "thư viện chưa có" (2026-09-30): công thức chính + công thức phụ
 // của phương pháp phải cùng nằm trong danh sách ứng viên.
 const CASES = [

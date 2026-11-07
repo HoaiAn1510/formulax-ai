@@ -64,12 +64,19 @@ test("latexNumber hiểu số, phân số, căn, nhân ngầm; có chữ cái th
 
 test("optionNumber bỏ vế trái và đơn vị; optionNumbers tách nhiều nghiệm", () => {
   assert.equal(optionNumber("$BC = 10 \\text{ cm}$"), 10);
+  assert.equal(optionNumber("$u_{10} = 7$"), 7);
   assert.equal(optionNumber("$70^\\circ$"), 70);
   assert.equal(optionNumber("$5cm$"), 5);
   assert.deepEqual(optionNumbers("$x = 2; x = 5$"), [2, 5]);
   assert.deepEqual(optionNumbers("$x_1 = 2, x_2 = 5$"), [2, 5]);
   assert.deepEqual(optionNumbers("$S = \\{-1; 1,5\\}$"), [-1, 1.5]);
   assert.equal(optionNumbers("Vô nghiệm"), null);
+  assert.equal(optionNumber("$(x-1)^2+(y-2)^2=9$"), null);
+  assert.equal(optionNumbers("$(x-1)^2+(y-2)^2=9$"), null);
+  assert.equal(optionNumber("$x^2-5x+6=0$"), null);
+  assert.equal(optionNumbers("$x = 2; y = 3$"), null);
+  assert.equal(optionNumbers("$x = 3; y = 2$"), null);
+  assert.equal(optionNumber("$\\frac{x^2}{9}-\\frac{y^2}{16}=1$"), null);
 });
 
 test("quadraticCoefficients chỉ nhận đúng một phương trình bậc hai hệ số số", () => {
@@ -106,6 +113,38 @@ test("expectedAnswer: tổng ba góc (cả \\widehat, ^\\circ) và Pytago", () =
   assert.equal(expectedAnswer("Tam giác ABC vuông tại A có AB = 6, AC = 8. Tính diện tích."), null);
 });
 
+test("expectedAnswer: thể tích một khối cầu từ bán kính số", () => {
+  const volume = expectedAnswer("Tính thể tích khối cầu có bán kính $R = 3\\text{ cm}$.");
+  assert.equal(volume.kind, "sphere_volume");
+  assert.ok(matchesExpected("$36\\pi\\text{ cm}^3$", volume));
+  assert.ok(!matchesExpected("$27\\pi$", volume));
+  assert.equal(expectedAnswer("Tính thể tích khối cầu có bán kính 2,5 cm.").kind, "sphere_volume");
+  for (const q of [
+    "Tính thể tích khối cầu có đường kính 6 cm.",
+    "Tính diện tích mặt cầu có bán kính 3 cm.",
+    "Tính tổng thể tích hai khối cầu có bán kính 3 cm và 4 cm.",
+    "Tính thể tích khối trụ có bán kính 3 cm.",
+    "Tính thể tích khối cầu có bán kính 3/4 cm.",
+    "Tính thể tích khối cầu có bán kính 3 cm, lấy π = 3,14.",
+    "Tính thể tích khối cầu có bán kính 3 cm, làm tròn đến 2 chữ số thập phân.",
+  ]) assert.equal(expectedAnswer(q), null, q);
+});
+
+test("expectedAnswer: tổng cấp số cộng với u1, công sai, số hạng đầu", () => {
+  const sum = expectedAnswer("Cho cấp số cộng có $u_1=2$, công sai $d=3$. Tính tổng 10 số hạng đầu.");
+  assert.deepEqual(sum, { kind: "arithmetic_sum", value: 155 });
+  assert.equal(expectedAnswer("Cho cấp số cộng có $u_{1}=-2$, công sai $d=-3$. Tính tổng của 4 số hạng đầu ($S_{4}$).").value, -26);
+  assert.ok(matchesExpected("$155$", sum));
+  assert.ok(!matchesExpected("$150$", sum));
+  for (const q of [
+    "Cho cấp số nhân có u_1=2, công bội q=3. Tính tổng 10 số hạng đầu.",
+    "Cho cấp số cộng có u_1=2, d=3. Tính số hạng thứ 10.",
+    "Cho cấp số cộng có u_1=2, d=3. Tính tổng 10 số hạng đầu và số hạng thứ 10.",
+    "Cho cấp số cộng có u_1=2, d=3. Tính tổng 10 số hạng đầu S_9.",
+    "Cho cấp số cộng có u_1=2, d=3. Tính tổng n số hạng đầu.",
+  ]) assert.equal(expectedAnswer(q), null, q);
+});
+
 // ─── validateVariant ───────────────────────────────────────────────────────
 test("đề hợp lệ qua kiểm, đáp án được backend tính lại", () => {
   const { variant, errors, expected } = check(rawAnswer());
@@ -115,6 +154,74 @@ test("đề hợp lệ qua kiểm, đáp án được backend tính lại", () =
   assert.equal(variant.options.find((o) => o.isCorrect).letter, "A");
   assert.deepEqual(variant.formulaIds, IDS);
   assert.ok(!variant.blankAnswer.includes("$"));
+});
+
+test("đề mới đổi dạng dù cùng id công thức vẫn bị trả lại cho AI sửa", () => {
+  const changed = check(rawAnswer({ question: "Tính tổng các nghiệm của phương trình $x^2 - 7x + 10 = 0$." }));
+  assert.ok(changed.errors.some((e) => e.includes("đổi dạng bài")), changed.errors.join("; "));
+  const reverse = check(rawAnswer(), { original: "Tính tổng các nghiệm của phương trình $x^2 - 5x + 6 = 0$." });
+  assert.ok(reverse.errors.some((e) => e.includes("đổi dạng bài")), reverse.errors.join("; "));
+});
+
+test("Quiz đổi số liệu nhưng giữ nguyên đáp số ở dạng đã kiểm được → trả lại", () => {
+  const angle = validateVariant({
+    question: "Tam giác ABC có A = 40°, B = 70°. Tính góc C.",
+    options: [
+      { letter: "A", text: "$70°$" }, { letter: "B", text: "$60°$" },
+      { letter: "C", text: "$80°$" }, { letter: "D", text: "$90°$" },
+    ],
+    answer: "A", blank_answer: "70", explanation: "Tổng ba góc bằng 180°.", formula_ids: [],
+  }, { original: "Tam giác ABC có A = 50°, B = 60°. Tính góc C.", allowedIds: [], requireIds: false });
+  assert.ok(angle.errors.some((e) => e.includes("đáp số đề mới phải khác")), angle.errors.join("; "));
+
+  const roots = check(rawAnswer({ question: "Giải phương trình $2x^2 - 10x + 12 = 0$." }));
+  assert.ok(roots.errors.some((e) => e.includes("đáp số đề mới phải khác")), roots.errors.join("; "));
+});
+
+test("Quiz thể tích khối cầu: kiểm đáp án số, phát hiện phương án sai và đổi sang diện tích", () => {
+  const original = "Tính thể tích khối cầu có bán kính 2 cm.";
+  const allowedIds = ["hh12-matcau-thetich"];
+  const base = {
+    question: "Tính thể tích khối cầu có bán kính 3 cm.",
+    options: [
+      { letter: "A", text: "$36\\pi$" }, { letter: "B", text: "$27\\pi$" },
+      { letter: "C", text: "$12\\pi$" }, { letter: "D", text: "$9\\pi$" },
+    ],
+    answer: "A", blank_answer: "36pi", explanation: "Áp dụng công thức thể tích khối cầu.",
+    formula_ids: allowedIds,
+  };
+  const ctx = { original, allowedIds };
+  const ok = validateVariant(base, ctx);
+  assert.deepEqual(ok.errors, []);
+  assert.equal(ok.expected.kind, "sphere_volume");
+  const wrong = validateVariant({ ...base, answer: "B", blank_answer: "27pi" }, ctx);
+  assert.ok(wrong.errors.some((e) => e.startsWith("đáp án sai")));
+  const wrongBlank = validateVariant({ ...base, blank_answer: "27π" }, ctx);
+  assert.ok(wrongBlank.errors.some((e) => e.includes("blank_answer không khớp")));
+  const changed = validateVariant({ ...base, question: "Tính diện tích mặt cầu có bán kính 3 cm." }, ctx);
+  assert.ok(changed.errors.some((e) => e.includes("đổi dạng bài")));
+});
+
+test("Quiz tổng cấp số cộng: kiểm đáp án và không giao bài đổi số nhưng cùng đáp số", () => {
+  const original = "Cho cấp số cộng có u_1=2, công sai d=3. Tính tổng 10 số hạng đầu.";
+  const allowedIds = ["ds11-csc-tong"];
+  const base = {
+    question: "Cho cấp số cộng có u_1=4, công sai d=2. Tính tổng 8 số hạng đầu.",
+    options: [
+      { letter: "A", text: "$88$" }, { letter: "B", text: "$80$" },
+      { letter: "C", text: "$96$" }, { letter: "D", text: "$72$" },
+    ],
+    answer: "A", blank_answer: "88", explanation: "Áp dụng công thức tổng cấp số cộng.",
+    formula_ids: allowedIds,
+  };
+  const ctx = { original, allowedIds };
+  const ok = validateVariant(base, ctx);
+  assert.deepEqual(ok.errors, []);
+  assert.equal(ok.expected.kind, "arithmetic_sum");
+  const wrong = validateVariant({ ...base, answer: "B", blank_answer: "80" }, ctx);
+  assert.ok(wrong.errors.some((e) => e.startsWith("đáp án sai")));
+  const sameAnswer = validateVariant({ ...base, question: "Cho cấp số cộng có u_1=11, công sai d=1. Tính tổng 10 số hạng đầu." }, ctx);
+  assert.ok(sameAnswer.errors.some((e) => e.includes("đáp số đề mới phải khác")));
 });
 
 test("AI đánh dấu nhầm đáp án (backend tính ra phương án khác) → lỗi", () => {
@@ -148,6 +255,24 @@ test("thiếu phương án / nhiều đáp án đúng / phương án trùng → 
   assert.ok(dupFraction.errors.some((e) => e.includes("trùng nhau")));
 });
 
+test("phương trình đường tròn khác tâm nhưng cùng bán kính không bị xem là phương án trùng", () => {
+  const base = {
+    question: "Viết phương trình đường tròn tâm I(3; 4), bán kính 3.",
+    options: [
+      { letter: "A", text: "$(x-3)^2+(y-4)^2=9$" },
+      { letter: "B", text: "$(x-4)^2+(y-3)^2=9$" },
+      { letter: "C", text: "$(x+3)^2+(y-4)^2=9$" },
+      { letter: "D", text: "$(x-3)^2+(y+4)^2=9$" },
+    ],
+    answer: "A", blank_answer: "(x-3)^2+(y-4)^2=9", explanation: "Dùng công thức phương trình đường tròn.",
+    formula_ids: ["hh10-duongtron-phuongtrinh"],
+  };
+  const ctx = { original: "Viết phương trình đường tròn tâm I(2; 1), bán kính 2.", allowedIds: ["hh10-duongtron-phuongtrinh"] };
+  assert.deepEqual(validateVariant(base, ctx).errors, []);
+  const duplicate = validateVariant({ ...base, options: [base.options[0], { letter: "B", text: base.options[0].text }, base.options[2], base.options[3]] }, ctx);
+  assert.ok(duplicate.errors.some((e) => e.includes("trùng nhau")));
+});
+
 test("số liệu y hệt đề gốc → lỗi; đề mới không có số → lỗi", () => {
   const same = check(rawAnswer({ question: "Tìm nghiệm của phương trình $x^2 - 5x + 6 = 0$." }));
   assert.ok(same.errors.some((e) => e.includes("khác đề gốc")));
@@ -158,7 +283,7 @@ test("số liệu y hệt đề gốc → lỗi; đề mới không có số →
 test("blank_answer: bỏ dấu $, cấm nhãn A–D, phải khớp phương án đúng khi là số", () => {
   const sumQ = "Tính tổng các nghiệm của phương trình $2x^2 - 6x + 1 = 0$.";
   const opts = [{ letter: "A", text: "$3$" }, { letter: "B", text: "$-3$" }, { letter: "C", text: "$\\frac{1}{2}$" }, { letter: "D", text: "$6$" }];
-  const ok = check(rawAnswer({ question: sumQ, options: opts, blank_answer: "$3$" }));
+  const ok = check(rawAnswer({ question: sumQ, options: opts, blank_answer: "$3$" }), { original: "Tính tổng các nghiệm của phương trình $x^2 - 5x + 6 = 0$." });
   assert.deepEqual(ok.errors, []);
   assert.equal(ok.variant.blankAnswer, "3");
   const label = check(rawAnswer({ question: sumQ, options: opts, blank_answer: "A" }));

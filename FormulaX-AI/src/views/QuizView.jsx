@@ -13,7 +13,7 @@ import { useGuestGate } from "../utils/useGuestGate";
 import { getGuestQuizRemaining, consumeGuestQuiz, GUEST_QUIZ_DAILY_LIMIT } from "../utils/guestQuiz";
 import { checkFillAnswer, isFillEligible } from "../utils/fillAnswer";
 import { extractAskedProblems, togglePick, MAX_VARIANT_PICK } from "../utils/askedProblems";
-import { toVariantQuestion, variantQuizTopic, runSequential } from "../utils/variantQuiz";
+import { toVariantQuestion, variantQuizTopic, runSequential, retryBusyOnce } from "../utils/variantQuiz";
 import PageShell from "../components/PageShell";
 import FilterPicker from "../components/FilterPicker";
 
@@ -35,7 +35,9 @@ async function callVariant(item, grade) {
       signal: controller.signal,
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw Object.assign(new Error(data.error || "Không thể kết nối AI"), { status: res.status, code: data.code, remaining: data.remaining });
+    if (!res.ok) throw Object.assign(new Error(data.error || "Không thể kết nối AI"), {
+      status: res.status, code: data.code, remaining: data.remaining, retryAfter: data.retryAfter,
+    });
     return data;
   } catch (err) {
     if (err.name === "AbortError") throw Object.assign(new Error("AI phản hồi quá lâu, bạn thử lại sau nhé"), { code: "timeout" });
@@ -80,6 +82,7 @@ export default function QuizView({
   const askedLoading = asked.key !== askedKey;
   const [pickedKeys, setPickedKeys] = useState([]);
   const [genProgress, setGenProgress] = useState({ done: 0, total: 0 });
+  const [retryWaitSeconds, setRetryWaitSeconds] = useState(0);
   const [reportedIds, setReportedIds] = useState(() => new Set());
   const genAliveRef = useRef(true);
   // Đặt lại true trong thân effect: StrictMode (dev) chạy cleanup một lần ngay lúc mount.
@@ -232,11 +235,15 @@ export default function QuizView({
     if (!items.length) return;
     if (isGuest) { handleGuestLogin(); return; }
     setGenProgress({ done: 0, total: items.length });
+    setRetryWaitSeconds(0);
     setQuizState("generating");
     const { results, failures, stoppedBy } = await runSequential(
       items,
       async (item) => {
-        const data = await callVariant(item, userGrade);
+        const data = await retryBusyOnce(() => callVariant(item, userGrade), {
+          onWait: (seconds) => { if (genAliveRef.current) setRetryWaitSeconds(seconds); },
+          shouldRetry: () => genAliveRef.current,
+        });
         const q = toVariantQuestion(data, item, (id) => formulasById.get(id));
         if (!q) throw Object.assign(new Error("Đề không hợp lệ"), { code: "variant_invalid" });
         return q;
@@ -778,7 +785,11 @@ export default function QuizView({
                 <div className="text-[1.05rem] font-bold text-primary dark:text-[#E2E8F0]">
                   Đang tạo câu {Math.min(genProgress.done + 1, genProgress.total)}/{genProgress.total}
                 </div>
-                <p className="m-0 mt-1 text-[0.8rem] text-text-muted dark:text-[#94A3B8]">AI đổi số liệu và máy kiểm lại đáp án, mỗi câu vài giây.</p>
+                <p className="m-0 mt-1 text-[0.8rem] text-text-muted dark:text-[#94A3B8]">
+                  {retryWaitSeconds > 0
+                    ? `AI đang giới hạn tốc độ; chờ khoảng ${retryWaitSeconds} giây rồi thử lại.`
+                    : "AI đổi số liệu và máy kiểm lại đáp án, mỗi câu vài giây."}
+                </p>
               </div>
               <div className="w-full max-w-[320px] h-1.5 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
                 <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${genProgress.total ? (genProgress.done / genProgress.total) * 100 : 0}%` }} />

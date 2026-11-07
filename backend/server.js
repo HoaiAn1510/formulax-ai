@@ -511,7 +511,7 @@ app.post("/api/quiz/variant", chatBurstLimiter, chatDailyLimiter, async (req, re
         // Lần giải kiểm chéo lỗi cả với model dự phòng / không đọc được đáp số.
         crossCheckFailed: error.meta?.crossCheckFailed || null, crossCheckErrors: error.meta?.crossCheckErrors || [],
       }));
-      return res.status(error.status).json({ error: "AI đang bận, bạn thử lại sau ít phút nhé", code: error.code, ...remainingInfo });
+      return res.status(error.status).json({ error: "Chưa tạo được đề cùng dạng đạt kiểm tra. Bạn thử lại hoặc chọn bài khác nhé", code: error.code, ...remainingInfo });
     }
     const status = error.status || error.statusCode || 500;
     console.error("[FormulaX Backend] /api/quiz/variant error:", error.message);

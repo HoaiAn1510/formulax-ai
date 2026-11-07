@@ -37,6 +37,22 @@ export function variantQuizTopic(questions) {
   return topics.length === 1 ? topics[0] : "Tổng hợp";
 }
 
+/** 429 theo phút: tôn trọng Retry-After ngắn, thử lại đúng một lần cho cùng bài. */
+export async function retryBusyOnce(fn, { wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)), maxWaitSeconds = 60, onWait = () => {}, shouldRetry = () => true } = {}) {
+  try {
+    return await fn();
+  } catch (error) {
+    const seconds = Number(error?.retryAfter);
+    if (error?.code !== "ai_busy" || error?.status !== 429
+      || !Number.isInteger(seconds) || seconds < 1 || seconds > maxWaitSeconds || !shouldRetry()) throw error;
+    onWait(seconds);
+    try { await wait(seconds * 1000); }
+    finally { onWait(0); }
+    if (!shouldRetry()) throw error;
+    return fn();
+  }
+}
+
 /**
  * Gọi `fn` LẦN LƯỢT cho từng mục (không song song — hạn mức theo phút của Gemini thấp). Dừng sớm khi
  * `shouldStop(err)` đúng (hết lượt, AI bận). onProgress(doneCount) sau mỗi mục.

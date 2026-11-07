@@ -255,7 +255,7 @@ nhưng backend không tin AI — mọi câu phải qua kiểm.
   `blankAnswer` không `$`/không phải nhãn và khớp số với phương án đúng, số liệu khác đề gốc, `precheckInvalidQuestion`
   của Finder, `formula_ids` ⊆ id gửi cho AI (bắt buộc khi câu trả lời Finder gốc có id; kiến thức nền thì không).
 - **Kiểm đáp án — ba mức, theo dạng bài** (log `[quiz:variant]` ghi `verified` + `crossChecked`):
-  1. **Tự tính lại** (`expectedAnswer`): CHỈ tổng ba góc, Pytago, phương trình bậc hai (nghiệm / tổng / tích) — backend
+  1. **Tự tính lại** (`expectedAnswer`): tổng ba góc, Pytago, phương trình bậc hai (nghiệm / tổng / tích), thể tích một khối cầu có bán kính số, tổng cấp số cộng có $u_1$, $d$, $n$ bằng số — backend
      tính đáp số bằng code, phương án đúng phải khớp. `verified` = tên dạng, `crossChecked = null`.
   2. **Kiểm chéo** — mọi dạng còn lại: gọi Gemini lần nữa GIẢI ĐỘC LẬP đề mới (`SOLVER_SYSTEM_PROMPT`, CHỈ gửi đề — không
      gửi 4 phương án, đáp án, lời giải), so đáp số với phương án đúng (`crossCheckMatches`: số thì so giá trị bằng
@@ -268,7 +268,8 @@ nhưng backend không tin AI — mọi câu phải qua kiểm.
   3. **Chỉ kiểm hình thức**: CHỈ khi sinh đề xong mà còn < 8s trong ngân sách 40s (không kịp gọi lần giải). Vẫn GIAO đề
      (chủ dự án chốt), `crossChecked = false`, `crossCheckSkipped: "budget"`. Theo dõi tỉ lệ dòng log này; cao thì cân
      nhắc tăng ngân sách hoặc không giao.
-  Không qua → hỏi lại AI một lần kèm lỗi → vẫn không qua thì 502 `variant_invalid` "AI đang bận" + hoàn lượt.
+  Không qua → hỏi lại AI một lần kèm lỗi → vẫn không qua thì 502 `variant_invalid`, báo "Chưa tạo được đề cùng dạng đạt kiểm tra" + hoàn lượt (khác 429 do AI quá tải). Bộ đọc đáp án số chỉ nhận phép gán ngắn (`x = 2`, `BC = 5`), không coi phương trình đường tròn/đường thẳng có cùng vế phải là các phương án trùng.
+  Frontend gặp 429 `ai_busy` có `retryAfter` ≤ 60 giây thì hiển thị trạng thái chờ và thử lại đúng một lần cho cùng bài; hết lượt, đề không qua kiểm và 429 lần hai không gọi lặp.
   `[quiz:variant_rejected]` chỉ có số liệu + danh sách lỗi.
 - JSON parse bằng `parseVariantJson` = `keepOcrNewlines` + `parseModelJson` ("\nThay số" là xuống dòng, không phải lệnh LaTeX).
 - Giao diện: thẻ nhỏ trung tính "Đề do AI tạo" trên câu hỏi và phần xem lại — KHÔNG kèm câu kiểu "có thể sai, hãy đối

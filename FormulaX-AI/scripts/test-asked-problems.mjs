@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { extractAskedProblems, isFollowUpQuestion, togglePick, formatAskedAt, MAX_VARIANT_PICK } from "../src/utils/askedProblems.js";
-import { toVariantQuestion, variantQuizTopic, runSequential } from "../src/utils/variantQuiz.js";
+import { toVariantQuestion, variantQuizTopic, runSequential, retryBusyOnce } from "../src/utils/variantQuiz.js";
 import { daysInScope, summarize, studiedDaysLast7, badgeProgress } from "../src/utils/progressStats.js";
 import { buildGoals, isNewLearner, headline, nextStep, lastSevenDays } from "../src/utils/todayPlan.js";
 
@@ -127,6 +127,45 @@ test("runSequential: gọi lần lượt, không song song; dừng khi hết lư
   assert.equal(out.failures.length, 2);
   assert.equal(out.stoppedBy.code, "quota_exceeded");
   assert.deepEqual(progress, [1, 2, 3]);
+});
+
+test("429 có Retry-After ngắn: chờ rồi thử lại cùng bài đúng một lần", async () => {
+  const delays = [];
+  let calls = 0;
+  const result = await retryBusyOnce(async () => {
+    calls++;
+    if (calls === 1) throw Object.assign(new Error("AI đang bận"), { code: "ai_busy", status: 429, retryAfter: 34 });
+    return "đề đã kiểm";
+  }, { wait: async (ms) => { delays.push(ms); }, onWait: (seconds) => { delays.push(`state:${seconds}`); } });
+  assert.equal(result, "đề đã kiểm");
+  assert.equal(calls, 2);
+  assert.deepEqual(delays, ["state:34", 34000, "state:0"]);
+});
+
+test("không thử lại khi đề sai kiểm, chờ quá lâu hoặc 429 lần hai", async () => {
+  for (const error of [
+    Object.assign(new Error("đề chưa đạt"), { code: "variant_invalid", status: 502, retryAfter: 2 }),
+    Object.assign(new Error("hết lượt"), { code: "quota_exceeded", status: 429, retryAfter: 2 }),
+    Object.assign(new Error("chờ lâu"), { code: "ai_busy", status: 429, retryAfter: 61 }),
+    Object.assign(new Error("không rõ lúc nào"), { code: "ai_busy", status: 429 }),
+  ]) {
+    let calls = 0;
+    await assert.rejects(retryBusyOnce(async () => { calls++; throw error; }, { wait: async () => {} }), (got) => got === error);
+    assert.equal(calls, 1);
+  }
+  let calls = 0;
+  await assert.rejects(retryBusyOnce(async () => {
+    calls++;
+    throw Object.assign(new Error("429"), { code: "ai_busy", status: 429, retryAfter: 1 });
+  }, { wait: async () => {} }), /429/);
+  assert.equal(calls, 2);
+  let mounted = true;
+  let unmountedCalls = 0;
+  await assert.rejects(retryBusyOnce(async () => {
+    unmountedCalls++;
+    throw Object.assign(new Error("429"), { code: "ai_busy", status: 429, retryAfter: 1 });
+  }, { wait: async () => { mounted = false; }, shouldRetry: () => mounted }), /429/);
+  assert.equal(unmountedCalls, 1, "rời màn hình trong lúc chờ không gọi backend lần nữa");
 });
 
 test("buildGoals: việc chọn hôm nay lên đầu, gợi ý chủ đề yếu", () => {

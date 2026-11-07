@@ -5,7 +5,9 @@
 //   - đúng 4 phương án A–D khác nhau, đúng 1 đáp án; blankAnswer không có $ và không phải nhãn A–D;
 //   - số liệu khác đề gốc; dữ kiện không vô lý (precheckInvalidQuestion của Finder);
 //   - formula_ids chỉ là id có thật trong formulas.js VÀ thuộc danh sách gửi cho AI;
-//   - dạng bài đã có bộ kiểm (tổng ba góc, Pytago, phương trình bậc hai) thì backend TỰ TÍNH lại đáp án;
+//   - dạng bài đã có bộ kiểm (tổng ba góc, Pytago, phương trình bậc hai, thể tích khối cầu,
+//     tổng cấp số cộng)
+//     thì backend TỰ TÍNH lại đáp án và kiểm đề mới vẫn cùng loại câu hỏi;
 //   - dạng khác: KIỂM CHÉO — gọi Gemini lần nữa giải độc lập đề mới (chỉ gửi đề), đáp số phải khớp phương án
 //     đúng; lỗi gọi → thử model dự phòng một lần, vẫn lỗi → VariantError. CHỈ khi còn < 8 giây trong ngân sách
 //     mới giao đề không kiểm chéo (meta.crossChecked = false).
@@ -175,7 +177,7 @@ export function latexNumber(raw) {
 /** Giá trị số của MỘT phương án: bỏ "x =", "BC =", đơn vị (cm, °, \text{...}). null nếu không đọc được. */
 export function optionNumber(text) {
   const s = String(text ?? "").replace(/\$/g, "").trim()
-    .replace(/^[^=]*=(?!=)/, "") // "x = 3", "BC = 5" → vế phải
+    .replace(/^[A-Za-z]{1,3}(?:_\{?[A-Za-z0-9]+\}?)?\s*=(?!=)/, "") // chỉ "x = 3", "BC = 5", "u_{10} = 7"; phương trình không phải một số
     .replace(/\\text\s*\{[^{}]*\}(?:\s*\^\s*\{?\s*[23]\s*\}?)?/g, "")
     .replace(/\^\s*\{?\s*\\circ\s*\}?|°/g, "")
     .replace(/(?<![A-Za-z\\])(?:k|c|d|m)?m(?:\s*\^\s*\{?\s*[23]\s*\}?|[²³])?\s*$/, "")
@@ -187,6 +189,9 @@ export function optionNumber(text) {
 export function optionNumbers(text) {
   const s = String(text ?? "").replace(/\$/g, "").replace(/\\\{|\\\}/g, "").replace(/^\s*S\s*=/, "");
   const parts = s.split(/;|\s(?:và|hoặc)\s|\\text\s*\{\s*(?:và|hoặc)\s*\}|,\s*(?=[A-Za-z_\\])/);
+  // x_1, x_2 là tập nghiệm không thứ tự; x và y là hai biến khác nhau nên (x=2,y=3) KHÁC (x=3,y=2).
+  const labels = parts.map((p) => /^\s*([A-Za-z]{1,3})(?:_\{?[A-Za-z0-9]+\}?)?\s*=/.exec(p)?.[1]?.toLowerCase()).filter(Boolean);
+  if (new Set(labels).size > 1) return null;
   const values = parts.map((p) => optionNumber(p));
   return values.length && values.every((v) => v !== null) ? values : null;
 }
@@ -285,10 +290,45 @@ function quadraticExpected(q) {
   return { kind: "quadratic_roots", values: roots };
 }
 
+/** Thể tích MỘT khối cầu với bán kính số cho sẵn; không suy bán kính từ dữ kiện khác. */
+function sphereVolumeExpected(q) {
+  if (!/tính\s+thể tích\s+(?:của\s+)?(?:một\s+)?khối cầu/i.test(q)
+    || /đường kính|diện tích|nhiều|hai khối|tổng|tỉ số|tỷ số|lấy\s*(?:π|pi)|(?:π|pi)\s*=|\\sqrt|sqrt|\\frac/i.test(q)) return null;
+  const radii = [...q.matchAll(/bán kính\s*(?:R\s*=\s*)?(\d+(?:[.,]\d+)?)(?![\d.,/])/gi)];
+  if (radii.length !== 1) return null;
+  // Chỉ một dữ kiện số: nếu đề thêm chiều cao, phép làm tròn, v.v. thì để luồng kiểm chéo xử lý.
+  const otherData = q.replace(radii[0][0], "")
+    .replace(/\\text\s*\{[^{}]*\}(?:\s*\^\s*\{?\d+\}?)?/g, "")
+    .replace(/\b(?:mm|cm|m)\s*(?:\^\s*\{?\d+\}?)?/gi, "");
+  if (/\d/.test(otherData)) return null;
+  const radius = toNum(radii[0][1]);
+  return radius > 0 ? { kind: "sphere_volume", value: (4 / 3) * Math.PI * radius ** 3 } : null;
+}
+
+/** Tổng n số hạng đầu của MỘT cấp số cộng khi đề cho u_1, d và n bằng số. */
+function arithmeticSumExpected(q) {
+  if (!/cấp số cộng/i.test(q) || !/tính\s+tổng/i.test(q)
+    || /cấp số nhân|hai cấp số|vô hạn|trung bình|tổng các nghiệm|tính\s+tổng[^.?!]*\s+và\s+/i.test(q)) return null;
+  const signed = String.raw`([+-]?\d+(?:[.,]\d+)?)`;
+  const first = [...q.matchAll(new RegExp(String.raw`u\s*_\s*\{?\s*1\s*\}?\s*=\s*${signed}(?!\d|[.,]\d)`, "gi"))];
+  const steps = [...q.matchAll(new RegExp(String.raw`\bd\s*=\s*${signed}(?!\d|[.,]\d)`, "gi"))];
+  if (first.length !== 1 || steps.length !== 1) return null;
+  const fromWords = [...q.matchAll(/tính\s+tổng(?:\s+của)?\s+(\d+)\s+số hạng đầu/gi)].map((m) => Number(m[1]));
+  const fromSymbol = [...q.matchAll(/S\s*_\s*\{?\s*(\d+)\s*\}?/g)].map((m) => Number(m[1]));
+  const positions = [...fromWords, ...fromSymbol];
+  if (!positions.length || positions.some((n) => n !== positions[0])) return null;
+  const n = positions[0];
+  if (!Number.isInteger(n) || n < 1 || n > 10_000) return null;
+  const u1 = toNum(first[0][1]);
+  const d = toNum(steps[0][1]);
+  return { kind: "arithmetic_sum", value: n * (2 * u1 + (n - 1) * d) / 2 };
+}
+
 /** Đáp án tính lại được cho đề mới; null nếu dạng bài chưa có bộ kiểm. */
 export function expectedAnswer(question) {
   const q = plainMath(question);
-  return angleSumExpected(q) || pythagorasExpected(q) || quadraticExpected(q);
+  return angleSumExpected(q) || pythagorasExpected(q) || quadraticExpected(q)
+    || sphereVolumeExpected(q) || arithmeticSumExpected(q);
 }
 
 /** Phương án `text` có khớp đáp án tính lại không. */
@@ -300,6 +340,13 @@ export function matchesExpected(text, expected) {
   }
   const v = optionNumber(text);
   return v !== null && near(v, expected.value);
+}
+
+function sameExpectedAnswer(a, b) {
+  if (!a || !b || a.kind !== b.kind) return false;
+  if (a.none || b.none) return Boolean(a.none && b.none);
+  if (a.values || b.values) return Boolean(a.values && b.values && sameSet(a.values, b.values));
+  return near(a.value, b.value);
 }
 
 // ─── Kiểm cấu trúc + nội dung ──────────────────────────────────────────────
@@ -352,7 +399,7 @@ export function validateVariant(parsed, { original, allowedIds, requireIds = tru
   const correct = options.find((o) => o.isCorrect);
   if (correct && blankAnswer) {
     // blankAnswer đọc được thành số → phải bằng phương án đúng (nếu phương án đúng cũng là số).
-    const vb = latexNumber(blankAnswer.replace(/sqrt\s*\(([^()]*)\)/g, "\\sqrt{$1}").replace(/\bpi\b/g, "\\pi"));
+    const vb = latexNumber(blankAnswer.replace(/sqrt\s*\(([^()]*)\)/g, "\\sqrt{$1}").replace(/\bpi\b|π/g, "\\pi"));
     const vc = optionNumber(correct.text);
     if (vb !== null && vc !== null && !near(vb, vc)) errors.push("blank_answer không khớp phương án đúng");
   }
@@ -377,6 +424,12 @@ export function validateVariant(parsed, { original, allowedIds, requireIds = tru
     else if (before.length && before.join("|") === after.join("|")) errors.push("số liệu đề mới phải khác đề gốc");
     else if (!before.length && sameText(question, original)) errors.push("đề mới trùng đề gốc");
     if (precheckInvalidQuestion(question.replace(/\$/g, ""), { hasHistory: true })) errors.push("dữ kiện đề mới vô lý");
+    const originalExpected = expectedAnswer(original);
+    const variantExpected = expectedAnswer(question);
+    if (originalExpected && variantExpected?.kind !== originalExpected.kind) {
+      errors.push(`đề mới đã đổi dạng bài: cần ${originalExpected.kind}`);
+    }
+    if (sameExpectedAnswer(originalExpected, variantExpected)) errors.push("đáp số đề mới phải khác đề gốc");
   }
 
   let expected = null;

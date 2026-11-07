@@ -76,6 +76,24 @@ const hasTwoPlanePoints = (t) => (t.match(PLANE_POINT) || []).length >= 2;
 
 // Mỗi nhóm: match (regex, bắt buộc), and (regex), unless (regex), when (hàm trên văn bản đã normalize).
 export const METHOD_GROUPS = [
+  // Các đề chỉ có biểu thức LaTeX thường thiếu từ khóa tiếng Việt. Chỉ nhận cú pháp rõ ràng.
+  { match: /\\lim\s*_?\s*\{?\s*n\s*\\to\s*\+?\\infty/, and: /n\s*\^\s*\{?\s*[2-9]/, unless: /\\[dt]?frac/, ids: ["gt11-gioihan-vocuc-day", "gt11-gioihan-day"] },
+  { match: /\\lim\s*_?\s*\{?\s*n\s*\\to/, ids: ["gt11-gioihan-day"] },
+  { match: /\\lim\s*_?\s*\{?\s*x\s*\\to[^}]{0,30}\^[+-]/, ids: ["gt11-gioihan-motphia-ham"] },
+  { match: /\\int[^\n]{0,80}\\(?:sin|cos)\s*\^\s*\{?\s*2/, ids: ["ds11-luonggiac-habac", "gt12-tichphan-newtonleibniz"] },
+  { match: /\\int[^\n]{0,80}\\(?:sin|cos)\s*\([^()]{0,30}x[^()]*\)/, ids: ["gt12-nguyenham-morong", "gt12-nguyenham-basic"] },
+  { match: /\\int[^\n]{0,80}(?:f\(x\)|g\(x\))/, and: /f\(x\)[^\n]{0,80}g\(x\)/, ids: ["gt12-tichphan-tinhchat"] },
+  { match: /\\int\s*\([^)]{0,60}x[^)]*[+-][^)]*\)/, ids: ["gt12-nguyenham-tinhchat", "gt12-nguyenham-basic"] },
+  { match: /\\(?:sin|cos|tan)\s*\d{2,3}\s*°/, ids: ["lg11-goc-dacbiet"] },
+  { match: /\\sin\s*x\s*=/, and: /\\cos\s*x|\\tan\s*x/, ids: ["lg11-congthuc-coban"] },
+  { match: /dao ham/, and: /\\sqrt\s*\{[^{}]{0,50}x/, ids: ["gt11-daoham-can", "gt12-daoham-hopham"] },
+  { match: /\\sqrt\s*\[\s*\d+\s*\]/, ids: ["gt11-canbacn"] },
+  { match: /\d+\s*\^\s*\{\s*-?\d+\s*\/\s*\d+\s*\}/, ids: ["gt11-luythua-somuhuutythuc"] },
+  // LaTeX thuần không có từ "giới hạn" để bộ tách từ tìm đúng thẻ. Chỉ ghim khi biến tiến tới là x;
+  // giới hạn dãy (n → ∞) và giới hạn lượng giác giữ cách chọn riêng.
+  { match: /\\lim\s*_?\s*\{?\s*x\s*\\to|gioi han/, when: (t) => /\\lim\s*_?\s*\{?\s*x\s*\\to|gioi han(?: cua)? ham|gioi han khi x|gioi han x/.test(t) && !/sin|cos|tan|cot/.test(t), ids: ["gt11-gioihan-ham"] },
+  // Lũy thừa của biểu thức chứa x: cần quy tắc dây chuyền, không áp cho x^n đơn thuần.
+  { match: /dao ham|y\s*['’]/, and: /\([^()]{0,50}x[^()]{0,50}\)\s*\^\s*\{?\s*(?:[2-9]|\d{2,})/, ids: ["gt12-daoham-hopham", "gt12-daoham-basic"] },
   { match: /dong bien|nghich bien|don dieu|bien thien|gtln|gtnn|gia tri lon nhat|gia tri nho nhat|dinh cua|truc doi xung/, when: isQuadraticOnly, ids: ["ds10-hamso-bachai-bienthien", "hh10-parabola", "ds10-ham-so-dongbien-nghichbien"] },
   { match: /giao diem/, and: /truc hoanh|truc tung|\bo[xy]\b/, when: (t) => /parabol/.test(t) || QUADRATIC.test(t), ids: ["ds10-phuongtrinh-bac2", "hh10-parabola"] },
   { match: /goc/, when: (t) => namedAngles(t) >= 2, ids: TRIANGLE_TRIO },
