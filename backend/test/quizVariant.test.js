@@ -397,6 +397,38 @@ test("crossCheckMatches: số so giá trị, không phải số so chuỗi chu�
   assert.equal(normalizeAnswerText("$x = \\dfrac{1}{2}$."), "\\frac{1}{2}");
 });
 
+test("cực trị: so cặp hoành độ/giá trị có thứ tự dù AI viết nhãn khác", () => {
+  const q = "Tìm điểm cực đại và giá trị cực đại của hàm số $f(x)=-x^3+12x-5$.";
+  const option = "Điểm cực đại $x = 2$, giá trị cực đại $y = 11$";
+  assert.ok(crossCheckMatches(option, "x = 2; y_{CĐ} = 11", q));
+  assert.ok(!crossCheckMatches(option, "x = -2; y_{CĐ} = 11", q));
+  assert.ok(!crossCheckMatches(option, "x = 2; y_{CĐ} = 10", q));
+  assert.ok(!crossCheckMatches(option, "x = 11; y_{CĐ} = 2", q));
+  assert.ok(!crossCheckMatches(option, "x = 2", q));
+  assert.ok(!crossCheckMatches(option, "x = 2; y_{CĐ} = 11", "Tìm nghiệm phương trình"));
+});
+
+test("bài cực đại trong ảnh: hai cách ghi đáp án khớp, không trả AI đang bận", async () => {
+  const original = "Tìm điểm cực đại và giá trị cực đại của hàm số $f(x)=-x^3+3x+1$.";
+  const formulaIds = ["gt12-daoham-basic", "gt11-daoham-tonghieu", "gt12-cuctrituoc"];
+  const generated = rawAnswer({
+    question: "Tìm điểm cực đại và giá trị cực đại của hàm số $f(x)=-x^3+12x-5$.",
+    options: [
+      { letter: "A", text: "Điểm cực đại $x=2$, giá trị cực đại $y=11$" },
+      { letter: "B", text: "Điểm cực đại $x=-2$, giá trị cực đại $y=11$" },
+      { letter: "C", text: "Điểm cực đại $x=2$, giá trị cực đại $y=10$" },
+      { letter: "D", text: "Điểm cực đại $x=-2$, giá trị cực đại $y=-21$" },
+    ],
+    answer: "A", blank_answer: "x=2, y=11", explanation: "Dùng đạo hàm để xét cực trị.",
+    formula_ids: ["gt12-cuctrituoc"],
+  });
+  const groq = fakeGroq([generated, solverReply("x = 2; y_{CĐ} = 11")]);
+  const { meta } = await generateVariant({ groq, problem: original, formulaIds, grade: 12 });
+  assert.equal(meta.crossChecked, true);
+  assert.equal(meta.attempts, 1);
+  assert.equal(groq.calls.length, 2);
+});
+
 test("kiểm chéo khớp → giao đề, crossChecked = true; lần giải chỉ nhận đề (không phương án, không lời giải)", async () => {
   fallbackState.primaryBlockedUntil = 0;
   const groq = fakeGroq([cosAnswer(), solverReply("\\frac{11}{14}")]);

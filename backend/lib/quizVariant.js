@@ -469,8 +469,26 @@ export function normalizeAnswerText(s) {
   return t;
 }
 
+// Cực trị hỏi cả vị trí x và giá trị y: AI có thể viết "Điểm cực đại x=2, giá trị cực đại y=11"
+// hoặc "x=2; y_{CĐ}=11". Chỉ so hai cặp số có nhãn x/y khi đề hỏi đúng cặp này.
+function extremumPair(text) {
+  const read = (label) => {
+    const pattern = new RegExp(String.raw`(?:^|[^\p{L}])${label}(?:_\{[^{}]{1,12}\}|_[\p{L}\d]{1,12})?\s*=\s*([+-]?\d+(?:[.,]\d+)?)`, "giu");
+    const matches = [...String(text).replace(/\$/g, "").matchAll(pattern)];
+    return matches.length === 1 ? Number(matches[0][1].replace(",", ".")) : null;
+  };
+  const x = read("x");
+  const y = read("y");
+  return x !== null && y !== null ? { x, y } : null;
+}
+
 /** Đáp số của lần giải độc lập có khớp phương án đúng không. Số thì so giá trị, không phải số thì so chuỗi. */
-export function crossCheckMatches(correctText, solverAnswer) {
+export function crossCheckMatches(correctText, solverAnswer, question = "") {
+  if (/điểm cực (?:đại|tiểu)\s+và\s+giá trị cực (?:đại|tiểu)/i.test(question)) {
+    const a = extremumPair(correctText);
+    const b = extremumPair(solverAnswer);
+    if (a && b) return near(a.x, b.x) && near(a.y, b.y);
+  }
   const a = optionNumbers(correctText);
   const b = optionNumbers(solverAnswer);
   if (a && b) return sameSet([...new Set(a)], [...new Set(b)]);
@@ -575,7 +593,7 @@ export async function generateVariant({ groq, problem, formulaIds = [], grade = 
         meta.crossChecked = false;
         return { variant, meta };
       }
-      if (crossCheckMatches(correct.text, solved)) {
+      if (crossCheckMatches(correct.text, solved, variant.question)) {
         meta.crossChecked = true;
         delete meta.crossCheckSkipped;
         return { variant, meta };

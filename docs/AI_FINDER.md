@@ -265,6 +265,7 @@ nhưng backend không tin AI — mọi câu phải qua kiểm.
      `VariantError`, hoàn lượt, "AI đang bận" (log `[quiz:variant_rejected]` có `crossCheckFailed`, `crossCheckErrors`).
      Đây là hai lần model đồng ý với nhau, KHÔNG phải chứng minh đúng: cùng hiểu sai đề thì vẫn lọt; so chuỗi có thể
      chặn nhầm đáp án đúng viết khác dạng (`x+1` / `1+x`).
+     Riêng đề hỏi **điểm cực đại/cực tiểu và giá trị cực đại/cực tiểu**, nếu cả hai câu trả lời đều có đúng một `x = số` và một `y = số`, backend so cặp `(x,y)` theo đúng thứ tự; cách ghi `y_{CĐ}`/`y_{CT}` được chấp nhận. Hai số khác nhau vẫn bị chặn.
   3. **Chỉ kiểm hình thức**: CHỈ khi sinh đề xong mà còn < 8s trong ngân sách 40s (không kịp gọi lần giải). Vẫn GIAO đề
      (chủ dự án chốt), `crossChecked = false`, `crossCheckSkipped: "budget"`. Theo dõi tỉ lệ dòng log này; cao thì cân
      nhắc tăng ngân sách hoặc không giao.
