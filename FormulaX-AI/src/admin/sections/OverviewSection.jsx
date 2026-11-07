@@ -41,7 +41,7 @@ export default function OverviewSection({ range, refreshKey, onStatus, goTo }) {
               <KpiCard icon={UserPlus} tone="blue" label="Tài khoản mới" value={formatCount(o.new_accounts)} delta={computeDelta(o.new_accounts, p?.new_accounts)} spark={days.map((d) => d.new_accounts || 0)} />
               <KpiCard icon={Wallet} tone="green" label="Doanh thu" value={formatVnd(o.revenue_total)} delta={computeDelta(o.revenue_total, p?.revenue_total)} spark={days.map((d) => d.revenue || 0)} />
               <KpiCard icon={Receipt} tone="amber" label="Đơn thành công" value={formatCount(o.paid_orders)} delta={computeDelta(o.paid_orders, p?.paid_orders)} spark={days.map((d) => d.paid_orders || 0)} />
-              <KpiCard icon={Crown} tone="violet" label="Premium đang hoạt động" value={formatCount(o.premium_active)} hint="Hiện tại, gồm cả tài khoản cấp tay không thời hạn" />
+              <KpiCard icon={Crown} tone="violet" label="Premium đang hoạt động" value={formatCount(o.premium_active)} hint="Tài khoản đang còn hạn Premium" />
             </KpiGrid>
 
             <div className="grid lg:grid-cols-2 gap-4">

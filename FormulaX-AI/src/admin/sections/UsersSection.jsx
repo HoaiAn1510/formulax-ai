@@ -18,7 +18,7 @@ export default function UsersSection({ range, refreshKey, onStatus }) {
           <KpiGrid>
             <KpiCard icon={Users} tone="blue" label="Tổng tài khoản Google" value={formatCount(t.google_accounts_total)} hint="Không tính khách ẩn danh" spark={cumulative.map((d) => d.total_accounts)} />
             <KpiCard icon={UserPlus} tone="green" label="Tài khoản mới trong kỳ" value={formatCount(sum.new_accounts)} delta={computeDelta(sum.new_accounts, previous?.new_accounts)} spark={days.map((d) => d.new_accounts)} />
-            <KpiCard icon={Crown} tone="violet" label="Premium đang hoạt động" value={formatCount(t.premium_active)} hint={`Gồm ${formatCount(t.premium_no_expiry)} tài khoản cấp tay không thời hạn`} />
+            <KpiCard icon={Crown} tone="violet" label="Premium đang hoạt động" value={formatCount(t.premium_active)} hint="Tài khoản đang còn hạn Premium" />
             <KpiCard
               icon={CalendarClock}
               tone="amber"
