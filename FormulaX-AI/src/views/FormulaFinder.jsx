@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock, ClipboardList, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, Crown, Lock, ClipboardList, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
@@ -188,7 +188,6 @@ export default function FormulaFinder({
   const sessionsRef = useRef(sessions);
 
   // Saved formula popup
-  const [savedPopup, setSavedPopup] = useState(null);
 
   const chatMessagesRef = useRef(null);
   const renameInputRef = useRef(null);
@@ -512,15 +511,10 @@ export default function FormulaFinder({
     setRenamingId(null);
   };
 
-  // ─── Bookmark với popup ───────────────────────────────────────────────────
+  // ─── Bookmark ───────────────────────────────────────────────────
 
-  const handleBookmarkWithPopup = (formulaId, formulaName) => {
-    const alreadySaved = bookmarkedIds.includes(formulaId);
-    onToggleBookmark(formulaId);
-    if (!alreadySaved) {
-      setSavedPopup({ formulaName });
-    }
-  };
+  // Thông báo "Đã thêm vào Bookmark" (kèm nút Xem thư viện) do handleToggleBookmark ở App.jsx bắn.
+  const handleBookmarkWithPopup = (formulaId) => onToggleBookmark(formulaId);
 
   // ─── Ảnh đề: chụp/chọn → Gemini đọc → chọn bài → hướng dẫn từng bài ───────
 
@@ -1328,41 +1322,6 @@ export default function FormulaFinder({
           )}
         </div>
       </div>
-
-      {/* ─── Saved formula popup ─── */}
-      {savedPopup && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[2000] bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl py-4 px-5 shadow-[0_8px_32px_rgba(0,0,0,0.14)] min-w-[280px] max-w-[340px] flex flex-col gap-2.5">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-success/10 flex items-center justify-center shrink-0">
-              <BookMarked size={14} color="#10B981" />
-            </div>
-            <div>
-              <div className="text-[0.82rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0]">Đã lưu vào thư viện!</div>
-              <div className="text-[0.75rem] text-text-muted mt-0.5">
-                "{savedPopup.formulaName.length > 35 ? savedPopup.formulaName.slice(0, 35) + "..." : savedPopup.formulaName}"
-              </div>
-            </div>
-            <button aria-label="Đóng thông báo" onClick={() => setSavedPopup(null)} className="ml-auto bg-transparent border-none cursor-pointer text-[#94A3B8] flex items-center">
-              <X size={14} />
-            </button>
-          </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => { setActiveTab("library"); setSavedPopup(null); }}
-              className="flex-1 py-2.5 bg-primary text-white border-none rounded-[9px] cursor-pointer text-[0.78rem] font-bold flex items-center justify-center gap-1.5"
-            >
-              <BookOpen size={13} />
-              Xem thư viện
-            </button>
-            <button
-              onClick={() => setSavedPopup(null)}
-              className="flex-1 py-2.5 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] border-none rounded-[9px] cursor-pointer text-[0.78rem] font-bold"
-            >
-              Tiếp tục chat
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* ─── Chọn nguồn ảnh đề (kèm thông báo quyền riêng tư) ─── */}
       {scanSheetOpen && <ImageScanSheet onPick={handlePickImage} onClose={() => setScanSheetOpen(false)} />}

@@ -28,6 +28,7 @@ import OnboardingModal from "./components/OnboardingModal";
 import DailyIntentModal from "./components/DailyIntentModal";
 import { ToastContainer, showToast } from "./components/Toast";
 import { ConfirmDialogHost } from "./components/ConfirmDialog";
+import PageSkeleton from "./components/PageSkeleton";
 
 // Dashboard và LoginView là màn hình đầu tiên người dùng thấy (đã đăng nhập / chưa đăng nhập)
 // nên giữ nạp thẳng — lazy hai màn này chỉ thêm một vòng request trước khi vẽ được gì.
@@ -46,14 +47,10 @@ const PremiumUpgrade   = lazy(() => import("./views/PremiumUpgrade"));
 const ProgressDashboard = lazy(() => import("./views/ProgressDashboard"));
 const SettingsView     = lazy(() => import("./views/SettingsView"));
 
-// Màn hình chờ dùng chung khi đang tải chunk của một view (hoặc dữ liệu công thức).
-function ViewLoading() {
-  return (
-    <div className="flex flex-col items-center justify-center gap-3 py-20">
-      <div className="w-8 h-8 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
-      <p className="text-[0.8rem] font-semibold text-text-muted dark:text-[#94A3B8]">Đang tải…</p>
-    </div>
-  );
+// Màn hình chờ khi đang tải chunk của một view (hoặc dữ liệu công thức): khung xương gần giống trang thật.
+const SKELETON_BY_TAB = { finder: "chat", progress: "stats", settings: "narrow" };
+function ViewLoading({ tab }) {
+  return <PageSkeleton variant={SKELETON_BY_TAB[tab] || "grid"} />;
 }
 
 export default function App() {
@@ -475,7 +472,10 @@ export default function App() {
       if (isBookmarked) removeBookmark(user.googleId, formulaId).catch(console.error);
       else              addBookmark(user.googleId, formulaId).catch(console.error);
     }
-    showToast(isBookmarked ? "Đã xoá khỏi Bookmark" : "Đã thêm vào Bookmark");
+    if (isBookmarked) showToast("Đã xoá khỏi Bookmark", "info");
+    else showToast("Đã thêm vào Bookmark", "success",
+      // Đang ở Thư viện thì nút "Xem thư viện" thừa.
+      activeTab === "library" ? undefined : { action: { label: "Xem thư viện →", onClick: () => setActiveTab("library") } });
   };
 
   const handleSaveNote = (formulaId, text) => {
@@ -681,7 +681,7 @@ export default function App() {
     // dụng. Chờ chunk formulas về rồi mới vẽ. Dashboard không nằm ở đây vì nó còn nhiều nội
     // dung khác vẽ được ngay, chỉ riêng phần "Gợi ý hôm nay" hiển thị skeleton.
     if (["library", "finder", "flashcard", "progress"].includes(activeTab) && formulas.length === 0) {
-      return <ViewLoading />;
+      return <ViewLoading tab={activeTab} />;
     }
 
     switch (activeTab) {
@@ -847,7 +847,7 @@ export default function App() {
         onOpenNotifications={handleMarkNotificationsRead}
       />
 
-      <Suspense fallback={<ViewLoading />}>{renderView()}</Suspense>
+      <Suspense fallback={<ViewLoading tab={activeTab} />}>{renderView()}</Suspense>
 
       <BottomNav
         activeTab={activeTab}
