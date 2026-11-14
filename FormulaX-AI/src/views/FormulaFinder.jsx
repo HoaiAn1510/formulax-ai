@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, Crown, Lock, ClipboardList, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, Crown, RotateCcw, Lock, ClipboardList, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
@@ -339,7 +339,8 @@ export default function FormulaFinder({
     setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text, isLimitHit: true }]);
   };
 
-  const handleSend = async (textToSend) => {
+  // baseMessages: danh sách tin làm nền (nút "Hỏi lại" sau "AI đang bận" bỏ cặp câu hỏi + thông báo cũ trước khi gửi lại).
+  const handleSend = async (textToSend, baseMessages = messages) => {
     if (!textToSend.trim() || isAnalyzing) return;
     // Ô nhập đã khóa với khách; chốt thêm ở đây cho các đường gọi khác (camera, tệp đính kèm).
     if (isGuest) return;
@@ -353,7 +354,7 @@ export default function FormulaFinder({
 
     setApiError(null);
     const userMsg = { id: Date.now(), sender: "user", text: textToSend };
-    const updatedMessages = [...messages, userMsg];
+    const updatedMessages = [...baseMessages, userMsg];
     setMessages(updatedMessages);
     setQuery("");
     if (textareaRef.current) {
@@ -366,7 +367,7 @@ export default function FormulaFinder({
     // câu trả lời thật của AI (answer, hoặc aiResult ở tin định dạng cũ), câu hỏi tiếp theo như
     // "Cho mình đáp án luôn nhé" hay "Mình chưa hiểu bước này" thường không có từ khóa toán nào —
     // gửi thẳng lên backend, AI tự phân loại refuse_answer / off_topic dựa trên lịch sử.
-    const hasAiAnswer = messages.some(m => m.sender === "bot" && (m.answer || m.aiResult));
+    const hasAiAnswer = baseMessages.some(m => m.sender === "bot" && (m.answer || m.aiResult));
     if (!hasAiAnswer && !isMathRelated(textToSend)) {
       // isNotice: câu mẫu của app, không phải lời AI — hiện kiểu thông báo và không gửi lên AI
       // làm lịch sử.
@@ -434,7 +435,8 @@ export default function FormulaFinder({
       }
       if (error.code === "ai_busy") {
         // Không phải lỗi của học sinh và đã được hoàn lượt — báo nhẹ nhàng, không gắn "Lỗi AI".
-        setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text: error.message, isNotice: true }]);
+        // retryText: hiện nút "Hỏi lại" (đã tự thử lại một lần mà vẫn bận).
+        setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text: error.message, isNotice: true, retryText: textToSend }]);
         return;
       }
       const isConn = error.message.includes("fetch") || error.message.includes("Failed");
@@ -1148,6 +1150,22 @@ export default function FormulaFinder({
                         phiên cũ vẫn hiện đúng kiểu thông báo. */}
                     {msg.isNotice && (
                       <span className="text-[0.88rem]">{msg.text}</span>
+                    )}
+                    {msg.isNotice && msg.retryText && msg.id === messages[messages.length - 1]?.id && !isAnalyzing && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Bỏ thông báo này + câu hỏi ngay trước nó (cùng nội dung), rồi gửi lại.
+                          const i = messages.length - 1;
+                          const prevMsg = messages[i - 1];
+                          const base = messages.slice(0, prevMsg?.sender === "user" && prevMsg.text === msg.retryText ? i - 1 : i);
+                          setMessages(base);
+                          handleSend(msg.retryText, base);
+                        }}
+                        className="mt-2 flex items-center gap-1.5 py-1.5 px-3 rounded-lg border-none bg-accent hover:bg-accent-hover text-white text-[0.8rem] font-bold cursor-pointer transition-colors"
+                      >
+                        <RotateCcw size={13} /> Hỏi lại
+                      </button>
                     )}
 
                     {!msg.answer && !msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && !msg.isNotice && (

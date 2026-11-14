@@ -31,7 +31,7 @@
   mức trừ điểm).
 - **Câu trả lời bảng biến thiên đôi khi bỏ bước nêu khoảng đồng biến / nghịch biến** (chạy thật
   2026-10-08, lần thứ ba) — chỉ còn "tìm đỉnh" rồi "lập bảng".
-- **Ô chat gõ tay:** "AI đang bận" chưa có đếm ngược / tự hỏi lại như tab bài từ ảnh.
+- ~~**Ô chat gõ tay:** "AI đang bận" chưa có đếm ngược / tự hỏi lại~~ — đã có (đếm ngược + tự hỏi lại một lần, `utils/finderBusyRetry.js`); từ 2026-11-14 thêm nút "Hỏi lại" khi lần tự hỏi lại vẫn bận.
 - **Bộ lọc "không tính":** hằng số tính ra trùng số trong đề vẫn lọt, trừ đại lượng đề hỏi dạng tên
   đoạn/góc viết hoa (`askedTargets`); giá trị lượng giác đã thay (`\frac{1}{2}` thay `\cos 60^\circ`)
   chỉ được prompt chặn.
