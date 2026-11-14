@@ -61,6 +61,11 @@ export default function ImageScanSheet({ onPick, onClose }) {
             <input type="file" accept="image/*" className="hidden" onChange={handleChange} />
           </label>
         </div>
+
+        {/* Máy tính: ảnh chụp màn hình nằm trong bộ nhớ tạm, không phải file — nhắc cách dán / kéo thả (FormulaFinder.jsx). */}
+        <p className="hidden md:block m-0 text-[0.75rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">
+          Mẹo: chụp màn hình rồi bấm <kbd className="px-1.5 py-0.5 rounded border border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] font-sans text-[0.7rem]">Ctrl+V</kbd> vào ô nhập, hoặc kéo thả file ảnh vào khung chat.
+        </p>
       </div>
     </div>
   );

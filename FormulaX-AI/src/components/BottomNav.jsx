@@ -209,7 +209,7 @@ export default function BottomNav({
         {accountOpen && (
           <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] bg-secondary/4 max-md:dark:bg-secondary/6 md:!bg-[#0F172A] border border-[#EEF2FF] max-md:dark:border-[#334155] md:!border-[#0F172A] overflow-hidden">
             {/* Avatar + name + email header */}
-            <div className="flex items-center gap-2.5 py-2.5 px-3 bg-[linear-gradient(135deg,#1E3A5F_0%,#2563EB_100%)]">
+            <div className="flex items-center gap-2.5 py-2.5 px-3 bg-[#1E3A5F]">
               {isGuest ? (
                 <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
                   <UserRound size={18} />

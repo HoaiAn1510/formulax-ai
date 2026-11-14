@@ -458,22 +458,22 @@ export default function QuizView({
           {/* Modal hết quota */}
           {showQuotaModal && (
             <div className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.6)] backdrop-blur-[4px] flex items-center justify-center p-4">
-              <div className="bg-white rounded-[20px] w-full max-w-[380px] py-7 px-6 shadow-[0_24px_60px_rgba(0,0,0,0.18)] text-center">
+              <div className="bg-white dark:bg-[#1E293B] rounded-[20px] w-full max-w-[380px] py-7 px-6 shadow-[0_24px_60px_rgba(0,0,0,0.18)] text-center">
                 {/* Icon */}
                 <div className="w-[52px] h-[52px] rounded-full bg-premium/10 flex items-center justify-center mx-auto mb-4">
                   <Crown size={24} color="#F59E0B" />
                 </div>
 
-                <h2 className="text-[1.15rem] font-extrabold text-[#1E3A5F] mb-2">
+                <h2 className="text-[1.15rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] mb-2">
                   Hết lượt quiz hôm nay!
                 </h2>
                 {isGuest ? (
-                  <p className="text-[0.83rem] text-text-muted leading-[1.55] mb-5">
+                  <p className="text-[0.83rem] text-text-muted dark:text-[#94A3B8] leading-[1.55] mb-5">
                     Bạn đã dùng hết <strong>{GUEST_QUIZ_DAILY_LIMIT}/{GUEST_QUIZ_DAILY_LIMIT} lượt quiz của chế độ khách</strong> hôm nay.
                     Lượt sẽ được làm mới vào ngày mai — hoặc đăng nhập Google để luyện tiếp và lưu kết quả.
                   </p>
                 ) : (
-                  <p className="text-[0.83rem] text-text-muted leading-[1.55] mb-5">
+                  <p className="text-[0.83rem] text-text-muted dark:text-[#94A3B8] leading-[1.55] mb-5">
                     Bạn đã dùng hết <strong>10/10 lượt quiz miễn phí</strong> ngày hôm nay.
                     Lượt sẽ được reset vào ngày mai — hoặc nâng cấp <strong>Premium</strong> để luyện không giới hạn!
                   </p>
@@ -481,10 +481,10 @@ export default function QuizView({
 
                 {/* Highlight — khách chưa có tài khoản để nâng cấp nên không mời mua Premium */}
                 {!isGuest && (
-                  <div className="bg-[linear-gradient(135deg,#FFFBEB,#FEF3C7)] border border-premium/25 rounded-xl py-3 px-4 mb-5 flex items-center justify-between">
+                  <div className="bg-[linear-gradient(135deg,#FFFBEB,#FEF3C7)] dark:bg-none dark:bg-premium/10 border border-premium/25 rounded-xl py-3 px-4 mb-5 flex items-center justify-between">
                     <div className="text-left">
-                      <div className="text-[0.7rem] text-[#92400E] font-bold mb-0.5">Premium</div>
-                      <div className="text-[0.82rem] font-extrabold text-[#1E3A5F]">Quiz không giới hạn mỗi ngày</div>
+                      <div className="text-[0.7rem] text-[#92400E] dark:text-[#FCD34D] font-bold mb-0.5">Premium</div>
+                      <div className="text-[0.82rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">Quiz không giới hạn mỗi ngày</div>
                     </div>
                     <div className="text-[0.9rem] font-extrabold text-premium">49.000đ/tháng</div>
                   </div>
@@ -501,14 +501,14 @@ export default function QuizView({
                 ) : (
                   <button
                     onClick={() => { setShowQuotaModal(false); setActiveTab("premium"); }}
-                    className="w-full py-3 rounded-xl border-none bg-[linear-gradient(135deg,#F59E0B,#EF4444)] text-white font-extrabold text-[0.9rem] cursor-pointer mb-2.5 flex items-center justify-center gap-2"
+                    className="w-full py-3 rounded-xl border-none bg-accent hover:bg-accent-hover text-white font-extrabold text-[0.9rem] cursor-pointer mb-2.5 flex items-center justify-center gap-2 transition-colors duration-200"
                   >
                     <Crown size={16} /> Nâng cấp Premium ngay
                   </button>
                 )}
                 <button
                   onClick={() => setShowQuotaModal(false)}
-                  className="w-full py-2.5 rounded-xl border border-[#E2E8F0] bg-white text-text-muted font-semibold text-[0.85rem] cursor-pointer"
+                  className="w-full py-2.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-text-muted dark:text-[#94A3B8] font-semibold text-[0.85rem] cursor-pointer"
                 >
                   Để ngày mai quay lại
                 </button>
@@ -964,17 +964,17 @@ export default function QuizView({
                 )}
 
                 {isGuest && remainingQuizzes <= 0 && (
-                  <div className="w-full mt-1 rounded-[14px] bg-primary text-white p-4 text-left flex flex-col gap-2">
+                  <div className="w-full mt-1 rounded-[14px] bg-primary dark:bg-[#1E293B] dark:border dark:border-[#334155] text-white p-4 text-left flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-[0.8rem] font-bold"><Lock size={13} /> Hết lượt quiz của chế độ khách</div>
                     <p className="m-0 text-[0.78rem] text-white/80">Đăng nhập Google để luyện tiếp hôm nay và lưu lại kết quả.</p>
-                    <button type="button" className="self-start inline-flex items-center gap-1.5 rounded-[10px] bg-[#FBBF24] text-primary font-semibold text-[0.8rem] px-3 py-2 border-none cursor-pointer" onClick={handleGuestLogin}>Đăng nhập Google</button>
+                    <button type="button" className="self-start inline-flex items-center gap-1.5 rounded-[10px] bg-[#FBBF24] hover:bg-premium text-primary font-semibold text-[0.8rem] px-3 py-2 border-none cursor-pointer transition-colors duration-200" onClick={handleGuestLogin}>Đăng nhập Google</button>
                   </div>
                 )}
                 {!isGuest && !isPremium && remainingQuizzes <= 0 && (
-                  <div className="w-full mt-1 rounded-[14px] bg-primary text-white p-4 text-left flex flex-col gap-2">
+                  <div className="w-full mt-1 rounded-[14px] bg-primary dark:bg-[#1E293B] dark:border dark:border-[#334155] text-white p-4 text-left flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-[0.8rem] font-bold"><Crown size={13} className="text-[#FBBF24]" /> Hết lượt test miễn phí</div>
                     <p className="m-0 text-[0.78rem] text-white/80">Nâng cấp Premium để làm bài trắc nghiệm không giới hạn!</p>
-                    <button type="button" className="self-start inline-flex items-center gap-1.5 rounded-[10px] bg-[#FBBF24] text-primary font-semibold text-[0.8rem] px-3 py-2 border-none cursor-pointer" onClick={() => setActiveTab("premium")}>Nâng cấp Premium</button>
+                    <button type="button" className="self-start inline-flex items-center gap-1.5 rounded-[10px] bg-[#FBBF24] hover:bg-premium text-primary font-semibold text-[0.8rem] px-3 py-2 border-none cursor-pointer transition-colors duration-200" onClick={() => setActiveTab("premium")}>Nâng cấp Premium</button>
                   </div>
                 )}
 
