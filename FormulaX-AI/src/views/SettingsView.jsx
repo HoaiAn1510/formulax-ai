@@ -136,7 +136,7 @@ export default function SettingsView({
                     Cài app
                   </button>
                 ) : (
-                  <button onClick={() => setShowIosSteps(v => !v)} className="bg-transparent border-none cursor-pointer text-accent text-[0.8rem] font-bold">
+                  <button onClick={() => setShowIosSteps(v => !v)} className="bg-transparent border-none cursor-pointer text-accent hover:text-accent-hover text-[0.8rem] font-bold min-h-9 px-2.5 -my-2 -mr-2.5 rounded-lg">
                     {showIosSteps ? "Ẩn" : "Xem cách"}
                   </button>
                 )}
@@ -294,7 +294,7 @@ export default function SettingsView({
                 <button
                   onClick={() => setLegalDoc("terms")}
                   aria-label="Mở Điều khoản dịch vụ"
-                  className="bg-transparent border-none cursor-pointer text-accent text-[0.8rem] font-bold"
+                  className="bg-transparent border-none cursor-pointer text-accent hover:text-accent-hover text-[0.8rem] font-bold min-h-9 px-2.5 -my-2 -mr-2.5 rounded-lg"
                 >
                   Xem
                 </button>
@@ -308,7 +308,7 @@ export default function SettingsView({
                 <button
                   onClick={() => setLegalDoc("privacy")}
                   aria-label="Mở Chính sách bảo mật"
-                  className="bg-transparent border-none cursor-pointer text-accent text-[0.8rem] font-bold"
+                  className="bg-transparent border-none cursor-pointer text-accent hover:text-accent-hover text-[0.8rem] font-bold min-h-9 px-2.5 -my-2 -mr-2.5 rounded-lg"
                 >
                   Xem
                 </button>

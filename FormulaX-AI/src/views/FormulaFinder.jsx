@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, Crown, Lock, ClipboardList, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, Crown, RotateCcw, Lock, ClipboardList, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
@@ -16,6 +16,7 @@ import { problemToFinderMessage, nextGuidanceRequest, busyWaitSeconds } from "..
 import { retryFinderBusyOnce } from "../utils/finderBusyRetry";
 import { isFollowUpQuestion } from "../utils/askedProblems";
 import { latexToPlainText } from "../utils/mathLines";
+import { showToast } from "../components/Toast";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -111,6 +112,17 @@ export default function FormulaFinder({
   // null = chưa biết (đang tải). Số lượt thật lấy từ backend. Khách và Premium không dùng giá
   // trị này (thanh đếm bị ẩn, handleSend không kiểm tra) nên không cần tải.
   const [aiQueriesLeft, setAiQueriesLeft] = useState(null);
+  // Nhắc trước khi hết lượt: chỉ khi số lượt GIẢM xuống đúng 3 hoặc 1 (vừa hỏi xong), không nhắc lúc mới mở trang.
+  const prevQueriesLeftRef = useRef(null);
+  useEffect(() => {
+    const prev = prevQueriesLeftRef.current;
+    prevQueriesLeftRef.current = aiQueriesLeft;
+    if (isPremium || prev === null || aiQueriesLeft === null || aiQueriesLeft >= prev) return;
+    if (aiQueriesLeft !== 3 && aiQueriesLeft !== 1) return;
+    showToast(`Bạn còn ${aiQueriesLeft} lượt hỏi AI miễn phí hôm nay. Lượt mới có vào 0 giờ.`, "info", {
+      action: { label: "Hỏi không giới hạn với Premium →", onClick: () => setActiveTab("premium") },
+    });
+  }, [aiQueriesLeft, isPremium, setActiveTab]);
 
   useEffect(() => {
     if (isGuest || !user?.googleId || isPremium) return;
@@ -339,7 +351,8 @@ export default function FormulaFinder({
     setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text, isLimitHit: true }]);
   };
 
-  const handleSend = async (textToSend) => {
+  // baseMessages: danh sách tin làm nền (nút "Hỏi lại" sau "AI đang bận" bỏ cặp câu hỏi + thông báo cũ trước khi gửi lại).
+  const handleSend = async (textToSend, baseMessages = messages) => {
     if (!textToSend.trim() || isAnalyzing) return;
     // Ô nhập đã khóa với khách; chốt thêm ở đây cho các đường gọi khác (camera, tệp đính kèm).
     if (isGuest) return;
@@ -353,7 +366,7 @@ export default function FormulaFinder({
 
     setApiError(null);
     const userMsg = { id: Date.now(), sender: "user", text: textToSend };
-    const updatedMessages = [...messages, userMsg];
+    const updatedMessages = [...baseMessages, userMsg];
     setMessages(updatedMessages);
     setQuery("");
     if (textareaRef.current) {
@@ -366,7 +379,7 @@ export default function FormulaFinder({
     // câu trả lời thật của AI (answer, hoặc aiResult ở tin định dạng cũ), câu hỏi tiếp theo như
     // "Cho mình đáp án luôn nhé" hay "Mình chưa hiểu bước này" thường không có từ khóa toán nào —
     // gửi thẳng lên backend, AI tự phân loại refuse_answer / off_topic dựa trên lịch sử.
-    const hasAiAnswer = messages.some(m => m.sender === "bot" && (m.answer || m.aiResult));
+    const hasAiAnswer = baseMessages.some(m => m.sender === "bot" && (m.answer || m.aiResult));
     if (!hasAiAnswer && !isMathRelated(textToSend)) {
       // isNotice: câu mẫu của app, không phải lời AI — hiện kiểu thông báo và không gửi lên AI
       // làm lịch sử.
@@ -434,7 +447,8 @@ export default function FormulaFinder({
       }
       if (error.code === "ai_busy") {
         // Không phải lỗi của học sinh và đã được hoàn lượt — báo nhẹ nhàng, không gắn "Lỗi AI".
-        setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text: error.message, isNotice: true }]);
+        // retryText: hiện nút "Hỏi lại" (đã tự thử lại một lần mà vẫn bận).
+        setMessages(prev => [...prev, { id: Date.now() + 1, sender: "bot", text: error.message, isNotice: true, retryText: textToSend }]);
         return;
       }
       const isConn = error.message.includes("fetch") || error.message.includes("Failed");
@@ -853,7 +867,9 @@ export default function FormulaFinder({
         <div className="flex items-center gap-2 shrink-0">
           {!isPremium && !isGuest && aiQueriesLeft !== null && (
             <span className={`hidden sm:inline-flex items-center h-9 px-3 rounded-full border text-[0.78rem] font-semibold ${
-              aiQueriesLeft === 0 ? "bg-error/10 border-error/30 text-[#B91C1C] dark:text-[#FCA5A5]" : "bg-[#DCFCE7] border-[#BBF7D0] text-[#166534] dark:bg-success/15 dark:border-success/30 dark:text-[#6EE7B7]"
+              aiQueriesLeft === 0 ? "bg-error/10 border-error/30 text-[#B91C1C] dark:text-[#FCA5A5]"
+                : aiQueriesLeft <= 3 ? "bg-accent-light border-accent/30 text-[#92400E] dark:bg-accent/15 dark:border-accent/30 dark:text-[#FCD34D]"
+                : "bg-[#DCFCE7] border-[#BBF7D0] text-[#166534] dark:bg-success/15 dark:border-success/30 dark:text-[#6EE7B7]"
             }`}>
               {aiQueriesLeft === 0 ? "Hết lượt hôm nay" : `Còn ${aiQueriesLeft}/${FREE_AI_LIMIT} lượt hôm nay`}
             </span>
@@ -1149,6 +1165,22 @@ export default function FormulaFinder({
                     {msg.isNotice && (
                       <span className="text-[0.88rem]">{msg.text}</span>
                     )}
+                    {msg.isNotice && msg.retryText && msg.id === messages[messages.length - 1]?.id && !isAnalyzing && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Bỏ thông báo này + câu hỏi ngay trước nó (cùng nội dung), rồi gửi lại.
+                          const i = messages.length - 1;
+                          const prevMsg = messages[i - 1];
+                          const base = messages.slice(0, prevMsg?.sender === "user" && prevMsg.text === msg.retryText ? i - 1 : i);
+                          setMessages(base);
+                          handleSend(msg.retryText, base);
+                        }}
+                        className="mt-2 flex items-center gap-1.5 py-1.5 px-3 rounded-lg border-none bg-accent hover:bg-accent-hover text-white text-[0.8rem] font-bold cursor-pointer transition-colors"
+                      >
+                        <RotateCcw size={13} /> Hỏi lại
+                      </button>
+                    )}
 
                     {!msg.answer && !msg.isImage && !msg.isFile && !msg.isError && !msg.isLimitHit && !msg.isNotice && (
                       <div className="chat-bot-text leading-[1.65] text-[0.88rem]">
@@ -1238,7 +1270,9 @@ export default function FormulaFinder({
           {/* Free user AI query counter */}
           {!isPremium && !isGuest && (
             <div className={`flex items-center justify-between py-2 px-4 md:px-6 border-t border-line dark:border-night-line text-[0.75rem] font-medium ${
-              aiQueriesLeft === 0 ? "text-[#B91C1C] dark:text-[#FCA5A5]" : "text-text-muted dark:text-night-muted"
+              aiQueriesLeft === 0 ? "text-[#B91C1C] dark:text-[#FCA5A5]"
+                : aiQueriesLeft !== null && aiQueriesLeft <= 3 ? "text-[#92400E] dark:text-[#FCD34D] font-semibold"
+                : "text-text-muted dark:text-night-muted"
             }`}>
               <span>
                 {aiQueriesLeft === null
