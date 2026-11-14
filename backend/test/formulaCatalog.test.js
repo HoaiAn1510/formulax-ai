@@ -4,6 +4,41 @@ import { shortlistFormulas, methodGroupIds, isValidFormulaId, METHOD_GROUPS } fr
 
 const ids = (texts) => shortlistFormulas(texts).map((f) => f.id);
 
+test("logo không ghim lôgarit; ký hiệu log có cơ số vẫn được nhận", () => {
+  for (const q of ["Tính diện tích hình phẳng của logo giới hạn bởi hai parabol", "Thiết kế logo hình tròn", "Một blog về toán"]) {
+    assert.ok(!methodGroupIds(q).includes("gt12-logarit"), q);
+  }
+  for (const q of ["log₂(x)=3", "log2(x)=3", String.raw`\log_{2}(x)=3`, "log(x)=2", "Tính lôgarit của 8"]) {
+    assert.ok(methodGroupIds(q).includes("gt12-logarit"), q);
+  }
+});
+
+const MULTISTEP_CASES = [
+  ["Tam giác có a=13, b=14, c=15. Tính bán kính đường tròn nội tiếp r.", ["hh10-herong", "hh10-bankinh-noitiep"]],
+  ["Tam giác có a=13, b=14, c=15. Tính bán kính đường tròn ngoại tiếp R.", ["hh10-herong", "hh10-bankinh-ngoaitiep"]],
+  ["Tam giác có ba cạnh 5, 12, 13. Tính bán kính nội tiếp.", ["hh10-herong", "hh10-bankinh-noitiep"]],
+  ["Phương trình x² - 5x + 3 = 0 có hai nghiệm x₁, x₂. Tính x₁²+x₂² bằng hệ thức Vi-ét.", ["ds10-hethuc-viet"]],
+  ["Phương trình x² - 7x + 2 = 0 có hai nghiệm x₁, x₂. Tính 1/x₁+1/x₂ bằng hệ thức Vi-ét.", ["ds10-hethuc-viet"]],
+  ["Tìm cực trị của y = (2x² - 3)^5.", ["gt12-cuctrituoc", "gt12-daoham-hopham", "gt12-daoham-basic", "gt11-daoham-tonghieu"]],
+  ["Cho hàm số f. Tìm cực trị của g(x)=f(x²−1).", ["gt12-cuctrituoc", "gt12-daoham-hopham", "gt12-daoham-basic"]],
+  ["Tìm cực đại của y=f(2x+1).", ["gt12-cuctrituoc", "gt12-daoham-hopham"]],
+];
+for (const [q, required] of MULTISTEP_CASES) {
+  test(`chuỗi nhiều bước có đủ thẻ trong top 8: ${q}`, () => {
+    const actual = ids([q]);
+    assert.ok(actual.length <= 8);
+    assert.equal(new Set(actual).size, actual.length);
+    assert.deepEqual(required.filter(id => !actual.includes(id)), []);
+  });
+}
+
+test("không ghim hàm hợp khi chỉ có f(x), bài tính giá trị hoặc học sinh lớp 10", () => {
+  for (const q of ["Tìm cực trị của f(x)=x³-3x", "Tính f(x²-1)", "Tính (2x+1)^5", "Tìm cực trị của y=x³-3x"]) {
+    assert.ok(!methodGroupIds(q).includes("gt12-daoham-hopham"), q);
+  }
+  assert.ok(!methodGroupIds("Tìm cực trị của y=f(x²-1)", 10).includes("gt12-daoham-hopham"));
+});
+
 test("mọi id trong METHOD_GROUPS đều có trong formulas.js", () => {
   const missing = METHOD_GROUPS.flatMap((g) => g.ids).filter((id) => !isValidFormulaId(id));
   assert.deepEqual(missing, []);

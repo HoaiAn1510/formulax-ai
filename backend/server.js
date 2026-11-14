@@ -19,6 +19,7 @@ import { precheckInvalidQuestion } from "./lib/invalidQuestionPrecheck.js";
 import { expandShorthand } from "./lib/problemText.js";
 import { runWithQuota } from "./lib/quotaFlow.js";
 import { FINDER_MODEL } from "./lib/finderPrompt.js";
+import { answerWithReasoning, REASONING_ENABLED } from "./lib/reasoningFinder.js";
 import { decodeImagePayload, readProblemsFromImage, OcrError, OCR_BUDGET_MS, MAX_IMAGE_BYTES } from "./lib/ocrReader.js";
 import { createPerKeyLimiter } from "./lib/perKeyLimiter.js";
 import { generateVariant, VariantError, VARIANT_BUDGET_MS, MAX_FORMULA_IDS } from "./lib/quizVariant.js";
@@ -137,6 +138,9 @@ function logFinderEvents(message, answer, meta, ms, source) {
   // Groq trả 413 (prompt + max_completion_tokens > TPM) rồi backend gọi lại với max_completion_tokens
   // thấp hơn. Dòng này xuất hiện thường xuyên = prompt đang sát trần, cần rút thêm (không có câu hỏi).
   if (meta.reducedForTpm) console.warn("[finder:tpm_retry]", JSON.stringify(meta.reducedForTpm));
+  // Đợt B2 (cờ FINDER_REASONING_ENABLED): dạng bài, kết quả kiểm, và bộ lọc cuối có sửa lời hướng dẫn đã kiểm không
+  // (guardChanged = ca chặn nhầm cần xem). Không ghi đề ở dòng này.
+  if (meta.reasoning) console.log("[finder:reasoning]", JSON.stringify({ type: answer.type, ...meta.reasoning }));
   if (meta.jsonFailed) console.warn("[finder:json_failed]", JSON.stringify({ ...base, attempts: meta.attempts }));
   // Câu trả lời do model dự phòng (20b) soạn vì model chính hết hạn mức ngày — đếm số dòng này
   // trong Render Logs để biết mỗi ngày bao nhiêu câu phải dùng dự phòng.
@@ -266,7 +270,10 @@ app.post("/api/chat", chatBurstLimiter, chatDailyLimiter, async (req, res) => {
     const grade = [10, 11, 12].includes(Number(req.body?.grade)) ? Number(req.body.grade) : null;
     const ask = async () => {
       const startedAt = Date.now();
-      const out = await askFinder({ groq, message, history: chatHistory, grade, deadline: requestDeadline });
+      // Đợt B2 (lib/reasoningFinder.js): cờ mặc định TẮT, chỉ câu đầu của phiên. Dạng thí điểm → lời hướng dẫn do
+      // backend lập kế hoạch + kiểm chứng, không gọi AI; không phải dạng thí điểm → null → luồng cũ như trước.
+      const reasoned = REASONING_ENABLED() && chatHistory.length === 0 ? answerWithReasoning(message, { grade }) : null;
+      const out = reasoned || await askFinder({ groq, message, history: chatHistory, grade, deadline: requestDeadline });
       logFinderEvents(message, out.answer, out.meta, Date.now() - startedAt, source);
       return { ...out, delivered: countsAsTurn(out.answer, out.meta) };
     };
