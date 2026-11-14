@@ -16,6 +16,7 @@ import { problemToFinderMessage, nextGuidanceRequest, busyWaitSeconds } from "..
 import { retryFinderBusyOnce } from "../utils/finderBusyRetry";
 import { isFollowUpQuestion } from "../utils/askedProblems";
 import { latexToPlainText } from "../utils/mathLines";
+import { showToast } from "../components/Toast";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -111,6 +112,17 @@ export default function FormulaFinder({
   // null = chưa biết (đang tải). Số lượt thật lấy từ backend. Khách và Premium không dùng giá
   // trị này (thanh đếm bị ẩn, handleSend không kiểm tra) nên không cần tải.
   const [aiQueriesLeft, setAiQueriesLeft] = useState(null);
+  // Nhắc trước khi hết lượt: chỉ khi số lượt GIẢM xuống đúng 3 hoặc 1 (vừa hỏi xong), không nhắc lúc mới mở trang.
+  const prevQueriesLeftRef = useRef(null);
+  useEffect(() => {
+    const prev = prevQueriesLeftRef.current;
+    prevQueriesLeftRef.current = aiQueriesLeft;
+    if (isPremium || prev === null || aiQueriesLeft === null || aiQueriesLeft >= prev) return;
+    if (aiQueriesLeft !== 3 && aiQueriesLeft !== 1) return;
+    showToast(`Bạn còn ${aiQueriesLeft} lượt hỏi AI miễn phí hôm nay. Lượt mới có vào 0 giờ.`, "info", {
+      action: { label: "Hỏi không giới hạn với Premium →", onClick: () => setActiveTab("premium") },
+    });
+  }, [aiQueriesLeft, isPremium, setActiveTab]);
 
   useEffect(() => {
     if (isGuest || !user?.googleId || isPremium) return;
@@ -855,7 +867,9 @@ export default function FormulaFinder({
         <div className="flex items-center gap-2 shrink-0">
           {!isPremium && !isGuest && aiQueriesLeft !== null && (
             <span className={`hidden sm:inline-flex items-center h-9 px-3 rounded-full border text-[0.78rem] font-semibold ${
-              aiQueriesLeft === 0 ? "bg-error/10 border-error/30 text-[#B91C1C] dark:text-[#FCA5A5]" : "bg-[#DCFCE7] border-[#BBF7D0] text-[#166534] dark:bg-success/15 dark:border-success/30 dark:text-[#6EE7B7]"
+              aiQueriesLeft === 0 ? "bg-error/10 border-error/30 text-[#B91C1C] dark:text-[#FCA5A5]"
+                : aiQueriesLeft <= 3 ? "bg-accent-light border-accent/30 text-[#92400E] dark:bg-accent/15 dark:border-accent/30 dark:text-[#FCD34D]"
+                : "bg-[#DCFCE7] border-[#BBF7D0] text-[#166534] dark:bg-success/15 dark:border-success/30 dark:text-[#6EE7B7]"
             }`}>
               {aiQueriesLeft === 0 ? "Hết lượt hôm nay" : `Còn ${aiQueriesLeft}/${FREE_AI_LIMIT} lượt hôm nay`}
             </span>
@@ -1256,7 +1270,9 @@ export default function FormulaFinder({
           {/* Free user AI query counter */}
           {!isPremium && !isGuest && (
             <div className={`flex items-center justify-between py-2 px-4 md:px-6 border-t border-line dark:border-night-line text-[0.75rem] font-medium ${
-              aiQueriesLeft === 0 ? "text-[#B91C1C] dark:text-[#FCA5A5]" : "text-text-muted dark:text-night-muted"
+              aiQueriesLeft === 0 ? "text-[#B91C1C] dark:text-[#FCA5A5]"
+                : aiQueriesLeft !== null && aiQueriesLeft <= 3 ? "text-[#92400E] dark:text-[#FCD34D] font-semibold"
+                : "text-text-muted dark:text-night-muted"
             }`}>
               <span>
                 {aiQueriesLeft === null
