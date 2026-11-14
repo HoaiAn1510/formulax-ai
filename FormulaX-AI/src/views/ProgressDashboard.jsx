@@ -507,7 +507,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
               </p>
               <button
                 onClick={() => setActiveTab("premium")}
-                className="bg-premium text-primary border-none rounded-[10px] py-2.5 px-6 text-[0.85rem] font-extrabold cursor-pointer inline-flex items-center gap-1.5"
+                className="bg-premium hover:bg-accent text-primary border-none rounded-[10px] py-2.5 px-6 text-[0.85rem] font-extrabold cursor-pointer transition-colors duration-200 inline-flex items-center gap-1.5"
               >
                 <Crown size={14} fill="#1E3A5F" color="#1E3A5F" />
                 Nâng cấp Premium để mở khóa
@@ -592,7 +592,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                         <span className="text-[0.82rem] font-bold">{t}</span>
                         <span className="text-[0.78rem] font-bold">??%</span>
                       </div>
-                      <div className="bg-[#F1F5F9] rounded-md h-2">
+                      <div className="bg-[#F1F5F9] dark:bg-[#334155] rounded-md h-2">
                         <div className="h-full rounded-md bg-[#94A3B8]" style={{ width: w }} />
                       </div>
                     </div>

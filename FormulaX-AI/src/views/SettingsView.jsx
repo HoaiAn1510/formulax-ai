@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowLeft, Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles, FileText, ShieldCheck, Lock, UserRound } from "lucide-react";
+import { Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles, FileText, ShieldCheck, Lock, UserRound } from "lucide-react";
 import LegalModal from "../components/LegalModal";
 import PageShell from "../components/PageShell";
 import GuestLockNotice from "../components/GuestLockNotice";
@@ -72,27 +72,15 @@ export default function SettingsView({
   };
 
   return (
-    <PageShell width="narrow" decor={false}>
-          {/* Header */}
-          <div className="flex items-center gap-3 mb-5">
-            <button aria-label="Về trang chủ"
-              onClick={() => setActiveTab("dashboard")}
-              className="flex items-center justify-center w-[34px] h-[34px] rounded-[10px] bg-[#F1F5F9] dark:bg-[#334155] border-none cursor-pointer text-primary dark:text-[#E2E8F0]"
-            >
-              <ArrowLeft size={18} />
-            </button>
-            <div>
-              <h1 className="m-0 text-[1.15rem] font-extrabold text-primary dark:text-[#E2E8F0]">
-                Cài đặt
-              </h1>
-              <p className="m-0 text-[0.72rem] text-text-muted dark:text-[#94A3B8]">
-                Quản lý tài khoản và tuỳ chỉnh trải nghiệm học tập
-              </p>
-            </div>
-          </div>
-
+    <PageShell
+      width="narrow"
+      decor={false}
+      title="Cài đặt"
+      description="Quản lý tài khoản và tuỳ chỉnh trải nghiệm học tập"
+      onBack={() => setActiveTab("dashboard")}
+    >
           {/* Identity card */}
-          <div className="rounded-2xl p-4 mb-4 flex items-center gap-3 bg-[linear-gradient(135deg,#1E3A5F_0%,#2563EB_100%)] shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+          <div className="rounded-2xl p-4 mb-4 flex items-center gap-3 bg-[#1E3A5F] dark:border dark:border-[#334155] shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
             {isGuest ? (
               <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
                 <UserRound size={22} />

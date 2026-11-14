@@ -90,7 +90,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
 
   const chipClass = (active) =>
     `py-1.5 px-3.5 rounded-[20px] text-[0.8rem] font-semibold cursor-pointer transition-all duration-150 border-[1.5px] ${
-      active ? "border-accent bg-[#FEF3C7] text-accent" : "border-[#E2E8F0] bg-white text-text-muted"
+      active ? "border-accent bg-[#FEF3C7] dark:bg-accent/15 text-accent" : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-text-muted dark:text-[#94A3B8]"
     }`;
 
   return (
@@ -99,15 +99,15 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-2xl p-6 w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        className="bg-white dark:bg-[#1E293B] rounded-2xl p-6 w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
         onClick={e => e.stopPropagation()}
       >
-        <h3 className="text-[1.1rem] font-extrabold text-[#1E3A5F] mb-1">Tạo bộ thẻ theo chủ đề</h3>
+        <h3 className="text-[1.1rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] mb-1">Tạo bộ thẻ theo chủ đề</h3>
         <p className="text-[0.8rem] text-text-muted mb-5">Chọn nhiều chủ đề và lớp để tạo bộ thẻ tự động</p>
 
         {/* Topic chips — multi-select */}
         <div className="mb-4">
-          <p className="text-[0.8rem] font-bold text-[#1E3A5F] mb-2">Chủ đề</p>
+          <p className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] mb-2">Chủ đề</p>
           <div className="flex flex-wrap gap-2">
             {TOPICS.map(t => (
               <button key={t} onClick={() => toggleTopic(t)} className={chipClass(isTopicActive(t))}>
@@ -119,7 +119,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
 
         {/* Grade chips — multi-select */}
         <div className="mb-5">
-          <p className="text-[0.8rem] font-bold text-[#1E3A5F] mb-2">Lớp</p>
+          <p className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] mb-2">Lớp</p>
           <div className="flex flex-wrap gap-2">
             {GRADES.map(g => (
               <button key={g} onClick={() => toggleGrade(g)} className={chipClass(isGradeActive(g))}>
@@ -130,17 +130,17 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
         </div>
 
         {/* Preview */}
-        <div className={`bg-[#F8FAFC] rounded-[10px] py-3 px-4 text-center ${dupError ? "mb-2.5" : "mb-5"}`}>
+        <div className={`bg-[#F8FAFC] dark:bg-[#0F172A] rounded-[10px] py-3 px-4 text-center ${dupError ? "mb-2.5" : "mb-5"}`}>
           <span className="text-[0.85rem] font-semibold text-text-muted">
             Bộ thẻ sẽ gồm{" "}
-            <strong className="text-[#1E3A5F] text-base">{matched.length}</strong>
+            <strong className="text-[#1E3A5F] dark:text-[#E2E8F0] text-base">{matched.length}</strong>
             {" "}công thức
           </span>
         </div>
 
         {/* Duplicate error */}
         {dupError && (
-          <div className="bg-[#FEF2F2] border border-[#FECACA] rounded-lg py-2.5 px-3 mb-3.5 text-[0.78rem] text-error font-semibold">
+          <div className="bg-[#FEF2F2] dark:bg-error/10 border border-[#FECACA] dark:border-error/30 rounded-lg py-2.5 px-3 mb-3.5 text-[0.78rem] text-error font-semibold">
             ⚠️ {dupError}
           </div>
         )}
@@ -149,7 +149,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
         <div className="flex gap-2.5">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 border-[1.5px] border-[#E2E8F0] rounded-[10px] bg-white cursor-pointer text-[0.875rem] text-text-muted font-semibold"
+            className="flex-1 py-2.5 border-[1.5px] border-[#E2E8F0] dark:border-[#334155] rounded-[10px] bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-[#334155] cursor-pointer text-[0.875rem] text-text-muted dark:text-[#94A3B8] font-semibold"
           >
             Huỷ
           </button>
@@ -157,7 +157,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
             onClick={handleCreate}
             disabled={matched.length === 0}
             className={`flex-[2] py-2.5 rounded-[10px] text-[0.875rem] font-bold border-none transition-all duration-150 ${
-              matched.length === 0 ? "bg-[#E2E8F0] text-[#94A3B8] cursor-not-allowed" : "bg-accent text-white cursor-pointer"
+              matched.length === 0 ? "bg-[#E2E8F0] dark:bg-[#334155] text-[#94A3B8] dark:text-[#64748B] cursor-not-allowed" : "bg-accent hover:bg-accent-hover text-white cursor-pointer"
             }`}
           >
             Tạo bộ
