@@ -320,3 +320,19 @@ một bước "suy ra công thức" từ công thức thư viện. Nguyên tắc
 - Phép biến đổi cũng không được tính ra số (bộ lọc số vẫn áp dụng).
 - Trước khi triển khai: đề xuất thiết kế, chấm trên bộ câu thử (tỉ lệ suy ra sai, lộ số, chặn
   nhầm) như đợt 1, rồi chờ người dùng duyệt.
+
+## Suy luận nhiều bước có kiểm chứng (2026-11-14) — chưa bật
+
+Thiết kế: `docs/FINDER_REASONING_DESIGN.md` (lộ trình đợt A–D) và `docs/FINDER_REASONING_PHASE_B.md` (hợp đồng kế hoạch,
+AST, quy tắc kiểm, prompt B2 dự kiến). Đây là bản cụ thể hoá của mục "Phase 3" ở trên: thử số chỉ để tìm phản ví dụ,
+đồng nhất thức phải kiểm chính xác.
+
+- **Đợt A (đã vào runtime):** `formulaCatalog.js` — từ khoá lôgarit không khớp nhầm "logo"/"blog"; đề hỏi cực trị của
+  hàm hợp (`(2x²−3)^5`, `f(x²−1)`) ghim quy tắc đạo hàm hàm hợp. `shortlist-coverage.mjs`: 20/20.
+- **Đợt B1 (offline, KHÔNG import ở route nào):** `lib/reasoningAlgebra.js` (đại số hữu tỉ chính xác bằng BigInt, giới
+  hạn thao tác/thời gian), `lib/reasoningTemplates.js` (4 thẻ đã đối chiếu: Vi-ét, Hê-rông, r = S/p, R = abc/(4S); khoá bằng
+  SHA-256 của `latex` + `explanation` — sửa thẻ là adapter tự tắt tới khi đối chiếu lại), `lib/reasoningPlan.js`
+  (`verifyReasoningPlan(plan, context)`; `context` do backend cung cấp, không bao giờ lấy từ AI/client). Test:
+  `test/reasoning.test.js`.
+- **Đợt B2 (chưa làm):** nối vào Finder sau cờ mặc định tắt, prompt riêng, bộ đọc đề cho đúng các dạng trên. Cần chủ dự
+  án duyệt diff prompt trước; chấm thật chỉ bằng `GEMINI_EVAL_API_KEY` khi được phép.

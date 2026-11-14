@@ -93,7 +93,10 @@ export const METHOD_GROUPS = [
   // giới hạn dãy (n → ∞) và giới hạn lượng giác giữ cách chọn riêng.
   { match: /\\lim\s*_?\s*\{?\s*x\s*\\to|gioi han/, when: (t) => /\\lim\s*_?\s*\{?\s*x\s*\\to|gioi han(?: cua)? ham|gioi han khi x|gioi han x/.test(t) && !/sin|cos|tan|cot/.test(t), ids: ["gt11-gioihan-ham"] },
   // Lũy thừa của biểu thức chứa x: cần quy tắc dây chuyền, không áp cho x^n đơn thuần.
-  { match: /dao ham|y\s*['’]/, and: /\([^()]{0,50}x[^()]{0,50}\)\s*\^\s*\{?\s*(?:[2-9]|\d{2,})/, ids: ["gt12-daoham-hopham", "gt12-daoham-basic"] },
+  { match: /dao ham|y\s*['’]|cuc tri|cuc dai|cuc tieu/, and: /\([^()]{0,50}x[^()]{0,50}\)\s*\^\s*\{?\s*(?:[2-9]|\d{2,})/, ids: ["gt12-daoham-hopham", "gt12-daoham-basic"] },
+  // Hàm hợp được ghi rõ f(x² − 1), g(2x + 1): chỉ ưu tiên khi đề hỏi cực trị.
+  // f(x) đơn thuần không cần ghim quy tắc dây chuyền.
+  { match: /cuc tri|cuc dai|cuc tieu/, and: /\b[fg]\s*\(\s*[^()]{0,40}x\s*(?:\^\s*\{?\s*\d+|[2-9]|[+−-])[^()]{0,40}\)/, ids: ["gt12-daoham-hopham", ...DERIVATIVE] },
   { match: /dong bien|nghich bien|don dieu|bien thien|gtln|gtnn|gia tri lon nhat|gia tri nho nhat|dinh cua|truc doi xung/, when: isQuadraticOnly, ids: ["ds10-hamso-bachai-bienthien", "hh10-parabola", "ds10-ham-so-dongbien-nghichbien"] },
   { match: /giao diem/, and: /truc hoanh|truc tung|\bo[xy]\b/, when: (t) => /parabol/.test(t) || QUADRATIC.test(t), ids: ["ds10-phuongtrinh-bac2", "hh10-parabola"] },
   { match: /goc/, when: (t) => namedAngles(t) >= 2, ids: TRIANGLE_TRIO },
@@ -103,7 +106,7 @@ export const METHOD_GROUPS = [
   { match: /gtln|gtnn|gia tri lon nhat|gia tri nho nhat/, when: (t) => !isQuadraticOnly(t), ids: ["gt12-gtln-gtnn", ...DERIVATIVE] },
   { match: /dien tich hinh phang/, ids: ["gt12-tichphan-dientich", "gt12-nguyenham-basic", "gt12-tichphan-newtonleibniz"] },
   { match: /tich phan/, ids: ["gt12-tichphan-newtonleibniz", "gt12-nguyenham-basic", "gt12-nguyenham-bangtable", "gt12-tichphan-tinhchat"] },
-  { match: /\blog|logarit/, ids: ["gt12-logarit", "gt11-logarit-dinhnghia", "gt11-logarit-quytac-thuong-luythua", "gt12-mu-log-phuongtrinh"] },
+  { match: /\blog(?=$|[^a-z])|\blogarit\b/, ids: ["gt12-logarit", "gt11-logarit-dinhnghia", "gt11-logarit-quytac-thuong-luythua", "gt12-mu-log-phuongtrinh"] },
   { match: /lai kep|lai suat|gui tiet kiem|gui ngan hang/, ids: ["gt11-laikep", "mr-taichinh-dautu", "gt11-logarit-dinhnghia"] },
   // Phương trình / bất phương trình mũ: có lũy thừa với số mũ chứa x (3^x, 3^(2x), 2^{x+1}).
   { match: /phuong trinh/, and: /\d\s*\^\s*[({]?\s*\d*\s*x/, ids: ["gt12-mu-log-phuongtrinh", "gt11-batptmu-coban", "ds10-bpt-bac2", "ds10-phuongtrinh-bac2"] },
