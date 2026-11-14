@@ -577,10 +577,15 @@ export default function FormulaFinder({
   // file, nên trước đây không gửi được (mentor báo 2026-11-03). Dùng lại đúng luồng quét như nút ảnh (handlePickImage).
   // Nghe ở cả document để dán được dù con trỏ không ở ô nhập; ref giữ hàm mới nhất để không gắn lại listener mỗi lần vẽ.
   const [dragActive, setDragActive] = useState(false);
+  // Hộp thoại khác đang mở thì không nhận ảnh dán/thả (trừ bảng "Gửi ảnh đề bài" — chính nó nhắc bấm Ctrl+V).
+  const otherDialogOpen = () =>
+    Array.from(document.querySelectorAll('[role="dialog"], [aria-modal="true"]'))
+      .some((el) => el.getAttribute("aria-label") !== "Gửi ảnh đề bài");
   const takeImageRef = useRef(null);
   takeImageRef.current = (file) => {
     if (!FINDER_IMAGE_INPUT_ENABLED || isGuest || !user?.googleId || isAnalyzing) return false;
     if (ocr && ocr.stage !== "error") return false; // đang quét / đang chọn bài / đang hướng dẫn
+    if (otherDialogOpen()) return false; // vd hộp "Hôm nay bạn gặp khó khăn gì?" đang che trang
     if (!file || !file.type.startsWith("image/")) return false;
     if (!isPremium && aiQueriesLeft === 0) {
       pushLimitHitMessage(`Bạn đã dùng hết ${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`);
@@ -598,7 +603,7 @@ export default function FormulaFinder({
       if (takeImageRef.current(item.getAsFile())) e.preventDefault();
     };
     let depth = 0; // dragenter/dragleave nổ ở từng phần tử con — đếm để biết khi nào thật sự rời trang
-    const onDragEnter = (e) => { if (!hasFiles(e)) return; depth += 1; setDragActive(true); };
+    const onDragEnter = (e) => { if (!hasFiles(e)) return; depth += 1; if (!otherDialogOpen()) setDragActive(true); };
     const onDragLeave = (e) => { if (!hasFiles(e)) return; depth = Math.max(0, depth - 1); if (!depth) setDragActive(false); };
     const onDragOver = (e) => { if (hasFiles(e)) e.preventDefault(); };
     const onDrop = (e) => {
@@ -948,7 +953,7 @@ export default function FormulaFinder({
                     <button aria-label="Lưu tên mới" onClick={confirmRename} className="bg-success border-none rounded-md py-1 px-1.5 cursor-pointer text-white flex items-center">
                       <Check size={12} />
                     </button>
-                    <button aria-label="Huỷ đổi tên" onClick={() => setRenamingId(null)} className="bg-[#F1F5F9] border-none rounded-md py-1 px-1.5 cursor-pointer text-text-muted flex items-center">
+                    <button aria-label="Huỷ đổi tên" onClick={() => setRenamingId(null)} className="bg-[#F1F5F9] dark:bg-[#334155] border-none rounded-md py-1 px-1.5 cursor-pointer text-text-muted dark:text-[#94A3B8] flex items-center">
                       <X size={12} />
                     </button>
                   </div>
@@ -967,7 +972,7 @@ export default function FormulaFinder({
                       </button>
                       <button
                         onClick={() => setDeletingId(null)}
-                        className="flex-1 py-1.5 bg-[#F1F5F9] text-text-muted border-none rounded-md cursor-pointer text-[0.75rem] font-bold"
+                        className="flex-1 py-1.5 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] border-none rounded-md cursor-pointer text-[0.75rem] font-bold"
                       >
                         Hủy
                       </button>
@@ -1069,7 +1074,7 @@ export default function FormulaFinder({
                     // thì ở dark mode thông báo trông y như bong bóng thường.
                     ? "bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.3)] text-[#92400E] dark:text-[#FCD34D] dark:!bg-[rgba(245,158,11,0.1)] dark:!border-[rgba(245,158,11,0.35)]"
                     : (msg.isImage || msg.isFile)
-                      ? "p-2 bg-white border border-[#E2E8F0] text-[#1E3A5F]"
+                      ? "p-2 bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#1E3A5F] dark:text-[#E2E8F0]"
                       : isUser
                         ? "bg-primary text-white dark:bg-[#334155]"
                         : "bg-white bg-[linear-gradient(135deg,#FFF8E1,#FFFFFF_45%)] dark:bg-none dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0]";
@@ -1100,12 +1105,12 @@ export default function FormulaFinder({
                     )}
 
                     {msg.isFile && (
-                      <div className="flex items-center gap-2.5 py-1.5 px-2.5 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
+                      <div className="flex items-center gap-2.5 py-1.5 px-2.5 bg-[#F8FAFC] dark:bg-[#0F172A] rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
                         <div className="p-2 bg-secondary/8 text-secondary rounded-md flex items-center justify-center">
                           <FileText size={18} />
                         </div>
                         <div className="flex flex-col overflow-hidden">
-                          <span className="text-[0.8rem] font-bold text-[#1E3A5F] text-ellipsis overflow-hidden whitespace-nowrap max-w-[160px]">{msg.fileName}</span>
+                          <span className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] text-ellipsis overflow-hidden whitespace-nowrap max-w-[160px]">{msg.fileName}</span>
                           <span className="text-[0.65rem] text-text-muted font-semibold">Tài liệu đính kèm</span>
                         </div>
                       </div>
@@ -1326,13 +1331,13 @@ export default function FormulaFinder({
 
       {/* ─── Saved formula popup ─── */}
       {savedPopup && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[2000] bg-white border border-[#E2E8F0] rounded-2xl py-4 px-5 shadow-[0_8px_32px_rgba(0,0,0,0.14)] min-w-[280px] max-w-[340px] flex flex-col gap-2.5">
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[2000] bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-2xl py-4 px-5 shadow-[0_8px_32px_rgba(0,0,0,0.14)] min-w-[280px] max-w-[340px] flex flex-col gap-2.5">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-full bg-success/10 flex items-center justify-center shrink-0">
               <BookMarked size={14} color="#10B981" />
             </div>
             <div>
-              <div className="text-[0.82rem] font-bold text-[#1E3A5F]">Đã lưu vào thư viện!</div>
+              <div className="text-[0.82rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0]">Đã lưu vào thư viện!</div>
               <div className="text-[0.75rem] text-text-muted mt-0.5">
                 "{savedPopup.formulaName.length > 35 ? savedPopup.formulaName.slice(0, 35) + "..." : savedPopup.formulaName}"
               </div>
@@ -1351,7 +1356,7 @@ export default function FormulaFinder({
             </button>
             <button
               onClick={() => setSavedPopup(null)}
-              className="flex-1 py-2.5 bg-[#F1F5F9] text-text-muted border-none rounded-[9px] cursor-pointer text-[0.78rem] font-bold"
+              className="flex-1 py-2.5 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] border-none rounded-[9px] cursor-pointer text-[0.78rem] font-bold"
             >
               Tiếp tục chat
             </button>
