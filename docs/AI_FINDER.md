@@ -334,5 +334,17 @@ AST, quy tắc kiểm, prompt B2 dự kiến). Đây là bản cụ thể hoá c
   SHA-256 của `latex` + `explanation` — sửa thẻ là adapter tự tắt tới khi đối chiếu lại), `lib/reasoningPlan.js`
   (`verifyReasoningPlan(plan, context)`; `context` do backend cung cấp, không bao giờ lấy từ AI/client). Test:
   `test/reasoning.test.js`.
-- **Đợt B2 (chưa làm):** nối vào Finder sau cờ mặc định tắt, prompt riêng, bộ đọc đề cho đúng các dạng trên. Cần chủ dự
-  án duyệt diff prompt trước; chấm thật chỉ bằng `GEMINI_EVAL_API_KEY` khi được phép.
+- **Đợt B2 (đã nối, cờ `FINDER_REASONING_ENABLED=1` mới chạy — mặc định TẮT):** `lib/reasoningFinder.js`, gọi ở `/api/chat`
+  chỉ cho câu đầu của phiên. Bản đầu **không gọi AI và không đổi prompt**: 4 dạng thí điểm có kế hoạch cố định nên backend tự
+  lập kế hoạch (đúng hướng "ưu tiên bộ xử lý dạng bài xác định" của thiết kế) → `verifyReasoningPlan` → tự dựng lời hướng dẫn
+  (renderer AST gọn, ký hiệu + dữ kiện, mỗi biểu thức kết thúc `= ?`) → `finalizeAnswer` (toàn bộ bộ lọc cũ là lớp kiểm cuối).
+  - Bộ đọc đề CHẶT, không chắc thì trả null → luồng cũ y như trước: Vi-ét chỉ nhận đúng một phương trình hệ số nguyên, không
+    tham số, hỏi đúng một trong x₁²+x₂² / 1/x₁+1/x₂; Δ < 0 hoặc (với 1/x₁+1/x₂) c = 0 thì từ chối. Tam giác chỉ nhận ba cạnh
+    (a=…, AB/BC/CA=…, "ba cạnh …"), hỏi đúng một trong r/R, không kèm tam giác vuông/cân/đều, góc, diện tích, chu vi…
+  - Điều kiện (Δ ≥ 0, a ≠ 0, c ≠ 0, bất đẳng thức tam giác) tính bằng số hữu tỉ chính xác, chỉ dùng nội bộ — không hiển thị.
+  - Thẻ nguồn đổi (SHA-256 lệch) → bộ đọc trả null, dạng đó tự quay về luồng cũ tới khi đối chiếu lại.
+  - Đã nhận bài mà kiểm thất bại → `no_formula` (hoàn lượt), log `[finder:reasoning]` có `reasonCode`; không quay sang lời
+    giải tự do. Bộ lọc cuối mà sửa lời hướng dẫn đã kiểm → `guardChanged: true` trong log (ca chặn nhầm cần xem, không nới).
+  - Thành công tính 1 lượt như câu trả lời thường. Test: `test/reasoningFinder.test.js` (22 ca, gồm route với probe chặn mọi
+    lời gọi AI). Prompt "AI đề xuất kế hoạch" trong PHASE_B để dành cho dạng không lập kế hoạch cố định được — chưa dùng.
+  - Trước khi bật trên Render: chủ dự án xem lời hướng dẫn mẫu của 4 dạng; bật bằng biến môi trường, tắt là về luồng cũ ngay.

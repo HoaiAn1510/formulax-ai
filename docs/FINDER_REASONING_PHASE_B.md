@@ -1,6 +1,6 @@
 # Đợt B: hợp đồng kiểm chứng suy luận để duyệt
 
-Trạng thái: B1 đã được duyệt và triển khai offline; B2 chưa tích hợp. Ngày 14/11/2026.
+Trạng thái: B1 đã được duyệt và triển khai offline. B2 đã nối vào Finder sau cờ `FINDER_REASONING_ENABLED` (mặc định tắt), bản đầu dùng kế hoạch cố định do backend lập, chưa dùng prompt AI bên dưới — xem docs/AI_FINDER.md. Ngày 14/11/2026.
 
 ## B1 đã triển khai
 
