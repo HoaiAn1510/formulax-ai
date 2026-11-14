@@ -11,8 +11,8 @@ import MimiMascot from "../components/MimiMascot";
 function SectionTitle({ title, sub }) {
   return (
     <div className="mb-4 md:mb-5">
-      <h2 className="m-0 text-[1.1rem] md:text-[1.25rem] font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">{title}</h2>
-      {sub && <p className="m-0 mt-1 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">{sub}</p>}
+      <h2 className="m-0 text-[1.1rem] md:text-[1.25rem] font-bold tracking-[-0.01em] text-primary dark:text-night-text">{title}</h2>
+      {sub && <p className="m-0 mt-1 text-[0.82rem] text-text-muted dark:text-night-muted">{sub}</p>}
     </div>
   );
 }
@@ -296,10 +296,10 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
       {/* Thanh CTA dính - phải nằm NGOÀI div overflow-hidden bên dưới, vì position:sticky
           không hoạt động nếu có tổ tiên nào đó overflow:hidden/auto/scroll (giới hạn CSS). */}
       {!isPremium && (
-        <div className="sticky top-[65px] md:top-0 z-20 -mx-4 md:-mx-8 -mt-6 md:-mt-8 mb-6 flex items-center justify-between gap-3 bg-white/95 dark:bg-[#1E293B]/95 backdrop-blur-sm border-b border-line dark:border-[#334155] py-2.5 px-4 md:px-8">
+        <div className="sticky top-[65px] md:top-0 z-20 -mx-4 md:-mx-8 -mt-6 md:-mt-8 mb-6 flex items-center justify-between gap-3 bg-white/95 dark:bg-night-card/95 backdrop-blur-sm border-b border-line dark:border-night-line py-2.5 px-4 md:px-8">
           <div className="flex items-center gap-2 min-w-0">
             <Crown size={16} fill="#F59E0B" color="#F59E0B" className="shrink-0" />
-            <span className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0] truncate">{promoAvailable ? `Tháng tri ân: 1 tháng chỉ ${PLAN_DISPLAY[PROMO_PLAN].price}` : `Premium chỉ từ ${PLAN_DISPLAY.monthly.price}${PLAN_DISPLAY.monthly.unit}`}</span>
+            <span className="text-[0.8rem] font-bold text-primary dark:text-night-text truncate">{promoAvailable ? `Tháng tri ân: 1 tháng chỉ ${PLAN_DISPLAY[PROMO_PLAN].price}` : `Premium chỉ từ ${PLAN_DISPLAY.monthly.price}${PLAN_DISPLAY.monthly.unit}`}</span>
           </div>
           <button
             onClick={() => handleUpgrade(selectedPlan)}
@@ -340,7 +340,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Banner sự kiện "Tháng tri ân ngành giáo dục" — chỉ trong tháng 11/2026. */}
             {promoWindowOpen && (
-              <div className="relative overflow-hidden rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-7 py-4 md:py-5 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 shadow-[0_14px_30px_-16px_rgba(15,23,42,0.7)]">
+              <div className="relative overflow-hidden rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-night-line text-white px-5 md:px-7 py-4 md:py-5 flex flex-col md:flex-row md:items-center gap-3 md:gap-6 shadow-[0_14px_30px_-16px_rgba(15,23,42,0.7)]">
                 <div className="flex-1 min-w-0">
                   <div className="text-[0.68rem] font-semibold tracking-[0.08em] uppercase text-[#FBBF24]">Tháng tri ân ngành giáo dục · 01/11 – {PROMO_END_LABEL}</div>
                   <div className="mt-1 text-[1.05rem] md:text-[1.2rem] font-bold leading-snug">
@@ -368,7 +368,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 khung lời chào Dashboard; Mimi đội vương miện NGỒI TRÊN MÉP TRÊN của khung (chủ dự án chọn 2026-11-02):
                 máy tính ở góc phải, nhô lên vùng trống bên phải tiêu đề trang; điện thoại nhỏ hơn, giống Dashboard. */}
             {/* Có banner tri ân ở trên: chừa chỗ cho Mimi (ngồi trên mép khung, cao ~124px) để không đè lên banner. */}
-            <div className={`relative mt-[56px] ${promoWindowOpen ? "lg:mt-[88px]" : "lg:mt-0"} fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 dark:shadow-none flex`}>
+            <div className={`relative mt-[56px] ${promoWindowOpen ? "lg:mt-[88px]" : "lg:mt-0"} fx-card bg-hero-amber dark:bg-none dark:bg-night-card dark:border-[#78350F]/60 dark:shadow-none flex`}>
               <MimiMascot crown width={140} className="lg:hidden absolute right-2 -top-[70px]" />
               {/* 190px → cao ≈ 124px, đáy thân ở 148/150 khung hình → đặt -top-[122px] để thân vừa chạm mép khung. */}
               <MimiMascot crown width={190} className="hidden lg:block absolute right-14 -top-[122px]" />
@@ -380,16 +380,16 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 </span>
 
                 {isPremium ? (
-                  <h2 className="mt-4 mb-0 text-[1.6rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">
+                  <h2 className="mt-4 mb-0 text-[1.6rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-night-text">
                     Bạn đang là <span className="text-accent dark:text-[#FCD34D]">Premium</span>!
                   </h2>
                 ) : (
-                  <h2 className="mt-4 mb-0 text-[1.6rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">
+                  <h2 className="mt-4 mb-0 text-[1.6rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-night-text">
                     Mở khóa toàn bộ sức mạnh <span className="text-accent dark:text-[#FCD34D]">FormulaX AI</span>
                   </h2>
                 )}
 
-                <p className="m-0 mt-2.5 text-[0.88rem] md:text-[0.95rem] text-text-muted dark:text-[#94A3B8] leading-[1.6] max-w-[520px]">
+                <p className="m-0 mt-2.5 text-[0.88rem] md:text-[0.95rem] text-text-muted dark:text-night-muted leading-[1.6] max-w-[520px]">
                   {isPremium
                     ? "Cảm ơn bạn đã đồng hành cùng FormulaX AI! Gia hạn sớm để việc ôn tập không bị gián đoạn."
                     : "Đột phá điểm số môn Toán THPT Quốc gia cùng lộ trình ôn tập công thức thông minh bậc nhất và trợ lý AI hướng dẫn cách giải."}
@@ -427,8 +427,8 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                         aria-pressed={isSelected}
                         onClick={() => setSelectedPlan(planId)}
                         className={`relative rounded-[14px] py-3 px-3.5 text-left border-[1.5px] transition-colors duration-200 cursor-pointer ${isPromo ? "col-span-2" : ""} ${isSelected
-                            ? "border-accent bg-white dark:bg-[#0F172A] shadow-[0_8px_20px_-12px_rgba(217,119,6,0.6)]"
-                            : "border-line bg-white/70 dark:border-[#334155] dark:bg-[#0F172A]/60 hover:border-[#F1E3BF]"
+                            ? "border-accent bg-white dark:bg-night-page shadow-[0_8px_20px_-12px_rgba(217,119,6,0.6)]"
+                            : "border-line bg-white/70 dark:border-night-line dark:bg-night-page/60 hover:border-[#F1E3BF]"
                           }`}
                       >
                         {isPromo && (
@@ -441,11 +441,11 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                             Tiết kiệm {SIX_MONTH_SAVINGS_PERCENT}%
                           </span>
                         )}
-                        <div className="text-[0.68rem] font-semibold tracking-[0.06em] text-text-muted dark:text-[#94A3B8] uppercase">{PLAN_DISPLAY[planId].label}</div>
-                        <div className="mt-0.5 text-[1.05rem] md:text-[1.15rem] font-bold text-primary dark:text-[#E2E8F0]">
+                        <div className="text-[0.68rem] font-semibold tracking-[0.06em] text-text-muted dark:text-night-muted uppercase">{PLAN_DISPLAY[planId].label}</div>
+                        <div className="mt-0.5 text-[1.05rem] md:text-[1.15rem] font-bold text-primary dark:text-night-text">
                           <span className="whitespace-nowrap">{PLAN_DISPLAY[planId].price}</span>
                           {/* Điện thoại: đơn vị xuống dòng riêng — trước đây "49.000 đ /tháng" bị ngắt giữa số và "đ". */}
-                          <span className="block sm:inline text-[0.7rem] font-medium text-text-muted dark:text-[#94A3B8] sm:ml-1">{PLAN_DISPLAY[planId].unit}</span>
+                          <span className="block sm:inline text-[0.7rem] font-medium text-text-muted dark:text-night-muted sm:ml-1">{PLAN_DISPLAY[planId].unit}</span>
                           {isPromo && <span className="ml-2 text-[0.75rem] font-medium text-[#94A3B8] line-through">49.000 ₫</span>}
                         </div>
                       </button>
@@ -470,7 +470,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 </button>
 
                 {/* Dòng tin cậy thanh toán đặt ngay dưới nút (trước đây là một phần riêng giữa trang). */}
-                <div className="mt-3 flex items-center gap-1.5 text-[0.75rem] text-text-muted dark:text-[#94A3B8]">
+                <div className="mt-3 flex items-center gap-1.5 text-[0.75rem] text-text-muted dark:text-night-muted">
                   <ShieldCheck size={14} className="shrink-0 text-success" />
                   <span>Thanh toán an toàn qua PayOS · Chuyển khoản & VietQR</span>
                 </div>
@@ -479,7 +479,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                     loại hẳn nút này (import.meta.env.DEV = false), người dùng thật không thấy. */}
                 {import.meta.env.DEV && isPremium && (
                   <button
-                    className="self-start mt-3 bg-transparent border-none p-0 text-[0.72rem] text-text-muted dark:text-[#94A3B8] underline cursor-pointer"
+                    className="self-start mt-3 bg-transparent border-none p-0 text-[0.72rem] text-text-muted dark:text-night-muted underline cursor-pointer"
                     onClick={handleDowngrade}
                   >
                     Trở về gói Free (giả lập — chỉ để test)
@@ -500,13 +500,13 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                 {goals.map((goal, idx) => {
                   const GoalIcon = goal.icon;
                   return (
-                    <div key={idx} className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none flex flex-col gap-3 p-5 transition-transform duration-200 hover:-translate-y-0.5">
+                    <div key={idx} className="fx-card dark:bg-night-card dark:border-night-line dark:shadow-none flex flex-col gap-3 p-5 transition-transform duration-200 hover:-translate-y-0.5">
                       <div className={`w-10 h-10 rounded-[10px] flex items-center justify-center shrink-0 ${GOAL_COLOR_CLASSES[goal.color]}`}>
                         <GoalIcon size={18} />
                       </div>
                       <div>
-                        <h3 className="text-[0.95rem] font-bold text-primary dark:text-[#E2E8F0] mb-1">{goal.title}</h3>
-                        <p className="text-[0.78rem] text-text-muted dark:text-[#94A3B8] m-0 leading-[1.5]">{goal.desc}</p>
+                        <h3 className="text-[0.95rem] font-bold text-primary dark:text-night-text mb-1">{goal.title}</h3>
+                        <p className="text-[0.78rem] text-text-muted dark:text-night-muted m-0 leading-[1.5]">{goal.desc}</p>
                       </div>
                     </div>
                   );
@@ -519,12 +519,12 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
               <SectionTitle title="So sánh các gói học tập" sub="Lựa chọn thông minh để bứt phá điểm số tối đa" />
 
               {/* Desktop: bảng đầy đủ. Mobile: bảng cuộn ngang khó đọc — thay bằng thẻ xếp dọc bên dưới. */}
-              <div className="hidden md:block fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none overflow-x-auto">
+              <div className="hidden md:block fx-card dark:bg-night-card dark:border-night-line dark:shadow-none overflow-x-auto">
                 <table className="w-full border-collapse text-[0.85rem] text-left">
                   <thead>
                     <tr>
-                      <th className="text-left py-4 px-5 font-extrabold text-primary dark:text-[#E2E8F0] border-b-2 border-[#f1f5f9] dark:border-[#334155] text-[0.9rem]">Tính năng</th>
-                      <th className="text-center py-4 px-5 font-extrabold text-primary dark:text-[#E2E8F0] border-b-2 border-[#f1f5f9] dark:border-[#334155] text-[0.9rem]">Bản Free</th>
+                      <th className="text-left py-4 px-5 font-extrabold text-primary dark:text-night-text border-b-2 border-[#f1f5f9] dark:border-night-line text-[0.9rem]">Tính năng</th>
+                      <th className="text-center py-4 px-5 font-extrabold text-primary dark:text-night-text border-b-2 border-[#f1f5f9] dark:border-night-line text-[0.9rem]">Bản Free</th>
                       <th className="text-center py-4 px-5 font-black text-[#d97706] bg-premium/4 border-b-2 border-premium/15 text-[0.9rem]">
                         <span className="inline-flex flex-col items-center gap-1">
                           <span className="text-[0.6rem] font-extrabold text-white bg-accent py-0.5 px-2 rounded-full tracking-wide">ĐƯỢC CHỌN NHIỀU NHẤT</span>
@@ -536,17 +536,17 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                   <tbody>
                     {features.map((feat, idx) => (
                       <tr key={idx} className="hover:bg-[#f8fafc] dark:hover:bg-white/5 last:[&>td]:border-b-0">
-                        <td className="text-left py-4 px-5 border-b border-[#f1f5f9] dark:border-[#334155] align-middle leading-[1.5] font-bold text-primary dark:text-[#E2E8F0] text-[0.85rem]">{feat.name}</td>
-                        <td className="text-center py-4 px-5 border-b border-[#f1f5f9] dark:border-[#334155] align-middle leading-[1.5]">
+                        <td className="text-left py-4 px-5 border-b border-[#f1f5f9] dark:border-night-line align-middle leading-[1.5] font-bold text-primary dark:text-night-text text-[0.85rem]">{feat.name}</td>
+                        <td className="text-center py-4 px-5 border-b border-[#f1f5f9] dark:border-night-line align-middle leading-[1.5]">
                           {feat.free === "Khóa" ? (
                             <div className="inline-flex items-center justify-center bg-error/8 text-error w-6 h-6 rounded-full mx-auto">
                               <X size={12} />
                             </div>
                           ) : (
-                            <span className="text-text-muted dark:text-[#94A3B8] font-medium">{feat.free}</span>
+                            <span className="text-text-muted dark:text-night-muted font-medium">{feat.free}</span>
                           )}
                         </td>
-                        <td className="text-center py-4 px-5 border-b border-[#f1f5f9] dark:border-[#334155] align-middle leading-[1.5] bg-premium/[0.015] font-bold text-primary dark:text-[#E2E8F0]">
+                        <td className="text-center py-4 px-5 border-b border-[#f1f5f9] dark:border-night-line align-middle leading-[1.5] bg-premium/[0.015] font-bold text-primary dark:text-night-text">
                           {feat.premium === "Mở" ? (
                             <div className="inline-flex items-center justify-center bg-success/8 text-success w-6 h-6 rounded-full mx-auto">
                               <Check size={12} />
@@ -563,17 +563,17 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
               <div className="md:hidden flex flex-col gap-3">
                 {features.map((feat, idx) => (
-                  <div key={idx} className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-4 flex flex-col gap-3">
-                    <div className="font-bold text-primary dark:text-[#E2E8F0] text-[0.9rem]">{feat.name}</div>
+                  <div key={idx} className="fx-card dark:bg-night-card dark:border-night-line dark:shadow-none p-4 flex flex-col gap-3">
+                    <div className="font-bold text-primary dark:text-night-text text-[0.9rem]">{feat.name}</div>
                     <div className="flex gap-2.5">
-                      <div className="flex-1 rounded-lg bg-[#f8fafc] dark:bg-[#0F172A]/40 p-2.5">
-                        <div className="text-[0.62rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-wide mb-1">Bản Free</div>
+                      <div className="flex-1 rounded-lg bg-[#f8fafc] dark:bg-night-page/40 p-2.5">
+                        <div className="text-[0.62rem] font-extrabold text-text-muted dark:text-night-muted uppercase tracking-wide mb-1">Bản Free</div>
                         {feat.free === "Khóa" ? (
                           <div className="flex items-center gap-1.5 text-error font-bold text-[0.8rem]">
                             <X size={13} /> <span>Khóa</span>
                           </div>
                         ) : (
-                          <div className="text-text-muted dark:text-[#94A3B8] font-medium text-[0.8rem]">{feat.free}</div>
+                          <div className="text-text-muted dark:text-night-muted font-medium text-[0.8rem]">{feat.free}</div>
                         )}
                       </div>
                       <div className="flex-1 rounded-lg bg-premium/8 border border-premium/20 p-2.5">
@@ -583,7 +583,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                             <Check size={13} /> <span>{feat.premium}</span>
                           </div>
                         ) : (
-                          <div className="text-primary dark:text-[#E2E8F0] font-bold text-[0.8rem]">{feat.premium}</div>
+                          <div className="text-primary dark:text-night-text font-bold text-[0.8rem]">{feat.premium}</div>
                         )}
                       </div>
                     </div>
@@ -595,13 +595,13 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
             {/* Section 7: FAQs Accordion */}
             <div>
               <SectionTitle title="Câu hỏi thường gặp" />
-              <div className="fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none flex flex-col px-4 md:px-6 py-1 [&>*:last-child]:border-b-0">
+              <div className="fx-card dark:bg-night-card dark:border-night-line dark:shadow-none flex flex-col px-4 md:px-6 py-1 [&>*:last-child]:border-b-0">
                 {FAQS.map((faq, idx) => {
                   const isOpen = openFaqIdx === idx;
                   const FaqIcon = faq.icon;
                   return (
-                    <div key={idx} className="border-b border-line dark:border-[#334155] py-2">
-                      <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center gap-3 bg-transparent border-none py-3 px-1 text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer text-left">
+                    <div key={idx} className="border-b border-line dark:border-night-line py-2">
+                      <button onClick={() => toggleFaq(idx)} className="w-full flex justify-between items-center gap-3 bg-transparent border-none py-3 px-1 text-[0.85rem] font-bold text-primary dark:text-night-text cursor-pointer text-left">
                         <span className="flex items-center gap-2.5 min-w-0">
                           <span className="w-7 h-7 rounded-lg bg-accent/8 text-accent flex items-center justify-center shrink-0">
                             <FaqIcon size={14} />
@@ -611,7 +611,7 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
                         {isOpen ? <ChevronUp size={16} className="shrink-0" /> : <ChevronDown size={16} className="shrink-0" />}
                       </button>
                       {isOpen && (
-                        <div className="py-1 pl-[38px] pr-1 pb-3 text-[0.8rem] text-[#475569] dark:text-[#94A3B8] leading-[1.5]">
+                        <div className="py-1 pl-[38px] pr-1 pb-3 text-[0.8rem] text-[#475569] dark:text-night-muted leading-[1.5]">
                           {faq.a}
                         </div>
                       )}
@@ -623,11 +623,11 @@ export default function PremiumUpgrade({ isPremium, setIsPremium, premiumExpiry,
 
             {/* Section 9: Bottom CTA Banner */}
             {!isPremium && (
-              <div className="relative mt-16 fx-card bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none p-6 pt-12 md:p-8 md:pt-14 text-center flex flex-col items-center gap-3">
+              <div className="relative mt-16 fx-card bg-hero-amber dark:bg-none dark:bg-night-card dark:border-night-line dark:shadow-none p-6 pt-12 md:p-8 md:pt-14 text-center flex flex-col items-center gap-3">
                 {/* Mimi chuyển từ thẻ giá Premium (đã bỏ vì trùng khung đầu trang) xuống banner cuối. */}
                 <MimiMascot width={150} className="absolute left-1/2 -translate-x-1/2 -top-[66px]" />
-                <h3 className="text-[1.15rem] md:text-[1.35rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0] m-0">Điểm cao không chờ đợi</h3>
-                <p className="text-[0.85rem] text-text-muted dark:text-[#94A3B8] m-0 max-w-[380px] leading-[1.5]">
+                <h3 className="text-[1.15rem] md:text-[1.35rem] font-bold tracking-[-0.02em] text-primary dark:text-night-text m-0">Điểm cao không chờ đợi</h3>
+                <p className="text-[0.85rem] text-text-muted dark:text-night-muted m-0 max-w-[380px] leading-[1.5]">
                   Đăng ký ngay tài khoản Premium để đạt kết quả tốt nhất trong kỳ thi sắp tới.
                 </p>
                 <div className="flex gap-3 w-full justify-center flex-wrap mt-1">

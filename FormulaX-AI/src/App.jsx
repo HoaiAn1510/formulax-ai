@@ -28,6 +28,8 @@ import OnboardingModal from "./components/OnboardingModal";
 import DailyIntentModal from "./components/DailyIntentModal";
 import { ToastContainer, showToast } from "./components/Toast";
 import { ConfirmDialogHost } from "./components/ConfirmDialog";
+import PageSkeleton from "./components/PageSkeleton";
+import { scheduleInstallHint, promptInstall, IOS_INSTALL_STEPS } from "./utils/installApp";
 
 // Dashboard và LoginView là màn hình đầu tiên người dùng thấy (đã đăng nhập / chưa đăng nhập)
 // nên giữ nạp thẳng — lazy hai màn này chỉ thêm một vòng request trước khi vẽ được gì.
@@ -46,14 +48,10 @@ const PremiumUpgrade   = lazy(() => import("./views/PremiumUpgrade"));
 const ProgressDashboard = lazy(() => import("./views/ProgressDashboard"));
 const SettingsView     = lazy(() => import("./views/SettingsView"));
 
-// Màn hình chờ dùng chung khi đang tải chunk của một view (hoặc dữ liệu công thức).
-function ViewLoading() {
-  return (
-    <div className="flex flex-col items-center justify-center gap-3 py-20">
-      <div className="w-8 h-8 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
-      <p className="text-[0.8rem] font-semibold text-text-muted dark:text-[#94A3B8]">Đang tải…</p>
-    </div>
-  );
+// Màn hình chờ khi đang tải chunk của một view (hoặc dữ liệu công thức): khung xương gần giống trang thật.
+const SKELETON_BY_TAB = { finder: "chat", progress: "stats", settings: "narrow" };
+function ViewLoading({ tab }) {
+  return <PageSkeleton variant={SKELETON_BY_TAB[tab] || "grid"} />;
 }
 
 export default function App() {
@@ -463,6 +461,23 @@ export default function App() {
     saveQuizDaily(user.googleId, remainingQuizzes).catch(console.error);
   }, [remainingQuizzes, user?.googleId]);
 
+  // ─── Nhắc cài app (điện thoại, 1 lần mỗi máy) — xem utils/installApp.js
+  const signedIn = !!user;
+  useEffect(() => {
+    if (!signedIn) return;
+    return scheduleInstallHint((mode) => {
+      if (mode === "prompt") {
+        showToast("Mở nhanh từ màn hình chính, không cần tìm lại trang web.", "info", {
+          title: "Cài FormulaX như một app",
+          action: { label: "Cài app", onClick: () => { promptInstall(); } },
+          duration: 10000,
+        });
+      } else {
+        showToast(IOS_INSTALL_STEPS, "info", { title: "Thêm FormulaX vào màn hình chính", duration: 10000 });
+      }
+    });
+  }, [signedIn]);
+
   // ─── Handlers ─────────────────────────────────────────────────────────────
 
   const handleToggleBookmark = (formulaId) => {
@@ -475,7 +490,10 @@ export default function App() {
       if (isBookmarked) removeBookmark(user.googleId, formulaId).catch(console.error);
       else              addBookmark(user.googleId, formulaId).catch(console.error);
     }
-    showToast(isBookmarked ? "Đã xoá khỏi Bookmark" : "Đã thêm vào Bookmark");
+    if (isBookmarked) showToast("Đã xoá khỏi Bookmark", "info");
+    else showToast("Đã thêm vào Bookmark", "success",
+      // Đang ở Thư viện thì nút "Xem thư viện" thừa.
+      activeTab === "library" ? undefined : { action: { label: "Xem thư viện →", onClick: () => setActiveTab("library") } });
   };
 
   const handleSaveNote = (formulaId, text) => {
@@ -654,9 +672,9 @@ export default function App() {
   // người dùng đã đăng nhập cũng thấy nháy qua màn hình đăng nhập rồi mới vào app.
   if (authLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-[#0F172A]">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-night-page">
         <img src="/favicon.svg" alt="FormulaX" className="w-12 h-12 rounded-xl animate-pulse" />
-        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
+        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-night-line border-t-accent animate-spin" />
       </div>
     );
   }
@@ -665,10 +683,10 @@ export default function App() {
 
   if (isLoadingData) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-[#0F172A]">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-night-page">
         <img src="/favicon.svg" alt="FormulaX" className="w-12 h-12 rounded-xl animate-pulse" />
-        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
-        <p className="text-[0.85rem] font-semibold text-text-muted dark:text-[#94A3B8]">
+        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-night-line border-t-accent animate-spin" />
+        <p className="text-[0.85rem] font-semibold text-text-muted dark:text-night-muted">
           Đang tải dữ liệu của bạn…
         </p>
       </div>
@@ -681,7 +699,7 @@ export default function App() {
     // dụng. Chờ chunk formulas về rồi mới vẽ. Dashboard không nằm ở đây vì nó còn nhiều nội
     // dung khác vẽ được ngay, chỉ riêng phần "Gợi ý hôm nay" hiển thị skeleton.
     if (["library", "finder", "flashcard", "progress"].includes(activeTab) && formulas.length === 0) {
-      return <ViewLoading />;
+      return <ViewLoading tab={activeTab} />;
     }
 
     switch (activeTab) {
@@ -847,7 +865,7 @@ export default function App() {
         onOpenNotifications={handleMarkNotificationsRead}
       />
 
-      <Suspense fallback={<ViewLoading />}>{renderView()}</Suspense>
+      <Suspense fallback={<ViewLoading tab={activeTab} />}>{renderView()}</Suspense>
 
       <BottomNav
         activeTab={activeTab}

@@ -33,14 +33,14 @@ export default function FilterPicker({ label, summary, options, onToggle, highli
         className={`w-full h-11 flex items-center gap-2 pl-3.5 pr-2.5 rounded-[12px] border text-left cursor-pointer transition-colors ${
           highlighted || open
             ? "border-accent bg-accent-light/60 dark:bg-accent/15"
-            : "border-line dark:border-[#334155] bg-white dark:bg-[#1E293B]"
+            : "border-line dark:border-night-line bg-white dark:bg-night-card"
         }`}
       >
         <span className="flex-1 min-w-0">
-          <span className="block text-[0.62rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8] leading-none">{label}</span>
-          <span className="block mt-1 text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0] truncate leading-none">{summary}</span>
+          <span className="block text-[0.62rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted leading-none">{label}</span>
+          <span className="block mt-1 text-[0.85rem] font-semibold text-primary dark:text-night-text truncate leading-none">{summary}</span>
         </span>
-        <ChevronDown size={16} className={`shrink-0 text-text-muted dark:text-[#94A3B8] transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown size={16} className={`shrink-0 text-text-muted dark:text-night-muted transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (<>
@@ -51,9 +51,9 @@ export default function FilterPicker({ label, summary, options, onToggle, highli
           role="listbox"
           aria-multiselectable="true"
           aria-label={label}
-          className="fixed inset-x-3 bottom-[84px] z-[150] max-h-[min(460px,calc(100dvh-170px))] flex flex-col rounded-[18px] border border-line dark:border-[#334155] bg-white dark:bg-[#1E293B] shadow-[0_24px_48px_-16px_rgba(15,23,42,0.45)]"
+          className="fixed inset-x-3 bottom-[84px] z-[150] max-h-[min(460px,calc(100dvh-170px))] flex flex-col rounded-[18px] border border-line dark:border-night-line bg-white dark:bg-night-card shadow-[0_24px_48px_-16px_rgba(15,23,42,0.45)]"
         >
-          <div className="px-4 pt-3.5 pb-2 text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">Chọn {label.toLowerCase()}</div>
+          <div className="px-4 pt-3.5 pb-2 text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted">Chọn {label.toLowerCase()}</div>
           <div className="flex-1 min-h-0 overflow-y-auto px-1.5">
           {options.map((o) => (
             <button
@@ -63,7 +63,7 @@ export default function FilterPicker({ label, summary, options, onToggle, highli
               aria-selected={o.active}
               onClick={() => onToggle(o.value)}
               className={`w-full min-h-[44px] flex items-center gap-2.5 px-2.5 rounded-[10px] border-none text-left text-[0.88rem] cursor-pointer transition-colors ${
-                o.active ? "bg-accent-light/70 dark:bg-accent/15 font-semibold text-primary dark:text-[#E2E8F0]" : "bg-transparent text-primary dark:text-[#E2E8F0] hover:bg-page dark:hover:bg-white/5"
+                o.active ? "bg-accent-light/70 dark:bg-accent/15 font-semibold text-primary dark:text-night-text" : "bg-transparent text-primary dark:text-night-text hover:bg-page dark:hover:bg-white/5"
               }`}
             >
               {o.glyph && (
@@ -74,7 +74,7 @@ export default function FilterPicker({ label, summary, options, onToggle, highli
             </button>
           ))}
           </div>
-          <div className="border-t border-line dark:border-[#334155] p-1.5">
+          <div className="border-t border-line dark:border-night-line p-1.5">
             <button
               type="button"
               onClick={() => setOpen(false)}

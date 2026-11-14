@@ -11,6 +11,7 @@ import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { saveFlashcardActivity } from "../lib/supabase";
 import { sortFormulaIdsByDue, getDueReviewQueue, countCardStates } from "../utils/spacedRepetition";
 import { showToast } from "../components/Toast";
+import { useEscapeKey } from "../utils/useEscapeKey";
 import { useGuestGate } from "../utils/useGuestGate";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -43,6 +44,7 @@ function isSameFormulaSet(idsA, idsB) {
 // ─── Create Filtered Deck Modal ───────────────────────────────────────────────
 
 function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }) {
+  useEscapeKey(onClose);
   const [selTopics, setSelTopics] = useState([]);  // empty = Tất cả
   const [selGrades, setSelGrades] = useState([]);  // empty = Tất cả
   const [dupError, setDupError] = useState("");
@@ -90,24 +92,27 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
 
   const chipClass = (active) =>
     `py-1.5 px-3.5 rounded-[20px] text-[0.8rem] font-semibold cursor-pointer transition-all duration-150 border-[1.5px] ${
-      active ? "border-accent bg-[#FEF3C7] dark:bg-accent/15 text-accent" : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-text-muted dark:text-[#94A3B8]"
+      active ? "border-accent bg-[#FEF3C7] dark:bg-accent/15 text-accent" : "border-[#E2E8F0] dark:border-night-line bg-white dark:bg-night-page text-text-muted dark:text-night-muted"
     }`;
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tạo bộ thẻ theo chủ đề"
       className="fixed inset-0 bg-black/50 z-[9998] flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-[#1E293B] rounded-2xl p-6 w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
+        className="bg-white dark:bg-night-card rounded-2xl p-6 w-full max-w-[420px] shadow-[0_20px_60px_rgba(0,0,0,0.3)]"
         onClick={e => e.stopPropagation()}
       >
-        <h3 className="text-[1.1rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] mb-1">Tạo bộ thẻ theo chủ đề</h3>
+        <h3 className="text-[1.1rem] font-extrabold text-[#1E3A5F] dark:text-night-text mb-1">Tạo bộ thẻ theo chủ đề</h3>
         <p className="text-[0.8rem] text-text-muted mb-5">Chọn nhiều chủ đề và lớp để tạo bộ thẻ tự động</p>
 
         {/* Topic chips — multi-select */}
         <div className="mb-4">
-          <p className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] mb-2">Chủ đề</p>
+          <p className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-night-text mb-2">Chủ đề</p>
           <div className="flex flex-wrap gap-2">
             {TOPICS.map(t => (
               <button key={t} onClick={() => toggleTopic(t)} className={chipClass(isTopicActive(t))}>
@@ -119,7 +124,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
 
         {/* Grade chips — multi-select */}
         <div className="mb-5">
-          <p className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] mb-2">Lớp</p>
+          <p className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-night-text mb-2">Lớp</p>
           <div className="flex flex-wrap gap-2">
             {GRADES.map(g => (
               <button key={g} onClick={() => toggleGrade(g)} className={chipClass(isGradeActive(g))}>
@@ -130,10 +135,10 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
         </div>
 
         {/* Preview */}
-        <div className={`bg-[#F8FAFC] dark:bg-[#0F172A] rounded-[10px] py-3 px-4 text-center ${dupError ? "mb-2.5" : "mb-5"}`}>
+        <div className={`bg-[#F8FAFC] dark:bg-night-page rounded-[10px] py-3 px-4 text-center ${dupError ? "mb-2.5" : "mb-5"}`}>
           <span className="text-[0.85rem] font-semibold text-text-muted">
             Bộ thẻ sẽ gồm{" "}
-            <strong className="text-[#1E3A5F] dark:text-[#E2E8F0] text-base">{matched.length}</strong>
+            <strong className="text-[#1E3A5F] dark:text-night-text text-base">{matched.length}</strong>
             {" "}công thức
           </span>
         </div>
@@ -149,7 +154,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
         <div className="flex gap-2.5">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 border-[1.5px] border-[#E2E8F0] dark:border-[#334155] rounded-[10px] bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-[#334155] cursor-pointer text-[0.875rem] text-text-muted dark:text-[#94A3B8] font-semibold"
+            className="flex-1 py-2.5 border-[1.5px] border-[#E2E8F0] dark:border-night-line rounded-[10px] bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-night-line cursor-pointer text-[0.875rem] text-text-muted dark:text-night-muted font-semibold"
           >
             Huỷ
           </button>
@@ -157,7 +162,7 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
             onClick={handleCreate}
             disabled={matched.length === 0}
             className={`flex-[2] py-2.5 rounded-[10px] text-[0.875rem] font-bold border-none transition-all duration-150 ${
-              matched.length === 0 ? "bg-[#E2E8F0] dark:bg-[#334155] text-[#94A3B8] dark:text-[#64748B] cursor-not-allowed" : "bg-accent hover:bg-accent-hover text-white cursor-pointer"
+              matched.length === 0 ? "bg-[#E2E8F0] dark:bg-night-line text-[#94A3B8] dark:text-[#64748B] cursor-not-allowed" : "bg-accent hover:bg-accent-hover text-white cursor-pointer"
             }`}
           >
             Tạo bộ
@@ -566,18 +571,18 @@ export default function FlashcardView({
                   onBlur={handleConfirmRename}
                   onClick={e => e.stopPropagation()}
                   aria-label="Tên bộ thẻ"
-                  className="text-[0.92rem] font-semibold text-primary dark:text-[#E2E8F0] border border-accent rounded-[8px] py-1 px-2 w-full outline-none bg-white dark:bg-[#0F172A]"
+                  className="text-[0.92rem] font-semibold text-primary dark:text-night-text border border-accent rounded-[8px] py-1 px-2 w-full outline-none bg-white dark:bg-night-page"
                 />
               ) : (
-                <h3 className="m-0 text-[1rem] font-semibold text-primary dark:text-[#E2E8F0] truncate">{deck.name}</h3>
+                <h3 className="m-0 text-[1rem] font-semibold text-primary dark:text-night-text truncate">{deck.name}</h3>
               )}
-              <div className="mt-0.5 text-[0.76rem] text-text-muted dark:text-[#94A3B8]">
+              <div className="mt-0.5 text-[0.76rem] text-text-muted dark:text-night-muted">
                 {isEmpty ? "Chưa có thẻ — thêm từ Thư viện" : `${st.total} thẻ`}
               </div>
             </div>
             <div className="flex items-center gap-0.5 shrink-0 -mr-1.5 -mt-1">
               {kind === "favorite" && (
-                <button aria-label="Đổi tên bộ thẻ" title="Đổi tên" onClick={e => { e.stopPropagation(); handleStartRename(deck); }} className="w-8 h-8 bg-transparent border-none cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0] rounded-[8px] flex items-center justify-center">
+                <button aria-label="Đổi tên bộ thẻ" title="Đổi tên" onClick={e => { e.stopPropagation(); handleStartRename(deck); }} className="w-8 h-8 bg-transparent border-none cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-night-text rounded-[8px] flex items-center justify-center">
                   <Pencil size={15} />
                 </button>
               )}
@@ -585,7 +590,7 @@ export default function FlashcardView({
                 aria-label="Xuất PDF"
                 title="Xuất PDF"
                 onClick={e => { e.stopPropagation(); handlePdfExport({ name: deck.name, cards: deck.formulaIds.map(id => formulas.find(f => f.id === id)).filter(Boolean) }); }}
-                className="w-8 h-8 bg-transparent border-none cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0] rounded-[8px] flex items-center justify-center"
+                className="w-8 h-8 bg-transparent border-none cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-night-text rounded-[8px] flex items-center justify-center"
               >
                 <FileDown size={15} />
               </button>
@@ -597,11 +602,11 @@ export default function FlashcardView({
 
           {!isEmpty && (
             <div className="mt-auto">
-              <div className="flex items-center justify-between text-[0.75rem] text-text-muted dark:text-[#94A3B8] mb-1.5">
+              <div className="flex items-center justify-between text-[0.75rem] text-text-muted dark:text-night-muted mb-1.5">
                 <span>Đang nhớ {st.remembered}/{st.total}</span>
-                <span className="font-semibold text-primary dark:text-[#E2E8F0]">{pct}%</span>
+                <span className="font-semibold text-primary dark:text-night-text">{pct}%</span>
               </div>
-              <div className="h-1.5 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+              <div className="h-1.5 rounded-full bg-[#EEF1F6] dark:bg-night-line overflow-hidden">
                 <div className="h-full rounded-full bg-[linear-gradient(90deg,#F59E0B,#FBBF24)]" style={{ width: `${pct}%` }} />
               </div>
               <div className="mt-3.5 flex items-center gap-1.5 flex-wrap text-[0.72rem] font-semibold">
@@ -655,10 +660,10 @@ export default function FlashcardView({
       >
         {!hasDecks ? (
           /* EMPTY STATE */
-          <div className={`${CARD} relative max-w-[640px] mx-auto mt-[60px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-10 flex flex-col items-center text-center gap-3`}>
+          <div className={`${CARD} relative max-w-[640px] mx-auto mt-[60px] bg-hero-amber dark:bg-none dark:bg-night-card p-6 md:p-10 flex flex-col items-center text-center gap-3`}>
             <MimiMascot width={160} className="absolute left-1/2 -translate-x-1/2 -top-[86px]" />
-            <h2 className="m-0 mt-6 text-[1.25rem] md:text-[1.5rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">Chưa có bộ thẻ nào</h2>
-            <p className="m-0 text-[0.88rem] text-text-muted dark:text-[#94A3B8] max-w-[420px] leading-[1.6]">
+            <h2 className="m-0 mt-6 text-[1.25rem] md:text-[1.5rem] font-bold tracking-[-0.02em] text-primary dark:text-night-text">Chưa có bộ thẻ nào</h2>
+            <p className="m-0 text-[0.88rem] text-text-muted dark:text-night-muted max-w-[420px] leading-[1.6]">
               {isGuest
                 ? "Đăng nhập Google để tạo bộ thẻ, lưu lịch ôn tập và theo dõi thẻ đến hạn mỗi ngày."
                 : "Tạo bộ thẻ theo chủ đề để ôn tập có hệ thống, hoặc tạo bộ yêu thích để tự chọn công thức."}
@@ -678,7 +683,7 @@ export default function FlashcardView({
           <div className="flex flex-col gap-6 md:gap-8">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-5">
               {/* Ôn tập hôm nay: gộp thẻ đến hạn + thẻ mới của mọi bộ, tối đa 20 thẻ một phiên. */}
-              <div className="lg:col-span-7 2xl:col-span-8 relative overflow-hidden rounded-[20px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white p-5 md:p-7 flex items-center gap-5 shadow-[0_14px_30px_-16px_rgba(15,23,42,0.7)]">
+              <div className="lg:col-span-7 2xl:col-span-8 relative overflow-hidden rounded-[20px] bg-primary dark:bg-[#020617] dark:border dark:border-night-line text-white p-5 md:p-7 flex items-center gap-5 shadow-[0_14px_30px_-16px_rgba(15,23,42,0.7)]">
                 <div className="flex-1 min-w-0 relative z-[1]">
                   <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-[#FBBF24]">Ôn tập hôm nay</div>
                   {dueReviewPreviewIds.length > 0 ? (<>
@@ -707,11 +712,11 @@ export default function FlashcardView({
                   <div key={label} className={`${CARD} p-3 md:p-5 flex flex-col gap-3`}>
                     <span className={`hidden md:flex w-9 h-9 rounded-[10px] items-center justify-center ${tone}`}><Icon size={17} /></span>
                     <div>
-                      <div className="text-[1.2rem] md:text-[1.75rem] font-bold tracking-[-0.02em] leading-none text-primary dark:text-[#E2E8F0]">
+                      <div className="text-[1.2rem] md:text-[1.75rem] font-bold tracking-[-0.02em] leading-none text-primary dark:text-night-text">
                         {value}
-                        {sub && <span className="hidden md:inline ml-1.5 text-[0.8rem] font-semibold text-text-muted dark:text-[#94A3B8]">{sub}</span>}
+                        {sub && <span className="hidden md:inline ml-1.5 text-[0.8rem] font-semibold text-text-muted dark:text-night-muted">{sub}</span>}
                       </div>
-                      <div className="mt-1.5 text-[0.68rem] md:text-[0.78rem] leading-tight text-text-muted dark:text-[#94A3B8]">{label}</div>
+                      <div className="mt-1.5 text-[0.68rem] md:text-[0.78rem] leading-tight text-text-muted dark:text-night-muted">{label}</div>
                     </div>
                   </div>
                 ))}
@@ -745,8 +750,8 @@ export default function FlashcardView({
         <PageShell width="full">
           <div className={`${CARD} max-w-[520px] mx-auto p-8 flex flex-col items-center text-center gap-3`}>
             <HelpCircle size={32} className="text-[#CBD5E1]" />
-            <h2 className="m-0 text-[1.15rem] font-bold text-primary dark:text-[#E2E8F0]">Bộ thẻ trống</h2>
-            <p className="m-0 text-[0.85rem] text-text-muted dark:text-[#94A3B8]">Không có công thức nào trong bộ thẻ này.</p>
+            <h2 className="m-0 text-[1.15rem] font-bold text-primary dark:text-night-text">Bộ thẻ trống</h2>
+            <p className="m-0 text-[0.85rem] text-text-muted dark:text-night-muted">Không có công thức nào trong bộ thẻ này.</p>
             <button className={BTN_PRIMARY} onClick={() => setView("list")}>
               Quay lại danh sách
             </button>
@@ -762,11 +767,11 @@ export default function FlashcardView({
         <div className="flex flex-col items-center w-full max-w-[820px] mx-auto gap-4 md:gap-5 [animation:fadeIn_0.3s_ease-out]">
           {/* Tiến độ */}
           <div className="w-full flex items-center gap-3 md:gap-4">
-            <span className="text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0] shrink-0">Thẻ {currentIndex + 1}/{cards.length}</span>
-            <div className="flex-1 h-2 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+            <span className="text-[0.9rem] font-bold text-primary dark:text-night-text shrink-0">Thẻ {currentIndex + 1}/{cards.length}</span>
+            <div className="flex-1 h-2 rounded-full bg-[#EEF1F6] dark:bg-night-line overflow-hidden">
               <div className="h-full rounded-full bg-[linear-gradient(90deg,#F59E0B,#FBBF24)] transition-[width] duration-300" style={{ width: `${((currentIndex + 1) / cards.length) * 100}%` }} />
             </div>
-            <span className="hidden sm:block text-[0.8rem] text-text-muted dark:text-[#94A3B8] shrink-0 truncate max-w-[200px]">{isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}</span>
+            <span className="hidden sm:block text-[0.8rem] text-text-muted dark:text-night-muted shrink-0 truncate max-w-[200px]">{isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}</span>
           </div>
 
           {/* Thẻ lật 3D */}
@@ -783,15 +788,15 @@ export default function FlashcardView({
             >
               <div className={`w-full h-full relative transition-transform duration-[0.6s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)] [transform-style:preserve-3d] ${isFlipped ? "[transform:rotateY(180deg)]" : ""}`}>
                 {/* Mặt trước */}
-                <div className={`${CARD} absolute inset-0 [backface-visibility:hidden] bg-[linear-gradient(160deg,#FFF8E1,#FFFFFF_55%)] dark:bg-none dark:bg-[#1E293B] p-6 md:p-10 flex flex-col justify-between items-center text-center overflow-hidden`}>
+                <div className={`${CARD} absolute inset-0 [backface-visibility:hidden] bg-[linear-gradient(160deg,#FFF8E1,#FFFFFF_55%)] dark:bg-none dark:bg-night-card p-6 md:p-10 flex flex-col justify-between items-center text-center overflow-hidden`}>
                   <span className={LABEL}>Mặt trước · Tên công thức</span>
                   <div className="flex flex-col items-center gap-4 flex-1 justify-center">
                     <span className="inline-block py-1 px-3 rounded-full text-[0.75rem] font-semibold bg-[#DBEAFE] text-[#2563EB] dark:bg-[#2563EB]/20 dark:text-[#93C5FD]">
                       {currentCard.topic} · Lớp {currentCard.grade}
                     </span>
-                    <div className="text-[1.4rem] md:text-[1.9rem] font-semibold tracking-[-0.02em] leading-[1.35] max-w-[620px] text-primary dark:text-[#E2E8F0]">{currentCard.name}</div>
+                    <div className="text-[1.4rem] md:text-[1.9rem] font-semibold tracking-[-0.02em] leading-[1.35] max-w-[620px] text-primary dark:text-night-text">{currentCard.name}</div>
                   </div>
-                  <div className="flex items-center gap-2 text-[0.8rem] text-text-muted dark:text-[#94A3B8]">
+                  <div className="flex items-center gap-2 text-[0.8rem] text-text-muted dark:text-night-muted">
                     <RotateCw size={14} /> Chạm vào thẻ hoặc nhấn Space để lật
                   </div>
                 </div>
@@ -800,17 +805,17 @@ export default function FlashcardView({
                 <div className={`${CARD} absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] p-5 md:p-8 flex flex-col justify-between items-center overflow-hidden`}>
                   <span className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>Mặt sau · Công thức</span>
                   <div className="flex flex-col items-center gap-3 w-full flex-1 min-h-0 justify-start overflow-y-auto overflow-x-hidden mt-3">
-                    <div className="bg-page dark:bg-[#0F172A] rounded-[14px] p-4 flex items-center justify-center min-h-[80px] max-h-[200px] overflow-auto shrink-0 border border-line dark:border-[#334155] w-full text-primary dark:text-[#E2E8F0]">
+                    <div className="bg-page dark:bg-night-page rounded-[14px] p-4 flex items-center justify-center min-h-[80px] max-h-[200px] overflow-auto shrink-0 border border-line dark:border-night-line w-full text-primary dark:text-night-text">
                       <MathElement math={currentCard.latex} block={true} />
                     </div>
                     <div className="flashcard-explanation text-[0.82rem] text-[#475569] dark:text-[#CBD5E1] text-left w-full overflow-x-auto">
-                      <strong className="text-primary dark:text-[#E2E8F0]">Giải thích:</strong>
+                      <strong className="text-primary dark:text-night-text">Giải thích:</strong>
                       <div className="mt-0.5">
                         <RichTextRenderer text={currentCard.explanation} />
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 text-[0.8rem] text-text-muted dark:text-[#94A3B8] mt-2">
+                  <div className="flex items-center gap-2 text-[0.8rem] text-text-muted dark:text-night-muted mt-2">
                     <RotateCw size={14} /> Chạm để lật lại
                   </div>
                 </div>
@@ -841,15 +846,15 @@ export default function FlashcardView({
               <button aria-label="Thẻ trước" className={`${BTN_SECONDARY} !px-3.5`} onClick={handlePrev} disabled={currentIndex === 0}>
                 <ArrowLeft size={18} />
               </button>
-              <span className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] text-center">Lật thẻ xem đáp án trước khi chấm</span>
+              <span className="text-[0.8rem] text-text-muted dark:text-night-muted text-center">Lật thẻ xem đáp án trước khi chấm</span>
               <button aria-label="Thẻ tiếp theo" className={`${BTN_SECONDARY} !px-3.5`} onClick={handleNext} disabled={currentIndex === cards.length - 1}>
                 <ArrowRight size={18} />
               </button>
             </div>
           )}
 
-          <div className="hidden md:block text-[0.75rem] text-text-muted dark:text-[#94A3B8]">
-            Phím tắt: <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">Space</kbd> lật thẻ, <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển thẻ / chấm điểm
+          <div className="hidden md:block text-[0.75rem] text-text-muted dark:text-night-muted">
+            Phím tắt: <kbd className="bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-0.5 font-mono">Space</kbd> lật thẻ, <kbd className="bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển thẻ / chấm điểm
           </div>
 
           {/* Remove from favorite deck button */}
@@ -873,23 +878,23 @@ export default function FlashcardView({
     const rate = cards.length > 0 ? Math.round((rememberedCount / cards.length) * 100) : 0;
     return (
       <PageShell width="full">
-        <div className={`${CARD} relative max-w-[560px] mx-auto mt-[70px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-6 md:p-9 flex flex-col items-center text-center gap-3`}>
+        <div className={`${CARD} relative max-w-[560px] mx-auto mt-[70px] bg-hero-amber dark:bg-none dark:bg-night-card p-6 md:p-9 flex flex-col items-center text-center gap-3`}>
           <MimiMascot width={170} className="absolute left-1/2 -translate-x-1/2 -top-[96px]" />
           <div className={`${LABEL} mt-6`}>Hoàn thành bộ thẻ</div>
-          <h2 className="m-0 text-[1.3rem] md:text-[1.6rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">
+          <h2 className="m-0 text-[1.3rem] md:text-[1.6rem] font-bold tracking-[-0.02em] text-primary dark:text-night-text">
             {isDueReviewSession ? "Ôn tập hôm nay" : activeDeck?.name}
           </h2>
           <div className="grid grid-cols-2 gap-3 w-full mt-2">
-            <div className="rounded-[14px] bg-white dark:bg-[#0F172A] border border-line dark:border-[#334155] p-4">
+            <div className="rounded-[14px] bg-white dark:bg-night-page border border-line dark:border-night-line p-4">
               <div className="text-[2rem] font-bold text-[#059669] dark:text-[#6EE7B7]">{rememberedCount}</div>
-              <div className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">Đã nhớ tốt</div>
+              <div className="text-[0.78rem] text-text-muted dark:text-night-muted">Đã nhớ tốt</div>
             </div>
-            <div className="rounded-[14px] bg-white dark:bg-[#0F172A] border border-line dark:border-[#334155] p-4">
+            <div className="rounded-[14px] bg-white dark:bg-night-page border border-line dark:border-night-line p-4">
               <div className="text-[2rem] font-bold text-[#BE123C] dark:text-[#FDA4AF]">{reviewCount}</div>
-              <div className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">Cần ôn thêm</div>
+              <div className="text-[0.78rem] text-text-muted dark:text-night-muted">Cần ôn thêm</div>
             </div>
           </div>
-          <div className="text-[0.95rem] font-semibold text-primary dark:text-[#E2E8F0]">Tỷ lệ ghi nhớ: {rate}%</div>
+          <div className="text-[0.95rem] font-semibold text-primary dark:text-night-text">Tỷ lệ ghi nhớ: {rate}%</div>
 
           <div className="w-full flex flex-col gap-2.5 mt-2">
             <button className={`${BTN_PRIMARY} w-full`} onClick={handleRestartDeck}>Luyện tập lại</button>

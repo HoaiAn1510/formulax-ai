@@ -100,14 +100,14 @@ export default function DailyChallengeCard({ user, userGrade, savedRecord, onSav
 
   if (answer && collapsed) {
     return (
-      <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-6 md:mb-8 flex items-center justify-between gap-3">
+      <div className="glass-card dark:bg-night-card dark:border-night-line p-4 mb-6 md:mb-8 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${answer.isCorrect ? "bg-success/10 text-success" : "bg-error/10 text-error"}`}>
             {answer.isCorrect ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
           </div>
           <div className="min-w-0">
-            <div className="text-[0.85rem] font-extrabold text-primary dark:text-[#E2E8F0]">Thử thách hôm nay: Đã hoàn thành</div>
-            <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8]">{answer.isCorrect ? "Bạn đã trả lời đúng" : "Bạn đã trả lời sai"}</div>
+            <div className="text-[0.85rem] font-extrabold text-primary dark:text-night-text">Thử thách hôm nay: Đã hoàn thành</div>
+            <div className="text-[0.7rem] text-text-muted dark:text-night-muted">{answer.isCorrect ? "Bạn đã trả lời đúng" : "Bạn đã trả lời sai"}</div>
           </div>
         </div>
         <button
@@ -122,29 +122,29 @@ export default function DailyChallengeCard({ user, userGrade, savedRecord, onSav
   }
 
   return (
-    <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-6 md:mb-8">
+    <div className="glass-card dark:bg-night-card dark:border-night-line p-4 mb-6 md:mb-8">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-accent/10 text-accent shrink-0">
             <Sparkles size={16} />
           </div>
           <div>
-            <div className="text-[0.9rem] font-extrabold text-primary dark:text-[#E2E8F0]">Thử thách hôm nay</div>
-            <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8]">{question.topic} · Lớp {question.grade}</div>
+            <div className="text-[0.9rem] font-extrabold text-primary dark:text-night-text">Thử thách hôm nay</div>
+            <div className="text-[0.7rem] text-text-muted dark:text-night-muted">{question.topic} · Lớp {question.grade}</div>
           </div>
         </div>
         {answer && (
           <button
             onClick={handleCollapse}
             aria-label="Đóng"
-            className="w-7 h-7 rounded-lg flex items-center justify-center bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] border-none cursor-pointer shrink-0"
+            className="w-7 h-7 rounded-lg flex items-center justify-center bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-muted border-none cursor-pointer shrink-0"
           >
             <X size={15} />
           </button>
         )}
       </div>
 
-      <div className="quiz-question-text text-[0.9rem] font-semibold text-primary dark:text-[#E2E8F0] leading-[1.55] mb-3">
+      <div className="quiz-question-text text-[0.9rem] font-semibold text-primary dark:text-night-text leading-[1.55] mb-3">
         <RichTextRenderer text={question.text} />
       </div>
 
@@ -160,18 +160,18 @@ export default function DailyChallengeCard({ user, userGrade, savedRecord, onSav
               key={option.letter}
               onClick={() => handleSelect(option)}
               disabled={revealed}
-              className={`flex items-center w-full min-h-[46px] py-2.5 px-3.5 rounded-xl text-[0.85rem] font-semibold text-left gap-2.5 border-[1.5px] text-primary dark:text-[#E2E8F0] transition-all duration-200 disabled:opacity-100 ${
+              className={`flex items-center w-full min-h-[46px] py-2.5 px-3.5 rounded-xl text-[0.85rem] font-semibold text-left gap-2.5 border-[1.5px] text-primary dark:text-night-text transition-all duration-200 disabled:opacity-100 ${
                 // KaTeX kế thừa color từ phần tử cha bình thường (không cần nền sáng cố định để
                 // đọc được — xem FormulaDetailModal.jsx render MathElement trực tiếp trên nền tối).
                 isRight
                   ? "border-success bg-[#F0FDF4] dark:bg-success/15"
                   : isWrongSelected
                     ? "border-error bg-[#FEF2F2] dark:bg-error/15"
-                    : "border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-white dark:bg-[#1E293B]" + (revealed ? "" : " cursor-pointer hover:border-accent hover:bg-accent/[0.02]")
+                    : "border-[rgba(30,58,95,0.07)] dark:border-night-line bg-white dark:bg-night-card" + (revealed ? "" : " cursor-pointer hover:border-accent hover:bg-accent/[0.02]")
               }`}
             >
               <div className={`flex items-center justify-center w-6 h-6 rounded-full text-[0.78rem] font-extrabold shrink-0 ${
-                isRight ? "bg-success text-white" : isWrongSelected ? "bg-error text-white" : "bg-[#f1f5f9] dark:bg-[#334155] text-text-muted"
+                isRight ? "bg-success text-white" : isWrongSelected ? "bg-error text-white" : "bg-[#f1f5f9] dark:bg-night-line text-text-muted"
               }`}>
                 {option.letter}
               </div>
@@ -184,7 +184,7 @@ export default function DailyChallengeCard({ user, userGrade, savedRecord, onSav
       </div>
 
       {answer && (
-        <div className="formula-explanation-prose mt-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-[#0F172A]/40 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.6]">
+        <div className="formula-explanation-prose mt-3 p-3 rounded-xl bg-[#F8FAFC] dark:bg-night-page/40 text-[0.78rem] text-text-muted dark:text-night-muted leading-[1.6]">
           <RichTextRenderer text={question.explanation} />
         </div>
       )}

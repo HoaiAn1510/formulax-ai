@@ -32,6 +32,14 @@
   --color-navy-btn-hover: #1E3A5F;
   --color-page: #F6F7FA;
   --color-line: #E6E9F0;
+
+  /* Bảng màu chế độ tối (.dark-mode) — dùng với variant dark:, vd dark:bg-night-card dark:border-night-line.
+     Trước đây viết tay mã hex ở từng file; giá trị giữ nguyên. */
+  --color-night-page: #0F172A;   /* nền trang, ô nhập */
+  --color-night-card: #1E293B;   /* nền thẻ, modal */
+  --color-night-line: #334155;   /* viền, nền nút phụ */
+  --color-night-text: #E2E8F0;   /* chữ chính */
+  --color-night-muted: #94A3B8;  /* chữ phụ */
   --shadow-fx-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 22px -14px rgba(15, 23, 42, 0.12);
 }
 

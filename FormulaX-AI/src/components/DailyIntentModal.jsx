@@ -25,7 +25,7 @@ export default function DailyIntentModal({ gid, firstName, onPick, onClose }) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-[520px] max-h-[92vh] overflow-y-auto rounded-[20px] bg-white dark:bg-[#1E293B] p-6 md:p-7 shadow-[0_24px_60px_rgba(0,0,0,0.18)]"
+        className="relative w-full max-w-[520px] max-h-[92vh] overflow-y-auto rounded-[20px] bg-white dark:bg-night-card p-6 md:p-7 shadow-[0_24px_60px_rgba(0,0,0,0.18)]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -36,10 +36,10 @@ export default function DailyIntentModal({ gid, firstName, onPick, onClose }) {
           Để sau <X size={14} />
         </button>
 
-        <h2 id="daily-intent-title" className="m-0 pr-16 text-[1.2rem] font-extrabold text-primary dark:text-[#E2E8F0]">
+        <h2 id="daily-intent-title" className="m-0 pr-16 text-[1.2rem] font-extrabold text-primary dark:text-night-text">
           {firstName ? `${firstName} ơi, hôm nay bạn gặp khó khăn gì?` : "Hôm nay bạn gặp khó khăn gì?"}
         </h2>
-        <p className="mt-1.5 mb-4 text-[0.82rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">
+        <p className="mt-1.5 mb-4 text-[0.82rem] leading-[1.5] text-text-muted dark:text-night-muted">
           Chọn một việc, mình đưa bạn tới thẳng đúng chỗ.
         </p>
 
@@ -51,19 +51,19 @@ export default function DailyIntentModal({ gid, firstName, onPick, onClose }) {
                 key={o.id}
                 type="button"
                 onClick={() => { writeLast(gid, o.id); onPick(o); }}
-                className="group flex items-start gap-3 text-left w-full rounded-2xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] px-4 py-3.5 cursor-pointer transition duration-200 hover:-translate-y-0.5 hover:border-accent active:scale-[0.99]"
+                className="group flex items-start gap-3 text-left w-full rounded-2xl border border-[#E2E8F0] dark:border-night-line bg-white dark:bg-night-page px-4 py-3.5 cursor-pointer transition duration-200 hover:-translate-y-0.5 hover:border-accent active:scale-[0.99]"
               >
                 <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${o.color}`}>
                   <Icon size={20} />
                 </span>
                 <span className="flex-1 min-w-0">
                   <span className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[0.92rem] font-extrabold text-primary dark:text-[#E2E8F0]">{o.title}</span>
+                    <span className="text-[0.92rem] font-extrabold text-primary dark:text-night-text">{o.title}</span>
                     {o.id === last && (
                       <span className="text-[0.62rem] font-bold uppercase tracking-wide text-accent bg-accent/10 rounded px-1.5 py-px">Lần trước</span>
                     )}
                   </span>
-                  <span className="block mt-1 text-[0.78rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">{o.what}</span>
+                  <span className="block mt-1 text-[0.78rem] leading-[1.5] text-text-muted dark:text-night-muted">{o.what}</span>
                   <span className="mt-1.5 flex items-center gap-1 text-[0.78rem] font-bold text-accent">
                     {o.cta} <ChevronRight size={14} className="transition-transform group-hover:translate-x-0.5" />
                   </span>
