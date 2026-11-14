@@ -20,8 +20,8 @@ const LAST_UPDATED = "22/10/2026";
 function Section({ title, children }) {
   return (
     <section className="mb-5">
-      <h3 className="text-[0.95rem] font-extrabold text-primary dark:text-[#E2E8F0] mb-2">{title}</h3>
-      <div className="text-[0.83rem] leading-[1.7] text-text-muted dark:text-[#94A3B8] flex flex-col gap-2">
+      <h3 className="text-[0.95rem] font-extrabold text-primary dark:text-night-text mb-2">{title}</h3>
+      <div className="text-[0.83rem] leading-[1.7] text-text-muted dark:text-night-muted flex flex-col gap-2">
         {children}
       </div>
     </section>
@@ -253,20 +253,20 @@ export default function LegalModal({ doc = "terms", onClose }) {
       aria-label={title}
     >
       <div
-        className="bg-white dark:bg-[#1E293B] w-full sm:max-w-[560px] max-h-[88vh] rounded-t-2xl sm:rounded-2xl border border-[#E5E7EB] dark:border-[#334155] flex flex-col overflow-hidden"
+        className="bg-white dark:bg-night-card w-full sm:max-w-[560px] max-h-[88vh] rounded-t-2xl sm:rounded-2xl border border-[#E5E7EB] dark:border-night-line flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB] dark:border-[#334155] shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#E5E7EB] dark:border-night-line shrink-0">
           <div>
-            <h2 className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">{title}</h2>
-            <p className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] mt-0.5">
+            <h2 className="text-[1.05rem] font-extrabold text-primary dark:text-night-text m-0">{title}</h2>
+            <p className="text-[0.7rem] text-text-muted dark:text-night-muted mt-0.5">
               Cập nhật lần cuối: {LAST_UPDATED}
             </p>
           </div>
           <button
             onClick={onClose}
             aria-label="Đóng"
-            className="bg-transparent border-none cursor-pointer text-text-muted dark:text-[#94A3B8] p-1 rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-[#334155]"
+            className="bg-transparent border-none cursor-pointer text-text-muted dark:text-night-muted p-1 rounded-lg hover:bg-[#F1F5F9] dark:hover:bg-night-line"
           >
             <X size={20} />
           </button>

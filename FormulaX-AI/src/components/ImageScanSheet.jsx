@@ -27,12 +27,12 @@ export default function ImageScanSheet({ onPick, onClose }) {
         aria-modal="true"
         aria-label="Gửi ảnh đề bài"
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:max-w-[420px] bg-white dark:bg-[#1E293B] rounded-t-2xl sm:rounded-2xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-[0_10px_25px_rgba(0,0,0,0.15)] flex flex-col gap-4"
+        className="w-full sm:max-w-[420px] bg-white dark:bg-night-card rounded-t-2xl sm:rounded-2xl p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-[0_10px_25px_rgba(0,0,0,0.15)] flex flex-col gap-4"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Gửi ảnh đề bài</h3>
-            <p className="text-[0.78rem] text-text-muted dark:text-[#94A3B8] mt-1 mb-0">
+            <h3 className="text-[1.05rem] font-extrabold text-primary dark:text-night-text m-0">Gửi ảnh đề bài</h3>
+            <p className="text-[0.78rem] text-text-muted dark:text-night-muted mt-1 mb-0">
               AI đọc tất cả các bài trong ảnh, bạn chọn bài cần hướng dẫn.
             </p>
           </div>
@@ -40,7 +40,7 @@ export default function ImageScanSheet({ onPick, onClose }) {
             type="button"
             aria-label="Đóng"
             onClick={onClose}
-            className="bg-[#F1F5F9] dark:bg-[#334155] border-none w-8 h-8 rounded-full cursor-pointer flex items-center justify-center text-primary dark:text-[#E2E8F0] shrink-0"
+            className="bg-[#F1F5F9] dark:bg-night-line border-none w-8 h-8 rounded-full cursor-pointer flex items-center justify-center text-primary dark:text-night-text shrink-0"
           >
             <X size={16} />
           </button>
@@ -57,7 +57,7 @@ export default function ImageScanSheet({ onPick, onClose }) {
             Chụp ảnh
             <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleChange} />
           </label>
-          <label className={`${optionClass} bg-white dark:bg-[#0F172A] hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-primary dark:text-[#E2E8F0] border-[#E2E8F0] dark:border-[#334155]`}>
+          <label className={`${optionClass} bg-white dark:bg-night-page hover:bg-[#F8FAFC] dark:hover:bg-night-line text-primary dark:text-night-text border-[#E2E8F0] dark:border-night-line`}>
             <ImageIcon size={22} />
             Chọn ảnh
             <input type="file" accept="image/*" className="hidden" onChange={handleChange} />
@@ -65,8 +65,8 @@ export default function ImageScanSheet({ onPick, onClose }) {
         </div>
 
         {/* Máy tính: ảnh chụp màn hình nằm trong bộ nhớ tạm, không phải file — nhắc cách dán / kéo thả (FormulaFinder.jsx). */}
-        <p className="hidden md:block m-0 text-[0.75rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">
-          Mẹo: chụp màn hình rồi bấm <kbd className="px-1.5 py-0.5 rounded border border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] font-sans text-[0.7rem]">Ctrl+V</kbd> vào ô nhập, hoặc kéo thả file ảnh vào khung chat.
+        <p className="hidden md:block m-0 text-[0.75rem] leading-[1.5] text-text-muted dark:text-night-muted">
+          Mẹo: chụp màn hình rồi bấm <kbd className="px-1.5 py-0.5 rounded border border-line dark:border-night-line bg-page dark:bg-night-page font-sans text-[0.7rem]">Ctrl+V</kbd> vào ô nhập, hoặc kéo thả file ảnh vào khung chat.
         </p>
       </div>
     </div>

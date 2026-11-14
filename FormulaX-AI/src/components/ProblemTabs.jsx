@@ -5,7 +5,7 @@ import StepAnswer from "./StepAnswer";
 import { isGuided } from "../utils/ocrProblems";
 
 const Dots = ({ label }) => (
-  <div className="flex items-center gap-2 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8] py-2">
+  <div className="flex items-center gap-2 text-[0.8rem] font-bold text-text-muted dark:text-night-muted py-2">
     <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
     <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
     <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
@@ -57,11 +57,11 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
   return (
     <div className="flex flex-col gap-3 w-full max-w-[760px] mx-auto min-w-0">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-[1rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0">Hướng dẫn từng bài</h3>
+        <h3 className="text-[1rem] font-extrabold text-primary dark:text-night-text m-0">Hướng dẫn từng bài</h3>
         <button
           type="button"
           onClick={onClose}
-          className="inline-flex items-center gap-1 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#E2E8F0] border-none rounded-lg py-1.5 px-3 text-[0.75rem] font-bold cursor-pointer"
+          className="inline-flex items-center gap-1 bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-text border-none rounded-lg py-1.5 px-3 text-[0.75rem] font-bold cursor-pointer"
         >
           <X size={12} /> Xong
         </button>
@@ -81,7 +81,7 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
               className={`shrink-0 inline-flex items-center gap-1.5 rounded-full py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer border transition-colors duration-200 ${
                 isActive
                   ? "bg-accent text-white border-accent"
-                  : "bg-white dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0] border-[#E2E8F0] dark:border-[#334155] hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
+                  : "bg-white dark:bg-night-card text-primary dark:text-night-text border-[#E2E8F0] dark:border-night-line hover:bg-[#F8FAFC] dark:hover:bg-night-line"
               }`}
             >
               {p.label}
@@ -93,8 +93,8 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
         })}
       </div>
 
-      <div className="rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 py-2.5 min-w-0">
-        <div className="text-[0.68rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-[#94A3B8] mb-1">Đề bài</div>
+      <div className="rounded-xl border border-[#E2E8F0] dark:border-night-line bg-[#F8FAFC] dark:bg-night-page/60 px-3 py-2.5 min-w-0">
+        <div className="text-[0.68rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-night-muted mb-1">Đề bài</div>
         {isEditing ? (
           <div className="flex flex-col gap-2">
             <textarea
@@ -102,7 +102,7 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
               value={editing.text}
               onChange={(e) => setEditing((d) => ({ ...d, text: e.target.value }))}
               rows={4}
-              className="w-full rounded-lg border border-accent bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] p-2 text-[0.85rem] font-medium leading-[1.5] outline-none resize-y font-[inherit]"
+              className="w-full rounded-lg border border-accent bg-white dark:bg-night-page text-primary dark:text-night-text p-2 text-[0.85rem] font-medium leading-[1.5] outline-none resize-y font-[inherit]"
             />
             {active.hasFigure && (
               <textarea
@@ -110,11 +110,11 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
                 value={editing.figureNote}
                 onChange={(e) => setEditing((d) => ({ ...d, figureNote: e.target.value }))}
                 rows={2}
-                className="w-full rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] p-2 text-[0.82rem] leading-[1.5] outline-none resize-y font-[inherit]"
+                className="w-full rounded-lg border border-[#E2E8F0] dark:border-night-line bg-white dark:bg-night-page text-primary dark:text-night-text p-2 text-[0.82rem] leading-[1.5] outline-none resize-y font-[inherit]"
               />
             )}
             <div className="flex gap-2 justify-end">
-              <button type="button" onClick={() => setEditing(null)} className="inline-flex items-center gap-1 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#E2E8F0] border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
+              <button type="button" onClick={() => setEditing(null)} className="inline-flex items-center gap-1 bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-text border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
                 <X size={12} /> Hủy
               </button>
               <button type="button" onClick={saveEdit} disabled={!editing.text.trim()} className="inline-flex items-center gap-1 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
@@ -123,7 +123,7 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
             </div>
           </div>
         ) : (
-          <div className="chat-bot-text text-[0.86rem] leading-[1.6] text-primary dark:text-[#E2E8F0] overflow-x-auto">
+          <div className="chat-bot-text text-[0.86rem] leading-[1.6] text-primary dark:text-night-text overflow-x-auto">
             <RichTextRenderer text={active.text} />
           </div>
         )}
@@ -134,7 +134,7 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
         )}
       </div>
 
-      <div role="tabpanel" className="rounded-xl border border-[#e2e8f0] dark:border-[#334155] bg-white dark:bg-[#1E293B] py-3 px-4 min-w-0 text-primary dark:text-[#E2E8F0]">
+      <div role="tabpanel" className="rounded-xl border border-[#e2e8f0] dark:border-night-line bg-white dark:bg-night-card py-3 px-4 min-w-0 text-primary dark:text-night-text">
         {!result && inFlightKey && inFlightKey !== active.key && <Dots label="Đang hướng dẫn bài trước, bài này sẽ bắt đầu ngay sau..." />}
         {!result && !inFlightKey && secondsLeft > 0 && (
           <div role="status" className="flex items-center gap-2 text-[0.85rem] text-[#92400E] dark:text-[#FCD34D] py-1">
@@ -155,7 +155,7 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
                     : "AI vẫn đang bận. Bạn bấm Thử lại nhé."}
               </span>
             </div>
-            <span className="text-[0.75rem] text-text-muted dark:text-[#94A3B8]">Lần này không bị tính vào lượt hỏi AI của bạn.</span>
+            <span className="text-[0.75rem] text-text-muted dark:text-night-muted">Lần này không bị tính vào lượt hỏi AI của bạn.</span>
             {retryBtn}
           </div>
         )}
@@ -168,7 +168,7 @@ export default function ProblemTabs({ items, activeKey, results, inFlightKey, bu
               <span>{result.answer?.intro || "Mình chưa đủ thông tin để hướng dẫn đề này. Bạn thử viết lại rõ hơn nhé."}</span>
             </div>
             {result.answer?.reminder && (
-              <span className="text-[0.8rem] leading-[1.5] text-text-muted dark:text-[#94A3B8]">{result.answer.reminder}</span>
+              <span className="text-[0.8rem] leading-[1.5] text-text-muted dark:text-night-muted">{result.answer.reminder}</span>
             )}
             {!isEditing && (
               <button type="button" onClick={startEdit} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">

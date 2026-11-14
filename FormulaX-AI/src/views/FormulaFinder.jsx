@@ -750,13 +750,13 @@ export default function FormulaFinder({
     if (ocr.stage === "scanning") {
       return (
         <div className="flex flex-col items-center text-center gap-2 py-10">
-          <div className="flex items-center gap-2 text-[0.85rem] font-bold text-text-muted dark:text-[#94A3B8]">
+          <div className="flex items-center gap-2 text-[0.85rem] font-bold text-text-muted dark:text-night-muted">
             <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite]" />
             <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.2s]" />
             <div className="w-2 h-2 rounded-full bg-accent animate-[pulse-bubble_1.4s_ease-in-out_infinite] [animation-delay:0.4s]" />
             <span>Đang đọc đề trong ảnh...</span>
           </div>
-          <span className="text-[0.75rem] text-text-muted dark:text-[#94A3B8]">Thường mất khoảng 5–10 giây.</span>
+          <span className="text-[0.75rem] text-text-muted dark:text-night-muted">Thường mất khoảng 5–10 giây.</span>
         </div>
       );
     }
@@ -764,12 +764,12 @@ export default function FormulaFinder({
       return (
         <div className="flex flex-col items-center text-center gap-3 py-10 px-4 max-w-[420px] mx-auto">
           <AlertCircle size={26} className="text-error" />
-          <p className="text-[0.88rem] text-primary dark:text-[#E2E8F0] m-0">{ocr.message}</p>
+          <p className="text-[0.88rem] text-primary dark:text-night-text m-0">{ocr.message}</p>
           <div className="flex gap-2">
             <button type="button" onClick={openScanSheet} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
               <Camera size={14} /> Thử lại
             </button>
-            <button type="button" onClick={closeOcr} className="bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#E2E8F0] border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
+            <button type="button" onClick={closeOcr} className="bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-text border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
               Đóng
             </button>
           </div>
@@ -838,16 +838,16 @@ export default function FormulaFinder({
     // min-height, nên kích thước của nó tính theo nội dung: chat dài hoặc ví dụ của khách kéo giãn
     // cả khung và đẩy ô nhập ra khỏi màn hình thay vì cuộn bên trong. contain-size bỏ phần nội
     // dung ra khỏi phép tính đó — view chỉ lấp đúng phần trống giữa header và thanh điều hướng.
-    <PageShell fill width="full" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-[#0F172A]">
+    <PageShell fill width="full" className="!p-[10px] h-[calc(100vh-124px)] max-md:contain-size flex flex-col bg-page dark:bg-night-page">
 
       {/* Tiêu đề + lượt còn lại (mockup Trợ lý hướng dẫn) */}
       <div className="flex justify-between items-end gap-3 mb-3 md:mb-4 md:pt-2">
         <div className="min-w-0">
-          <button className="bg-transparent border-none p-0 text-text-muted dark:text-[#94A3B8] text-[0.8rem] font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors hover:text-primary dark:hover:text-[#E2E8F0]" onClick={() => setActiveTab("dashboard")}>
+          <button className="bg-transparent border-none p-0 text-text-muted dark:text-night-muted text-[0.8rem] font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors hover:text-primary dark:hover:text-night-text" onClick={() => setActiveTab("dashboard")}>
             <ArrowLeft size={14} />
             <span>Về trang chủ</span>
           </button>
-          <h1 className="m-0 mt-1 text-[1.35rem] md:text-[1.9rem] font-bold tracking-[-0.03em] leading-[1.15] text-primary dark:text-[#E2E8F0]">Trợ lý hướng dẫn</h1>
+          <h1 className="m-0 mt-1 text-[1.35rem] md:text-[1.9rem] font-bold tracking-[-0.03em] leading-[1.15] text-primary dark:text-night-text">Trợ lý hướng dẫn</h1>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -859,7 +859,7 @@ export default function FormulaFinder({
             </span>
           )}
           <button
-            className="md:hidden relative inline-flex items-center gap-1.5 bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] rounded-full px-3 py-2 text-[0.75rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer transition duration-200 hover:bg-[#f8fafc] dark:hover:bg-[#334155] hover:border-[#cbd5e1] mb-0"
+            className="md:hidden relative inline-flex items-center gap-1.5 bg-white dark:bg-night-card border border-[#E2E8F0] dark:border-night-line rounded-full px-3 py-2 text-[0.75rem] font-bold text-primary dark:text-night-text cursor-pointer transition duration-200 hover:bg-[#f8fafc] dark:hover:bg-night-line hover:border-[#cbd5e1] mb-0"
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <History size={14} />
@@ -885,7 +885,7 @@ export default function FormulaFinder({
 
       <div className="flex flex-col md:flex-row gap-4 flex-1 overflow-hidden h-full relative">
         {/* ─── Session Sidebar ─── (desktop: cột phải như mockup; mobile: ngăn trượt như cũ) */}
-        <div className={`fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none ${sidebarOpen ? "flex" : "hidden"} md:flex md:order-2 flex-col gap-2 fixed md:relative top-[68px] md:top-auto left-0 md:left-auto right-0 md:right-auto bottom-14 md:bottom-auto z-[300] md:z-auto w-full md:w-[300px] md:shrink-0 p-4 md:p-5 overflow-y-auto`}>
+        <div className={`fx-card dark:bg-night-card dark:border-night-line dark:shadow-none ${sidebarOpen ? "flex" : "hidden"} md:flex md:order-2 flex-col gap-2 fixed md:relative top-[68px] md:top-auto left-0 md:left-auto right-0 md:right-auto bottom-14 md:bottom-auto z-[300] md:z-auto w-full md:w-[300px] md:shrink-0 p-4 md:p-5 overflow-y-auto`}>
 
           {/* New chat button */}
           <button
@@ -910,27 +910,27 @@ export default function FormulaFinder({
             </button>
           )}
 
-          <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8] mb-1.5">Lịch sử gần đây</div>
+          <div className="text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted mb-1.5">Lịch sử gần đây</div>
 
           {isGuest ? (
             <div className="flex flex-col items-center text-center gap-2 py-4 px-2">
               <Lock size={18} className="text-accent" />
-              <div className="text-[0.75rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
+              <div className="text-[0.75rem] text-text-muted dark:text-night-muted leading-[1.5]">
                 Đăng nhập Google để lưu và xem lại lịch sử trò chuyện.
               </div>
             </div>
           ) : sessions.length === 0 ? (
             <div className="py-4 px-2 text-center">
               <History size={22} className="mx-auto mb-1.5 text-[#CBD5E1] dark:text-[#475569]" />
-              <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">Chưa có cuộc trò chuyện nào</div>
-              <div className="mt-0.5 text-[0.72rem] leading-[1.45] text-text-muted dark:text-[#94A3B8]">Câu hỏi bạn gửi sẽ được lưu ở đây để xem lại.</div>
+              <div className="text-[0.8rem] font-bold text-primary dark:text-night-text">Chưa có cuộc trò chuyện nào</div>
+              <div className="mt-0.5 text-[0.72rem] leading-[1.45] text-text-muted dark:text-night-muted">Câu hỏi bạn gửi sẽ được lưu ở đây để xem lại.</div>
             </div>
           ) : (
             sessions.map((session) => (
               <div
                 key={session.id}
                 className={`mb-1.5 rounded-[12px] overflow-hidden border ${
-                  currentSessionId === session.id ? "border-accent bg-accent-light/50 dark:bg-accent/10" : "border-line dark:border-[#334155] bg-[#FAFBFD] dark:bg-[#0F172A]"
+                  currentSessionId === session.id ? "border-accent bg-accent-light/50 dark:bg-accent/10" : "border-line dark:border-night-line bg-[#FAFBFD] dark:bg-night-page"
                 }`}
               >
                 {/* Rename mode */}
@@ -949,7 +949,7 @@ export default function FormulaFinder({
                     <button aria-label="Lưu tên mới" onClick={confirmRename} className="bg-success border-none rounded-md py-1 px-1.5 cursor-pointer text-white flex items-center">
                       <Check size={12} />
                     </button>
-                    <button aria-label="Huỷ đổi tên" onClick={() => setRenamingId(null)} className="bg-[#F1F5F9] dark:bg-[#334155] border-none rounded-md py-1 px-1.5 cursor-pointer text-text-muted dark:text-[#94A3B8] flex items-center">
+                    <button aria-label="Huỷ đổi tên" onClick={() => setRenamingId(null)} className="bg-[#F1F5F9] dark:bg-night-line border-none rounded-md py-1 px-1.5 cursor-pointer text-text-muted dark:text-night-muted flex items-center">
                       <X size={12} />
                     </button>
                   </div>
@@ -968,7 +968,7 @@ export default function FormulaFinder({
                       </button>
                       <button
                         onClick={() => setDeletingId(null)}
-                        className="flex-1 py-1.5 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] border-none rounded-md cursor-pointer text-[0.75rem] font-bold"
+                        className="flex-1 py-1.5 bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-muted border-none rounded-md cursor-pointer text-[0.75rem] font-bold"
                       >
                         Hủy
                       </button>
@@ -981,7 +981,7 @@ export default function FormulaFinder({
                       onClick={() => loadSession(session)}
                       className="flex-1 text-left py-2.5 px-2.5 bg-transparent border-none cursor-pointer min-w-0"
                     >
-                      <div className="text-[0.82rem] font-medium text-primary dark:text-[#E2E8F0] whitespace-nowrap overflow-hidden text-ellipsis">
+                      <div className="text-[0.82rem] font-medium text-primary dark:text-night-text whitespace-nowrap overflow-hidden text-ellipsis">
                         {/* Tên cũ (trước 2026-11-02) còn LaTeX thô → đổi lúc hiển thị. */}
                         {latexToPlainText(session.name)}
                       </div>
@@ -1014,18 +1014,18 @@ export default function FormulaFinder({
         </div>
 
         {/* ─── Chat window ─── */}
-        <div className="fx-card dark:bg-[#0F172A] dark:border-[#334155] dark:shadow-none flex flex-col flex-1 min-w-0 overflow-hidden">
-          <div className="flex-1 py-5 px-4 md:px-7 md:py-7 overflow-y-auto flex flex-col gap-4 bg-transparent dark:bg-[#0F172A]" ref={chatMessagesRef}>
+        <div className="fx-card dark:bg-night-page dark:border-night-line dark:shadow-none flex flex-col flex-1 min-w-0 overflow-hidden">
+          <div className="flex-1 py-5 px-4 md:px-7 md:py-7 overflow-y-auto flex flex-col gap-4 bg-transparent dark:bg-night-page" ref={chatMessagesRef}>
             {isGuest ? (
               <div className="flex flex-col gap-4 w-full max-w-[640px] mx-auto">
                 <div className="flex flex-col items-center text-center gap-2 pt-2">
                   <div className="w-14 h-14 rounded-full bg-accent-light dark:bg-accent/15 text-accent flex items-center justify-center">
                     <Lock size={24} />
                   </div>
-                  <h2 className="text-[1.2rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] m-0">
+                  <h2 className="text-[1.2rem] font-extrabold text-[#1E3A5F] dark:text-night-text m-0">
                     Hỏi AI cần đăng nhập Google
                   </h2>
-                  <p className="text-[0.82rem] text-text-muted dark:text-[#94A3B8] m-0 max-w-[420px] leading-[1.5]">
+                  <p className="text-[0.82rem] text-text-muted dark:text-night-muted m-0 max-w-[420px] leading-[1.5]">
                     Tài khoản Google miễn phí được hỏi {FREE_AI_LIMIT} lượt mỗi ngày. Dưới đây là ví dụ cách FormulaX AI trả lời.
                   </p>
                 </div>
@@ -1034,14 +1034,14 @@ export default function FormulaFinder({
                   // Chỉ lấy dòng đầu (đề bài) — phần còn lại của `example` là lời giải có đáp số.
                   const question = formula.example.split("\n")[0].trim();
                   return (
-                    <div key={formula.id} className="flex flex-col gap-2.5 rounded-2xl border border-dashed border-[#E2E8F0] dark:border-[#334155] p-3.5">
+                    <div key={formula.id} className="flex flex-col gap-2.5 rounded-2xl border border-dashed border-[#E2E8F0] dark:border-night-line p-3.5">
                       <span className="self-start text-[0.68rem] font-extrabold uppercase tracking-[0.5px] text-accent bg-accent-light dark:bg-accent/15 py-0.5 px-2 rounded-md">
                         Ví dụ
                       </span>
                       <div className="self-end max-w-[85%] py-2.5 px-3.5 rounded-xl rounded-br-[2px] bg-accent text-white text-[0.85rem] leading-[1.5]">
                         <RichTextRenderer text={question} />
                       </div>
-                      <div className="self-start w-full min-w-0 md:max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] bg-white dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0]">
+                      <div className="self-start w-full min-w-0 md:max-w-[92%] py-3 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-night-line bg-white dark:bg-night-card text-primary dark:text-night-text">
                         <StepAnswer answer={answer} formulas={formulas} onViewDetail={onViewDetail} />
                       </div>
                     </div>
@@ -1053,10 +1053,10 @@ export default function FormulaFinder({
             ) : messages.length === 0 ? (
               <div className="flex flex-col items-center text-center py-8 md:py-14 max-w-[520px] mx-auto gap-3">
                 <MimiMascot width={170} />
-                <h2 className="m-0 text-[1.3rem] md:text-[1.6rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">
+                <h2 className="m-0 text-[1.3rem] md:text-[1.6rem] font-bold tracking-[-0.02em] text-primary dark:text-night-text">
                   Xin chào! Mình là FormulaX AI
                 </h2>
-                <p className="m-0 text-[0.88rem] text-text-muted dark:text-[#94A3B8] leading-[1.6]">
+                <p className="m-0 text-[0.88rem] text-text-muted dark:text-night-muted leading-[1.6]">
                   Gõ hoặc chụp đề bài. Mình chỉ ra công thức cần dùng và các bước thay dữ kiện, phần tính bạn tự làm.
                 </p>
               </div>
@@ -1070,17 +1070,17 @@ export default function FormulaFinder({
                     // thì ở dark mode thông báo trông y như bong bóng thường.
                     ? "bg-[rgba(245,158,11,0.08)] border border-[rgba(245,158,11,0.3)] text-[#92400E] dark:text-[#FCD34D] dark:!bg-[rgba(245,158,11,0.1)] dark:!border-[rgba(245,158,11,0.35)]"
                     : (msg.isImage || msg.isFile)
-                      ? "p-2 bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] text-[#1E3A5F] dark:text-[#E2E8F0]"
+                      ? "p-2 bg-white dark:bg-night-card border border-[#E2E8F0] dark:border-night-line text-[#1E3A5F] dark:text-night-text"
                       : isUser
-                        ? "bg-primary text-white dark:bg-[#334155]"
-                        : "bg-white bg-[linear-gradient(135deg,#FFF8E1,#FFFFFF_45%)] dark:bg-none dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0]";
+                        ? "bg-primary text-white dark:bg-night-line"
+                        : "bg-white bg-[linear-gradient(135deg,#FFF8E1,#FFFFFF_45%)] dark:bg-none dark:bg-night-card text-primary dark:text-night-text";
                 return (
                   <div
                     key={msg.id}
                     className={`${msg.answer ? "w-full max-w-full" : "max-w-[85%]"} ${!isUser ? "md:max-w-[92%]" : "md:max-w-[620px]"} min-w-0 py-3 px-4 md:py-3.5 md:px-5 text-[0.88rem] md:text-[0.95rem] leading-[1.5] break-words ${
                       isUser
                         ? "self-end rounded-[18px] rounded-br-[4px]"
-                        : "self-start rounded-[18px] rounded-bl-[4px] border border-line dark:border-[#334155]"
+                        : "self-start rounded-[18px] rounded-bl-[4px] border border-line dark:border-night-line"
                     } ${bubbleStateClass}`}
                   >
                     {msg.isError && (
@@ -1092,8 +1092,8 @@ export default function FormulaFinder({
 
                     {msg.isImage && (
                       <div className="flex flex-col gap-1.5">
-                        <div className="relative w-[180px] h-[100px] bg-[linear-gradient(135deg,#F8FAFC_0%,#E2E8F0_100%)] dark:bg-[linear-gradient(135deg,#1E293B_0%,#0F172A_100%)] rounded-lg border-[1.5px] border-[#CBD5E1] dark:border-[#334155] flex flex-col items-center justify-center text-[0.8rem] text-[#475569] dark:text-[#94A3B8] font-bold">
-                          <div className="text-[0.85rem] text-[#1E3A5F] dark:text-[#E2E8F0] font-mono z-[1]">R = 3cm | V = ?</div>
+                        <div className="relative w-[180px] h-[100px] bg-[linear-gradient(135deg,#F8FAFC_0%,#E2E8F0_100%)] dark:bg-[linear-gradient(135deg,#1E293B_0%,#0F172A_100%)] rounded-lg border-[1.5px] border-[#CBD5E1] dark:border-night-line flex flex-col items-center justify-center text-[0.8rem] text-[#475569] dark:text-night-muted font-bold">
+                          <div className="text-[0.85rem] text-[#1E3A5F] dark:text-night-text font-mono z-[1]">R = 3cm | V = ?</div>
                           <span className="absolute bottom-1.5 right-1.5 bg-success text-white text-[0.6rem] py-0.5 px-1.5 rounded z-[1] font-extrabold">CAPTURE OCR</span>
                         </div>
                         <div className="text-xs text-text-muted font-semibold pl-1">Ảnh chụp đề bài từ Camera AI</div>
@@ -1101,12 +1101,12 @@ export default function FormulaFinder({
                     )}
 
                     {msg.isFile && (
-                      <div className="flex items-center gap-2.5 py-1.5 px-2.5 bg-[#F8FAFC] dark:bg-[#0F172A] rounded-lg border border-[#E2E8F0] dark:border-[#334155]">
+                      <div className="flex items-center gap-2.5 py-1.5 px-2.5 bg-[#F8FAFC] dark:bg-night-page rounded-lg border border-[#E2E8F0] dark:border-night-line">
                         <div className="p-2 bg-secondary/8 text-secondary rounded-md flex items-center justify-center">
                           <FileText size={18} />
                         </div>
                         <div className="flex flex-col overflow-hidden">
-                          <span className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] text-ellipsis overflow-hidden whitespace-nowrap max-w-[160px]">{msg.fileName}</span>
+                          <span className="text-[0.8rem] font-bold text-[#1E3A5F] dark:text-night-text text-ellipsis overflow-hidden whitespace-nowrap max-w-[160px]">{msg.fileName}</span>
                           <span className="text-[0.65rem] text-text-muted font-semibold">Tài liệu đính kèm</span>
                         </div>
                       </div>
@@ -1133,10 +1133,10 @@ export default function FormulaFinder({
                           onClick={() => onPracticeAsked({ text: asked.text, formulaIds: msg.answer.formulaIds || [] })}
                           className="mt-3 w-full flex items-center gap-3 text-left rounded-[12px] border border-dashed border-accent/50 bg-accent-light/40 dark:bg-accent/10 px-3 py-2.5 cursor-pointer transition-colors hover:border-accent hover:bg-accent-light/70 dark:hover:bg-accent/15"
                         >
-                          <span className="w-8 h-8 rounded-[9px] bg-white dark:bg-[#0F172A] text-accent dark:text-[#FCD34D] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)]"><ClipboardList size={16} /></span>
+                          <span className="w-8 h-8 rounded-[9px] bg-white dark:bg-night-page text-accent dark:text-[#FCD34D] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)]"><ClipboardList size={16} /></span>
                           <span className="flex-1 min-w-0">
-                            <span className="block text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0]">Làm bài kiểm tra cùng dạng này</span>
-                            <span className="block text-[0.72rem] text-text-muted dark:text-[#94A3B8]">AI ra đề mới cùng dạng, số liệu khác — tự giải rồi xem đáp án</span>
+                            <span className="block text-[0.85rem] font-semibold text-primary dark:text-night-text">Làm bài kiểm tra cùng dạng này</span>
+                            <span className="block text-[0.72rem] text-text-muted dark:text-night-muted">AI ra đề mới cùng dạng, số liệu khác — tự giải rồi xem đáp án</span>
                           </span>
                           <ChevronRight size={16} className="text-accent shrink-0" />
                         </button>
@@ -1179,9 +1179,9 @@ export default function FormulaFinder({
 
                     {/* Thẻ công thức của tin nhắn định dạng cũ (lưu cả object công thức) */}
                     {msg.sender === "bot" && !msg.answer && msg.aiResult && (
-                      <div className="finder-ai-card mt-3.5 bg-white dark:bg-[#1E293B] border-[1.5px] border-[#e2e8f0] dark:border-[#334155] border-l-4 border-l-accent rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
-                        <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0] flex items-center gap-1.5 before:content-['✨'] before:text-[0.95rem]">{msg.aiResult.name}</div>
-                        <div className="bg-[#f8fafc] dark:bg-[#0F172A]/60 border border-secondary/15 dark:border-[#334155] rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)] !text-[#1E3A5F] dark:!text-[#E2E8F0]">
+                      <div className="finder-ai-card mt-3.5 bg-white dark:bg-night-card border-[1.5px] border-[#e2e8f0] dark:border-night-line border-l-4 border-l-accent rounded-xl p-4 flex flex-col gap-3 shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+                        <div className="text-[1.05rem] font-extrabold text-primary dark:text-night-text flex items-center gap-1.5 before:content-['✨'] before:text-[0.95rem]">{msg.aiResult.name}</div>
+                        <div className="bg-[#f8fafc] dark:bg-night-page/60 border border-secondary/15 dark:border-night-line rounded-lg p-4 flex items-center justify-center my-1 shadow-[inset_0_2px_4px_rgba(30,58,95,0.01)] !text-[#1E3A5F] dark:!text-night-text">
                           <MathElement math={msg.aiResult.latex} block={true} />
                         </div>
                         <div className="finder-ai-card text-xs text-[#334155] dark:text-[#CBD5E1]">
@@ -1202,7 +1202,7 @@ export default function FormulaFinder({
                           </button>
                           <button
                             className={`flex-1 py-2 px-3 rounded-lg text-[0.8rem] font-bold cursor-pointer transition-all duration-200 border border-black/[0.03] inline-flex items-center justify-center min-h-[38px] hover:-translate-y-[1.5px] hover:scale-[1.02] hover:shadow-[0_4px_8px_rgba(30,58,95,0.06)] active:translate-y-0 active:scale-100 ${
-                              bookmarkedIds.includes(msg.aiResult.id) ? "bg-error/8 text-error" : "bg-[rgba(30,58,95,0.05)] text-[#1E3A5F] dark:bg-[rgba(226,232,240,0.08)] dark:text-[#E2E8F0]"
+                              bookmarkedIds.includes(msg.aiResult.id) ? "bg-error/8 text-error" : "bg-[rgba(30,58,95,0.05)] text-[#1E3A5F] dark:bg-[rgba(226,232,240,0.08)] dark:text-night-text"
                             }`}
                             onClick={() => handleBookmarkWithPopup(msg.aiResult.id, msg.aiResult.name)}
                           >
@@ -1223,8 +1223,8 @@ export default function FormulaFinder({
             )}
 
             {isAnalyzing && !ocr && (
-              <div className="self-start max-w-[92%] py-2.5 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-[#334155] shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white dark:bg-[#1E293B]">
-                <div className="flex items-center gap-3 text-[0.8rem] font-bold text-text-muted dark:text-[#94A3B8]">
+              <div className="self-start max-w-[92%] py-2.5 px-4 rounded-xl rounded-bl-[2px] border border-[#e2e8f0] dark:border-night-line shadow-[0_2px_8px_rgba(30,58,95,0.02)] bg-white dark:bg-night-card">
+                <div className="flex items-center gap-3 text-[0.8rem] font-bold text-text-muted dark:text-night-muted">
                   {/* Chờ AI: Mimi nhìn lên "đang nghĩ" (ba chấm bay) thay cho ba chấm nhấp nháy — đỡ chán khi chờ 5–20 giây. */}
                   <MimiMascot width={72} expression="thinking" interactive={false} withSymbols={false} className="shrink-0 -my-1" />
                   <span>{typedBusyUntil
@@ -1237,8 +1237,8 @@ export default function FormulaFinder({
 
           {/* Free user AI query counter */}
           {!isPremium && !isGuest && (
-            <div className={`flex items-center justify-between py-2 px-4 md:px-6 border-t border-line dark:border-[#334155] text-[0.75rem] font-medium ${
-              aiQueriesLeft === 0 ? "text-[#B91C1C] dark:text-[#FCA5A5]" : "text-text-muted dark:text-[#94A3B8]"
+            <div className={`flex items-center justify-between py-2 px-4 md:px-6 border-t border-line dark:border-night-line text-[0.75rem] font-medium ${
+              aiQueriesLeft === 0 ? "text-[#B91C1C] dark:text-[#FCA5A5]" : "text-text-muted dark:text-night-muted"
             }`}>
               <span>
                 {aiQueriesLeft === null
@@ -1261,11 +1261,11 @@ export default function FormulaFinder({
 
           {/* Chat input — khóa với khách, vẫn hiển thị để khách biết tính năng tồn tại */}
           {isGuest ? (
-            <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-[#334155] bg-transparent">
+            <div className="p-3 border-t border-[rgba(30,58,95,0.07)] dark:border-night-line bg-transparent">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <div
                   aria-disabled="true"
-                  className="glass-card-sm dark:bg-[#1E293B] dark:border-[#334155] flex-1 flex items-center gap-2 py-2.5 px-3 text-[0.85rem] text-[#94A3B8] cursor-not-allowed min-w-0"
+                  className="glass-card-sm dark:bg-night-card dark:border-night-line flex-1 flex items-center gap-2 py-2.5 px-3 text-[0.85rem] text-[#94A3B8] cursor-not-allowed min-w-0"
                 >
                   <Lock size={16} className="text-accent shrink-0" />
                   <span className="truncate">Ô hỏi AI đang khóa ở chế độ khách</span>
@@ -1280,12 +1280,12 @@ export default function FormulaFinder({
               </div>
             </div>
           ) : ocr ? null : (
-          <div className="p-3 md:p-4 border-t border-line dark:border-[#334155] bg-transparent">
-            <div className="flex items-center gap-2 py-1.5 pl-3 pr-1.5 rounded-[16px] bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] focus-within:border-accent transition-colors">
+          <div className="p-3 md:p-4 border-t border-line dark:border-night-line bg-transparent">
+            <div className="flex items-center gap-2 py-1.5 pl-3 pr-1.5 rounded-[16px] bg-white dark:bg-night-card border border-line dark:border-night-line focus-within:border-accent transition-colors">
               {/* Nhập đề bằng ảnh — bật/tắt bằng cờ FINDER_IMAGE_INPUT_ENABLED (config/features.js) */}
               {FINDER_IMAGE_INPUT_ENABLED && (
                 <button type="button" onClick={openScanSheet} disabled={isAnalyzing}
-                  className="bg-transparent border-none text-[#64748B] dark:text-[#94A3B8] hover:text-accent cursor-pointer flex items-center justify-center py-2 pr-1 pl-1.5 disabled:opacity-50"
+                  className="bg-transparent border-none text-[#64748B] dark:text-night-muted hover:text-accent cursor-pointer flex items-center justify-center py-2 pr-1 pl-1.5 disabled:opacity-50"
                   title="Gửi ảnh đề bài (chụp hoặc chọn ảnh)"
                   aria-label="Gửi ảnh đề bài"
                 >
@@ -1294,7 +1294,7 @@ export default function FormulaFinder({
               )}
               <textarea
                 ref={textareaRef}
-                className={`flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] bg-transparent dark:bg-transparent! py-2 ${FINDER_IMAGE_INPUT_ENABLED ? "px-2" : "pl-1 pr-2"} outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]`}
+                className={`flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-night-text bg-transparent dark:bg-transparent! py-2 ${FINDER_IMAGE_INPUT_ENABLED ? "px-2" : "pl-1 pr-2"} outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]`}
                 aria-label="Hỏi AI về công thức"
                 placeholder={FINDER_IMAGE_INPUT_ENABLED ? "Nhập đề bài, chụp hoặc dán ảnh (Ctrl+V)..." : "Nhập đề bài..."}
                 rows={1}
@@ -1311,7 +1311,7 @@ export default function FormulaFinder({
                 className={`w-10 h-10 md:w-11 md:h-11 rounded-[12px] border-none flex items-center justify-center cursor-pointer transition-colors shrink-0 ${
                   query.trim() && (isPremium || aiQueriesLeft !== 0)
                     ? "bg-navy-btn text-white dark:bg-accent"
-                    : "bg-[#EEF1F6] dark:bg-[#334155] text-text-muted"
+                    : "bg-[#EEF1F6] dark:bg-night-line text-text-muted"
                 }`}
                 disabled={isAnalyzing || !query.trim() || (!isPremium && aiQueriesLeft === 0)}
                 onClick={() => handleSend(textareaRef.current?.value || "")}
@@ -1329,10 +1329,10 @@ export default function FormulaFinder({
       {scanSheetOpen && <ImageScanSheet onPick={handlePickImage} onClose={() => setScanSheetOpen(false)} />}
       {dragActive && FINDER_IMAGE_INPUT_ENABLED && !isGuest && (
         <div className="fixed inset-0 z-[900] pointer-events-none flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[2px]">
-          <div className="rounded-[20px] border-2 border-dashed border-accent bg-white dark:bg-[#1E293B] px-8 py-7 text-center shadow-[0_24px_60px_rgba(0,0,0,0.25)]">
+          <div className="rounded-[20px] border-2 border-dashed border-accent bg-white dark:bg-night-card px-8 py-7 text-center shadow-[0_24px_60px_rgba(0,0,0,0.25)]">
             <ImageIcon size={32} className="mx-auto text-accent" />
-            <div className="mt-2 text-[1rem] font-bold text-primary dark:text-[#E2E8F0]">Thả ảnh đề bài vào đây</div>
-            <div className="mt-1 text-[0.78rem] text-text-muted dark:text-[#94A3B8]">AI sẽ đọc các bài trong ảnh, bạn chọn bài cần hướng dẫn</div>
+            <div className="mt-2 text-[1rem] font-bold text-primary dark:text-night-text">Thả ảnh đề bài vào đây</div>
+            <div className="mt-1 text-[0.78rem] text-text-muted dark:text-night-muted">AI sẽ đọc các bài trong ảnh, bạn chọn bài cần hướng dẫn</div>
           </div>
         </div>
       )}

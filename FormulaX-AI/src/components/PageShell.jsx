@@ -45,17 +45,17 @@ export default function PageShell({
   }
   return (
     // Nền cũng đặt ở view-container: khối nền bên trong (min-h-full) không phủ hết phần đệm dưới đáy trên desktop.
-    <div className={`view-container bg-page dark:bg-[#0F172A] ${className}`}>
+    <div className={`view-container bg-page dark:bg-night-page ${className}`}>
       {top}
       {/* Có `top` thì phần tử đó đã kéo sát mép trên (-mt) — khối nền không kéo lên nữa để khỏi chui dưới nó. */}
-      <div className={`relative min-h-full overflow-x-clip bg-page dark:bg-[#0F172A] ${top ? "" : "-mt-6 md:-mt-8"} -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 md:px-8 pb-8 md:pb-12`}>
+      <div className={`relative min-h-full overflow-x-clip bg-page dark:bg-night-page ${top ? "" : "-mt-6 md:-mt-8"} -mx-4 md:-mx-8 -mb-8 md:-mb-12 pt-6 md:pt-8 px-4 md:px-8 pb-8 md:pb-12`}>
         {decor && DECOR[width] && <MathDecor gutter={DECOR[width].gutter} show={DECOR[width].show} />}
         <div className={`relative z-[1] w-full mx-auto ${WIDTHS[width] || WIDTHS.default} ${innerClassName}`}>
           {onBack && (
             <button
               type="button"
               onClick={onBack}
-              className="bg-transparent border-none p-0 mb-3 inline-flex items-center gap-1.5 text-[0.8rem] font-semibold text-text-muted dark:text-[#94A3B8] cursor-pointer transition-colors hover:text-primary dark:hover:text-[#E2E8F0]"
+              className="bg-transparent border-none p-0 mb-3 inline-flex items-center gap-1.5 text-[0.8rem] font-semibold text-text-muted dark:text-night-muted cursor-pointer transition-colors hover:text-primary dark:hover:text-night-text"
             >
               <ArrowLeft size={14} />
               <span>{backLabel}</span>
@@ -65,12 +65,12 @@ export default function PageShell({
             <header className="mb-5 md:mb-7 flex flex-col md:flex-row md:items-end md:justify-between gap-3 md:gap-5">
               <div className="min-w-0">
                 {title && (
-                  <h1 className="m-0 text-[1.5rem] md:text-[2rem] font-bold tracking-[-0.03em] leading-[1.15] text-primary dark:text-[#E2E8F0]">
+                  <h1 className="m-0 text-[1.5rem] md:text-[2rem] font-bold tracking-[-0.03em] leading-[1.15] text-primary dark:text-night-text">
                     {title}
                   </h1>
                 )}
                 {description && (
-                  <p className="m-0 mt-1.5 text-[0.85rem] md:text-[0.95rem] text-text-muted dark:text-[#94A3B8]">{description}</p>
+                  <p className="m-0 mt-1.5 text-[0.85rem] md:text-[0.95rem] text-text-muted dark:text-night-muted">{description}</p>
                 )}
               </div>
               {actions && <div className="shrink-0 w-full md:w-auto">{actions}</div>}

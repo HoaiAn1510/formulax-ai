@@ -29,12 +29,12 @@ export default function SocialLinks({ variant = "row", className = "" }) {
             href={s.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 py-2.5 border-b last:border-b-0 border-[#F1F5F9] dark:border-[#334155] no-underline group"
+            className="flex items-center gap-3 py-2.5 border-b last:border-b-0 border-[#F1F5F9] dark:border-night-line no-underline group"
           >
-            <span className="w-8 h-8 rounded-[9px] bg-primary dark:bg-[#0F172A] text-white flex items-center justify-center shrink-0">{LOGOS[s.id]}</span>
+            <span className="w-8 h-8 rounded-[9px] bg-primary dark:bg-night-page text-white flex items-center justify-center shrink-0">{LOGOS[s.id]}</span>
             <span className="flex-1 min-w-0">
-              <span className="block text-[0.88rem] font-semibold text-primary dark:text-[#E2E8F0]">{s.label}</span>
-              <span className="block text-[0.75rem] text-text-muted dark:text-[#94A3B8]">{s.handle}</span>
+              <span className="block text-[0.88rem] font-semibold text-primary dark:text-night-text">{s.label}</span>
+              <span className="block text-[0.75rem] text-text-muted dark:text-night-muted">{s.handle}</span>
             </span>
             <span className="text-accent text-[0.8rem] font-bold group-hover:underline">Theo dõi</span>
           </a>

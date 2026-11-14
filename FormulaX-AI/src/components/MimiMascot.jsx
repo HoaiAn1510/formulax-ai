@@ -298,18 +298,18 @@ export default function MimiMascot({
       {say && (
         <span
           role="status"
-          className={`absolute ${bubbleSide} top-[92%] z-40 w-[260px] max-w-[80vw] text-left rounded-[14px] border border-[#F1E3BF] dark:border-[#334155] bg-white dark:bg-[#1E293B] shadow-[0_14px_30px_-12px_rgba(15,23,42,0.35)] p-3 pr-8 [animation:fadeIn_0.2s_ease-out]`}
+          className={`absolute ${bubbleSide} top-[92%] z-40 w-[260px] max-w-[80vw] text-left rounded-[14px] border border-[#F1E3BF] dark:border-night-line bg-white dark:bg-night-card shadow-[0_14px_30px_-12px_rgba(15,23,42,0.35)] p-3 pr-8 [animation:fadeIn_0.2s_ease-out]`}
           onClick={(e) => e.stopPropagation()}
         >
           <button
             type="button"
             aria-label="Đóng"
             onClick={() => setSay(null)}
-            className="absolute top-2 right-2 w-6 h-6 rounded-full border-none bg-transparent text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0] flex items-center justify-center cursor-pointer"
+            className="absolute top-2 right-2 w-6 h-6 rounded-full border-none bg-transparent text-[#94A3B8] hover:text-primary dark:hover:text-night-text flex items-center justify-center cursor-pointer"
           >
             <X size={14} />
           </button>
-          <span className="block text-[0.8rem] leading-[1.5] text-primary dark:text-[#E2E8F0]">{say.text}</span>
+          <span className="block text-[0.8rem] leading-[1.5] text-primary dark:text-night-text">{say.text}</span>
         </span>
       )}
     </span>

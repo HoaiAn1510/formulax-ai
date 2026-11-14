@@ -14,7 +14,7 @@ function navItemClass(active) {
   const base = "group relative flex flex-col md:flex-row items-center justify-center md:justify-start bg-transparent border-none cursor-pointer flex-1 md:flex-none h-full md:h-[52px] min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 gap-1 md:gap-3 md:px-3 md:w-[calc(100%-16px)] md:mx-2 md:rounded-xl text-[0.75rem] md:text-[0.85rem] font-bold transition duration-200";
   const color = active
     ? "text-secondary dark:text-[#3B82F6] font-extrabold md:bg-[#29589C] md:text-white md:dark:bg-[#29589C] md:dark:text-white"
-    : "text-text-muted dark:text-[#94A3B8] md:text-[#CBD5E1] md:dark:text-[#CBD5E1] md:hover:bg-white/8";
+    : "text-text-muted dark:text-night-muted md:text-[#CBD5E1] md:dark:text-[#CBD5E1] md:hover:bg-white/8";
   return `${base} ${color}`;
 }
 
@@ -75,13 +75,13 @@ export default function BottomNav({
   return (
     <nav
       onMouseLeave={() => { setNotifOpen(false); setAccountOpen(false); }}
-      className="group/sidebar fixed bottom-0 left-0 right-0 md:right-auto md:bottom-auto md:top-0 h-[72px] md:h-screen md:w-[88px] md:hover:w-60 bg-white/95 max-md:dark:bg-[#1E293B] md:!bg-[#16243A] backdrop-blur-[20px] md:backdrop-blur-none border-t md:border-t-0 md:border-r border-[rgba(30,58,95,0.07)] max-md:dark:border-[#334155] md:!border-[#0F172A] shadow-[0_-4px_20px_rgba(0,0,0,0.02)] md:shadow-none flex md:flex-col justify-around md:justify-start items-center md:items-stretch px-2 md:px-0 md:pt-4 md:overflow-y-auto md:overflow-x-hidden z-[100] md:transition-[width] md:duration-300 md:ease-in-out"
+      className="group/sidebar fixed bottom-0 left-0 right-0 md:right-auto md:bottom-auto md:top-0 h-[72px] md:h-screen md:w-[88px] md:hover:w-60 bg-white/95 max-md:dark:bg-night-card md:!bg-[#16243A] backdrop-blur-[20px] md:backdrop-blur-none border-t md:border-t-0 md:border-r border-[rgba(30,58,95,0.07)] max-md:dark:border-night-line md:!border-[#0F172A] shadow-[0_-4px_20px_rgba(0,0,0,0.02)] md:shadow-none flex md:flex-col justify-around md:justify-start items-center md:items-stretch px-2 md:px-0 md:pt-4 md:overflow-y-auto md:overflow-x-hidden z-[100] md:transition-[width] md:duration-300 md:ease-in-out"
     >
 
       {/* Logo header — chỉ hiện trên desktop (sidebar), luôn nền navy bất kể toggle dark mode */}
-      <div className="hidden md:flex items-center gap-2.5 pt-[18px] pb-3.5 px-5 border-b border-[#f1f5f9] max-md:dark:border-[#334155] md:!border-[#0F172A] mb-2">
+      <div className="hidden md:flex items-center gap-2.5 pt-[18px] pb-3.5 px-5 border-b border-[#f1f5f9] max-md:dark:border-night-line md:!border-[#0F172A] mb-2">
         <img src="/favicon.svg" alt="FormulaX" className="w-8 h-8 object-cover shrink-0" />
-        <span className={`font-extrabold text-[1.15rem] text-primary max-md:dark:text-[#E2E8F0] md:!text-white tracking-[-0.5px] ${collapsibleLabel}`}>FormulaX AI</span>
+        <span className={`font-extrabold text-[1.15rem] text-primary max-md:dark:text-night-text md:!text-white tracking-[-0.5px] ${collapsibleLabel}`}>FormulaX AI</span>
       </div>
 
       {/* Chế độ khách — nhãn luôn thấy kể cả khi sidebar thu gọn, nút đăng nhập màu amber nổi
@@ -122,7 +122,7 @@ export default function BottomNav({
 
       {/* ── Settings section ──────────────────────────── */}
       <div className="hidden md:flex md:flex-col md:mt-auto md:pb-3 w-full">
-        <div className="h-px bg-[#f1f5f9] max-md:dark:bg-[#334155] md:!bg-[#0F172A] mx-4 my-2" />
+        <div className="h-px bg-[#f1f5f9] max-md:dark:bg-night-line md:!bg-[#0F172A] mx-4 my-2" />
 
         {/* Cài đặt */}
         <button
@@ -156,14 +156,14 @@ export default function BottomNav({
           <ActiveAccentBar show={notifOpen} />
           <div className={`${navIconClass(notifOpen)} relative`}>
             <Bell size={18} />
-            {hasUnread && <span className="absolute -top-[3px] -right-[3px] w-[7px] h-[7px] rounded-full bg-error border-[1.5px] border-white max-md:dark:border-[#1E293B] md:!border-[#16243A] animate-pulse" />}
+            {hasUnread && <span className="absolute -top-[3px] -right-[3px] w-[7px] h-[7px] rounded-full bg-error border-[1.5px] border-white max-md:dark:border-night-card md:!border-[#16243A] animate-pulse" />}
           </div>
           <span className={collapsibleLabel}>Thông báo</span>
           <ChevronDown size={14} className={`hidden md:group-hover/sidebar:block md:ml-auto transition-transform duration-200 text-[#94A3B8] shrink-0 ${notifOpen ? "rotate-180" : "rotate-0"}`} />
         </button>
 
         {notifOpen && (
-          <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] border border-[#EEF2FF] max-md:dark:border-[#334155] md:!border-[#0F172A] p-2 bg-white max-md:dark:bg-[#1E293B] md:!bg-[#0F172A] flex flex-col gap-1.5 max-h-[160px] overflow-y-auto">
+          <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] border border-[#EEF2FF] max-md:dark:border-night-line md:!border-[#0F172A] p-2 bg-white max-md:dark:bg-night-card md:!bg-[#0F172A] flex flex-col gap-1.5 max-h-[160px] overflow-y-auto">
             {isGuest ? (
               <p className="text-[0.72rem] text-[#94A3B8] text-center py-1.5 m-0 leading-[1.45]">
                 <Lock size={12} className="inline mr-1 -mt-0.5 text-accent" />
@@ -207,7 +207,7 @@ export default function BottomNav({
         </button>
 
         {accountOpen && (
-          <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] bg-secondary/4 max-md:dark:bg-secondary/6 md:!bg-[#0F172A] border border-[#EEF2FF] max-md:dark:border-[#334155] md:!border-[#0F172A] overflow-hidden">
+          <div className="mt-0.5 mx-2.5 mb-1 rounded-[10px] bg-secondary/4 max-md:dark:bg-secondary/6 md:!bg-[#0F172A] border border-[#EEF2FF] max-md:dark:border-night-line md:!border-[#0F172A] overflow-hidden">
             {/* Avatar + name + email header */}
             <div className="flex items-center gap-2.5 py-2.5 px-3 bg-[#1E3A5F]">
               {isGuest ? (

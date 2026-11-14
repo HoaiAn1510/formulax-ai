@@ -33,7 +33,7 @@ const TONE = {
 };
 
 const DayTag = ({ children }) => (
-  <span className="text-[0.7rem] font-semibold text-text-muted dark:text-[#94A3B8] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] rounded-full py-0.5 px-2 shrink-0">{children}</span>
+  <span className="text-[0.7rem] font-semibold text-text-muted dark:text-night-muted bg-page dark:bg-night-page border border-line dark:border-night-line rounded-full py-0.5 px-2 shrink-0">{children}</span>
 );
 
 function BadgeTile({ b }) {
@@ -42,15 +42,15 @@ function BadgeTile({ b }) {
     <div
       title={b.description}
       className={`flex flex-col items-center gap-1.5 rounded-[12px] p-3 border ${
-        b.unlocked ? "border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10" : "border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] opacity-60"
+        b.unlocked ? "border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10" : "border-line dark:border-night-line bg-page dark:bg-night-page opacity-60"
       }`}
     >
       <div className={`w-9 h-9 rounded-full flex items-center justify-center ${
-        b.unlocked ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8]"
+        b.unlocked ? "bg-accent text-white" : "bg-[#F1F5F9] dark:bg-night-line text-[#94A3B8]"
       }`}>
         <Icon size={16} />
       </div>
-      <span className="text-[0.68rem] font-semibold text-center text-primary dark:text-[#E2E8F0] leading-tight">{b.label}</span>
+      <span className="text-[0.68rem] font-semibold text-center text-primary dark:text-night-text leading-tight">{b.label}</span>
     </div>
   );
 }
@@ -74,7 +74,7 @@ function BadgesSection({ state, showAll, onToggle }) {
               {unlocked.map((b) => {
                 const Icon = BADGE_ICONS[b.icon] || Flame;
                 return (
-                  <span key={b.id} title={b.description} className="inline-flex items-center gap-1.5 rounded-full border border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10 py-1 pl-1 pr-3 text-[0.75rem] font-semibold text-primary dark:text-[#E2E8F0]">
+                  <span key={b.id} title={b.description} className="inline-flex items-center gap-1.5 rounded-full border border-[#F1E3BF] dark:border-accent/30 bg-hero-amber dark:bg-none dark:bg-accent/10 py-1 pl-1 pr-3 text-[0.75rem] font-semibold text-primary dark:text-night-text">
                     <span className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center"><Icon size={13} /></span>
                     {b.label}
                   </span>
@@ -84,21 +84,21 @@ function BadgesSection({ state, showAll, onToggle }) {
           )}
           {next.length > 0 && (
             <div>
-              <div className="text-[0.72rem] font-semibold text-text-muted dark:text-[#94A3B8] mb-2">Mốc kế tiếp</div>
+              <div className="text-[0.72rem] font-semibold text-text-muted dark:text-night-muted mb-2">Mốc kế tiếp</div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-3">
                 {next.map((b) => {
                   const Icon = BADGE_ICONS[b.icon] || Flame;
                   const pct = Math.min(100, Math.round((b.value / b.threshold) * 100));
                   return (
-                    <div key={b.id} className="rounded-[12px] border border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] p-3">
+                    <div key={b.id} className="rounded-[12px] border border-line dark:border-night-line bg-page dark:bg-night-page p-3">
                       <div className="flex items-center gap-2">
-                        <span className="w-7 h-7 rounded-full bg-[#F1F5F9] dark:bg-[#334155] text-[#94A3B8] flex items-center justify-center shrink-0"><Icon size={14} /></span>
-                        <span className="text-[0.8rem] font-semibold text-primary dark:text-[#E2E8F0] truncate">{b.label}</span>
+                        <span className="w-7 h-7 rounded-full bg-[#F1F5F9] dark:bg-night-line text-[#94A3B8] flex items-center justify-center shrink-0"><Icon size={14} /></span>
+                        <span className="text-[0.8rem] font-semibold text-primary dark:text-night-text truncate">{b.label}</span>
                       </div>
-                      <div className="mt-2 h-1.5 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+                      <div className="mt-2 h-1.5 rounded-full bg-[#EEF1F6] dark:bg-night-line overflow-hidden">
                         <div className="h-full rounded-full bg-[linear-gradient(90deg,#F59E0B,#FBBF24)]" style={{ width: `${pct}%` }} />
                       </div>
-                      <div className="mt-1.5 text-[0.7rem] text-text-muted dark:text-[#94A3B8]">
+                      <div className="mt-1.5 text-[0.7rem] text-text-muted dark:text-night-muted">
                         {b.value}/{b.threshold} · còn {b.threshold - b.value} {UNIT[b.metric] || ""} nữa
                       </div>
                     </div>
@@ -124,8 +124,8 @@ function StatCard({ icon: Icon, tone, value, suffix = "", label, sublabel }) {
     <div className={`${CARD} p-4 md:p-5 flex flex-col gap-3`}>
       <span className={`w-9 h-9 rounded-[10px] flex items-center justify-center ${tone}`}><Icon size={17} /></span>
       <div>
-        <div className="text-[1.5rem] md:text-[1.75rem] font-bold tracking-[-0.02em] leading-none text-primary dark:text-[#E2E8F0]"><CountUp value={value} />{suffix}</div>
-        <div className="mt-1.5 text-[0.78rem] text-text-muted dark:text-[#94A3B8]">
+        <div className="text-[1.5rem] md:text-[1.75rem] font-bold tracking-[-0.02em] leading-none text-primary dark:text-night-text"><CountUp value={value} />{suffix}</div>
+        <div className="mt-1.5 text-[0.78rem] text-text-muted dark:text-night-muted">
           {label}{sublabel && <span className="text-[#94A3B8]"> · {sublabel}</span>}
         </div>
       </div>
@@ -144,11 +144,11 @@ function TopicBar({ topic, rate, correct, total }) {
         <div className="flex items-center gap-1.5">
           {isWeak && <AlertTriangle size={13} color="#EF4444" />}
           {isStrong && <CheckCircle size={13} color="#10B981" />}
-          <span className="text-[0.82rem] font-bold text-primary dark:text-[#E2E8F0]">{topic}</span>
+          <span className="text-[0.82rem] font-bold text-primary dark:text-night-text">{topic}</span>
         </div>
         <span className="text-[0.78rem] font-bold" style={{ color: barColor }}>{rate}%</span>
       </div>
-      <div className="bg-[#F1F5F9] dark:bg-[#334155] rounded-md h-2 overflow-hidden">
+      <div className="bg-[#F1F5F9] dark:bg-night-line rounded-md h-2 overflow-hidden">
         <div className="h-full rounded-md transition-[width] duration-[0.8s] [transition-timing-function:cubic-bezier(0.4,0,0.2,1)]" style={{ width: `${rate}%`, background: barColor }} />
       </div>
       <div className="text-[0.68rem] text-[#94A3B8] mt-1">
@@ -162,7 +162,7 @@ function FormulaChip({ formula, onViewDetail }) {
   return (
     <button
       onClick={() => onViewDetail(formula)}
-      className="inline-flex items-center gap-1.5 bg-accent/7 border border-accent/[0.18] rounded-lg py-1.5 px-2.5 text-xs font-semibold text-primary dark:text-[#E2E8F0] cursor-pointer text-left max-w-full"
+      className="inline-flex items-center gap-1.5 bg-accent/7 border border-accent/[0.18] rounded-lg py-1.5 px-2.5 text-xs font-semibold text-primary dark:text-night-text cursor-pointer text-left max-w-full"
     >
       <BookOpen size={12} color="#D97706" />
       <span className="overflow-hidden text-ellipsis whitespace-nowrap">
@@ -196,11 +196,11 @@ function getLongestStreak(activityDates) {
 
 function StreakStat({ icon, label, value, unit }) {
   return (
-    <div className="flex-1 md:flex-none bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] rounded-[12px] p-3 flex flex-col items-center md:items-start gap-1">
+    <div className="flex-1 md:flex-none bg-page dark:bg-night-page border border-line dark:border-night-line rounded-[12px] p-3 flex flex-col items-center md:items-start gap-1">
       <div className="flex items-center gap-1.5 text-[#94A3B8] text-[0.62rem] font-bold uppercase tracking-wide">
         {icon} {label}
       </div>
-      <div className="text-[1.05rem] font-extrabold text-primary dark:text-[#E2E8F0]"><CountUp value={value} /> {unit}</div>
+      <div className="text-[1.05rem] font-extrabold text-primary dark:text-night-text"><CountUp value={value} /> {unit}</div>
     </div>
   );
 }
@@ -211,10 +211,10 @@ function DayDetail({ date, quizzes, flashcardIds, formulaMap }) {
   const hasActivity = quizzes.length > 0 || flashcardIds.length > 0;
 
   return (
-    <div className="border-t border-line dark:border-[#334155] mt-4 pt-3.5">
+    <div className="border-t border-line dark:border-night-line mt-4 pt-3.5">
       <div className="flex items-center gap-2 mb-2.5">
         <div className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-        <span className="font-extrabold text-primary dark:text-[#E2E8F0] text-[0.85rem]">{formatDateLabel(date)}</span>
+        <span className="font-extrabold text-primary dark:text-night-text text-[0.85rem]">{formatDateLabel(date)}</span>
         {quizzes.length > 0 && <span className="text-[0.68rem] bg-[#EFF6FF] dark:bg-secondary/15 text-secondary font-bold rounded py-0.5 px-1.5">{quizzes.length} quiz</span>}
         {flashcardIds.length > 0 && <span className="text-[0.68rem] bg-[#F0FDF4] dark:bg-success/15 text-success font-bold rounded py-0.5 px-1.5">{flashcardIds.length} thẻ</span>}
       </div>
@@ -227,8 +227,8 @@ function DayDetail({ date, quizzes, flashcardIds, formulaMap }) {
             <div style={{ marginBottom: flashcardIds.length > 0 ? "10px" : 0 }}>
               <div className="text-[0.68rem] font-bold text-[#94A3B8] mb-1.5 uppercase tracking-[0.06em]">Quiz</div>
               {quizzes.map((q, i) => (
-                <div key={i} className={`flex justify-between items-center py-1.5 ${i < quizzes.length - 1 ? "border-b border-[#F8FAFC] dark:border-[#334155]" : ""}`}>
-                  <span className="text-[0.8rem] text-primary dark:text-[#E2E8F0] font-semibold">{q.topic}</span>
+                <div key={i} className={`flex justify-between items-center py-1.5 ${i < quizzes.length - 1 ? "border-b border-[#F8FAFC] dark:border-night-line" : ""}`}>
+                  <span className="text-[0.8rem] text-primary dark:text-night-text font-semibold">{q.topic}</span>
                   <div className="flex items-center gap-2">
                     <span className="text-[0.72rem] text-[#94A3B8]">{q.questionsCorrect}/{q.questionsTotal} câu</span>
                     <span className="text-[0.75rem] font-extrabold min-w-[38px] text-right" style={{ color: scoreColor(q.scorePercent) }}>{q.scorePercent}%</span>
@@ -311,7 +311,7 @@ function StreakChart({ activityDates, selectedDate, detailDate, onSelectDate, se
                     className={`aspect-square rounded-[7px] flex items-center justify-center text-[0.62rem] md:text-[0.8rem] font-semibold ${
                       isFuture ? "bg-transparent" : "cursor-pointer hover:opacity-80"
                     } ${
-                      isFuture ? "" : active ? "bg-[linear-gradient(180deg,#FBBF24,#F59E0B)] text-white" : "bg-[#EEF1F6] dark:bg-[#334155] text-[#94A3B8]"
+                      isFuture ? "" : active ? "bg-[linear-gradient(180deg,#FBBF24,#F59E0B)] text-white" : "bg-[#EEF1F6] dark:bg-night-line text-[#94A3B8]"
                     }`}
                     style={{ border: isSelected ? "2px solid #D97706" : "1.5px solid transparent" }}
                   >
@@ -324,7 +324,7 @@ function StreakChart({ activityDates, selectedDate, detailDate, onSelectDate, se
 
           <div className="flex gap-3 mt-2 justify-end">
             <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
-              <div className="w-2.5 h-2.5 rounded-sm bg-[#F1F5F9] dark:bg-[#334155] border border-[#E2E8F0] dark:border-[#475569]" />
+              <div className="w-2.5 h-2.5 rounded-sm bg-[#F1F5F9] dark:bg-night-line border border-[#E2E8F0] dark:border-[#475569]" />
               Không học
             </div>
             <div className="flex items-center gap-1 text-[0.62rem] text-[#94A3B8]">
@@ -356,7 +356,7 @@ function EmptyState({ message, ctaLabel, onCta, mood = "surprised" }) {
   return (
     <div className="flex flex-col items-center text-center gap-2 py-4 px-2">
       <MimiMascot width={96} expression={mood} withSymbols={false} />
-      <p className="text-[0.84rem] text-text-muted dark:text-[#94A3B8] font-medium m-0">{message}</p>
+      <p className="text-[0.84rem] text-text-muted dark:text-night-muted font-medium m-0">{message}</p>
       {onCta && (
         <button type="button" onClick={onCta} className={`${BTN_PRIMARY} !py-2.5 !text-[0.85rem] mt-1`}>
           {ctaLabel}
@@ -468,10 +468,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
   const mimiExpr = summary.accuracy == null ? "wink" : summary.accuracy >= 80 ? "star" : summary.accuracy >= 50 ? "happy" : "surprised";
   const mimiReaction = loading || isGuest ? null : { expr: mimiExpr, at: `${rangeId}|${selectedDay}|${summary.accuracy}` };
   const scopeTag = (
-    <span className="inline-flex items-center gap-1 text-[0.7rem] font-semibold text-text-muted dark:text-[#94A3B8] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] rounded-full py-0.5 pl-2 pr-2 shrink-0">
+    <span className="inline-flex items-center gap-1 text-[0.7rem] font-semibold text-text-muted dark:text-night-muted bg-page dark:bg-night-page border border-line dark:border-night-line rounded-full py-0.5 pl-2 pr-2 shrink-0">
       {scopeLabel}
       {selectedDay && (
-        <button type="button" aria-label="Bỏ chọn ngày" onClick={() => setSelectedDay(null)} className="bg-transparent border-none p-0 cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0] flex"><X size={12} /></button>
+        <button type="button" aria-label="Bỏ chọn ngày" onClick={() => setSelectedDay(null)} className="bg-transparent border-none p-0 cursor-pointer text-[#94A3B8] hover:text-primary dark:hover:text-night-text flex"><X size={12} /></button>
       )}
     </span>
   );
@@ -481,7 +481,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
 
           {/* Guest gate — khách chưa có tài khoản nên mời đăng nhập, không mời mua Premium */}
           {isGuest && (
-            <div className="bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] rounded-[18px] p-5 md:p-7 text-white text-center mb-5 shadow-[0_10px_24px_-12px_rgba(15,23,42,0.6)]">
+            <div className="bg-primary dark:bg-[#020617] dark:border dark:border-night-line rounded-[18px] p-5 md:p-7 text-white text-center mb-5 shadow-[0_10px_24px_-12px_rgba(15,23,42,0.6)]">
               <Lock size={26} color="#F59E0B" className="mx-auto mb-2.5" />
               <h3 className="m-0 mb-1.5 text-base font-extrabold">Đăng nhập Google để xem tiến độ học tập</h3>
               <p className="m-0 mb-3.5 text-[0.8rem] opacity-85">
@@ -499,7 +499,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
 
           {/* Premium gate */}
           {!isGuest && !isPremium && (
-            <div className="bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] rounded-[18px] p-5 md:p-7 text-white text-center mb-5 shadow-[0_10px_24px_-12px_rgba(15,23,42,0.6)]">
+            <div className="bg-primary dark:bg-[#020617] dark:border dark:border-night-line rounded-[18px] p-5 md:p-7 text-white text-center mb-5 shadow-[0_10px_24px_-12px_rgba(15,23,42,0.6)]">
               <Crown size={28} fill="#F59E0B" color="#F59E0B" className="mx-auto mb-2.5" />
               <h3 className="m-0 mb-1.5 text-base font-extrabold">Tính năng Premium</h3>
               <p className="m-0 mb-3.5 text-[0.8rem] opacity-85">
@@ -517,15 +517,15 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
 
           <div className={isGuest ? "blur-[3px] pointer-events-none select-none opacity-70" : undefined} inert={isGuest}>
           {/* Khung tóm tắt (giống khung lời chào Dashboard): câu tóm tắt + chọn phạm vi, Mimi phản ứng theo độ chính xác. */}
-          <section className={`${CARD} relative mt-[56px] md:mt-[64px] mb-4 md:mb-5 bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 p-5 md:px-8 md:py-7`}>
+          <section className={`${CARD} relative mt-[56px] md:mt-[64px] mb-4 md:mb-5 bg-hero-amber dark:bg-none dark:bg-night-card dark:border-[#78350F]/60 p-5 md:px-8 md:py-7`}>
             <MimiMascot width={130} className="md:hidden absolute right-2 -top-[62px]" reaction={mimiReaction} />
             <MimiMascot width={190} className="hidden md:block absolute right-8 -top-[72px]" reaction={mimiReaction} />
             <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>{scopeLabel}</div>
-            <h2 className="m-0 mt-1.5 max-w-[640px] text-[1.25rem] md:text-[1.6rem] leading-[1.25] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">
+            <h2 className="m-0 mt-1.5 max-w-[640px] text-[1.25rem] md:text-[1.6rem] leading-[1.25] font-bold tracking-[-0.02em] text-primary dark:text-night-text">
               {loading ? "Đang tải tiến độ của bạn…" : headlineText}
             </h2>
-            <p className="m-0 mt-1.5 text-[0.85rem] text-text-muted dark:text-[#94A3B8]">Tuần này bạn học {days7}/7 ngày{streak > 0 ? ` · chuỗi ${streak} ngày liên tiếp` : ""}.</p>
-            <div role="tablist" aria-label="Khoảng thời gian" className="mt-4 inline-flex gap-1 p-1 rounded-[12px] border border-[#F1E3BF] dark:border-[#334155] bg-white/70 dark:bg-[#0F172A]">
+            <p className="m-0 mt-1.5 text-[0.85rem] text-text-muted dark:text-night-muted">Tuần này bạn học {days7}/7 ngày{streak > 0 ? ` · chuỗi ${streak} ngày liên tiếp` : ""}.</p>
+            <div role="tablist" aria-label="Khoảng thời gian" className="mt-4 inline-flex gap-1 p-1 rounded-[12px] border border-[#F1E3BF] dark:border-night-line bg-white/70 dark:bg-night-page">
               {RANGES.map((r) => {
                 const on = !selectedDay && rangeId === r.id;
                 return (
@@ -535,7 +535,7 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                     role="tab"
                     aria-selected={on}
                     onClick={() => { setRangeId(r.id); setSelectedDay(null); }}
-                    className={`border-none rounded-[9px] px-3.5 py-1.5 text-[0.8rem] font-semibold cursor-pointer transition-colors ${on ? "bg-navy-btn dark:bg-accent text-white" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"}`}
+                    className={`border-none rounded-[9px] px-3.5 py-1.5 text-[0.8rem] font-semibold cursor-pointer transition-colors ${on ? "bg-navy-btn dark:bg-accent text-white" : "bg-transparent text-text-muted dark:text-night-muted hover:text-primary dark:hover:text-night-text"}`}
                   >
                     {r.label}
                   </button>
@@ -576,10 +576,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                   {[85, 65, 45].map((w, i) => (
                     <div key={i} className="mb-3.5">
                       <div className="flex justify-between items-center mb-1.5">
-                        <div className="h-3 w-24 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
-                        <div className="h-3 w-7 bg-[#F1F5F9] dark:bg-[#334155] rounded" />
+                        <div className="h-3 w-24 bg-[#F1F5F9] dark:bg-night-line rounded" />
+                        <div className="h-3 w-7 bg-[#F1F5F9] dark:bg-night-line rounded" />
                       </div>
-                      <div className="bg-[#F1F5F9] dark:bg-[#334155] rounded-md h-2" style={{ width: `${w}%` }} />
+                      <div className="bg-[#F1F5F9] dark:bg-night-line rounded-md h-2" style={{ width: `${w}%` }} />
                     </div>
                   ))}
                 </div>
@@ -592,15 +592,15 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                         <span className="text-[0.82rem] font-bold">{t}</span>
                         <span className="text-[0.78rem] font-bold">??%</span>
                       </div>
-                      <div className="bg-[#F1F5F9] dark:bg-[#334155] rounded-md h-2">
+                      <div className="bg-[#F1F5F9] dark:bg-night-line rounded-md h-2">
                         <div className="h-full rounded-md bg-[#94A3B8]" style={{ width: w }} />
                       </div>
                     </div>
                   ))}
-                  <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-[#1E293B]/70">
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/60 dark:bg-night-card/70">
                     <div className="text-center">
                       <Lock size={22} color="#D97706" className="mx-auto mb-1.5" />
-                      <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">Cần Premium để xem</div>
+                      <div className="text-[0.8rem] font-bold text-primary dark:text-night-text">Cần Premium để xem</div>
                     </div>
                   </div>
                 </>
@@ -623,10 +623,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                 <div className="animate-pulse flex flex-col gap-3.5">
                   {[0, 1].map(i => (
                     <div key={i}>
-                      <div className="h-3 w-24 bg-[#F1F5F9] dark:bg-[#334155] rounded mb-2" />
+                      <div className="h-3 w-24 bg-[#F1F5F9] dark:bg-night-line rounded mb-2" />
                       <div className="flex gap-2">
-                        <div className="h-7 w-36 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
-                        <div className="h-7 w-32 bg-[#F1F5F9] dark:bg-[#334155] rounded-lg" />
+                        <div className="h-7 w-36 bg-[#F1F5F9] dark:bg-night-line rounded-lg" />
+                        <div className="h-7 w-32 bg-[#F1F5F9] dark:bg-night-line rounded-lg" />
                       </div>
                     </div>
                   ))}
@@ -650,10 +650,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
                   {weakTopics.map(t => {
                     const suggested = getFormulasForQuizTopic(t.topic, formulas).slice(0, 2);
                     return (
-                      <div key={t.topic} className="rounded-[12px] border border-line dark:border-[#334155] bg-page dark:bg-[#0F172A] p-3">
+                      <div key={t.topic} className="rounded-[12px] border border-line dark:border-night-line bg-page dark:bg-night-page p-3">
                         <div className="flex items-center gap-1.5 mb-2">
                           <AlertTriangle size={13} color="#F97316" />
-                          <span className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0]">{t.topic}</span>
+                          <span className="text-[0.85rem] font-bold text-primary dark:text-night-text">{t.topic}</span>
                           <span className="ml-auto text-[0.68rem] font-bold text-white bg-error rounded py-px px-1.5">{t.rate}% đúng</span>
                         </div>
                         {suggested.length > 0 && (
@@ -691,10 +691,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             <div className="bg-success/6 rounded-xl py-3 px-3.5 border border-success/[0.18] mb-4 flex items-start gap-2.5">
               <CheckCircle size={16} color="#10B981" className="mt-px shrink-0" />
               <div>
-                <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0] mb-1">
+                <div className="text-[0.8rem] font-bold text-primary dark:text-night-text mb-1">
                   Điểm mạnh của bạn
                 </div>
-                <div className="text-[0.75rem] text-[#475569] dark:text-[#94A3B8]">
+                <div className="text-[0.75rem] text-[#475569] dark:text-night-muted">
                   {strongTopics.map(t => `${t.topic} (${t.rate}%)`).join(" · ")}
                 </div>
               </div>
@@ -707,10 +707,10 @@ export default function ProgressDashboard({ user, formulas, setActiveTab, onView
             onClick={() => setActiveTab("flashcard")}
             className={`${CARD} w-full flex items-center gap-4 text-left py-4 px-4 md:px-6 cursor-pointer mb-2 transition-transform duration-200 hover:-translate-y-0.5`}
           >
-            <span className="w-11 h-11 rounded-xl bg-primary dark:bg-[#0F172A] text-[#FBBF24] flex items-center justify-center shrink-0"><Layers size={19} /></span>
+            <span className="w-11 h-11 rounded-xl bg-primary dark:bg-night-page text-[#FBBF24] flex items-center justify-center shrink-0"><Layers size={19} /></span>
             <span className="flex-1 min-w-0">
-              <span className="block text-[0.92rem] font-bold text-primary dark:text-[#E2E8F0]">Ôn tập ngay với Flashcard</span>
-              <span className="block text-[0.75rem] text-text-muted dark:text-[#94A3B8] mt-0.5">Tạo bộ thẻ theo chủ đề yếu để cải thiện điểm số</span>
+              <span className="block text-[0.92rem] font-bold text-primary dark:text-night-text">Ôn tập ngay với Flashcard</span>
+              <span className="block text-[0.75rem] text-text-muted dark:text-night-muted mt-0.5">Tạo bộ thẻ theo chủ đề yếu để cải thiện điểm số</span>
             </span>
             <ChevronRight size={18} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />
           </button>

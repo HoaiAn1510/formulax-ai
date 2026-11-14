@@ -55,8 +55,8 @@ const SHORTCUTS = [
   { tab: "quiz", icon: ClipboardList, label: "Kiểm tra", tone: "bg-white text-[#E11D48] dark:bg-[#E11D48]/20 dark:text-[#FDA4AF]", bg: "bg-[linear-gradient(135deg,#FFE1E7_0%,#FFF5F7_55%,#FFFFFF_100%)]" },
 ];
 
-const CARD = "fx-card dark:bg-[#1E293B] dark:border-[#334155] dark:shadow-none";
-const LABEL = "text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]";
+const CARD = "fx-card dark:bg-night-card dark:border-night-line dark:shadow-none";
+const LABEL = "text-[0.7rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted";
 
 export default function Dashboard({
   user,
@@ -129,13 +129,13 @@ export default function Dashboard({
           {/* ─── Hero: lời chào + Học tiếp ─────────────────────────────────── */}
           <section
             aria-label="Chào hỏi"
-            className={`${CARD} relative md:col-span-8 mt-[60px] md:mt-[64px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] dark:border-[#78350F]/60 px-[18px] pt-5 pb-[18px] md:px-10 md:py-9`}
+            className={`${CARD} relative md:col-span-8 mt-[60px] md:mt-[64px] bg-hero-amber dark:bg-none dark:bg-night-card dark:border-[#78350F]/60 px-[18px] pt-5 pb-[18px] md:px-10 md:py-9`}
           >
             <MimiMascot width={150} className="md:hidden absolute right-1.5 -top-[66px]" reaction={streakReaction} />
             <MimiMascot width={210} className="hidden md:block absolute right-8 -top-[70px]" reaction={streakReaction} />
             <div className="relative max-w-[560px]">
               <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>Xin chào {firstName}</div>
-              <h1 className="mt-1.5 md:mt-2.5 mb-0 text-[1.45rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">
+              <h1 className="mt-1.5 md:mt-2.5 mb-0 text-[1.45rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-night-text">
                 {isGuest ? "Hôm nay mình ôn gì nhé?" : headline({ isNew, streak, todayStats })}
               </h1>
 
@@ -146,15 +146,15 @@ export default function Dashboard({
                 <button
                   type="button"
                   onClick={goNext}
-                  className="group mt-3.5 md:mt-6 w-full flex items-center gap-3 md:gap-4 text-left rounded-[14px] bg-white dark:bg-[#0F172A] border border-[#F1E3BF] dark:border-[#334155] pl-3 md:pl-4 pr-2.5 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
+                  className="group mt-3.5 md:mt-6 w-full flex items-center gap-3 md:gap-4 text-left rounded-[14px] bg-white dark:bg-night-page border border-[#F1E3BF] dark:border-night-line pl-3 md:pl-4 pr-2.5 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
                 >
                   <span className="w-[34px] h-[34px] md:w-10 md:h-10 rounded-[10px] bg-accent-light dark:bg-accent/20 text-[#B45309] dark:text-[#FCD34D] flex items-center justify-center shrink-0">
                     <Sparkles size={17} />
                   </span>
                   <span className="flex-1 min-w-0">
-                    <span className="block text-[0.7rem] md:text-[0.75rem] text-text-muted dark:text-[#94A3B8]">{step.kicker}</span>
-                    <span className="block text-[0.9rem] md:text-base font-semibold text-primary dark:text-[#E2E8F0] truncate">{step.title}</span>
-                    <span className="hidden md:block text-[0.75rem] text-text-muted dark:text-[#94A3B8] truncate">{step.sub}</span>
+                    <span className="block text-[0.7rem] md:text-[0.75rem] text-text-muted dark:text-night-muted">{step.kicker}</span>
+                    <span className="block text-[0.9rem] md:text-base font-semibold text-primary dark:text-night-text truncate">{step.title}</span>
+                    <span className="hidden md:block text-[0.75rem] text-text-muted dark:text-night-muted truncate">{step.sub}</span>
                   </span>
                   <span className="shrink-0 inline-flex items-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white font-semibold text-[0.85rem] md:text-[0.9rem] px-3 md:px-4 py-2 md:py-2.5 transition-colors group-hover:bg-navy-btn-hover dark:group-hover:bg-accent-hover">
                     Học tiếp <ArrowRight size={15} strokeWidth={2.6} />
@@ -175,12 +175,12 @@ export default function Dashboard({
               {isGuest ? <Lock size={15} className="text-text-muted" /> : <Flame size={16} className="text-premium" />}
             </div>
             {isGuest ? (
-              <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">Đăng nhập Google để lưu chuỗi ngày học và số liệu mỗi ngày.</p>
+              <p className="m-0 text-[0.82rem] text-text-muted dark:text-night-muted leading-[1.5]">Đăng nhập Google để lưu chuỗi ngày học và số liệu mỗi ngày.</p>
             ) : (
               <>
                 <div className="flex items-baseline gap-2">
                   <span className="text-[2.5rem] md:text-[3.25rem] font-extrabold tracking-[-0.05em] leading-none bg-[linear-gradient(180deg,#FBBF24,#D97706)] bg-clip-text text-transparent">{streak}</span>
-                  <span className="text-[0.8rem] md:text-[0.9rem] font-medium text-text-muted dark:text-[#94A3B8]">{streak ? "ngày liên tiếp" : "ngày — học hôm nay để bắt đầu"}</span>
+                  <span className="text-[0.8rem] md:text-[0.9rem] font-medium text-text-muted dark:text-night-muted">{streak ? "ngày liên tiếp" : "ngày — học hôm nay để bắt đầu"}</span>
                 </div>
                 <div className="flex gap-1 md:gap-1.5" aria-label="7 ngày gần đây">
                   {week.map((d) => (
@@ -189,10 +189,10 @@ export default function Dashboard({
                         title={d.active ? "Có học" : "Chưa học"}
                         className={`h-[18px] md:h-6 rounded-[5px] md:rounded-[7px] ${
                           d.active ? "bg-[linear-gradient(180deg,#FBBF24,#F59E0B)]"
-                            : d.isToday ? "border-[1.5px] border-dashed border-accent" : "bg-[#EEF1F6] dark:bg-[#334155]"
+                            : d.isToday ? "border-[1.5px] border-dashed border-accent" : "bg-[#EEF1F6] dark:bg-night-line"
                         }`}
                       />
-                      <div className={`mt-1 text-[0.62rem] md:text-[0.68rem] ${d.isToday ? "font-bold text-[#B45309] dark:text-[#FCD34D]" : "text-text-muted dark:text-[#94A3B8]"}`}>{d.label}</div>
+                      <div className={`mt-1 text-[0.62rem] md:text-[0.68rem] ${d.isToday ? "font-bold text-[#B45309] dark:text-[#FCD34D]" : "text-text-muted dark:text-night-muted"}`}>{d.label}</div>
                     </div>
                   ))}
                 </div>
@@ -208,8 +208,8 @@ export default function Dashboard({
           {/* ─── "Hôm nay bạn gặp khó khăn gì?" — 4 lối tắt có giải thích rõ chức năng ───── */}
           <section aria-labelledby="dash-intent-title" className="md:col-span-12">
             <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-0.5 md:gap-3 mb-3">
-              <h2 id="dash-intent-title" className="m-0 text-base md:text-lg font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">Hôm nay bạn gặp khó khăn gì?</h2>
-              <span className="text-xs text-text-muted dark:text-[#94A3B8] font-medium">Chọn một việc, mình đưa bạn tới thẳng đúng chỗ</span>
+              <h2 id="dash-intent-title" className="m-0 text-base md:text-lg font-bold tracking-[-0.01em] text-primary dark:text-night-text">Hôm nay bạn gặp khó khăn gì?</h2>
+              <span className="text-xs text-text-muted dark:text-night-muted font-medium">Chọn một việc, mình đưa bạn tới thẳng đúng chỗ</span>
             </div>
             {/* Trợ lý hướng dẫn + Kiểm tra là hai chức năng chính (chủ dự án yêu cầu 2026-11-03): thẻ to, nổi bật, nằm trên
                 cùng, giữa hai thẻ có dải giải thích chúng nối với nhau (hỏi bài → AI gợi ý các bước → làm bài cùng dạng, đổi
@@ -232,14 +232,14 @@ export default function Dashboard({
                   >
                     <span className={`flex items-center gap-2.5 ${featured ? "w-full" : "shrink-0"}`}>
                       <span className={`${featured ? "w-12 h-12" : "w-10 h-10"} rounded-[11px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${tone}`}><Icon size={featured ? 22 : 18} /></span>
-                      {featured && <span className="text-[0.72rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">{label}</span>}
+                      {featured && <span className="text-[0.72rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted">{label}</span>}
                       {picked && featured && <span className="ml-auto text-[0.62rem] font-bold uppercase tracking-wide text-[#92400E] dark:text-[#FCD34D] bg-accent-light dark:bg-accent/15 rounded-full px-2 py-0.5">Hôm nay</span>}
                     </span>
                     <span className={featured ? "contents" : "flex-1 min-w-0"}>
-                      {!featured && <span className="block text-[0.66rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-[#94A3B8]">{label}</span>}
-                      <span className={`block font-bold leading-[1.35] text-primary dark:text-[#E2E8F0] ${featured ? "text-[1.1rem] md:text-[1.2rem]" : "text-[0.9rem]"}`}>{o.title}</span>
+                      {!featured && <span className="block text-[0.66rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted">{label}</span>}
+                      <span className={`block font-bold leading-[1.35] text-primary dark:text-night-text ${featured ? "text-[1.1rem] md:text-[1.2rem]" : "text-[0.9rem]"}`}>{o.title}</span>
                       {/* Bỏ tiền tố "Thư viện: " của câu giải thích — tên chức năng đã ghi ngay trên thẻ. */}
-                      <span className={`block leading-[1.5] text-text-muted dark:text-[#94A3B8] first-letter:uppercase ${featured ? "text-[0.82rem]" : "text-[0.74rem] line-clamp-2"}`}>{o.what.replace(/^[^:]+:s*/, "")}</span>
+                      <span className={`block leading-[1.5] text-text-muted dark:text-night-muted first-letter:uppercase ${featured ? "text-[0.82rem]" : "text-[0.74rem] line-clamp-2"}`}>{o.what.replace(/^[^:]+:s*/, "")}</span>
                     </span>
                     {featured ? (
                       <span className="mt-auto inline-flex items-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white text-[0.85rem] font-semibold px-4 py-2.5 transition-colors group-hover:bg-navy-btn-hover dark:group-hover:bg-accent-hover">
@@ -255,8 +255,8 @@ export default function Dashboard({
                 <>
                   {/* Một khung chung cho hai chức năng chính (sửa 2026-11-03: trước là 2 thẻ + một ô nối rỗng ở giữa, trông rời
                       rạc): dòng 3 bước đánh số ở trên, hai thẻ cạnh nhau bên dưới, nút tròn mũi tên nối giữa hai thẻ. */}
-                  <div className="rounded-[20px] border border-line dark:border-[#334155] bg-white/60 dark:bg-[#0F172A]/40 p-3 md:p-4">
-                    <ol className="list-none m-0 p-0 mb-3 md:mb-4 flex flex-col md:flex-row md:flex-wrap md:items-center gap-x-2 gap-y-1.5 text-[0.78rem] font-semibold text-primary dark:text-[#E2E8F0]">
+                  <div className="rounded-[20px] border border-line dark:border-night-line bg-white/60 dark:bg-night-page/40 p-3 md:p-4">
+                    <ol className="list-none m-0 p-0 mb-3 md:mb-4 flex flex-col md:flex-row md:flex-wrap md:items-center gap-x-2 gap-y-1.5 text-[0.78rem] font-semibold text-primary dark:text-night-text">
                       {["Gửi bài cho Trợ lý hướng dẫn", "AI gợi ý các bước, bạn tự tính", "Làm bài kiểm tra cùng dạng, chỉ đổi số liệu"].map((t, i) => (
                         <li key={t} className="flex items-center gap-2">
                           {i > 0 && <ChevronRight size={14} className="hidden md:block text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
@@ -268,7 +268,7 @@ export default function Dashboard({
                     <div className="relative grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                       {card("finder", true)}
                       {/* Nút tròn nối hai thẻ: giữa hai cột trên máy tính, giữa hai thẻ xếp dọc trên điện thoại. */}
-                      <span aria-hidden="true" className="pointer-events-none absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] shadow-[0_6px_16px_-6px_rgba(15,23,42,0.35)] flex items-center justify-center text-accent dark:text-[#FCD34D]">
+                      <span aria-hidden="true" className="pointer-events-none absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-night-card border border-line dark:border-night-line shadow-[0_6px_16px_-6px_rgba(15,23,42,0.35)] flex items-center justify-center text-accent dark:text-[#FCD34D]">
                         <ArrowRight size={18} className="rotate-90 md:rotate-0" />
                       </span>
                       {card("quiz", true)}
@@ -286,7 +286,7 @@ export default function Dashboard({
           {/* "Gợi ý hôm nay" và thẻ "Xem tiến độ học tập" đứng riêng đã bỏ (chủ dự án chốt 2026-11-03); lối vào Tiến độ nằm
               ở thẻ Chuỗi học. Tài khoản chưa Premium: dải mỏng mời nâng cấp trải hết bề ngang. */}
           {!isPremium && (
-            <section aria-label="Premium" className="md:col-span-12 rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-[#334155] text-white px-5 md:px-6 py-3.5 md:py-4 flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+            <section aria-label="Premium" className="md:col-span-12 rounded-[18px] bg-primary dark:bg-[#020617] dark:border dark:border-night-line text-white px-5 md:px-6 py-3.5 md:py-4 flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
               <div className="flex justify-between md:justify-start md:flex-col text-[0.8rem] font-semibold gap-2 md:gap-0.5 md:w-[260px] md:shrink-0">
                 <span>{isGuest ? "Chế độ khách" : `Còn ${remainingQuizzes}/10 quiz miễn phí hôm nay`}</span>
                 <span className="text-[#FBBF24] shrink-0">49.000 đ/tháng</span>
@@ -328,14 +328,14 @@ function NewLearnerSteps({ userGrade, setActiveTab }) {
           <button
             type="button"
             onClick={() => setActiveTab(s.tab)}
-            className="w-full flex items-center gap-3 text-left rounded-[14px] bg-white dark:bg-[#0F172A] border border-[#F1E3BF] dark:border-[#334155] px-3 md:px-4 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
+            className="w-full flex items-center gap-3 text-left rounded-[14px] bg-white dark:bg-night-page border border-[#F1E3BF] dark:border-night-line px-3 md:px-4 py-2.5 md:py-3 cursor-pointer transition-colors hover:border-accent"
           >
             <span className="w-8 h-8 rounded-[10px] bg-primary dark:bg-accent text-[#FBBF24] dark:text-white text-[0.8rem] font-extrabold flex items-center justify-center shrink-0">{i + 1}</span>
             <span className="flex-1 min-w-0">
-              <span className="block text-[0.88rem] font-semibold text-primary dark:text-[#E2E8F0]">{s.title}</span>
-              <span className="block text-[0.72rem] text-text-muted dark:text-[#94A3B8]">{s.sub}</span>
+              <span className="block text-[0.88rem] font-semibold text-primary dark:text-night-text">{s.title}</span>
+              <span className="block text-[0.72rem] text-text-muted dark:text-night-muted">{s.sub}</span>
             </span>
-            <s.icon size={16} className="text-text-muted dark:text-[#94A3B8] shrink-0" />
+            <s.icon size={16} className="text-text-muted dark:text-night-muted shrink-0" />
           </button>
         </li>
       ))}

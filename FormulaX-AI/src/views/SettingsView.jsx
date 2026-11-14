@@ -12,7 +12,7 @@ function LockedControl({ label, onClick }) {
   return (
     <button
       onClick={onClick}
-      className="py-1.5 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[0.78rem] font-bold text-text-muted dark:text-[#94A3B8] cursor-pointer inline-flex items-center gap-1"
+      className="py-1.5 px-3 rounded-lg border border-[#E2E8F0] dark:border-night-line bg-white dark:bg-night-page text-[0.78rem] font-bold text-text-muted dark:text-night-muted cursor-pointer inline-flex items-center gap-1"
     >
       <Lock size={12} className="text-accent" />
       {label}
@@ -24,7 +24,7 @@ function ToggleSwitch({ on, onClick }) {
   return (
     <button
       onClick={onClick}
-      className={`w-10 h-[22px] rounded-full relative transition-colors duration-200 shrink-0 border-none cursor-pointer ${on ? "bg-accent" : "bg-[#CBD5E1] dark:bg-[#334155]"}`}
+      className={`w-10 h-[22px] rounded-full relative transition-colors duration-200 shrink-0 border-none cursor-pointer ${on ? "bg-accent" : "bg-[#CBD5E1] dark:bg-night-line"}`}
     >
       <div className={`w-4 h-4 rounded-full bg-white absolute top-[3px] transition-[left] duration-200 shadow-[0_1px_3px_rgba(0,0,0,0.2)] ${on ? "left-[21px]" : "left-[3px]"}`} />
     </button>
@@ -33,13 +33,13 @@ function ToggleSwitch({ on, onClick }) {
 
 function SettingRow({ icon, label, description, control }) {
   return (
-    <div className="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0 border-b border-[#F1F5F9] dark:border-[#334155] last:border-b-0">
-      <div className="w-9 h-9 rounded-lg bg-[#F1F5F9] dark:bg-[#334155] flex items-center justify-center text-primary dark:text-[#E2E8F0] shrink-0">
+    <div className="flex items-center gap-3 py-3.5 first:pt-0 last:pb-0 border-b border-[#F1F5F9] dark:border-night-line last:border-b-0">
+      <div className="w-9 h-9 rounded-lg bg-[#F1F5F9] dark:bg-night-line flex items-center justify-center text-primary dark:text-night-text shrink-0">
         {icon}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0]">{label}</div>
-        {description && <div className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] mt-0.5">{description}</div>}
+        <div className="text-[0.85rem] font-bold text-primary dark:text-night-text">{label}</div>
+        {description && <div className="text-[0.72rem] text-text-muted dark:text-night-muted mt-0.5">{description}</div>}
       </div>
       <div className="shrink-0">{control}</div>
     </div>
@@ -83,7 +83,7 @@ export default function SettingsView({
       onBack={() => setActiveTab("dashboard")}
     >
           {/* Identity card */}
-          <div className="rounded-2xl p-4 mb-4 flex items-center gap-3 bg-[#1E3A5F] dark:border dark:border-[#334155] shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
+          <div className="rounded-2xl p-4 mb-4 flex items-center gap-3 bg-[#1E3A5F] dark:border dark:border-night-line shadow-[0_2px_6px_rgba(15,23,42,0.05)]">
             {isGuest ? (
               <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
                 <UserRound size={22} />
@@ -111,8 +111,8 @@ export default function SettingsView({
           </div>
 
           {/* Tuỳ chỉnh chung */}
-          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
-            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Chung</h2>
+          <div className="glass-card dark:bg-night-card dark:border-night-line p-4 mb-4">
+            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-night-muted uppercase tracking-[0.05em]">Chung</h2>
 
             <SettingRow
               icon={darkMode ? <Sun size={16} /> : <Moon size={16} />}
@@ -160,15 +160,15 @@ export default function SettingsView({
                       onKeyDown={e => { if (e.key === "Enter") handleSaveName(); if (e.key === "Escape") setEditingName(false); }}
                       placeholder="Nhập tên hiển thị..."
                       autoFocus
-                      className="py-1.5 px-2.5 rounded-lg border-[1.5px] border-accent text-[0.8rem] outline-none w-32 bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0]"
+                      className="py-1.5 px-2.5 rounded-lg border-[1.5px] border-accent text-[0.8rem] outline-none w-32 bg-white dark:bg-night-page text-primary dark:text-night-text"
                     />
                     <button aria-label="Lưu tên hiển thị" onClick={handleSaveName} className="py-1.5 px-2 border-none rounded-lg cursor-pointer bg-success text-white flex items-center"><Check size={13} /></button>
-                    <button aria-label="Huỷ đổi tên" onClick={() => setEditingName(false)} className="py-1.5 px-2 border-none rounded-lg cursor-pointer bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8] flex items-center"><X size={13} /></button>
+                    <button aria-label="Huỷ đổi tên" onClick={() => setEditingName(false)} className="py-1.5 px-2 border-none rounded-lg cursor-pointer bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-muted flex items-center"><X size={13} /></button>
                   </div>
                 ) : (
                   <button
                     onClick={() => { setNameInput(displayName || ""); setEditingName(true); }}
-                    className="py-1.5 px-3 rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-[0.78rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer"
+                    className="py-1.5 px-3 rounded-lg border border-[#E2E8F0] dark:border-night-line bg-white dark:bg-night-page text-[0.78rem] font-bold text-primary dark:text-night-text cursor-pointer"
                   >
                     Sửa
                   </button>
@@ -194,7 +194,7 @@ export default function SettingsView({
                       className={`w-9 h-9 rounded-lg text-[0.8rem] font-extrabold border-[1.5px] cursor-pointer transition duration-200 ${
                         userGrade === g
                           ? "bg-accent border-accent text-white"
-                          : "bg-white dark:bg-[#0F172A] border-[#E2E8F0] dark:border-[#334155] text-[#475569] dark:text-[#94A3B8]"
+                          : "bg-white dark:bg-night-page border-[#E2E8F0] dark:border-night-line text-[#475569] dark:text-night-muted"
                       }`}
                     >
                       {g}
@@ -207,8 +207,8 @@ export default function SettingsView({
           </div>
 
           {/* Gói của bạn */}
-          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
-            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Gói của bạn</h2>
+          <div className="glass-card dark:bg-night-card dark:border-night-line p-4 mb-4">
+            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-night-muted uppercase tracking-[0.05em]">Gói của bạn</h2>
             <SettingRow
               icon={<Crown size={16} />}
               label={isGuest ? "Chế độ khách" : isPremium ? "Premium" : "Miễn phí"}
@@ -243,8 +243,8 @@ export default function SettingsView({
           </div>
 
           {/* Thông báo */}
-          <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] p-4 mb-4">
-            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Thông báo</h2>
+          <div className="glass-card dark:bg-night-card dark:border-night-line p-4 mb-4">
+            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-night-muted uppercase tracking-[0.05em]">Thông báo</h2>
             {isGuest ? (
               <GuestLockNotice
                 className="mt-2"
@@ -277,15 +277,15 @@ export default function SettingsView({
           </div>
 
           {/* Trang mạng xã hội của FormulaX (config/social.js). */}
-          <div className="glass-card p-4 dark:bg-[#1E293B] dark:border-[#334155] mt-4">
-            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Theo dõi FormulaX</h2>
+          <div className="glass-card p-4 dark:bg-night-card dark:border-night-line mt-4">
+            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-night-muted uppercase tracking-[0.05em]">Theo dõi FormulaX</h2>
             <SocialLinks variant="list" />
           </div>
 
           {/* Pháp lý — bắt buộc phải tiếp cận được sau khi đăng nhập, không chỉ ở màn đăng nhập:
               người dùng cần đọc lại chính sách và biết cách yêu cầu xoá dữ liệu bất cứ lúc nào. */}
-          <div className="glass-card p-4 dark:bg-[#1E293B] dark:border-[#334155] mt-4">
-            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-[#94A3B8] uppercase tracking-[0.05em]">Pháp lý</h2>
+          <div className="glass-card p-4 dark:bg-night-card dark:border-night-line mt-4">
+            <h2 className="m-0 mb-1 text-[0.8rem] font-extrabold text-text-muted dark:text-night-muted uppercase tracking-[0.05em]">Pháp lý</h2>
             <SettingRow
               icon={<FileText size={16} />}
               label="Điều khoản dịch vụ"

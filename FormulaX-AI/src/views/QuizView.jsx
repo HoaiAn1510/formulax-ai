@@ -460,22 +460,22 @@ export default function QuizView({
           {/* Modal hết quota */}
           {showQuotaModal && (
             <div role="dialog" aria-modal="true" aria-label="Hết lượt quiz hôm nay" className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.6)] backdrop-blur-[4px] flex items-center justify-center p-4">
-              <div className="bg-white dark:bg-[#1E293B] rounded-[20px] w-full max-w-[380px] py-7 px-6 shadow-[0_24px_60px_rgba(0,0,0,0.18)] text-center">
+              <div className="bg-white dark:bg-night-card rounded-[20px] w-full max-w-[380px] py-7 px-6 shadow-[0_24px_60px_rgba(0,0,0,0.18)] text-center">
                 {/* Icon */}
                 <div className="w-[52px] h-[52px] rounded-full bg-premium/10 flex items-center justify-center mx-auto mb-4">
                   <Crown size={24} color="#F59E0B" />
                 </div>
 
-                <h2 className="text-[1.15rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] mb-2">
+                <h2 className="text-[1.15rem] font-extrabold text-[#1E3A5F] dark:text-night-text mb-2">
                   Hết lượt quiz hôm nay!
                 </h2>
                 {isGuest ? (
-                  <p className="text-[0.83rem] text-text-muted dark:text-[#94A3B8] leading-[1.55] mb-5">
+                  <p className="text-[0.83rem] text-text-muted dark:text-night-muted leading-[1.55] mb-5">
                     Bạn đã dùng hết <strong>{GUEST_QUIZ_DAILY_LIMIT}/{GUEST_QUIZ_DAILY_LIMIT} lượt quiz của chế độ khách</strong> hôm nay.
                     Lượt sẽ được làm mới vào ngày mai — hoặc đăng nhập Google để luyện tiếp và lưu kết quả.
                   </p>
                 ) : (
-                  <p className="text-[0.83rem] text-text-muted dark:text-[#94A3B8] leading-[1.55] mb-5">
+                  <p className="text-[0.83rem] text-text-muted dark:text-night-muted leading-[1.55] mb-5">
                     Bạn đã dùng hết <strong>10/10 lượt quiz miễn phí</strong> ngày hôm nay.
                     Lượt sẽ được reset vào ngày mai — hoặc nâng cấp <strong>Premium</strong> để luyện không giới hạn!
                   </p>
@@ -486,7 +486,7 @@ export default function QuizView({
                   <div className="bg-[linear-gradient(135deg,#FFFBEB,#FEF3C7)] dark:bg-none dark:bg-premium/10 border border-premium/25 rounded-xl py-3 px-4 mb-5 flex items-center justify-between">
                     <div className="text-left">
                       <div className="text-[0.7rem] text-[#92400E] dark:text-[#FCD34D] font-bold mb-0.5">Premium</div>
-                      <div className="text-[0.82rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0]">Quiz không giới hạn mỗi ngày</div>
+                      <div className="text-[0.82rem] font-extrabold text-[#1E3A5F] dark:text-night-text">Quiz không giới hạn mỗi ngày</div>
                     </div>
                     <div className="text-[0.9rem] font-extrabold text-premium">49.000đ/tháng</div>
                   </div>
@@ -510,7 +510,7 @@ export default function QuizView({
                 )}
                 <button
                   onClick={() => setShowQuotaModal(false)}
-                  className="w-full py-2.5 rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-text-muted dark:text-[#94A3B8] font-semibold text-[0.85rem] cursor-pointer"
+                  className="w-full py-2.5 rounded-xl border border-[#E2E8F0] dark:border-night-line bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-night-line text-text-muted dark:text-night-muted font-semibold text-[0.85rem] cursor-pointer"
                 >
                   Để ngày mai quay lại
                 </button>
@@ -522,7 +522,7 @@ export default function QuizView({
           {quizState === "setup" && (
             <div className="flex flex-col gap-4 md:gap-6">
               {/* Kiểu đề */}
-              <div role="tablist" aria-label="Kiểu đề" className="grid grid-cols-2 gap-1 p-1 rounded-[14px] border border-line dark:border-[#334155] bg-white dark:bg-[#1E293B] md:max-w-[620px]">
+              <div role="tablist" aria-label="Kiểu đề" className="grid grid-cols-2 gap-1 p-1 rounded-[14px] border border-line dark:border-night-line bg-white dark:bg-night-card md:max-w-[620px]">
                 {[
                   { id: "pool", icon: List, label: "Đề có sẵn", hint: "Trắc nghiệm theo lớp, chủ đề" },
                   { id: "asked", icon: History, label: "Luyện lại bài đã hỏi", hint: "AI đổi số liệu, giữ dạng bài" },
@@ -534,7 +534,7 @@ export default function QuizView({
                     aria-selected={setupMode === id}
                     onClick={() => setSetupMode(id)}
                     className={`flex flex-col items-center gap-0.5 rounded-[11px] py-2.5 px-2 border-none cursor-pointer transition-colors ${
-                      setupMode === id ? "bg-navy-btn text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"
+                      setupMode === id ? "bg-navy-btn text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-night-muted hover:text-primary dark:hover:text-night-text"
                     }`}
                   >
                     <span className="flex items-center gap-1.5 text-[0.85rem] font-semibold"><Icon size={15} /> {label}</span>
@@ -545,15 +545,15 @@ export default function QuizView({
 
               {setupMode === "asked" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:items-start">
-                  <section className={`${CARD} relative lg:col-span-5 mt-[52px] lg:mt-[70px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-5 md:p-8 flex flex-col gap-3`}>
+                  <section className={`${CARD} relative lg:col-span-5 mt-[52px] lg:mt-[70px] bg-hero-amber dark:bg-none dark:bg-night-card p-5 md:p-8 flex flex-col gap-3`}>
                     <MimiMascot width={130} className="lg:hidden absolute right-3 -top-[56px]" />
                     <MimiMascot width={180} className="hidden lg:block absolute right-6 -top-[76px]" />
                     <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>Luyện lại dạng bài</div>
-                    <h2 className="m-0 text-[1.4rem] md:text-[1.9rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">Cùng dạng, số liệu mới</h2>
-                    <p className="m-0 text-[0.88rem] md:text-[0.95rem] leading-[1.6] text-text-muted dark:text-[#94A3B8]">
+                    <h2 className="m-0 text-[1.4rem] md:text-[1.9rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-night-text">Cùng dạng, số liệu mới</h2>
+                    <p className="m-0 text-[0.88rem] md:text-[0.95rem] leading-[1.6] text-text-muted dark:text-night-muted">
                       Chọn tối đa {MAX_VARIANT_PICK} bài bạn đã hỏi AI. Mỗi bài, AI viết một câu cùng dạng với số liệu khác để bạn tự làm lại.
                     </p>
-                    <p className="m-0 flex items-start gap-1.5 text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
+                    <p className="m-0 flex items-start gap-1.5 text-[0.78rem] text-text-muted dark:text-night-muted leading-[1.5]">
                       <Sparkles size={13} className="text-accent shrink-0 mt-0.5" />
                       <span>{isPremium ? "Premium: tạo đề không giới hạn." : "Mỗi câu dùng 1 lượt AI (chung 10 lượt/ngày với Trợ lý hướng dẫn), lỗi thì được hoàn lượt."}</span>
                     </p>
@@ -571,7 +571,7 @@ export default function QuizView({
                   </section>
                   <section className={`${CARD} lg:col-span-7 p-4 md:p-7 flex flex-col gap-4`}>
                     <div className="flex items-center justify-between gap-3">
-                      <h2 className="m-0 text-[1.05rem] md:text-[1.2rem] font-bold text-primary dark:text-[#E2E8F0]">Bài đã hỏi</h2>
+                      <h2 className="m-0 text-[1.05rem] md:text-[1.2rem] font-bold text-primary dark:text-night-text">Bài đã hỏi</h2>
                       {pickedKeys.length > 0 && (
                         <span className="text-[0.75rem] font-semibold text-[#92400E] dark:text-[#FCD34D] bg-accent-light dark:bg-accent/15 rounded-full px-2.5 py-1">{pickedKeys.length}/{MAX_VARIANT_PICK} đã chọn</span>
                       )}
@@ -595,21 +595,21 @@ export default function QuizView({
               {setupMode === "pool" && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:items-start">
                   {/* Tóm tắt + nút bắt đầu */}
-                  <section className={`${CARD} relative lg:col-span-5 mt-[52px] lg:mt-[70px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-5 md:p-8 flex flex-col gap-3 lg:min-h-[420px]`}>
+                  <section className={`${CARD} relative lg:col-span-5 mt-[52px] lg:mt-[70px] bg-hero-amber dark:bg-none dark:bg-night-card p-5 md:p-8 flex flex-col gap-3 lg:min-h-[420px]`}>
                     <MimiMascot width={130} className="lg:hidden absolute right-3 -top-[56px]" />
                     <MimiMascot width={180} className="hidden lg:block absolute right-6 -top-[76px]" />
                     <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D]`}>Bài kiểm tra của bạn</div>
-                    <h2 className="m-0 text-[1.5rem] md:text-[2.2rem] leading-[1.15] font-bold tracking-[-0.03em] text-primary dark:text-[#E2E8F0]">
+                    <h2 className="m-0 text-[1.5rem] md:text-[2.2rem] leading-[1.15] font-bold tracking-[-0.03em] text-primary dark:text-night-text">
                       {Math.max(1, Math.min(parseInt(questionCountInput) || 10, maxQuestions || 1))} câu{(parseInt(timeLimitInput) || 0) > 0 ? `, ${parseInt(timeLimitInput)} phút` : ", không giới hạn giờ"}
                     </h2>
-                    <p className="m-0 text-[0.88rem] md:text-[0.95rem] leading-[1.6] text-text-muted dark:text-[#94A3B8]">
+                    <p className="m-0 text-[0.88rem] md:text-[0.95rem] leading-[1.6] text-text-muted dark:text-night-muted">
                       {quizType === "fill-in" ? "Điền đáp án" : quizType === "hybrid" ? "Kết hợp trắc nghiệm và điền đáp án" : "Trắc nghiệm"} · có lời giải chi tiết sau khi nộp bài.
                     </p>
                     <div className="flex flex-wrap gap-2">
-                      <span className="inline-flex items-center h-8 px-3 rounded-full bg-white dark:bg-[#0F172A] border border-line dark:border-[#334155] text-[0.78rem] font-semibold text-primary dark:text-[#E2E8F0]">
+                      <span className="inline-flex items-center h-8 px-3 rounded-full bg-white dark:bg-night-page border border-line dark:border-night-line text-[0.78rem] font-semibold text-primary dark:text-night-text">
                         {allMode || selectedTopics.length === 0 ? "Tất cả chủ đề" : selectedTopics.join(" + ")}
                       </span>
-                      <span className="inline-flex items-center h-8 px-3 rounded-full bg-white dark:bg-[#0F172A] border border-line dark:border-[#334155] text-[0.78rem] font-semibold text-primary dark:text-[#E2E8F0]">
+                      <span className="inline-flex items-center h-8 px-3 rounded-full bg-white dark:bg-night-page border border-line dark:border-night-line text-[0.78rem] font-semibold text-primary dark:text-night-text">
                         {allGradeMode || selectedGrades.length === 0 ? "Tất cả các lớp" : selectedGrades.map(g => `Lớp ${g}`).join(" + ")}
                       </span>
                     </div>
@@ -618,7 +618,7 @@ export default function QuizView({
                       <Play size={15} fill="currentColor" />
                       <span>Bắt đầu làm bài</span>
                     </button>
-                    <p className="m-0 text-center text-[0.78rem] text-text-muted dark:text-[#94A3B8]">
+                    <p className="m-0 text-center text-[0.78rem] text-text-muted dark:text-night-muted">
                       {isPremium
                         ? "Premium — không giới hạn lượt"
                         : isGuest
@@ -629,7 +629,7 @@ export default function QuizView({
 
                   {/* Tùy chỉnh */}
                   <section className={`${CARD} lg:col-span-7 p-4 md:p-8 flex flex-col gap-6`}>
-                    <h2 className="m-0 text-[1.05rem] md:text-[1.2rem] font-bold text-primary dark:text-[#E2E8F0]">Tùy chỉnh bài kiểm tra</h2>
+                    <h2 className="m-0 text-[1.05rem] md:text-[1.2rem] font-bold text-primary dark:text-night-text">Tùy chỉnh bài kiểm tra</h2>
 
                     {/* Điện thoại: hai ô chọn bấm mở danh sách (giống Thư viện) thay cho hai hàng chip. */}
                     <div className="md:hidden flex items-stretch gap-2">
@@ -713,9 +713,9 @@ export default function QuizView({
                               else if (n > maxQuestions) setQuestionCountInput(String(maxQuestions));
                               else setQuestionCountInput(String(n));
                             }}
-                            className="w-[96px] h-11 text-center text-[1.05rem] font-bold text-primary dark:text-[#E2E8F0] border border-line dark:border-[#334155] focus:border-accent rounded-[12px] outline-none bg-page dark:bg-[#0F172A]"
+                            className="w-[96px] h-11 text-center text-[1.05rem] font-bold text-primary dark:text-night-text border border-line dark:border-night-line focus:border-accent rounded-[12px] outline-none bg-page dark:bg-night-page"
                           />
-                          <span className="text-[0.8rem] text-text-muted dark:text-[#94A3B8]">câu (tối đa {maxQuestions})</span>
+                          <span className="text-[0.8rem] text-text-muted dark:text-night-muted">câu (tối đa {maxQuestions})</span>
                         </span>
                       </label>
                       <label className="flex flex-col gap-2">
@@ -731,16 +731,16 @@ export default function QuizView({
                               if (isNaN(n) || n < 0) setTimeLimitInput("0");
                               else setTimeLimitInput(String(n));
                             }}
-                            className="w-[96px] h-11 text-center text-[1.05rem] font-bold text-primary dark:text-[#E2E8F0] border border-line dark:border-[#334155] focus:border-accent rounded-[12px] outline-none bg-page dark:bg-[#0F172A]"
+                            className="w-[96px] h-11 text-center text-[1.05rem] font-bold text-primary dark:text-night-text border border-line dark:border-night-line focus:border-accent rounded-[12px] outline-none bg-page dark:bg-night-page"
                           />
-                          <span className="text-[0.8rem] text-text-muted dark:text-[#94A3B8]">phút{(parseInt(timeLimitInput) || 0) === 0 ? " (không giới hạn)" : ""}</span>
+                          <span className="text-[0.8rem] text-text-muted dark:text-night-muted">phút{(parseInt(timeLimitInput) || 0) === 0 ? " (không giới hạn)" : ""}</span>
                         </span>
                       </label>
                     </div>
 
                     <div>
                       <div className={`${LABEL} mb-3`}>Loại câu hỏi</div>
-                      <div className="grid grid-cols-3 gap-1 p-1 rounded-[13px] border border-line dark:border-[#334155] bg-page dark:bg-[#0F172A]">
+                      <div className="grid grid-cols-3 gap-1 p-1 rounded-[13px] border border-line dark:border-night-line bg-page dark:bg-night-page">
                         {[
                           { id: "multiple-choice", icon: List, label: "Trắc nghiệm", premium: false },
                           { id: "fill-in", icon: Pencil, label: "Điền đáp án", premium: true },
@@ -759,7 +759,7 @@ export default function QuizView({
                               }
                             }}
                             className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 rounded-[10px] py-2.5 px-1 border-none cursor-pointer text-[0.78rem] sm:text-[0.85rem] font-semibold transition-colors ${
-                              quizType === id ? "bg-navy-btn text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-[#94A3B8] hover:text-primary dark:hover:text-[#E2E8F0]"
+                              quizType === id ? "bg-navy-btn text-white dark:bg-accent" : "bg-transparent text-text-muted dark:text-night-muted hover:text-primary dark:hover:text-night-text"
                             }`}
                           >
                             <Icon size={15} />
@@ -781,16 +781,16 @@ export default function QuizView({
                 <Sparkles size={22} className="animate-pulse" />
               </div>
               <div>
-                <div className="text-[1.05rem] font-bold text-primary dark:text-[#E2E8F0]">
+                <div className="text-[1.05rem] font-bold text-primary dark:text-night-text">
                   Đang tạo câu {Math.min(genProgress.done + 1, genProgress.total)}/{genProgress.total}
                 </div>
-                <p className="m-0 mt-1 text-[0.8rem] text-text-muted dark:text-[#94A3B8]">
+                <p className="m-0 mt-1 text-[0.8rem] text-text-muted dark:text-night-muted">
                   {retryWaitSeconds > 0
                     ? `AI đang giới hạn tốc độ; chờ khoảng ${retryWaitSeconds} giây rồi thử lại.`
                     : "AI đổi số liệu và máy kiểm lại đáp án, mỗi câu vài giây."}
                 </p>
               </div>
-              <div className="w-full max-w-[320px] h-1.5 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+              <div className="w-full max-w-[320px] h-1.5 rounded-full bg-[#EEF1F6] dark:bg-night-line overflow-hidden">
                 <div className="h-full rounded-full bg-accent transition-[width] duration-300" style={{ width: `${genProgress.total ? (genProgress.done / genProgress.total) * 100 : 0}%` }} />
               </div>
             </div>
@@ -803,15 +803,15 @@ export default function QuizView({
               <div className="flex items-center gap-3 md:gap-5">
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between gap-3 text-[0.82rem] md:text-[0.9rem] font-semibold mb-2">
-                    <span className="text-primary dark:text-[#E2E8F0]">Câu {currentQIdx + 1}/{questions.length}</span>
-                    <span className="text-text-muted dark:text-[#94A3B8] truncate">{currentQ.topic}{currentQ.grade ? ` · Lớp ${currentQ.grade}` : ""}</span>
+                    <span className="text-primary dark:text-night-text">Câu {currentQIdx + 1}/{questions.length}</span>
+                    <span className="text-text-muted dark:text-night-muted truncate">{currentQ.topic}{currentQ.grade ? ` · Lớp ${currentQ.grade}` : ""}</span>
                   </div>
-                  <div className="h-2 md:h-2.5 rounded-full bg-[#EEF1F6] dark:bg-[#334155] overflow-hidden">
+                  <div className="h-2 md:h-2.5 rounded-full bg-[#EEF1F6] dark:bg-night-line overflow-hidden">
                     <div className="h-full rounded-full bg-[linear-gradient(90deg,#F59E0B,#FBBF24)] transition-[width] duration-300" style={{ width: `${((currentQIdx + 1) / questions.length) * 100}%` }} />
                   </div>
                 </div>
                 <div className={`shrink-0 inline-flex items-center gap-1.5 h-10 md:h-11 px-3.5 md:px-4 rounded-full border font-mono text-[0.95rem] font-bold ${
-                  timeLeft < 60 && timerActive ? "border-error/40 bg-error/10 text-error [animation:pulse-timer_1s_infinite_alternate]" : "border-line dark:border-[#334155] bg-white dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0]"
+                  timeLeft < 60 && timerActive ? "border-error/40 bg-error/10 text-error [animation:pulse-timer_1s_infinite_alternate]" : "border-line dark:border-night-line bg-white dark:bg-night-card text-primary dark:text-night-text"
                 }`}>
                   <Timer size={16} />
                   <span>{formatTime(timeLeft)}</span>
@@ -828,7 +828,7 @@ export default function QuizView({
                       </span>
                     )}
                   </div>
-                  <div className="quiz-question-text rt-inherit text-[1.1rem] md:text-[1.45rem] font-medium leading-[1.55] tracking-[-0.01em] text-primary dark:text-[#E2E8F0] break-words">
+                  <div className="quiz-question-text rt-inherit text-[1.1rem] md:text-[1.45rem] font-medium leading-[1.55] tracking-[-0.01em] text-primary dark:text-night-text break-words">
                     <RichTextRenderer text={currentQ.text} />
                   </div>
 
@@ -842,10 +842,10 @@ export default function QuizView({
                         onChange={e => setFillInputs(prev => ({ ...prev, [currentQIdx]: e.target.value }))}
                         onKeyDown={e => { if (e.key === "Enter" && currentQIdx + 1 < questions.length) setCurrentQIdx(p => p + 1); }}
                         placeholder="Nhập đáp án..."
-                        className="w-full h-14 px-4 text-[1.05rem] rounded-[14px] border-2 border-accent outline-none font-semibold text-primary dark:text-[#E2E8F0] bg-[#FFFBEB] dark:bg-[#0F172A] box-border"
+                        className="w-full h-14 px-4 text-[1.05rem] rounded-[14px] border-2 border-accent outline-none font-semibold text-primary dark:text-night-text bg-[#FFFBEB] dark:bg-night-page box-border"
                         autoFocus
                       />
-                      <div className="text-[0.75rem] text-text-muted dark:text-[#94A3B8] mt-2">Gợi ý: nhập số, biểu thức, hoặc tên công thức ngắn gọn</div>
+                      <div className="text-[0.75rem] text-text-muted dark:text-night-muted mt-2">Gợi ý: nhập số, biểu thức, hoặc tên công thức ngắn gọn</div>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
@@ -856,15 +856,15 @@ export default function QuizView({
                             key={option.letter}
                             type="button"
                             aria-pressed={isSelected}
-                            className={`flex items-center w-full min-h-[60px] py-3.5 px-4 md:px-5 rounded-[14px] text-[1rem] md:text-[1.1rem] text-left cursor-pointer transition-[border-color,box-shadow,background-color] duration-200 gap-3.5 text-primary dark:text-[#E2E8F0] ${
+                            className={`flex items-center w-full min-h-[60px] py-3.5 px-4 md:px-5 rounded-[14px] text-[1rem] md:text-[1.1rem] text-left cursor-pointer transition-[border-color,box-shadow,background-color] duration-200 gap-3.5 text-primary dark:text-night-text ${
                               isSelected
                                 ? "border-2 border-premium bg-[#FFFBEB] dark:bg-accent/10 shadow-[0_0_0_5px_rgba(245,158,11,0.14)]"
-                                : "border border-line dark:border-[#334155] bg-[#FAFBFD] dark:bg-[#0F172A] hover:border-[#CBD5E1] dark:hover:border-[#475569]"
+                                : "border border-line dark:border-night-line bg-[#FAFBFD] dark:bg-night-page hover:border-[#CBD5E1] dark:hover:border-[#475569]"
                             }`}
                             onClick={() => handleSelectOption(option)}
                           >
                             <span className={`flex items-center justify-center w-7 h-7 rounded-[8px] text-[0.8rem] font-bold shrink-0 ${
-                              isSelected ? "bg-premium text-primary" : "bg-[#EEF1F6] dark:bg-[#334155] text-[#475569] dark:text-[#CBD5E1]"
+                              isSelected ? "bg-premium text-primary" : "bg-[#EEF1F6] dark:bg-night-line text-[#475569] dark:text-[#CBD5E1]"
                             }`}>{option.letter}</span>
                             <span className="quiz-question-text rt-inherit flex-1 min-w-0"><RichTextRenderer text={option.text} /></span>
                           </button>
@@ -896,7 +896,7 @@ export default function QuizView({
                 <aside className={`${CARD} lg:col-span-4 p-5 md:p-6`}>
                   <div className="flex items-center justify-between">
                     <div className={LABEL}>Câu hỏi</div>
-                    <span className="text-[0.78rem] font-semibold text-text-muted dark:text-[#94A3B8]">
+                    <span className="text-[0.78rem] font-semibold text-text-muted dark:text-night-muted">
                       Đã trả lời {questions.filter((_, i) => isFillQuestion(i) ? !!fillInputs[i]?.trim() : !!userAnswers[i]).length}/{questions.length}
                     </span>
                   </div>
@@ -913,7 +913,7 @@ export default function QuizView({
                           onClick={() => setCurrentQIdx(i)}
                           className={`w-10 h-10 rounded-[10px] text-[0.82rem] font-bold cursor-pointer transition-colors ${
                             current ? "border-2 border-premium bg-[#FFFBEB] dark:bg-accent/15 text-[#B45309] dark:text-[#FCD34D]"
-                              : answered ? "border-none bg-success text-white" : "border-none bg-[#EEF1F6] dark:bg-[#334155] text-text-muted dark:text-[#94A3B8]"
+                              : answered ? "border-none bg-success text-white" : "border-none bg-[#EEF1F6] dark:bg-night-line text-text-muted dark:text-night-muted"
                           }`}
                         >
                           {i + 1}
@@ -922,8 +922,8 @@ export default function QuizView({
                     })}
                   </div>
                   {!isFillQuestion(currentQIdx) && (
-                    <div className="hidden md:block mt-5 pt-4 border-t border-line dark:border-[#334155] text-[0.75rem] text-text-muted dark:text-[#94A3B8] leading-[1.7]">
-                      Phím tắt: <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">1</kbd>–<kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">4</kbd> chọn đáp án, <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển câu
+                    <div className="hidden md:block mt-5 pt-4 border-t border-line dark:border-night-line text-[0.75rem] text-text-muted dark:text-night-muted leading-[1.7]">
+                      Phím tắt: <kbd className="bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-0.5 font-mono">1</kbd>–<kbd className="bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-0.5 font-mono">4</kbd> chọn đáp án, <kbd className="bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-0.5 font-mono">←</kbd> <kbd className="bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-0.5 font-mono">→</kbd> chuyển câu
                     </div>
                   )}
                 </aside>
@@ -941,22 +941,22 @@ export default function QuizView({
             return (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 lg:items-start">
               <Confetti active={showConfetti} />
-              <section className={`${CARD} relative lg:col-span-5 mt-[70px] lg:mt-[90px] bg-hero-amber dark:bg-none dark:bg-[#1E293B] p-5 md:p-8 flex flex-col items-center text-center gap-3 lg:sticky lg:top-6`}>
+              <section className={`${CARD} relative lg:col-span-5 mt-[70px] lg:mt-[90px] bg-hero-amber dark:bg-none dark:bg-night-card p-5 md:p-8 flex flex-col items-center text-center gap-3 lg:sticky lg:top-6`}>
                 {/* Mimi phản ứng theo điểm khi vào màn kết quả: cao → mắt ngôi sao, khá → cười, thấp → ngạc nhiên (lời nhắn ở dưới). */}
                 <MimiMascot width={170} className="absolute left-1/2 -translate-x-1/2 -top-[96px]" reaction={{ expr: pct >= 80 ? "star" : pct >= 50 ? "happy" : "surprised", at: "quiz-result" }} />
                 <div className={`${LABEL} mt-6`}>Kết quả</div>
                 <svg width="168" height="168" viewBox="0 0 100 100" role="img" aria-label={`Đúng ${score} trên ${total} câu, ${pct}%`}>
-                  <circle cx="50" cy="50" r="42" fill="none" className="stroke-[#EEF1F6] dark:stroke-[#334155]" strokeWidth="8" />
+                  <circle cx="50" cy="50" r="42" fill="none" className="stroke-[#EEF1F6] dark:stroke-night-line" strokeWidth="8" />
                   <circle cx="50" cy="50" r="42" fill="none" stroke={ringColor} strokeWidth="8" strokeLinecap="round" strokeDasharray={`${(pct / 100) * 264} 264`} transform="rotate(-90 50 50)" />
-                  <text x="50" y="55" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="800" fontSize="24" className="fill-primary dark:fill-[#E2E8F0]">{score}/{total}</text>
+                  <text x="50" y="55" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="800" fontSize="24" className="fill-primary dark:fill-night-text">{score}/{total}</text>
                   <text x="50" y="69" textAnchor="middle" fontFamily="Inter,sans-serif" fontWeight="600" fontSize="7" fill="#64748B">{pct}% chính xác</text>
                 </svg>
-                <div className="text-[1.15rem] md:text-[1.4rem] font-bold tracking-[-0.02em] text-primary dark:text-[#E2E8F0]">{message}</div>
-                <p className="m-0 text-[0.8rem] text-text-muted dark:text-[#94A3B8]">
+                <div className="text-[1.15rem] md:text-[1.4rem] font-bold tracking-[-0.02em] text-primary dark:text-night-text">{message}</div>
+                <p className="m-0 text-[0.8rem] text-text-muted dark:text-night-muted">
                   Lượt test miễn phí hôm nay: <strong>{isPremium ? "Không giới hạn" : `${remainingQuizzes} lượt`}</strong>
                 </p>
                 {isGuest && (
-                  <p className="m-0 text-[0.8rem] text-text-muted dark:text-[#94A3B8] flex items-center justify-center gap-1 flex-wrap">
+                  <p className="m-0 text-[0.8rem] text-text-muted dark:text-night-muted flex items-center justify-center gap-1 flex-wrap">
                     <Lock size={12} className="text-accent" />
                     <span>Chế độ khách không lưu kết quả.</span>
                     <button type="button" onClick={handleGuestLogin} className="bg-transparent border-none p-0 text-accent font-semibold underline cursor-pointer text-[0.8rem]">
@@ -966,14 +966,14 @@ export default function QuizView({
                 )}
 
                 {isGuest && remainingQuizzes <= 0 && (
-                  <div className="w-full mt-1 rounded-[14px] bg-primary dark:bg-[#1E293B] dark:border dark:border-[#334155] text-white p-4 text-left flex flex-col gap-2">
+                  <div className="w-full mt-1 rounded-[14px] bg-primary dark:bg-night-card dark:border dark:border-night-line text-white p-4 text-left flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-[0.8rem] font-bold"><Lock size={13} /> Hết lượt quiz của chế độ khách</div>
                     <p className="m-0 text-[0.78rem] text-white/80">Đăng nhập Google để luyện tiếp hôm nay và lưu lại kết quả.</p>
                     <button type="button" className="self-start inline-flex items-center gap-1.5 rounded-[10px] bg-[#FBBF24] hover:bg-premium text-primary font-semibold text-[0.8rem] px-3 py-2 border-none cursor-pointer transition-colors duration-200" onClick={handleGuestLogin}>Đăng nhập Google</button>
                   </div>
                 )}
                 {!isGuest && !isPremium && remainingQuizzes <= 0 && (
-                  <div className="w-full mt-1 rounded-[14px] bg-primary dark:bg-[#1E293B] dark:border dark:border-[#334155] text-white p-4 text-left flex flex-col gap-2">
+                  <div className="w-full mt-1 rounded-[14px] bg-primary dark:bg-night-card dark:border dark:border-night-line text-white p-4 text-left flex flex-col gap-2">
                     <div className="flex items-center gap-1.5 text-[0.8rem] font-bold"><Crown size={13} className="text-[#FBBF24]" /> Hết lượt test miễn phí</div>
                     <p className="m-0 text-[0.78rem] text-white/80">Nâng cấp Premium để làm bài trắc nghiệm không giới hạn!</p>
                     <button type="button" className="self-start inline-flex items-center gap-1.5 rounded-[10px] bg-[#FBBF24] hover:bg-premium text-primary font-semibold text-[0.8rem] px-3 py-2 border-none cursor-pointer transition-colors duration-200" onClick={() => setActiveTab("premium")}>Nâng cấp Premium</button>
@@ -988,15 +988,15 @@ export default function QuizView({
 
               <section className="lg:col-span-7 lg:mt-[90px] flex flex-col gap-3 md:gap-4">
                 <div className="flex justify-between items-baseline gap-3">
-                  <h2 className="m-0 text-[1.1rem] md:text-[1.35rem] font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">Xem lại bài làm</h2>
-                  <span className="text-[0.8rem] text-text-muted dark:text-[#94A3B8]">{wrongCount ? `${wrongCount} câu cần xem lại` : "Đúng hết, giỏi lắm!"}</span>
+                  <h2 className="m-0 text-[1.1rem] md:text-[1.35rem] font-bold tracking-[-0.01em] text-primary dark:text-night-text">Xem lại bài làm</h2>
+                  <span className="text-[0.8rem] text-text-muted dark:text-night-muted">{wrongCount ? `${wrongCount} câu cần xem lại` : "Đúng hết, giỏi lắm!"}</span>
                 </div>
                 {questions.map((q, idx) => {
                   const isFillQ = isFillQuestion(idx);
                   const correctOpt = q.options.find(o => o.isCorrect);
                   const header = (statusLabel, statusClass, extra) => (
                     <div className="flex justify-between items-center gap-2 text-[0.75rem] font-semibold">
-                      <span className="text-text-muted dark:text-[#94A3B8]">
+                      <span className="text-text-muted dark:text-night-muted">
                         Câu {idx + 1} · {q.topic}{q.grade ? ` · Lớp ${q.grade}` : ""}
                         {extra}
                         {q.isAiGenerated && <span className="bg-accent-light dark:bg-accent/15 text-[#92400E] dark:text-[#FCD34D] rounded-full ml-1.5 py-0.5 px-2">Đề do AI tạo</span>}
@@ -1005,8 +1005,8 @@ export default function QuizView({
                     </div>
                   );
                   const explanation = (
-                    <div className="formula-explanation-prose rounded-[12px] bg-page dark:bg-[#0F172A] border border-line dark:border-[#334155] p-3.5 text-[0.82rem] text-[#475569] dark:text-[#94A3B8] leading-[1.6]">
-                      <strong className="block text-primary dark:text-[#E2E8F0] mb-1 text-[0.8rem] font-bold">Lời giải chi tiết</strong>
+                    <div className="formula-explanation-prose rounded-[12px] bg-page dark:bg-night-page border border-line dark:border-night-line p-3.5 text-[0.82rem] text-[#475569] dark:text-night-muted leading-[1.6]">
+                      <strong className="block text-primary dark:text-night-text mb-1 text-[0.8rem] font-bold">Lời giải chi tiết</strong>
                       <RichTextRenderer text={q.explanation} />
                     </div>
                   );
@@ -1015,23 +1015,23 @@ export default function QuizView({
                     const userInput = fillInputs[idx] || "";
                     const isCorrect = isFillCorrect(q, userInput);
                     const statusLabel = !userInput.trim() ? "Chưa trả lời" : isCorrect ? "Đúng" : "Sai";
-                    const statusClass = !userInput.trim() ? "text-text-muted dark:text-[#94A3B8] bg-[#EEF1F6] dark:bg-[#334155]" : isCorrect ? "text-[#047857] dark:text-[#6EE7B7] bg-success/10" : "text-[#B91C1C] dark:text-[#FCA5A5] bg-error/10";
+                    const statusClass = !userInput.trim() ? "text-text-muted dark:text-night-muted bg-[#EEF1F6] dark:bg-night-line" : isCorrect ? "text-[#047857] dark:text-[#6EE7B7] bg-success/10" : "text-[#B91C1C] dark:text-[#FCA5A5] bg-error/10";
                     return (
                       <div key={q.id} className={`${CARD} p-4 md:p-6 flex flex-col gap-3`}>
-                        {header(statusLabel, statusClass, <span className="bg-[#EEF1F6] dark:bg-[#334155] rounded-full ml-1.5 py-0.5 px-2">Điền đáp án</span>)}
-                        <div className="quiz-question-text rt-inherit text-[0.95rem] font-semibold text-primary dark:text-[#E2E8F0]"><RichTextRenderer text={q.text} /></div>
-                        <div className="flex flex-col gap-1.5 rounded-[12px] border border-line dark:border-[#334155] p-3">
+                        {header(statusLabel, statusClass, <span className="bg-[#EEF1F6] dark:bg-night-line rounded-full ml-1.5 py-0.5 px-2">Điền đáp án</span>)}
+                        <div className="quiz-question-text rt-inherit text-[0.95rem] font-semibold text-primary dark:text-night-text"><RichTextRenderer text={q.text} /></div>
+                        <div className="flex flex-col gap-1.5 rounded-[12px] border border-line dark:border-night-line p-3">
                           <div className="text-[0.85rem]">
-                            <span className="text-text-muted dark:text-[#94A3B8]">Bạn trả lời: </span>
+                            <span className="text-text-muted dark:text-night-muted">Bạn trả lời: </span>
                             <span className={`font-semibold ${isCorrect ? "text-[#047857] dark:text-[#6EE7B7]" : "text-[#B91C1C] dark:text-[#FCA5A5]"}`}>{userInput || "(bỏ qua)"}</span>
                           </div>
                           <div className="text-[0.85rem] flex flex-wrap items-baseline gap-x-1">
-                            <span className="text-text-muted dark:text-[#94A3B8]">Đáp án đúng: </span>
+                            <span className="text-text-muted dark:text-night-muted">Đáp án đúng: </span>
                             <span className="quiz-question-text rt-inherit font-semibold text-[#047857] dark:text-[#6EE7B7] min-w-0 overflow-x-auto"><RichTextRenderer text={correctOpt?.text || ""} /></span>
                           </div>
                           <div className="text-[0.8rem]">
-                            <span className="text-text-muted dark:text-[#94A3B8]">Cách gõ: </span>
-                            <code className="font-mono font-semibold text-primary dark:text-[#E2E8F0] bg-[#EEF1F6] dark:bg-[#334155] rounded px-1.5 py-px break-all">{q.blankAnswer}</code>
+                            <span className="text-text-muted dark:text-night-muted">Cách gõ: </span>
+                            <code className="font-mono font-semibold text-primary dark:text-night-text bg-[#EEF1F6] dark:bg-night-line rounded px-1.5 py-px break-all">{q.blankAnswer}</code>
                           </div>
                         </div>
                         {explanation}
@@ -1042,18 +1042,18 @@ export default function QuizView({
                   const selected = userAnswers[idx];
                   const isCorrect = selected && selected.isCorrect;
                   const statusLabel = !selected ? "Chưa trả lời" : isCorrect ? "Đúng" : `Sai (chọn ${selected.letter})`;
-                  const statusClass = !selected ? "text-text-muted dark:text-[#94A3B8] bg-[#EEF1F6] dark:bg-[#334155]" : isCorrect ? "text-[#047857] dark:text-[#6EE7B7] bg-success/10" : "text-[#B91C1C] dark:text-[#FCA5A5] bg-error/10";
+                  const statusClass = !selected ? "text-text-muted dark:text-night-muted bg-[#EEF1F6] dark:bg-night-line" : isCorrect ? "text-[#047857] dark:text-[#6EE7B7] bg-success/10" : "text-[#B91C1C] dark:text-[#FCA5A5] bg-error/10";
 
                   return (
                     <div key={q.id} className={`${CARD} p-4 md:p-6 flex flex-col gap-3`}>
                       {header(statusLabel, statusClass, null)}
-                      <div className="quiz-question-text rt-inherit text-[0.95rem] font-semibold text-primary dark:text-[#E2E8F0]"><RichTextRenderer text={q.text} /></div>
+                      <div className="quiz-question-text rt-inherit text-[0.95rem] font-semibold text-primary dark:text-night-text"><RichTextRenderer text={q.text} /></div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {q.options.map((option) => {
                           const isOptSelected = selected === option;
                           const isOptCorrect = option.isCorrect;
-                          let optClass = "border border-line dark:border-[#334155] bg-[#FAFBFD] dark:bg-[#0F172A]";
-                          let badgeClass = "bg-[#EEF1F6] dark:bg-[#334155] text-[#475569] dark:text-[#CBD5E1]";
+                          let optClass = "border border-line dark:border-night-line bg-[#FAFBFD] dark:bg-night-page";
+                          let badgeClass = "bg-[#EEF1F6] dark:bg-night-line text-[#475569] dark:text-[#CBD5E1]";
                           let optBadge = null;
                           if (isOptCorrect) {
                             optClass = "border-[1.5px] border-success bg-success/[0.05] dark:bg-success/10";
@@ -1067,7 +1067,7 @@ export default function QuizView({
                           return (
                             <div key={option.letter} className={`flex items-center gap-2.5 py-2.5 px-3 rounded-[12px] text-[0.88rem] ${optClass}`}>
                               <span className={`w-6 h-6 rounded-[7px] flex items-center justify-center text-[0.72rem] font-bold shrink-0 ${badgeClass}`}>{option.letter}</span>
-                              <span className="quiz-question-text rt-inherit flex-1 min-w-0 text-primary dark:text-[#E2E8F0]"><RichTextRenderer text={option.text} /></span>
+                              <span className="quiz-question-text rt-inherit flex-1 min-w-0 text-primary dark:text-night-text"><RichTextRenderer text={option.text} /></span>
                               {optBadge}
                             </div>
                           );
@@ -1080,13 +1080,13 @@ export default function QuizView({
                       {q.isAiGenerated && (
                         <div className="flex flex-col gap-2">
                           {q.formulaIds.map((id) => formulasById.get(id)).filter(Boolean).map((f) => (
-                            <div key={f.id} className="rounded-[12px] border border-line dark:border-[#334155] bg-white dark:bg-[#0F172A] px-3.5 py-2.5">
-                              <div className="text-[0.72rem] font-semibold text-text-muted dark:text-[#94A3B8]">Công thức trong thư viện: {f.name}</div>
-                              <div className="overflow-x-auto text-primary dark:text-[#E2E8F0]"><MathElement math={f.latex} block={true} /></div>
+                            <div key={f.id} className="rounded-[12px] border border-line dark:border-night-line bg-white dark:bg-night-page px-3.5 py-2.5">
+                              <div className="text-[0.72rem] font-semibold text-text-muted dark:text-night-muted">Công thức trong thư viện: {f.name}</div>
+                              <div className="overflow-x-auto text-primary dark:text-night-text"><MathElement math={f.latex} block={true} /></div>
                             </div>
                           ))}
                           {q.sourceText && (
-                            <div className="text-[0.78rem] text-text-muted dark:text-[#94A3B8] leading-[1.5]">
+                            <div className="text-[0.78rem] text-text-muted dark:text-night-muted leading-[1.5]">
                               <span className="font-semibold">Luyện từ bài đã hỏi: </span>
                               <span className="quiz-question-text"><RichTextRenderer text={q.sourceText.length > 160 ? `${q.sourceText.slice(0, 160)}…` : q.sourceText} /></span>
                             </div>
@@ -1095,7 +1095,7 @@ export default function QuizView({
                             type="button"
                             onClick={() => reportVariant(q)}
                             disabled={reportedIds.has(q.id)}
-                            className="self-end inline-flex items-center gap-1.5 min-h-[36px] rounded-[10px] border border-line dark:border-[#475569] bg-white dark:bg-[#1E293B] px-3 text-[0.78rem] font-semibold text-text-muted dark:text-[#CBD5E1] cursor-pointer hover:border-error hover:text-error disabled:cursor-default disabled:opacity-60 disabled:hover:border-line disabled:hover:text-text-muted"
+                            className="self-end inline-flex items-center gap-1.5 min-h-[36px] rounded-[10px] border border-line dark:border-[#475569] bg-white dark:bg-night-card px-3 text-[0.78rem] font-semibold text-text-muted dark:text-[#CBD5E1] cursor-pointer hover:border-error hover:text-error disabled:cursor-default disabled:opacity-60 disabled:hover:border-line disabled:hover:text-text-muted"
                           >
                             <Flag size={13} /> {reportedIds.has(q.id) ? "Đã báo" : "Báo đề sai"}
                           </button>

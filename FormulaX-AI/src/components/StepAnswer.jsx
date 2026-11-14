@@ -3,7 +3,7 @@ import { MathElement, RichTextRenderer, InlineRichText } from "../utils/katexHel
 import FitMath from "./FitMath";
 import { splitMathLines } from "../utils/mathLines";
 
-const SECTION_TITLE = "text-[0.7rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-[#94A3B8] mb-2";
+const SECTION_TITLE = "text-[0.7rem] font-extrabold uppercase tracking-[0.5px] text-text-muted dark:text-night-muted mb-2";
 
 // Ô trống "?" — chỗ học sinh tự tính (quy tắc AI Finder từ 2026-10-03). Vẽ thành ô viền amber
 // nền amber nhạt ngay trong KaTeX (\fcolorbox, \textcolor không cần bật `trust`). Màu viết thẳng
@@ -103,14 +103,14 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
                 type="button"
                 onClick={() => onViewDetail?.(f)}
                 title="Xem chi tiết công thức"
-                className="w-full min-w-0 text-left bg-white dark:bg-[#1E293B] border border-[#E2E8F0] dark:border-[#334155] border-l-4 border-l-accent rounded-xl p-3 cursor-pointer transition duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:-translate-y-px"
+                className="w-full min-w-0 text-left bg-white dark:bg-night-card border border-[#E2E8F0] dark:border-night-line border-l-4 border-l-accent rounded-xl p-3 cursor-pointer transition duration-200 hover:shadow-[0_4px_12px_rgba(15,23,42,0.08)] hover:-translate-y-px"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <span className="text-[0.88rem] font-extrabold text-primary dark:text-[#E2E8F0]">{f.name}</span>
+                  <span className="text-[0.88rem] font-extrabold text-primary dark:text-night-text">{f.name}</span>
                   <span className="text-[0.7rem] font-bold text-accent shrink-0 mt-0.5">Xem chi tiết</span>
                 </div>
                 {/* Công thức thư viện giữ nguyên (không tách dòng) — quá rộng thì thu nhỏ cho vừa. */}
-                <div data-qa-math className="mt-2 max-w-full overflow-x-auto rounded-lg bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 !text-[#1E3A5F] dark:!text-[#E2E8F0]">
+                <div data-qa-math className="mt-2 max-w-full overflow-x-auto rounded-lg bg-[#F8FAFC] dark:bg-night-page/60 px-3 !text-[#1E3A5F] dark:!text-night-text">
                   <FitMath math={f.latex} />
                 </div>
               </button>
@@ -129,7 +129,7 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0]">
+                  <div className="text-[0.85rem] font-bold text-primary dark:text-night-text">
                     Bước {i + 1}{st.title && <> — <InlineRichText text={markBlanksInText(st.title)} /></>}
                   </div>
                   {st.detail && (
@@ -138,7 +138,7 @@ export default function StepAnswer({ answer, formulas, onViewDetail }) {
                     </div>
                   )}
                   {st.expression && (
-                    <div className="mt-1.5 max-w-full overflow-x-auto rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 !text-[#1E3A5F] dark:!text-[#E2E8F0]">
+                    <div className="mt-1.5 max-w-full overflow-x-auto rounded-lg border border-[#E2E8F0] dark:border-night-line bg-[#F8FAFC] dark:bg-night-page/60 px-3 !text-[#1E3A5F] dark:!text-night-text">
                       <StepExpression latex={st.expression} />
                     </div>
                   )}

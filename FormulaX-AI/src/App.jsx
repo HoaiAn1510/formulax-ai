@@ -672,9 +672,9 @@ export default function App() {
   // người dùng đã đăng nhập cũng thấy nháy qua màn hình đăng nhập rồi mới vào app.
   if (authLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-[#0F172A]">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-night-page">
         <img src="/favicon.svg" alt="FormulaX" className="w-12 h-12 rounded-xl animate-pulse" />
-        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
+        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-night-line border-t-accent animate-spin" />
       </div>
     );
   }
@@ -683,10 +683,10 @@ export default function App() {
 
   if (isLoadingData) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-[#0F172A]">
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#F8FAFC] dark:bg-night-page">
         <img src="/favicon.svg" alt="FormulaX" className="w-12 h-12 rounded-xl animate-pulse" />
-        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-[#334155] border-t-accent animate-spin" />
-        <p className="text-[0.85rem] font-semibold text-text-muted dark:text-[#94A3B8]">
+        <div className="w-9 h-9 rounded-full border-[3px] border-[#E2E8F0] dark:border-night-line border-t-accent animate-spin" />
+        <p className="text-[0.85rem] font-semibold text-text-muted dark:text-night-muted">
           Đang tải dữ liệu của bạn…
         </p>
       </div>

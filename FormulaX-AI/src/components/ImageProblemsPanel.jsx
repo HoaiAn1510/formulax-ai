@@ -39,13 +39,13 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
     return (
       <div className="flex flex-col items-center text-center gap-3 py-10 px-4 max-w-[420px] mx-auto">
         <TriangleAlert size={28} className="text-accent" />
-        <p className="text-[0.9rem] font-bold text-primary dark:text-[#E2E8F0] m-0">Không thấy đề toán nào trong ảnh.</p>
-        <p className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] m-0">Bạn chụp lại rõ phần đề bài (đủ sáng, không bị cắt mép) nhé.</p>
+        <p className="text-[0.9rem] font-bold text-primary dark:text-night-text m-0">Không thấy đề toán nào trong ảnh.</p>
+        <p className="text-[0.8rem] text-text-muted dark:text-night-muted m-0">Bạn chụp lại rõ phần đề bài (đủ sáng, không bị cắt mép) nhé.</p>
         <div className="flex gap-2">
           <button type="button" onClick={onRescan} className="inline-flex items-center gap-1.5 bg-accent hover:bg-accent-hover text-white border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
             <Camera size={14} /> Chụp lại
           </button>
-          <button type="button" onClick={onCancel} className="bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#E2E8F0] border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
+          <button type="button" onClick={onCancel} className="bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-text border-none rounded-[10px] py-2 px-4 text-[0.82rem] font-bold cursor-pointer">
             Đóng
           </button>
         </div>
@@ -56,15 +56,15 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
   return (
     <div className="flex flex-col gap-3 w-full max-w-[720px] mx-auto">
       <div className="flex items-center justify-between gap-2">
-        <h3 className="text-[1rem] font-extrabold text-primary dark:text-[#E2E8F0] m-0 inline-flex items-center gap-2">
+        <h3 className="text-[1rem] font-extrabold text-primary dark:text-night-text m-0 inline-flex items-center gap-2">
           <ListChecks size={18} className="text-accent" />
           Các bài trong ảnh ({problems.length})
         </h3>
-        <button type="button" onClick={onCancel} aria-label="Đóng danh sách bài" className="bg-transparent border-none text-text-muted dark:text-[#94A3B8] cursor-pointer p-1 flex items-center">
+        <button type="button" onClick={onCancel} aria-label="Đóng danh sách bài" className="bg-transparent border-none text-text-muted dark:text-night-muted cursor-pointer p-1 flex items-center">
           <X size={16} />
         </button>
       </div>
-      <p className="text-[0.78rem] text-text-muted dark:text-[#94A3B8] m-0">
+      <p className="text-[0.78rem] text-text-muted dark:text-night-muted m-0">
         Kiểm tra đề AI đọc được có đúng với ảnh không, sửa nếu sai, rồi chọn bài cần hướng dẫn.
       </p>
 
@@ -76,7 +76,7 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
             type="button"
             onClick={() => setZoomOpen(true)}
             aria-label="Phóng to ảnh đề bài"
-            className="relative self-center w-full rounded-xl border border-[#E2E8F0] dark:border-[#334155] bg-[#F8FAFC] dark:bg-[#0F172A] p-1 cursor-zoom-in overflow-hidden"
+            className="relative self-center w-full rounded-xl border border-[#E2E8F0] dark:border-night-line bg-[#F8FAFC] dark:bg-night-page p-1 cursor-zoom-in overflow-hidden"
           >
             <img src={imageUrl} alt="Ảnh đề bài đã gửi" className="block mx-auto max-h-[180px] max-w-full object-contain rounded-lg" />
             <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 bg-[rgba(15,23,42,0.75)] text-white text-[0.7rem] font-bold rounded-full py-1 px-2.5">
@@ -97,8 +97,8 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
         return (
           <div
             key={p.key}
-            className={`rounded-xl border bg-white dark:bg-[#1E293B] p-3 flex flex-col gap-2 min-w-0 ${
-              isChecked ? "border-accent shadow-[0_0_0_1px_var(--color-accent)]" : "border-[#E2E8F0] dark:border-[#334155]"
+            className={`rounded-xl border bg-white dark:bg-night-card p-3 flex flex-col gap-2 min-w-0 ${
+              isChecked ? "border-accent shadow-[0_0_0_1px_var(--color-accent)]" : "border-[#E2E8F0] dark:border-night-line"
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -112,7 +112,7 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
               />
               <span className="text-[0.72rem] font-extrabold text-accent bg-accent-light dark:bg-accent/15 py-0.5 px-2 rounded-md">{p.label}</span>
               {!isEditing && (
-                <button type="button" onClick={() => startEdit(p)} className="ml-auto inline-flex items-center gap-1 bg-transparent border border-[#E2E8F0] dark:border-[#334155] rounded-lg py-1 px-2 text-[0.72rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer hover:bg-[#F8FAFC] dark:hover:bg-[#334155]">
+                <button type="button" onClick={() => startEdit(p)} className="ml-auto inline-flex items-center gap-1 bg-transparent border border-[#E2E8F0] dark:border-night-line rounded-lg py-1 px-2 text-[0.72rem] font-bold text-primary dark:text-night-text cursor-pointer hover:bg-[#F8FAFC] dark:hover:bg-night-line">
                   <Pencil size={12} /> Sửa đề
                 </button>
               )}
@@ -120,34 +120,34 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
 
             {isEditing ? (
               <div className="flex flex-col gap-2">
-                <label className="text-[0.72rem] font-bold text-text-muted dark:text-[#94A3B8]">
+                <label className="text-[0.72rem] font-bold text-text-muted dark:text-night-muted">
                   Đề bài (công thức viết trong $...$; thay mỗi chỗ [?] bằng nội dung đúng)
                   <textarea
                     value={draft.text}
                     onChange={(e) => setDraft((d) => ({ ...d, text: e.target.value }))}
                     rows={5}
-                    className="mt-1 w-full rounded-lg border border-accent bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] p-2 text-[0.85rem] font-medium leading-[1.5] outline-none resize-y font-[inherit]"
+                    className="mt-1 w-full rounded-lg border border-accent bg-white dark:bg-night-page text-primary dark:text-night-text p-2 text-[0.85rem] font-medium leading-[1.5] outline-none resize-y font-[inherit]"
                   />
                 </label>
                 {p.hasFigure && (
-                  <label className="text-[0.72rem] font-bold text-text-muted dark:text-[#94A3B8]">
+                  <label className="text-[0.72rem] font-bold text-text-muted dark:text-night-muted">
                     Hình vẽ cho biết
                     <textarea
                       value={draft.figureNote}
                       onChange={(e) => setDraft((d) => ({ ...d, figureNote: e.target.value }))}
                       rows={2}
-                      className="mt-1 w-full rounded-lg border border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] p-2 text-[0.82rem] leading-[1.5] outline-none resize-y font-[inherit]"
+                      className="mt-1 w-full rounded-lg border border-[#E2E8F0] dark:border-night-line bg-white dark:bg-night-page text-primary dark:text-night-text p-2 text-[0.82rem] leading-[1.5] outline-none resize-y font-[inherit]"
                     />
                   </label>
                 )}
                 {draft.text.trim() && (
-                  <div className="rounded-lg bg-[#F8FAFC] dark:bg-[#0F172A]/60 px-3 py-2 text-[0.85rem] overflow-x-auto chat-bot-text">
-                    <span className="text-[0.68rem] font-bold text-text-muted dark:text-[#94A3B8]">Xem trước</span>
+                  <div className="rounded-lg bg-[#F8FAFC] dark:bg-night-page/60 px-3 py-2 text-[0.85rem] overflow-x-auto chat-bot-text">
+                    <span className="text-[0.68rem] font-bold text-text-muted dark:text-night-muted">Xem trước</span>
                     <RichTextRenderer text={markUnclear(draft.text)} />
                   </div>
                 )}
                 <div className="flex gap-2 justify-end">
-                  <button type="button" onClick={() => setEditingKey(null)} className="inline-flex items-center gap-1 bg-[#F1F5F9] dark:bg-[#334155] text-text-muted dark:text-[#E2E8F0] border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
+                  <button type="button" onClick={() => setEditingKey(null)} className="inline-flex items-center gap-1 bg-[#F1F5F9] dark:bg-night-line text-text-muted dark:text-night-text border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
                     <X size={12} /> Hủy
                   </button>
                   <button type="button" onClick={saveEdit} disabled={!draft.text.trim()} className="inline-flex items-center gap-1 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white border-none rounded-lg py-1.5 px-3 text-[0.78rem] font-bold cursor-pointer">
@@ -157,14 +157,14 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
               </div>
             ) : (
               <>
-                <div className="chat-bot-text text-[0.88rem] leading-[1.6] text-primary dark:text-[#E2E8F0] min-w-0 overflow-x-auto">
+                <div className="chat-bot-text text-[0.88rem] leading-[1.6] text-primary dark:text-night-text min-w-0 overflow-x-auto">
                   <RichTextRenderer text={markUnclear(p.text)} />
                 </div>
                 {p.hasFigure && (
-                  <div className="text-[0.78rem] leading-[1.5] rounded-lg bg-[#F8FAFC] dark:bg-[#0F172A]/60 border border-dashed border-[#CBD5E1] dark:border-[#334155] px-3 py-2 text-[#334155] dark:text-[#CBD5E1] [&_.detail-paragraph-line]:!text-inherit">
+                  <div className="text-[0.78rem] leading-[1.5] rounded-lg bg-[#F8FAFC] dark:bg-night-page/60 border border-dashed border-[#CBD5E1] dark:border-night-line px-3 py-2 text-[#334155] dark:text-[#CBD5E1] [&_.detail-paragraph-line]:!text-inherit">
                     <strong>Hình vẽ cho biết:</strong>{" "}
                     {p.figureNote ? <RichTextRenderer text={p.figureNote} /> : <em>(AI chưa mô tả được — bạn bấm Sửa đề để ghi thêm)</em>}
-                    <div className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] mt-1">Bạn kiểm tra lại với hình trong ảnh — AI hướng dẫn dựa vào ghi chú này.</div>
+                    <div className="text-[0.7rem] text-text-muted dark:text-night-muted mt-1">Bạn kiểm tra lại với hình trong ảnh — AI hướng dẫn dựa vào ghi chú này.</div>
                   </div>
                 )}
                 {unclear && (
@@ -184,12 +184,12 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
         </div>
       )}
 
-      <div className="sticky bottom-0 -mx-1 px-1 pt-2 pb-1 bg-white/95 dark:bg-[#0F172A]/95 flex gap-2">
+      <div className="sticky bottom-0 -mx-1 px-1 pt-2 pb-1 bg-white/95 dark:bg-night-page/95 flex gap-2">
         <button
           type="button"
           onClick={() => guide(chosen)}
           disabled={chosen.length === 0 || editingKey !== null}
-          className="flex-1 bg-accent hover:bg-accent-hover disabled:bg-[#E2E8F0] disabled:text-text-muted dark:disabled:bg-[#334155] text-white border-none rounded-[10px] py-2.5 px-2 sm:px-4 text-[0.8rem] sm:text-[0.85rem] font-bold cursor-pointer disabled:cursor-not-allowed transition-colors duration-200"
+          className="flex-1 bg-accent hover:bg-accent-hover disabled:bg-[#E2E8F0] disabled:text-text-muted dark:disabled:bg-night-line text-white border-none rounded-[10px] py-2.5 px-2 sm:px-4 text-[0.8rem] sm:text-[0.85rem] font-bold cursor-pointer disabled:cursor-not-allowed transition-colors duration-200"
         >
           Hướng dẫn đã chọn ({chosen.length})
         </button>
@@ -197,18 +197,18 @@ export default function ImageProblemsPanel({ problems, selected, onToggle, onEdi
           type="button"
           onClick={() => guide(ready)}
           disabled={ready.length === 0 || editingKey !== null}
-          className="flex-1 bg-white dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0] border border-[#E2E8F0] dark:border-[#334155] rounded-[10px] py-2.5 px-2 sm:px-4 text-[0.8rem] sm:text-[0.85rem] font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F8FAFC] dark:hover:bg-[#334155]"
+          className="flex-1 bg-white dark:bg-night-card text-primary dark:text-night-text border border-[#E2E8F0] dark:border-night-line rounded-[10px] py-2.5 px-2 sm:px-4 text-[0.8rem] sm:text-[0.85rem] font-bold cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#F8FAFC] dark:hover:bg-night-line"
         >
           Hướng dẫn tất cả ({ready.length})
         </button>
       </div>
       {!isPremium && (
-        <p className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] m-0 text-center">
+        <p className="text-[0.72rem] text-text-muted dark:text-night-muted m-0 text-center">
           Mỗi bài được hướng dẫn tính 1 lượt hỏi AI{typeof aiQueriesLeft === "number" ? ` — bạn còn ${aiQueriesLeft} lượt hôm nay` : ""}. Quét ảnh không tính lượt.
         </p>
       )}
       {ready.length < problems.length && (
-        <p className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] m-0 text-center">
+        <p className="text-[0.72rem] text-text-muted dark:text-night-muted m-0 text-center">
           "Hướng dẫn tất cả" bỏ qua bài còn chỗ chưa đọc rõ.
         </p>
       )}

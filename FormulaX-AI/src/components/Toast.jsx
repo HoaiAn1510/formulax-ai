@@ -51,13 +51,13 @@ export function ToastContainer() {
         return (
           <div
             key={t.id}
-            className="pointer-events-auto relative overflow-hidden flex items-start gap-2.5 w-full max-w-[400px] py-3 pl-4 pr-2.5 rounded-xl bg-white dark:bg-[#1E293B] border border-line dark:border-[#334155] shadow-[0_8px_24px_rgba(15,23,42,0.14)] [animation:slideUp_0.25s_cubic-bezier(0.16,1,0.3,1)]"
+            className="pointer-events-auto relative overflow-hidden flex items-start gap-2.5 w-full max-w-[400px] py-3 pl-4 pr-2.5 rounded-xl bg-white dark:bg-night-card border border-line dark:border-night-line shadow-[0_8px_24px_rgba(15,23,42,0.14)] [animation:slideUp_0.25s_cubic-bezier(0.16,1,0.3,1)]"
           >
             <span className={`absolute left-0 top-0 bottom-0 w-1 ${tone.bar}`} />
             <Icon size={18} className={`shrink-0 mt-px ${tone.icon}`} />
             <div className="min-w-0 flex-1">
-              {t.title && <div className="text-[0.85rem] font-bold text-primary dark:text-[#E2E8F0] leading-[1.35]">{t.title}</div>}
-              <div className={`text-[0.82rem] leading-[1.4] break-words ${t.title ? "text-text-muted dark:text-[#94A3B8] mt-0.5" : "font-semibold text-primary dark:text-[#E2E8F0]"}`}>
+              {t.title && <div className="text-[0.85rem] font-bold text-primary dark:text-night-text leading-[1.35]">{t.title}</div>}
+              <div className={`text-[0.82rem] leading-[1.4] break-words ${t.title ? "text-text-muted dark:text-night-muted mt-0.5" : "font-semibold text-primary dark:text-night-text"}`}>
                 {t.message}
               </div>
               {t.action && (
@@ -74,7 +74,7 @@ export function ToastContainer() {
               type="button"
               aria-label="Đóng thông báo"
               onClick={() => dismiss(t.id)}
-              className="shrink-0 w-6 h-6 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-[#334155] hover:text-text-muted"
+              className="shrink-0 w-6 h-6 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center text-[#94A3B8] hover:bg-[#F1F5F9] dark:hover:bg-night-line hover:text-text-muted"
             >
               <X size={14} />
             </button>

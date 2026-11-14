@@ -71,15 +71,15 @@ export default function LoginView() {
       <LoginBackground />
 
       {/* Card */}
-      <div className="glass-card dark:bg-[#1E293B] dark:border-[#334155] relative z-[1] max-w-[400px] w-full py-8 px-7 flex flex-col gap-5 !shadow-[0_18px_50px_rgba(2,6,23,0.55)]">
+      <div className="glass-card dark:bg-night-card dark:border-night-line relative z-[1] max-w-[400px] w-full py-8 px-7 flex flex-col gap-5 !shadow-[0_18px_50px_rgba(2,6,23,0.55)]">
         {/* Logo */}
         <div className="text-center flex flex-col items-center gap-2.5">
           <img src="/favicon.svg" alt="FormulaX" className="w-[52px] h-[52px] rounded-2xl shadow-[0_2px_6px_rgba(15,23,42,0.05)]" />
           <div>
-            <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] mb-1 tracking-[-0.5px]">
+            <h2 className="text-[1.3rem] font-extrabold text-[#1E3A5F] dark:text-night-text mb-1 tracking-[-0.5px]">
               FormulaX AI
             </h2>
-            <p className="text-[0.8rem] text-text-muted dark:text-[#94A3B8] font-medium m-0">
+            <p className="text-[0.8rem] text-text-muted dark:text-night-muted font-medium m-0">
               Đăng nhập để tiếp tục học tập
             </p>
           </div>
@@ -89,8 +89,8 @@ export default function LoginView() {
         <button
           onClick={googleLogin}
           disabled={!!loadingAction}
-          className={`flex items-center justify-center gap-2.5 w-full h-[46px] rounded-[10px] border-[1.5px] border-[#E2E8F0] dark:border-[#334155] text-[0.9rem] font-bold text-[#1E3A5F] dark:text-[#E2E8F0] shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:bg-[#F8FAFC] dark:hover:bg-[#334155] ${
-            loadingAction ? "bg-[#F8FAFC] dark:bg-[#0F172A] cursor-not-allowed" : "bg-white dark:bg-[#1E293B] cursor-pointer"
+          className={`flex items-center justify-center gap-2.5 w-full h-[46px] rounded-[10px] border-[1.5px] border-[#E2E8F0] dark:border-night-line text-[0.9rem] font-bold text-[#1E3A5F] dark:text-night-text shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-all duration-200 hover:bg-[#F8FAFC] dark:hover:bg-night-line ${
+            loadingAction ? "bg-[#F8FAFC] dark:bg-night-page cursor-not-allowed" : "bg-white dark:bg-night-card cursor-pointer"
           }`}
         >
           {loadingAction === "google" ? <Spinner /> : <GoogleIcon />}
@@ -107,9 +107,9 @@ export default function LoginView() {
 
         {/* Divider */}
         <div className="flex items-center gap-2.5">
-          <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-[#334155]" />
-          <span className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] font-medium">hoặc</span>
-          <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-[#334155]" />
+          <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-night-line" />
+          <span className="text-[0.72rem] text-text-muted dark:text-night-muted font-medium">hoặc</span>
+          <div className="flex-1 h-px bg-[#E2E8F0] dark:bg-night-line" />
         </div>
 
         {/* Dùng thử không cần đăng nhập — nút phụ: chỉ viền, không tô nền */}
@@ -117,14 +117,14 @@ export default function LoginView() {
           <button
             onClick={guestLogin}
             disabled={!!loadingAction}
-            className={`flex items-center justify-center gap-2 w-full h-[46px] rounded-[10px] border-[1.5px] border-[#E2E8F0] dark:border-[#334155] bg-transparent text-[0.85rem] font-bold text-text-muted dark:text-[#94A3B8] transition-all duration-200 hover:bg-[#F8FAFC] dark:hover:bg-[#334155]/40 ${
+            className={`flex items-center justify-center gap-2 w-full h-[46px] rounded-[10px] border-[1.5px] border-[#E2E8F0] dark:border-night-line bg-transparent text-[0.85rem] font-bold text-text-muted dark:text-night-muted transition-all duration-200 hover:bg-[#F8FAFC] dark:hover:bg-night-line/40 ${
               loadingAction ? "cursor-not-allowed opacity-70" : "cursor-pointer"
             }`}
           >
             {loadingAction === "guest" && <Spinner />}
             <span>{loadingAction === "guest" ? "Đang vào..." : "Dùng thử không cần đăng nhập"}</span>
           </button>
-          <p className="text-[0.72rem] text-text-muted dark:text-[#94A3B8] text-center leading-[1.5] m-0">
+          <p className="text-[0.72rem] text-text-muted dark:text-night-muted text-center leading-[1.5] m-0">
             Chế độ khách: tra cứu đầy đủ và 10 lượt Quiz mỗi ngày. Đăng nhập Google để dùng AI và lưu tiến độ.
           </p>
         </div>

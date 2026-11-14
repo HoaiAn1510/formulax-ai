@@ -168,12 +168,12 @@ export default function FormulaLibrary({
 
   const searchBox = (
     <div className="relative w-full md:w-[420px]" ref={searchContainerRef}>
-      <div className="relative flex items-center w-full h-12 px-4 rounded-[14px] bg-white dark:bg-[#1E293B] border-[1.5px] border-[#CBD5E1] dark:border-[#475569] shadow-[0_6px_18px_-10px_rgba(41,88,156,0.45)] focus-within:border-navy-btn dark:focus-within:border-accent focus-within:ring-4 focus-within:ring-navy-btn/15 dark:focus-within:ring-accent/20 transition-[border-color,box-shadow]">
+      <div className="relative flex items-center w-full h-12 px-4 rounded-[14px] bg-white dark:bg-night-card border-[1.5px] border-[#CBD5E1] dark:border-[#475569] shadow-[0_6px_18px_-10px_rgba(41,88,156,0.45)] focus-within:border-navy-btn dark:focus-within:border-accent focus-within:ring-4 focus-within:ring-navy-btn/15 dark:focus-within:ring-accent/20 transition-[border-color,box-shadow]">
         <Search size={19} strokeWidth={2.4} className="text-navy-btn dark:text-accent mr-2.5 shrink-0" />
         <input
           type="text"
           aria-label="Tìm công thức"
-          className="flex-1 min-w-0 border-none outline-none bg-transparent text-[0.95rem] font-medium text-primary dark:text-[#E2E8F0] placeholder:text-[#475569] dark:placeholder:text-[#CBD5E1]"
+          className="flex-1 min-w-0 border-none outline-none bg-transparent text-[0.95rem] font-medium text-primary dark:text-night-text placeholder:text-[#475569] dark:placeholder:text-[#CBD5E1]"
           placeholder="Tìm công thức, ví dụ: đạo hàm, cos..."
           value={searchQuery}
           onChange={handleSearchChange}
@@ -192,16 +192,16 @@ export default function FormulaLibrary({
       </div>
 
       {showSuggestions && suggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-[#1E293B] rounded-[14px] border border-line dark:border-[#334155] shadow-[0_12px_28px_-12px_rgba(15,23,42,0.2)] z-20 max-h-[280px] overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-1.5 bg-white dark:bg-night-card rounded-[14px] border border-line dark:border-night-line shadow-[0_12px_28px_-12px_rgba(15,23,42,0.2)] z-20 max-h-[280px] overflow-y-auto">
           {suggestions.map((item) => (
             <button
               type="button"
               key={item.id}
-              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left bg-transparent border-none border-b border-[#F1F5F9] dark:border-[#334155] last:border-b-0 cursor-pointer hover:bg-page dark:hover:bg-white/5"
+              className="w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left bg-transparent border-none border-b border-[#F1F5F9] dark:border-night-line last:border-b-0 cursor-pointer hover:bg-page dark:hover:bg-white/5"
               onClick={() => selectSuggestion(item.name)}
             >
-              <span className="text-[0.85rem] font-semibold text-primary dark:text-[#E2E8F0] truncate">{item.name}</span>
-              <span className="text-[0.7rem] text-text-muted dark:text-[#94A3B8] shrink-0 whitespace-nowrap">{item.topic} · Lớp {item.grade}</span>
+              <span className="text-[0.85rem] font-semibold text-primary dark:text-night-text truncate">{item.name}</span>
+              <span className="text-[0.7rem] text-text-muted dark:text-night-muted shrink-0 whitespace-nowrap">{item.topic} · Lớp {item.grade}</span>
             </button>
           ))}
         </div>
@@ -255,7 +255,7 @@ export default function FormulaLibrary({
           aria-label="Yêu thích"
           title="Yêu thích"
           onClick={() => handleTopicClick(savedActive ? "Tất cả" : "Yêu thích")}
-          className={`w-11 h-11 shrink-0 rounded-[12px] border flex items-center justify-center cursor-pointer transition-colors ${savedActive ? "bg-navy-btn border-navy-btn text-white dark:bg-accent dark:border-accent" : "bg-white dark:bg-[#1E293B] border-line dark:border-[#334155] text-[#E11D48]"}`}
+          className={`w-11 h-11 shrink-0 rounded-[12px] border flex items-center justify-center cursor-pointer transition-colors ${savedActive ? "bg-navy-btn border-navy-btn text-white dark:bg-accent dark:border-accent" : "bg-white dark:bg-night-card border-line dark:border-night-line text-[#E11D48]"}`}
         >
           {isGuest ? <Lock size={16} className="text-accent" /> : <Heart size={17} fill={savedActive ? "currentColor" : "none"} />}
         </button>
@@ -277,7 +277,7 @@ export default function FormulaLibrary({
             </button>
           );
         })}
-        <span className="w-px shrink-0 bg-line dark:bg-[#334155] mx-1" aria-hidden="true" />
+        <span className="w-px shrink-0 bg-line dark:bg-night-line mx-1" aria-hidden="true" />
         <button
           type="button"
           aria-pressed={savedActive}
@@ -313,7 +313,7 @@ export default function FormulaLibrary({
               className={`inline-flex items-center gap-2 h-10 pl-1 pr-3.5 rounded-full border text-[0.85rem] font-semibold cursor-pointer transition-colors ${
                 isActive
                   ? "border-accent bg-accent-light text-[#92400E] dark:bg-accent/15 dark:text-[#FCD34D]"
-                  : "border-line dark:border-[#334155] bg-white dark:bg-[#1E293B] text-primary dark:text-[#E2E8F0] hover:border-[#CBD5E1] dark:hover:border-[#475569]"
+                  : "border-line dark:border-night-line bg-white dark:bg-night-card text-primary dark:text-night-text hover:border-[#CBD5E1] dark:hover:border-[#475569]"
               }`}
             >
               <span className={`min-w-8 h-8 px-1.5 rounded-full flex items-center justify-center font-[Georgia,serif] italic font-bold text-[0.78rem] shrink-0 ${tone}`}>{glyph}</span>
@@ -326,10 +326,10 @@ export default function FormulaLibrary({
 
       {/* Danh sách công thức (không vẽ LaTeX trên thẻ — 249 công thức KaTeX cùng lúc rất nặng) */}
       <div className="flex justify-between items-baseline mb-3">
-        <h2 className="m-0 text-[1.05rem] md:text-[1.15rem] font-bold tracking-[-0.01em] text-primary dark:text-[#E2E8F0]">
+        <h2 className="m-0 text-[1.05rem] md:text-[1.15rem] font-bold tracking-[-0.01em] text-primary dark:text-night-text">
           {savedActive ? "Công thức yêu thích" : topicMode === "custom" ? selectedTopics.join(" · ") : "Tất cả công thức"}
         </h2>
-        <span className="text-[0.78rem] text-text-muted dark:text-[#94A3B8]">{filteredFormulas.length} công thức</span>
+        <span className="text-[0.78rem] text-text-muted dark:text-night-muted">{filteredFormulas.length} công thức</span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 gap-3 md:gap-5">
         {filteredFormulas.length > 0 ? (
@@ -340,7 +340,7 @@ export default function FormulaLibrary({
                 <div className="flex justify-between items-start gap-2">
                   <span className="flex items-center gap-2 text-[0.72rem] font-semibold">
                     <span className={TOPIC_TEXT[formula.topic] || "text-text-muted"}>{formula.topic}</span>
-                    <span className="text-text-muted dark:text-[#94A3B8]">· Lớp {formula.grade}</span>
+                    <span className="text-text-muted dark:text-night-muted">· Lớp {formula.grade}</span>
                   </span>
                   <button
                     type="button"
@@ -351,14 +351,14 @@ export default function FormulaLibrary({
                   >
                     <Heart size={18} fill={isBookmarked ? "currentColor" : "none"} />
                     {isGuest && (
-                      <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-[#1E293B] flex items-center justify-center">
+                      <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-white dark:bg-night-card flex items-center justify-center">
                         <Lock size={9} className="text-accent" />
                       </span>
                     )}
                   </button>
                 </div>
 
-                <h3 className="m-0 text-[0.98rem] md:text-[1.02rem] font-semibold leading-[1.4] text-primary dark:text-[#E2E8F0]">{formula.name}</h3>
+                <h3 className="m-0 text-[0.98rem] md:text-[1.02rem] font-semibold leading-[1.4] text-primary dark:text-night-text">{formula.name}</h3>
 
                 <div className="flex gap-2 mt-auto pt-1">
                   <button
@@ -371,7 +371,7 @@ export default function FormulaLibrary({
                   </button>
                   <button
                     type="button"
-                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-white dark:bg-[#0F172A] text-primary dark:text-[#E2E8F0] text-[0.8rem] font-semibold border border-[#D5DAE5] dark:border-[#475569] cursor-pointer transition-colors hover:border-accent"
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-white dark:bg-night-page text-primary dark:text-night-text text-[0.8rem] font-semibold border border-[#D5DAE5] dark:border-[#475569] cursor-pointer transition-colors hover:border-accent"
                     onClick={() => onCreateFlashcard(formula)}
                   >
                     {isGuest ? <Lock size={14} /> : <Layers size={14} />}
@@ -386,16 +386,16 @@ export default function FormulaLibrary({
             {topicMode === "saved" && bookmarkedIds.length === 0 ? (
               <>
                 <Heart size={40} className="text-[#CBD5E1] dark:text-[#475569]" />
-                <h3 className="m-0 text-base font-bold text-primary dark:text-[#E2E8F0]">Chưa có công thức yêu thích</h3>
-                <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">
+                <h3 className="m-0 text-base font-bold text-primary dark:text-night-text">Chưa có công thức yêu thích</h3>
+                <p className="m-0 text-[0.82rem] text-text-muted dark:text-night-muted">
                   Bấm biểu tượng trái tim trên thẻ công thức để lưu lại, lần sau mở nhanh ở đây.
                 </p>
               </>
             ) : (
               <>
                 <HelpCircle size={40} className="text-[#CBD5E1] dark:text-[#475569]" />
-                <h3 className="m-0 text-base font-bold text-primary dark:text-[#E2E8F0]">Không tìm thấy công thức</h3>
-                <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">
+                <h3 className="m-0 text-base font-bold text-primary dark:text-night-text">Không tìm thấy công thức</h3>
+                <p className="m-0 text-[0.82rem] text-text-muted dark:text-night-muted">
                   Hãy thử từ khoá khác hoặc đổi bộ lọc lớp, chủ đề.
                 </p>
               </>
@@ -404,7 +404,7 @@ export default function FormulaLibrary({
               <button
                 type="button"
                 onClick={() => { setSearchQuery(""); setTopicMode("all"); setSelectedTopics([]); setGradeMode("all"); setSelectedGrades([]); }}
-                className="mt-2 py-2 px-4 rounded-[10px] border border-line dark:border-[#334155] bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[0.82rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer transition-colors"
+                className="mt-2 py-2 px-4 rounded-[10px] border border-line dark:border-night-line bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-night-line text-[0.82rem] font-bold text-primary dark:text-night-text cursor-pointer transition-colors"
               >
                 Xem tất cả công thức
               </button>

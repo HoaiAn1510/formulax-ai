@@ -2,8 +2,8 @@
 // Bố cục gần giống trang thật (tiêu đề + lưới thẻ / khung chat) để lúc nội dung về không bị "nhảy".
 // variant: "grid" (Thư viện, Flashcard, Quiz, Premium), "chat" (Trợ lý hướng dẫn), "stats" (Tiến độ), "narrow" (Cài đặt)
 
-const BONE = "rounded-xl bg-[#E9EDF3] dark:bg-[#1E293B] animate-pulse";
-const CARD = "rounded-2xl border border-line dark:border-[#334155] bg-white dark:bg-[#1E293B]";
+const BONE = "rounded-xl bg-[#E9EDF3] dark:bg-night-card animate-pulse";
+const CARD = "rounded-2xl border border-line dark:border-night-line bg-white dark:bg-night-card";
 
 function Header() {
   return (
@@ -49,7 +49,7 @@ export default function PageSkeleton({ variant = "grid" }) {
 
   const width = variant === "narrow" ? "max-w-[760px]" : "max-w-[1440px]";
   return (
-    <div className="view-container bg-page dark:bg-[#0F172A]" aria-busy="true" aria-label="Đang tải trang">
+    <div className="view-container bg-page dark:bg-night-page" aria-busy="true" aria-label="Đang tải trang">
       <div className={`w-full mx-auto ${width}`}>
         <Header />
         {variant === "stats" && (

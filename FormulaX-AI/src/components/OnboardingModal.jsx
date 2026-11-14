@@ -66,7 +66,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
 
   return (
     <div role="dialog" aria-modal="true" aria-label="Làm quen với FormulaX" className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.65)] backdrop-blur-[6px] flex items-center justify-center p-4">
-      <div className="relative w-full max-w-[420px] rounded-[20px] bg-white dark:bg-[#1E293B] dark:border dark:border-[#334155] px-7 py-8 shadow-[0_24px_60px_rgba(0,0,0,0.18)]">
+      <div className="relative w-full max-w-[420px] rounded-[20px] bg-white dark:bg-night-card dark:border dark:border-night-line px-7 py-8 shadow-[0_24px_60px_rgba(0,0,0,0.18)]">
         {/* Skip */}
         <button
           onClick={handleSkip}
@@ -80,7 +80,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
           {STEPS.map((_, i) => (
             <div
               key={i}
-              className={`h-1 flex-1 rounded-sm transition-colors duration-300 ${i <= step ? "bg-accent" : "bg-[#E2E8F0] dark:bg-[#334155]"}`}
+              className={`h-1 flex-1 rounded-sm transition-colors duration-300 ${i <= step ? "bg-accent" : "bg-[#E2E8F0] dark:bg-night-line"}`}
             />
           ))}
         </div>
@@ -91,10 +91,10 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
         </div>
 
         {/* Title + subtitle */}
-        <h2 className="text-[1.25rem] font-extrabold text-[#1E3A5F] dark:text-[#E2E8F0] mb-2">
+        <h2 className="text-[1.25rem] font-extrabold text-[#1E3A5F] dark:text-night-text mb-2">
           {current.title}
         </h2>
-        <p className={`text-[0.85rem] leading-[1.55] text-text-muted dark:text-[#94A3B8] ${hasTryNow ? "mb-3" : "mb-6"}`}>
+        <p className={`text-[0.85rem] leading-[1.55] text-text-muted dark:text-night-muted ${hasTryNow ? "mb-3" : "mb-6"}`}>
           {current.subtitle}
         </p>
 
@@ -119,7 +119,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
                   className={`relative flex-1 py-3.5 px-2 rounded-xl cursor-pointer border-2 text-[1.05rem] font-extrabold transition-all duration-150 ${
                     active
                       ? "border-accent bg-accent/6 dark:bg-accent/15 text-accent"
-                      : "border-[#E2E8F0] dark:border-[#334155] bg-white dark:bg-[#0F172A] text-text-muted dark:text-[#94A3B8] hover:border-accent/40"
+                      : "border-[#E2E8F0] dark:border-night-line bg-white dark:bg-night-page text-text-muted dark:text-night-muted hover:border-accent/40"
                   }`}
                 >
                   Lớp {g}
@@ -151,7 +151,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
           disabled={ctaDisabled}
           className={`w-full p-[13px] rounded-xl border-none text-[0.9rem] font-extrabold flex items-center justify-center gap-2 transition-colors duration-200 ${
             ctaDisabled
-              ? "bg-[#E2E8F0] dark:bg-[#334155] text-[#94A3B8] dark:text-[#64748B] cursor-not-allowed"
+              ? "bg-[#E2E8F0] dark:bg-night-line text-[#94A3B8] dark:text-[#64748B] cursor-not-allowed"
               : "bg-accent hover:bg-accent-hover text-white cursor-pointer"
           }`}
         >
