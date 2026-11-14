@@ -920,8 +920,10 @@ export default function FormulaFinder({
               </div>
             </div>
           ) : sessions.length === 0 ? (
-            <div className="text-[0.75rem] text-[#999] py-2.5 text-center">
-              Chưa có cuộc trò chuyện nào
+            <div className="py-4 px-2 text-center">
+              <History size={22} className="mx-auto mb-1.5 text-[#CBD5E1] dark:text-[#475569]" />
+              <div className="text-[0.8rem] font-bold text-primary dark:text-[#E2E8F0]">Chưa có cuộc trò chuyện nào</div>
+              <div className="mt-0.5 text-[0.72rem] leading-[1.45] text-text-muted dark:text-[#94A3B8]">Câu hỏi bạn gửi sẽ được lưu ở đây để xem lại.</div>
             </div>
           ) : (
             sessions.map((session) => (

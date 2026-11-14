@@ -383,11 +383,32 @@ export default function FormulaLibrary({
           })
         ) : (
           <div className={`${CARD} flex flex-col items-center justify-center text-center gap-2 py-12 px-4 col-[1/-1]`}>
-            <HelpCircle size={40} className="text-[#CBD5E1]" />
-            <h3 className="m-0 text-base font-bold text-primary dark:text-[#E2E8F0]">Không tìm thấy công thức</h3>
-            <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">
-              Hãy thử từ khoá khác hoặc đổi bộ lọc lớp, chủ đề.
-            </p>
+            {topicMode === "saved" && bookmarkedIds.length === 0 ? (
+              <>
+                <Heart size={40} className="text-[#CBD5E1] dark:text-[#475569]" />
+                <h3 className="m-0 text-base font-bold text-primary dark:text-[#E2E8F0]">Chưa có công thức yêu thích</h3>
+                <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">
+                  Bấm biểu tượng trái tim trên thẻ công thức để lưu lại, lần sau mở nhanh ở đây.
+                </p>
+              </>
+            ) : (
+              <>
+                <HelpCircle size={40} className="text-[#CBD5E1] dark:text-[#475569]" />
+                <h3 className="m-0 text-base font-bold text-primary dark:text-[#E2E8F0]">Không tìm thấy công thức</h3>
+                <p className="m-0 text-[0.82rem] text-text-muted dark:text-[#94A3B8]">
+                  Hãy thử từ khoá khác hoặc đổi bộ lọc lớp, chủ đề.
+                </p>
+              </>
+            )}
+            {(searchQuery || topicMode !== "all" || gradeMode !== "all") && (
+              <button
+                type="button"
+                onClick={() => { setSearchQuery(""); setTopicMode("all"); setSelectedTopics([]); setGradeMode("all"); setSelectedGrades([]); }}
+                className="mt-2 py-2 px-4 rounded-[10px] border border-line dark:border-[#334155] bg-white dark:bg-transparent hover:bg-[#F8FAFC] dark:hover:bg-[#334155] text-[0.82rem] font-bold text-primary dark:text-[#E2E8F0] cursor-pointer transition-colors"
+              >
+                Xem tất cả công thức
+              </button>
+            )}
           </div>
         )}
       </div>
