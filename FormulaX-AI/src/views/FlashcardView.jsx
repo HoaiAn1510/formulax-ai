@@ -11,6 +11,7 @@ import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { saveFlashcardActivity } from "../lib/supabase";
 import { sortFormulaIdsByDue, getDueReviewQueue, countCardStates } from "../utils/spacedRepetition";
 import { showToast } from "../components/Toast";
+import { useEscapeKey } from "../utils/useEscapeKey";
 import { useGuestGate } from "../utils/useGuestGate";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -43,6 +44,7 @@ function isSameFormulaSet(idsA, idsB) {
 // ─── Create Filtered Deck Modal ───────────────────────────────────────────────
 
 function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }) {
+  useEscapeKey(onClose);
   const [selTopics, setSelTopics] = useState([]);  // empty = Tất cả
   const [selGrades, setSelGrades] = useState([]);  // empty = Tất cả
   const [dupError, setDupError] = useState("");
@@ -95,6 +97,9 @@ function CreateFilteredDeckModal({ formulas, existingDecks, onClose, onConfirm }
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tạo bộ thẻ theo chủ đề"
       className="fixed inset-0 bg-black/50 z-[9998] flex items-center justify-center p-4"
       onClick={onClose}
     >

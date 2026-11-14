@@ -16,6 +16,7 @@ import { extractAskedProblems, togglePick, MAX_VARIANT_PICK } from "../utils/ask
 import { toVariantQuestion, variantQuizTopic, variantFailureMessage, runSequential, retryBusyOnce } from "../utils/variantQuiz";
 import PageShell from "../components/PageShell";
 import FilterPicker from "../components/FilterPicker";
+import { useEscapeKey } from "../utils/useEscapeKey";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 // 45 giây PHẢI lớn hơn ngân sách 40 giây/request của backend (VARIANT_BUDGET_MS trong
@@ -93,6 +94,7 @@ export default function QuizView({
   // initialMode đã được đọc vào setupMode lúc mount → báo App xoá.
   useEffect(() => { if (initialMode) onConsumeInitialMode?.(); }, [initialMode, onConsumeInitialMode]);
   const [showQuotaModal, setShowQuotaModal] = useState(false);
+  useEscapeKey(() => setShowQuotaModal(false), showQuotaModal);
   // Topic: allMode=true → tất cả chủ đề (other buttons disabled); allMode=false → chọn nhiều chủ đề
   // initialMode { mode: "pool", topics }: mở từ Coach ở trang Tiến độ → chọn sẵn chủ đề đang yếu.
   const [allMode, setAllMode] = useState(() => !initialMode?.topics?.length);
@@ -457,7 +459,7 @@ export default function QuizView({
 
           {/* Modal hết quota */}
           {showQuotaModal && (
-            <div className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.6)] backdrop-blur-[4px] flex items-center justify-center p-4">
+            <div role="dialog" aria-modal="true" aria-label="Hết lượt quiz hôm nay" className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.6)] backdrop-blur-[4px] flex items-center justify-center p-4">
               <div className="bg-white dark:bg-[#1E293B] rounded-[20px] w-full max-w-[380px] py-7 px-6 shadow-[0_24px_60px_rgba(0,0,0,0.18)] text-center">
                 {/* Icon */}
                 <div className="w-[52px] h-[52px] rounded-full bg-premium/10 flex items-center justify-center mx-auto mb-4">

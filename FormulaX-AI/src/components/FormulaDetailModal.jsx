@@ -3,6 +3,7 @@ import { X, Save, Edit3, Bookmark, Lock } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useGuestGate } from "../utils/useGuestGate";
 import GuestLockNotice from "./GuestLockNotice";
+import { useEscapeKey } from "../utils/useEscapeKey";
 
 export default function FormulaDetailModal({
   formula,
@@ -21,6 +22,8 @@ export default function FormulaDetailModal({
     setNoteText(userNote || "");
     setIsSaved(false);
   }, [formula, userNote]);
+
+  useEscapeKey(onClose);
 
   const handleSave = () => {
     onSaveNote(formula.id, noteText);
@@ -122,7 +125,7 @@ export default function FormulaDetailModal({
   };
 
   return (
-    <div className="fixed inset-0 bg-[rgba(15,23,42,0.35)] backdrop-blur-[8px] z-[1000] flex items-end md:items-center justify-center [animation:fadeIn_0.25s_ease-out]" onClick={onClose}>
+    <div role="dialog" aria-modal="true" className="fixed inset-0 bg-[rgba(15,23,42,0.35)] backdrop-blur-[8px] z-[1000] flex items-end md:items-center justify-center [animation:fadeIn_0.25s_ease-out]" onClick={onClose}>
       <div
         className="bg-white dark:bg-[#1E293B] w-full max-w-[600px] rounded-t-2xl md:rounded-2xl py-6 px-4 max-h-[85vh] md:max-h-[80vh] overflow-y-auto shadow-[0_-8px_32px_rgba(15,23,42,0.08)] [animation:slideUp_0.35s_cubic-bezier(0.16,1,0.3,1)] relative border border-[rgba(30,58,95,0.07)] dark:border-[#334155]"
         onClick={(e) => e.stopPropagation()}

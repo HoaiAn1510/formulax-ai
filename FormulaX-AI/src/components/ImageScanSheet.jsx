@@ -1,5 +1,6 @@
 import { Camera, Image as ImageIcon, X, ShieldAlert } from "lucide-react";
 import { OCR_PRIVACY_NOTICE } from "../config/features";
+import { useEscapeKey } from "../utils/useEscapeKey";
 
 /**
  * Bảng chọn nguồn ảnh đề: "Chụp ảnh" (mở thẳng camera sau) và "Chọn ảnh" (thư viện ảnh / tệp).
@@ -9,6 +10,7 @@ import { OCR_PRIVACY_NOTICE } from "../config/features";
  * Thông báo quyền riêng tư hiện TRƯỚC khi học sinh chọn ảnh.
  */
 export default function ImageScanSheet({ onPick, onClose }) {
+  useEscapeKey(onClose);
   const handleChange = (e) => {
     const file = e.target.files?.[0];
     e.target.value = ""; // chọn lại đúng ảnh vừa chọn vẫn kích hoạt onChange

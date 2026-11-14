@@ -65,7 +65,7 @@ export default function OnboardingModal({ onFinish, onGoToFinder, onGoToQuiz }) 
   const hasTryNow = current.id === "finder" || current.id === "quiz";
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.65)] backdrop-blur-[6px] flex items-center justify-center p-4">
+    <div role="dialog" aria-modal="true" aria-label="Làm quen với FormulaX" className="fixed inset-0 z-[9999] bg-[rgba(15,23,42,0.65)] backdrop-blur-[6px] flex items-center justify-center p-4">
       <div className="relative w-full max-w-[420px] rounded-[20px] bg-white dark:bg-[#1E293B] dark:border dark:border-[#334155] px-7 py-8 shadow-[0_24px_60px_rgba(0,0,0,0.18)]">
         {/* Skip */}
         <button

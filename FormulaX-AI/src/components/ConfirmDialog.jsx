@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useEscapeKey } from "../utils/useEscapeKey";
 
 // Pub-sub kiểu Promise — thay cho window.confirm() trần (không theo giao diện app).
 // Gọi await showConfirm("...") từ bất kỳ đâu, resolve true/false theo nút người dùng bấm.
@@ -28,15 +29,18 @@ export function ConfirmDialogHost() {
     return () => { listeners = listeners.filter(l => l !== handler); };
   }, []);
 
-  if (!dialog) return null;
-
   const close = (result) => {
     setDialog(null);
     respond(result);
   };
+  useEscapeKey(() => close(false), !!dialog);
+
+  if (!dialog) return null;
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
       className="fixed inset-0 bg-black/50 z-[5000] flex items-center justify-center p-4"
       onClick={() => close(false)}
     >
