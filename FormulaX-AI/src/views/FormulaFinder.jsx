@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock, ClipboardList, ChevronRight } from "lucide-react";
+import { Send, ArrowLeft, History, Camera, X, FileText, AlertCircle, Plus, Trash2, Pencil, Check, BookOpen, BookMarked, Crown, Lock, ClipboardList, ChevronRight, Image as ImageIcon } from "lucide-react";
 import { MathElement, RichTextRenderer } from "../utils/katexHelper";
 import { useAuth } from "../context/AuthContext";
 import { FINDER_IMAGE_INPUT_ENABLED } from "../config/features";
@@ -572,6 +572,56 @@ export default function FormulaFinder({
       setOcr({ stage: "error", message: err.message });
     }
   };
+
+  // Dán ảnh (Ctrl+V / Cmd+V) và kéo thả file ảnh — trên máy tính, ảnh chụp màn hình nằm trong bộ nhớ tạm chứ không phải
+  // file, nên trước đây không gửi được (mentor báo 2026-11-03). Dùng lại đúng luồng quét như nút ảnh (handlePickImage).
+  // Nghe ở cả document để dán được dù con trỏ không ở ô nhập; ref giữ hàm mới nhất để không gắn lại listener mỗi lần vẽ.
+  const [dragActive, setDragActive] = useState(false);
+  const takeImageRef = useRef(null);
+  takeImageRef.current = (file) => {
+    if (!FINDER_IMAGE_INPUT_ENABLED || isGuest || !user?.googleId || isAnalyzing) return false;
+    if (ocr && ocr.stage !== "error") return false; // đang quét / đang chọn bài / đang hướng dẫn
+    if (!file || !file.type.startsWith("image/")) return false;
+    if (!isPremium && aiQueriesLeft === 0) {
+      pushLimitHitMessage(`Bạn đã dùng hết ${FREE_AI_LIMIT} lượt hỏi AI miễn phí hôm nay. Nâng cấp Premium để hỏi không giới hạn!`);
+      return true;
+    }
+    handlePickImage(file);
+    return true;
+  };
+  useEffect(() => {
+    if (!FINDER_IMAGE_INPUT_ENABLED) return;
+    const hasFiles = (e) => Array.from(e.dataTransfer?.types || []).includes("Files");
+    const onPaste = (e) => {
+      const item = Array.from(e.clipboardData?.items || []).find((it) => it.kind === "file" && it.type.startsWith("image/"));
+      if (!item) return; // dán chữ thì để ô nhập xử lý như thường
+      if (takeImageRef.current(item.getAsFile())) e.preventDefault();
+    };
+    let depth = 0; // dragenter/dragleave nổ ở từng phần tử con — đếm để biết khi nào thật sự rời trang
+    const onDragEnter = (e) => { if (!hasFiles(e)) return; depth += 1; setDragActive(true); };
+    const onDragLeave = (e) => { if (!hasFiles(e)) return; depth = Math.max(0, depth - 1); if (!depth) setDragActive(false); };
+    const onDragOver = (e) => { if (hasFiles(e)) e.preventDefault(); };
+    const onDrop = (e) => {
+      if (!hasFiles(e)) return;
+      e.preventDefault();
+      depth = 0;
+      setDragActive(false);
+      const file = Array.from(e.dataTransfer.files || []).find((f) => f.type.startsWith("image/"));
+      if (file) takeImageRef.current(file);
+    };
+    document.addEventListener("paste", onPaste);
+    document.addEventListener("dragenter", onDragEnter);
+    document.addEventListener("dragleave", onDragLeave);
+    document.addEventListener("dragover", onDragOver);
+    document.addEventListener("drop", onDrop);
+    return () => {
+      document.removeEventListener("paste", onPaste);
+      document.removeEventListener("dragenter", onDragEnter);
+      document.removeEventListener("dragleave", onDragLeave);
+      document.removeEventListener("dragover", onDragOver);
+      document.removeEventListener("drop", onDrop);
+    };
+  }, []);
 
   // Giải phóng ảnh khi rời màn "Các bài trong ảnh" (sang tab hướng dẫn, đóng, quét ảnh khác) hoặc rời
   // AI Finder: imageUrl đổi/mất → cleanup của URL cũ chạy.
@@ -1245,7 +1295,7 @@ export default function FormulaFinder({
                 ref={textareaRef}
                 className={`flex-1 border-none text-[0.9rem] font-medium text-primary dark:text-[#E2E8F0] bg-transparent dark:bg-transparent! py-2 ${FINDER_IMAGE_INPUT_ENABLED ? "px-2" : "pl-1 pr-2"} outline-none resize-none overflow-hidden leading-[1.5] font-[inherit] min-h-9 max-h-[120px] self-center placeholder:text-[#94A3B8]`}
                 aria-label="Hỏi AI về công thức"
-                placeholder={FINDER_IMAGE_INPUT_ENABLED ? "Nhập đề bài hoặc chụp ảnh..." : "Nhập đề bài..."}
+                placeholder={FINDER_IMAGE_INPUT_ENABLED ? "Nhập đề bài, chụp hoặc dán ảnh (Ctrl+V)..." : "Nhập đề bài..."}
                 rows={1}
                 onChange={(e) => {
                   setQuery(e.target.value);
@@ -1311,6 +1361,15 @@ export default function FormulaFinder({
 
       {/* ─── Chọn nguồn ảnh đề (kèm thông báo quyền riêng tư) ─── */}
       {scanSheetOpen && <ImageScanSheet onPick={handlePickImage} onClose={() => setScanSheetOpen(false)} />}
+      {dragActive && FINDER_IMAGE_INPUT_ENABLED && !isGuest && (
+        <div className="fixed inset-0 z-[900] pointer-events-none flex items-center justify-center bg-[rgba(15,23,42,0.45)] backdrop-blur-[2px]">
+          <div className="rounded-[20px] border-2 border-dashed border-accent bg-white dark:bg-[#1E293B] px-8 py-7 text-center shadow-[0_24px_60px_rgba(0,0,0,0.25)]">
+            <ImageIcon size={32} className="mx-auto text-accent" />
+            <div className="mt-2 text-[1rem] font-bold text-primary dark:text-[#E2E8F0]">Thả ảnh đề bài vào đây</div>
+            <div className="mt-1 text-[0.78rem] text-text-muted dark:text-[#94A3B8]">AI sẽ đọc các bài trong ảnh, bạn chọn bài cần hướng dẫn</div>
+          </div>
+        </div>
+      )}
     </PageShell>
   );
 }
