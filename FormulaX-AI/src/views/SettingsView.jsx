@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles, FileText, ShieldCheck, Lock, UserRound } from "lucide-react";
+import { Moon, Sun, Pencil, Check, X, GraduationCap, Crown, Bell, Sparkles, FileText, ShieldCheck, Lock, UserRound, Smartphone } from "lucide-react";
+import { useInstallMode, promptInstall, IOS_INSTALL_STEPS } from "../utils/installApp";
 import LegalModal from "../components/LegalModal";
 import PageShell from "../components/PageShell";
 import GuestLockNotice from "../components/GuestLockNotice";
@@ -60,6 +61,8 @@ export default function SettingsView({
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(displayName || "");
   const [legalDoc, setLegalDoc] = useState(null); // "terms" | "privacy" | null
+  const installMode = useInstallMode();
+  const [showIosSteps, setShowIosSteps] = useState(false);
 
   const handleSaveName = () => {
     onSetDisplayName?.(nameInput.trim());
@@ -117,6 +120,28 @@ export default function SettingsView({
               description={darkMode ? "Đang dùng giao diện tối" : "Đang dùng giao diện sáng"}
               control={<ToggleSwitch on={darkMode} onClick={() => setDarkMode?.(!darkMode)} />}
             />
+
+            {/* Cài như app (PWA) — chỉ hiện khi trình duyệt cho cài hoặc đang ở iPhone/iPad; đã cài thì báo đã cài. */}
+            {installMode !== "none" && (
+              <SettingRow
+                icon={<Smartphone size={16} />}
+                label="Cài FormulaX như app"
+                description={installMode === "installed"
+                  ? "Bạn đang dùng FormulaX dạng app"
+                  : installMode === "ios" && showIosSteps ? IOS_INSTALL_STEPS : "Mở nhanh từ màn hình chính, toàn màn hình"}
+                control={installMode === "installed" ? (
+                  <span className="text-[0.75rem] font-bold text-success">Đã cài</span>
+                ) : installMode === "prompt" ? (
+                  <button onClick={() => promptInstall()} className="py-1.5 px-3 rounded-lg border-none bg-accent hover:bg-accent-hover text-white text-[0.78rem] font-bold cursor-pointer transition-colors duration-200">
+                    Cài app
+                  </button>
+                ) : (
+                  <button onClick={() => setShowIosSteps(v => !v)} className="bg-transparent border-none cursor-pointer text-accent text-[0.8rem] font-bold">
+                    {showIosSteps ? "Ẩn" : "Xem cách"}
+                  </button>
+                )}
+              />
+            )}
 
             <SettingRow
               icon={<Pencil size={16} />}

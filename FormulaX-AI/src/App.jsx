@@ -29,6 +29,7 @@ import DailyIntentModal from "./components/DailyIntentModal";
 import { ToastContainer, showToast } from "./components/Toast";
 import { ConfirmDialogHost } from "./components/ConfirmDialog";
 import PageSkeleton from "./components/PageSkeleton";
+import { scheduleInstallHint, promptInstall, IOS_INSTALL_STEPS } from "./utils/installApp";
 
 // Dashboard và LoginView là màn hình đầu tiên người dùng thấy (đã đăng nhập / chưa đăng nhập)
 // nên giữ nạp thẳng — lazy hai màn này chỉ thêm một vòng request trước khi vẽ được gì.
@@ -459,6 +460,23 @@ export default function App() {
     localStorage.setItem(`formulax_quiz_${user.googleId}`, JSON.stringify({ count: remainingQuizzes, date: today }));
     saveQuizDaily(user.googleId, remainingQuizzes).catch(console.error);
   }, [remainingQuizzes, user?.googleId]);
+
+  // ─── Nhắc cài app (điện thoại, 1 lần mỗi máy) — xem utils/installApp.js
+  const signedIn = !!user;
+  useEffect(() => {
+    if (!signedIn) return;
+    return scheduleInstallHint((mode) => {
+      if (mode === "prompt") {
+        showToast("Mở nhanh từ màn hình chính, không cần tìm lại trang web.", "info", {
+          title: "Cài FormulaX như một app",
+          action: { label: "Cài app", onClick: () => { promptInstall(); } },
+          duration: 10000,
+        });
+      } else {
+        showToast(IOS_INSTALL_STEPS, "info", { title: "Thêm FormulaX vào màn hình chính", duration: 10000 });
+      }
+    });
+  }, [signedIn]);
 
   // ─── Handlers ─────────────────────────────────────────────────────────────
 

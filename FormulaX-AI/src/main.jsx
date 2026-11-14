@@ -4,10 +4,14 @@ import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import RootGate from './RootGate.jsx'
 import { captureChannelVisit } from './lib/channelTracking'
+import { initInstallCapture } from './utils/installApp'
 
 // Kênh giới thiệu (?ref=tiktok…): lưu first-touch, xoá tham số khỏi URL, đếm 1 lượt truy cập/ngày.
 // Chạy trước khi render để URL sạch ngay từ đầu. Lỗi im lặng.
 captureChannelVisit()
+
+// Giữ lại sự kiện "cài app" của trình duyệt (bắn rất sớm) — xem utils/installApp.js.
+initInstallCapture()
 
 // Đăng ký service worker qua virtual:pwa-register (thay vì injectRegister mặc định của
 // vite-plugin-pwa, chỉ gọi navigator.serviceWorker.register() trần — không có logic phát
