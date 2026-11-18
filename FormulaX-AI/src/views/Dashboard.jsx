@@ -138,7 +138,7 @@ export default function Dashboard({
             <div className="relative max-w-[560px]">
               <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D] max-md:pr-[84px]`}>Xin chào {firstName}</div>
               <h1 className="max-md:pr-[84px] mt-1.5 md:mt-2.5 mb-0 text-[1.45rem] md:text-[2.1rem] leading-[1.2] font-bold tracking-[-0.03em] text-primary dark:text-night-text">
-                {isGuest ? "Hôm nay mình ôn gì nhé?" : headline({ isNew, streak, todayStats })}
+                {isGuest ? "Hôm nay mình cùng ôn gì đây?" : headline({ isNew, streak, todayStats })}
               </h1>
 
               {isNew ? (

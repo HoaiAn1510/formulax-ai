@@ -42,7 +42,7 @@ export function headline({ isNew = false, goals = [], streak = 0, todayStats = {
   const studiedToday = (todayStats.flashcardsStudied ?? 0) > 0 || (todayStats.quizzesCompleted ?? 0) > 0;
   if (streak > 0 && !studiedToday) return `Học một chút hôm nay để giữ chuỗi ${streak} ngày nhé.`;
   // Dashboard không còn thẻ "Nhiệm vụ hôm nay" (chủ dự án bỏ 2026-11-02) → gọi không kèm goals.
-  if (!goals.length) return studiedToday ? "Hôm nay bạn học tốt lắm, làm thêm chút nữa nhé." : "Hôm nay mình ôn gì nhé?";
+  if (!goals.length) return studiedToday ? "Hôm nay bạn học tốt lắm, làm thêm chút nữa nhé." : "Hôm nay mình cùng ôn gì đây?";
   return `Còn ${left} nhiệm vụ hôm nay, mình làm tiếp nhé.`;
 }
 
