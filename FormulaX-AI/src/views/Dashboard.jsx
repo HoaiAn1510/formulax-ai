@@ -131,8 +131,9 @@ export default function Dashboard({
             aria-label="Chào hỏi"
             className={`${CARD} relative order-1 md:order-none md:col-span-8 mt-1 md:mt-[64px] bg-hero-amber dark:bg-none dark:bg-night-card dark:border-[#78350F]/60 px-[18px] pt-5 pb-[18px] md:px-10 md:py-9`}
           >
-            {/* Điện thoại: Mimi nhỏ nằm TRONG khung (trước đứng trên mép, chiếm ~80px trống phía trên) — chừa chỗ bên phải chữ. */}
-            <MimiMascot width={88} withSymbols={false} className="md:hidden absolute right-2 top-2" reaction={streakReaction} />
+            {/* Điện thoại: Mimi nhỏ nằm TRONG khung (trước đứng trên mép, chiếm ~80px trống phía trên) — chừa chỗ bên phải chữ. z-10: khối chữ
+                (relative, đứng sau trong DOM) không được đè lên làm mất tương tác bấm. */}
+            <MimiMascot width={88} className="md:hidden absolute z-10 right-2 top-2" reaction={streakReaction} />
             <MimiMascot width={210} className="hidden md:block absolute right-8 -top-[70px]" reaction={streakReaction} />
             <div className="relative max-w-[560px]">
               <div className={`${LABEL} !text-[#B45309] dark:!text-[#FCD34D] max-md:pr-[84px]`}>Xin chào {firstName}</div>
@@ -255,7 +256,7 @@ export default function Dashboard({
                       {!featured && <span className="block text-[0.66rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted">{label}</span>}
                       <span className={`block font-bold leading-[1.35] text-primary dark:text-night-text ${featured ? "text-[1.1rem] md:text-[1.2rem]" : "text-[0.9rem]"}`}>{o.title}</span>
                       {/* Bỏ tiền tố "Thư viện: " của câu giải thích — tên chức năng đã ghi ngay trên thẻ. */}
-                      <span className={`block leading-[1.5] text-text-muted dark:text-night-muted first-letter:uppercase ${featured ? "text-[0.82rem] max-md:line-clamp-2" : "text-[0.74rem] line-clamp-2 max-md:hidden"}`}>{o.what.replace(/^[^:]+:s*/, "")}</span>
+                      <span className={`block leading-[1.5] text-text-muted dark:text-night-muted first-letter:uppercase ${featured ? "text-[0.82rem] max-md:line-clamp-2" : "text-[0.74rem] md:line-clamp-2"}`}>{o.what.replace(/^[^:]+:s*/, "")}</span>
                     </span>
                     {featured ? (
                       <span className="mt-auto max-md:w-full max-md:justify-center max-md:py-3 inline-flex items-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white text-[0.85rem] font-semibold px-4 py-2.5 transition-colors group-hover:bg-navy-btn-hover dark:group-hover:bg-accent-hover">
@@ -269,30 +270,74 @@ export default function Dashboard({
               };
               return (
                 <>
-                  {/* Một khung chung cho hai chức năng chính (sửa 2026-11-03: trước là 2 thẻ + một ô nối rỗng ở giữa, trông rời
-                      rạc): dòng 3 bước đánh số ở trên, hai thẻ cạnh nhau bên dưới, nút tròn mũi tên nối giữa hai thẻ. */}
-                  <div className="md:rounded-[20px] md:border border-line dark:border-night-line md:bg-white/60 md:dark:bg-night-page/40 md:p-4">
-                    <ol className="hidden list-none m-0 p-0 mb-3 md:mb-4 md:flex flex-col md:flex-row md:flex-wrap md:items-center gap-x-2 gap-y-1.5 text-[0.78rem] font-semibold text-primary dark:text-night-text">
+                  {/* Máy tính — một khung chung cho hai chức năng chính (sửa 2026-11-03: trước là 2 thẻ + một ô nối rỗng ở giữa, trông
+                      rời rạc): dòng 3 bước đánh số ở trên, hai thẻ cạnh nhau bên dưới, nút tròn mũi tên nối giữa hai thẻ. */}
+                  <div className="hidden md:block rounded-[20px] border border-line dark:border-night-line bg-white/60 dark:bg-night-page/40 p-4">
+                    <ol className="list-none m-0 p-0 mb-4 flex flex-row flex-wrap items-center gap-x-2 gap-y-1.5 text-[0.78rem] font-semibold text-primary dark:text-night-text">
                       {["Gửi bài cho Trợ lý hướng dẫn", "AI gợi ý các bước, bạn tự tính", "Làm bài kiểm tra cùng dạng, chỉ đổi số liệu"].map((t, i) => (
                         <li key={t} className="flex items-center gap-2">
-                          {i > 0 && <ChevronRight size={14} className="hidden md:block text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
+                          {i > 0 && <ChevronRight size={14} className="text-[#CBD5E1] dark:text-[#475569] shrink-0" />}
                           <span className="w-5 h-5 rounded-full bg-navy-btn dark:bg-accent text-white text-[0.68rem] font-bold flex items-center justify-center shrink-0">{i + 1}</span>
                           <span>{t}</span>
                         </li>
                       ))}
                     </ol>
-                    <div className="relative grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                    <div className="relative grid grid-cols-2 gap-4">
                       {card("finder", true)}
-                      {/* Nút tròn nối hai thẻ: giữa hai cột trên máy tính, giữa hai thẻ xếp dọc trên điện thoại. */}
-                      <span aria-hidden="true" className="hidden md:flex pointer-events-none absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-night-card border border-line dark:border-night-line shadow-[0_6px_16px_-6px_rgba(15,23,42,0.35)] items-center justify-center text-accent dark:text-[#FCD34D]">
-                        <ArrowRight size={18} className="rotate-90 md:rotate-0" />
+                      <span aria-hidden="true" className="pointer-events-none absolute z-10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white dark:bg-night-card border border-line dark:border-night-line shadow-[0_6px_16px_-6px_rgba(15,23,42,0.35)] flex items-center justify-center text-accent dark:text-[#FCD34D]">
+                        <ArrowRight size={18} />
                       </span>
-                      <div className="hidden md:block">{card("quiz", true)}</div>
+                      {card("quiz", true)}
                     </div>
                   </div>
+                  {/* Điện thoại — gộp Kiểm tra thành phần chân của thẻ Trợ lý hướng dẫn (chủ dự án chọn 2026-11-18): nhìn là
+                      một luồng (hỏi AI → làm bài cùng dạng) mà Trợ lý vẫn là thẻ chính. Hai vùng bấm riêng, không lồng nút. */}
+                  {(() => {
+                    const f = SHORTCUTS.find((x) => x.tab === "finder");
+                    const fo = INTENT_OPTIONS.find((x) => x.tab === "finder");
+                    const qo = INTENT_OPTIONS.find((x) => x.tab === "quiz");
+                    const q = SHORTCUTS.find((x) => x.tab === "quiz");
+                    const go = (o, tab) => { writeLast(user?.googleId, o.id); setActiveTab(tab); };
+                    return (
+                      <div className={`md:hidden ${CARD} ${f.bg} dark:bg-none overflow-hidden ${intent === fo.id || intent === qo.id ? "!border-accent" : ""}`}>
+                        <button
+                          type="button"
+                          onClick={() => go(fo, "finder")}
+                          className="group w-full flex flex-col items-start gap-3 p-4 text-left bg-transparent border-none cursor-pointer active:opacity-90"
+                        >
+                          <span className="flex items-center gap-2.5 w-full">
+                            <span className={`w-12 h-12 rounded-[11px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${f.tone}`}><f.icon size={22} /></span>
+                            <span className="text-[0.72rem] font-semibold tracking-[0.08em] uppercase text-text-muted dark:text-night-muted">{f.label}</span>
+                          </span>
+                          <span className="block text-[1.1rem] font-bold leading-[1.35] text-primary dark:text-night-text">{fo.title}</span>
+                          <span className="block text-[0.82rem] leading-[1.5] text-text-muted dark:text-night-muted first-letter:uppercase">{fo.what.replace(/^[^:]+:s*/, "")}</span>
+                          <span className="w-full inline-flex items-center justify-center gap-1.5 rounded-[11px] bg-navy-btn dark:bg-accent text-white text-[0.85rem] font-semibold px-4 py-3 transition-colors group-active:bg-navy-btn-hover">
+                            {fo.cta} <ChevronRight size={15} />
+                          </span>
+                        </button>
+                        {/* Phần chân = Kiểm tra: khối riêng nền hồng (màu của Kiểm tra), tiêu đề + nút riêng — vẫn nổi bật nhưng
+                            nút viền, kém nút chính "Hỏi AI một bài" một bậc. */}
+                        <button
+                          type="button"
+                          onClick={() => go(qo, "quiz")}
+                          className={`group w-full flex flex-col items-start gap-2.5 px-4 pt-3.5 pb-4 text-left border-0 border-t border-solid border-[#F6CFD8] dark:border-night-line ${q.bg} dark:bg-none dark:bg-night-page/50 cursor-pointer`}
+                        >
+                          <span className="flex items-center gap-2.5 w-full">
+                            <span className={`w-10 h-10 rounded-[11px] flex items-center justify-center shrink-0 shadow-[0_2px_6px_rgba(15,23,42,0.08)] dark:shadow-none ${q.tone}`}><q.icon size={19} /></span>
+                            <span className="min-w-0">
+                              <span className="block text-[0.66rem] font-semibold tracking-[0.08em] uppercase text-[#BE123C] dark:text-[#FDA4AF]">Bước tiếp · {q.label}</span>
+                              <span className="block text-[1rem] font-bold leading-[1.3] text-primary dark:text-night-text">{qo.title}</span>
+                            </span>
+                          </span>
+                          <span className="block text-[0.8rem] leading-[1.45] text-text-muted dark:text-night-muted first-letter:uppercase">{qo.what.replace(/^[^:]+:s*/, "")}</span>
+                          <span className="w-full inline-flex items-center justify-center gap-1.5 rounded-[11px] border-[1.5px] border-solid border-navy-btn dark:border-accent bg-white/80 dark:bg-transparent text-navy-btn dark:text-[#FCD34D] text-[0.85rem] font-semibold px-4 py-2.5 transition-colors group-active:bg-white">
+                            {qo.cta} <ChevronRight size={15} />
+                          </span>
+                        </button>
+                      </div>
+                    );
+                  })()}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-4 mt-2.5 md:mt-4">
-                    {/* Điện thoại: Kiểm tra thành dòng gọn như Thư viện/Flashcard — chỉ Trợ lý hướng dẫn là thẻ lớn. */}
-                    <div className="md:hidden">{card("quiz", false)}</div>
                     {card("library", false)}
                     {card("flashcard", false)}
                   </div>
